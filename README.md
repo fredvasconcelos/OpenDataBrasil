@@ -47,6 +47,7 @@ Guia completo: [`docs/development/setup-windows-wsl2.md`](docs/development/setup
   - 0007: Silver, valores especiais e reconciliação
 - Fontes e datasets: [`docs/data_catalog/ibge.md`](docs/data_catalog/ibge.md)
 - Operação: [ingestão](docs/runbooks/ingestao.md) e [Silver](docs/runbooks/silver.md)
+- Problemas conhecidos: [`docs/known-issues.md`](docs/known-issues.md)
 - Compatibilidade: [`docs/development/compatibility-matrix.md`](docs/development/compatibility-matrix.md)
 
 ## Licença
