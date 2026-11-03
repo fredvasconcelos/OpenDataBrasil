@@ -34,6 +34,7 @@ COPY packages/query_engine/pyproject.toml packages/query_engine/pyproject.toml
 COPY packages/catalog/pyproject.toml packages/catalog/pyproject.toml
 COPY packages/cli/pyproject.toml packages/cli/pyproject.toml
 COPY packages/ingestion/pyproject.toml packages/ingestion/pyproject.toml
+COPY packages/processing/pyproject.toml packages/processing/pyproject.toml
 
 # ---------------------------------------------------------------- runtime
 FROM base AS runtime

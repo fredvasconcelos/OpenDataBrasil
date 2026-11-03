@@ -156,3 +156,35 @@ def test_reader_version_checks(writer: DeltaWriter, uri: str, tmp_path: Path) ->
     assert not reader.has_version(uri, -1)
     with pytest.raises(ValueError, match="versão inválida"):
         reader.scan(uri, -1)
+
+
+def test_replace_where_swaps_only_matching_rows(writer: DeltaWriter, uri: str) -> None:
+    writer.write(uri, make_frame([1, 2], uf="SP"), run_id="r", partition_by=["uf"])
+    writer.write(uri, make_frame([3], uf="RJ"), run_id="r")
+    result = writer.write(
+        uri, make_frame([9], uf="SP"), run_id="x", mode="overwrite", replace_where={"uf": "SP"}
+    )
+    assert result.operation == "write:replace_where"
+    rows = reader.scan(uri, result.version).sort("obs_id").select("obs_id", "uf").collect().rows()
+    assert rows == [(3, "RJ"), (9, "SP")]  # linhas SP antigas removidas, RJ intacta
+    assert reader.scan(uri, 1).select(pl.len()).collect().item() == 3  # versão anterior preservada
+
+
+def test_replace_where_creates_table_and_validates(writer: DeltaWriter, uri: str) -> None:
+    created = writer.write(
+        uri, make_frame([1], uf="SP"), run_id="r", mode="overwrite", replace_where={"uf": "SP"}
+    )
+    assert created.version == 0
+    with pytest.raises(TableWriteError, match="não satisfazem"):
+        writer.write(
+            uri, make_frame([2], uf="RJ"), run_id="r", mode="overwrite", replace_where={"uf": "SP"}
+        )
+    with pytest.raises(TableWriteError, match="mode='overwrite'"):
+        writer.write(uri, make_frame([2]), run_id="r", replace_where={"uf": "SP"})
+    with pytest.raises(TableWriteError, match="ausente"):
+        writer.write(
+            uri, make_frame([2]), run_id="r", mode="overwrite", replace_where={"nope": "x"}
+        )
+    with pytest.raises(TableWriteError, match="ao menos uma"):
+        writer.write(uri, make_frame([2]), run_id="r", mode="overwrite", replace_where={})
+    assert reader.current_version(uri) == 0

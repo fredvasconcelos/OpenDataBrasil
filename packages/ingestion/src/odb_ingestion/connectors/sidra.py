@@ -57,7 +57,7 @@ class SidraParams(BaseModel):
 
     table: str = Field(pattern=r"^\d{1,6}$")
     variables: tuple[str, ...] = Field(min_length=1)
-    territorial_level: str
+    territorial_levels: tuple[str, ...] = Field(min_length=1)
     classifications: dict[str, str] = Field(default_factory=dict)
     period_discovery_level: str = "n1"
     territory_dimension: str = "D1"
@@ -78,13 +78,23 @@ class SidraParams(BaseModel):
                 raise ValueError(msg)
         return value
 
-    @field_validator("territorial_level", "period_discovery_level")
+    @field_validator("period_discovery_level")
     @classmethod
     def _level(cls, value: str) -> str:
         if not _LEVEL.fullmatch(value):
             msg = f"nível territorial SIDRA inválido: {value!r}"
             raise ValueError(msg)
         return value
+
+    @field_validator("territorial_levels")
+    @classmethod
+    def _levels(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        for level in value:
+            cls._level(level)
+        if len(set(value)) != len(value):
+            msg = f"níveis territoriais repetidos: {value}"
+            raise ValueError(msg)
+        return tuple(sorted(value, key=lambda lv: int(lv[1:])))
 
     @field_validator("territory_dimension", "variable_dimension", "period_dimension")
     @classmethod
@@ -106,9 +116,18 @@ class SidraParams(BaseModel):
         return value
 
     @property
-    def level_code(self) -> str:
-        """Código numérico do nível (``n6`` → ``6``)."""
-        return self.territorial_level[1:]
+    def level_codes(self) -> frozenset[str]:
+        """Códigos numéricos dos níveis (``n6`` → ``6``), como aparecem na coluna ``NC``."""
+        return frozenset(level[1:] for level in self.territorial_levels)
+
+    @property
+    def level_signature(self) -> str:
+        """Assinatura dos níveis consultados (por exemplo, ``n1n2n3n6``)."""
+        return "".join(self.territorial_levels)
+
+    def partition_key(self, period: str) -> str:
+        """Chave de partição; inclui os níveis (mudar os níveis gera partições novas)."""
+        return f"{self.level_signature}-p{period}"
 
 
 class SidraConnector(BaseConnector):
@@ -145,8 +164,11 @@ class SidraConnector(BaseConnector):
 
     # ------------------------------------------------------------- URLs
 
-    def _values_url(self, params: SidraParams, level: str, variables: str, period: str) -> str:
-        path = f"/values/t/{params.table}/{level}/all/v/{variables}/p/{period}"
+    def _values_url(
+        self, params: SidraParams, levels: tuple[str, ...], variables: str, period: str
+    ) -> str:
+        territory = "/".join(f"{level}/all" for level in levels)
+        path = f"/values/t/{params.table}/{territory}/v/{variables}/p/{period}"
         for key, cats in sorted(params.classifications.items()):
             path += f"/{key}/{cats}"
         return self.source.base_url.rstrip("/") + path
@@ -154,7 +176,7 @@ class SidraConnector(BaseConnector):
     def discover_periods(self, dataset: DatasetConfig, http: HttpClient) -> list[str]:
         """Períodos disponíveis, consultados no nível de descoberta (por padrão, Brasil)."""
         params = self.params(dataset)
-        url = self._values_url(params, params.period_discovery_level, params.variables[0], "all")
+        url = self._values_url(params, (params.period_discovery_level,), params.variables[0], "all")
         try:
             payload = json.loads(http.get_bytes(url))
         except json.JSONDecodeError as exc:
@@ -189,15 +211,15 @@ class SidraConnector(BaseConnector):
         requests: list[ExtractionRequest] = []
         skipped: list[str] = []
         for period in periods:
-            key = f"p{period}"
+            key = params.partition_key(period)
             if full or key not in watermark.partitions or period in recent:
                 requests.append(
                     ExtractionRequest(
                         partition_key=key,
                         url=self._values_url(
-                            params, params.territorial_level, ",".join(params.variables), period
+                            params, params.territorial_levels, ",".join(params.variables), period
                         ),
-                        artifact_name=f"t{params.table}-{params.territorial_level}-p{period}.json",
+                        artifact_name=f"t{params.table}-{params.level_signature}-p{period}.json",
                         reference_period=period,
                         max_bytes=params.max_bytes,
                     )
@@ -252,8 +274,11 @@ class SidraConnector(BaseConnector):
         if params.max_rows is not None and len(rows) > params.max_rows:
             errors.append(f"{len(rows)} observações, máximo esperado {params.max_rows}")
         levels = Counter(r["NC"] for r in rows)
-        if set(levels) != {params.level_code}:
-            errors.append(f"níveis territoriais inesperados: {dict(levels)}")
+        if set(levels) != params.level_codes:
+            errors.append(
+                f"níveis territoriais {dict(levels)} diferem dos esperados "
+                f"{sorted(params.level_codes)}"
+            )
         period_key = f"{params.period_dimension}C"
         periods = Counter(r[period_key] for r in rows)
         if set(periods) != {request.reference_period}:
@@ -266,7 +291,8 @@ class SidraConnector(BaseConnector):
             )
 
         dim_keys = sorted(k for k in keys if re.fullmatch(r"D\d+C", k))
-        identities = Counter(tuple(r[k] for k in dim_keys) for r in rows)
+        # O nível (NC) faz parte da identidade: códigos se repetem entre níveis (Brasil=Norte=1).
+        identities = Counter((r["NC"], *(r[k] for k in dim_keys)) for r in rows)
         duplicated = sum(1 for n in identities.values() if n > 1)
         if duplicated:
             errors.append(f"{duplicated} combinações de dimensões duplicadas")
@@ -280,7 +306,8 @@ class SidraConnector(BaseConnector):
             warnings.append(f"símbolos de valor não catalogados: {unknown}")
         stats = {
             "observations": len(rows),
-            "territories": len({r[f"{params.territory_dimension}C"] for r in rows}),
+            "territories": len({(r["NC"], r[f"{params.territory_dimension}C"]) for r in rows}),
+            "levels": dict(sorted(levels.items())),
             "variables": sorted(variables),
             "dimensions": dim_keys,
             "numeric_values": values.get("numeric", 0),
@@ -295,7 +322,7 @@ class SidraConnector(BaseConnector):
         if not datasets:
             return HealthStatus(ok=False, detail="nenhum dataset configurado")
         params = self.params(datasets[0])
-        url = self._values_url(params, "n1", params.variables[0], "last")
+        url = self._values_url(params, ("n1",), params.variables[0], "last")
         started = time.perf_counter()
         try:
             body = json.loads(http.get_bytes(url))

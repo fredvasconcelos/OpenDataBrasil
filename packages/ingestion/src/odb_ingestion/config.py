@@ -89,6 +89,8 @@ class DatasetConfig(_Strict):
     reference_url: str | None = None
     enabled: bool = True
     params: dict[str, Any] = Field(default_factory=dict)
+    # Parâmetros da transformação Silver (interpretados pelo pacote processing).
+    silver: dict[str, Any] = Field(default_factory=dict)
 
     def config_sha256(self) -> str:
         """Checksum canônico da configuração, registrado no catálogo."""

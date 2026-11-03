@@ -80,9 +80,11 @@ def test_cli_ingest_run_rerun_and_status(lake: Path, fake: FakeSources, engine: 
         engine,
         "SELECT source_url, checksum_sha256, file_size_bytes, http_status, license_id, "
         "access_classification, storage_uri, reference_period, content_type "
-        "FROM operations.bronze_artifact WHERE partition_key = 'p2025'",
+        "FROM operations.bronze_artifact WHERE partition_key = 'n1n2n3-p2025'",
     )[0]
-    assert meta[0] == "https://apisidra.ibge.gov.br/values/t/6579/n3/all/v/9324/p/2025"
+    assert (
+        meta[0] == "https://apisidra.ibge.gov.br/values/t/6579/n1/all/n2/all/n3/all/v/9324/p/2025"
+    )
     assert len(str(meta[1])) == 64
     assert meta[3] == 200
     assert meta[4:6] == ("ibge-reuso-com-citacao", "public_conditional")
@@ -103,7 +105,7 @@ def test_cli_ingest_run_rerun_and_status(lake: Path, fake: FakeSources, engine: 
 
 
 def test_cli_failure_exit_code_and_isolation(lake: Path, fake: FakeSources, engine: Engine) -> None:
-    fake.overrides["/values/t/6579/n3/all/v/9324/p/2026"] = lambda _r: httpx.Response(
+    fake.overrides["/values/t/6579/n1/all/n2/all/n3/all/v/9324/p/2026"] = lambda _r: httpx.Response(
         200, content=fixture_bytes("t6579_n3_p1900_empty.json")
     )
     result = CliRunner().invoke(app, ["ingest", "run", "ibge-sidra-6579", "ibge-dtb"])

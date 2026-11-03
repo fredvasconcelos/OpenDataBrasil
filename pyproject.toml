@@ -43,7 +43,7 @@ python_version = "3.12"
 strict = true
 warn_unreachable = true
 # Atualizar ao criar novos pacotes (mypy não expande globs aqui).
-mypy_path = ["packages/common/src", "packages/lakehouse/src", "packages/query_engine/src", "packages/catalog/src", "packages/cli/src", "packages/ingestion/src"]
+mypy_path = ["packages/common/src", "packages/lakehouse/src", "packages/query_engine/src", "packages/catalog/src", "packages/cli/src", "packages/ingestion/src", "packages/processing/src"]
 files = ["packages", "tests"]
 explicit_package_bases = true
 

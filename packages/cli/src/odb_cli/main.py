@@ -13,6 +13,7 @@ from odb_catalog import make_engine
 from odb_catalog.migrate import current_revision, head_revision, upgrade
 from odb_cli.doctor import Status, run_checks
 from odb_cli.ingest import ingest_app, sources_app
+from odb_cli.silver import quality_app, silver_app
 from odb_cli.smoke import run_lakehouse_smoke
 from odb_common.logging import configure_logging
 from odb_common.settings import Settings, load_settings
@@ -26,6 +27,8 @@ app.add_typer(db_app, name="db")
 app.add_typer(smoke_app, name="smoke")
 app.add_typer(sources_app, name="sources")
 app.add_typer(ingest_app, name="ingest")
+app.add_typer(silver_app, name="silver")
+app.add_typer(quality_app, name="quality")
 
 logger = logging.getLogger("odb.cli")
 

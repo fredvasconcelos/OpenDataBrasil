@@ -86,10 +86,10 @@ def test_rerun_does_not_duplicate_bytes(env: Env) -> None:
 
 def test_revised_content_is_stored_as_new_version(env: Env) -> None:
     env.runner.run("ibge-sidra-6579")
-    payload = json.loads(fixture_bytes("t6579_n3_p2025.json"))
+    payload = json.loads(fixture_bytes("t6579_n1n2n3_p2025.json"))
     payload[1]["V"] = "1751951"  # revisão de um valor
-    env.fake.overrides["/values/t/6579/n3/all/v/9324/p/2025"] = lambda _r: httpx.Response(
-        200, content=json.dumps(payload).encode()
+    env.fake.overrides["/values/t/6579/n1/all/n2/all/n3/all/v/9324/p/2025"] = lambda _r: (
+        httpx.Response(200, content=json.dumps(payload).encode())
     )
     report = env.runner.run("ibge-sidra-6579")
     assert report.counts == {"stored": 1, "reused": 1}
@@ -97,8 +97,8 @@ def test_revised_content_is_stored_as_new_version(env: Env) -> None:
 
 
 def test_invalid_response_is_quarantined_and_ingestion_fails(env: Env) -> None:
-    env.fake.overrides["/values/t/6579/n3/all/v/9324/p/2026"] = lambda _r: httpx.Response(
-        200, content=fixture_bytes("t6579_n3_p1900_empty.json")
+    env.fake.overrides["/values/t/6579/n1/all/n2/all/n3/all/v/9324/p/2026"] = lambda _r: (
+        httpx.Response(200, content=fixture_bytes("t6579_n3_p1900_empty.json"))
     )
     report = env.runner.run("ibge-sidra-6579")
     assert report.status == "failed"
@@ -112,13 +112,15 @@ def test_invalid_response_is_quarantined_and_ingestion_fails(env: Env) -> None:
 
 
 def test_http_failure_isolated_per_dataset(env: Env) -> None:
-    env.fake.overrides["/values/t/6579/n3/all/v/9324/p/2003"] = lambda _r: httpx.Response(503)
+    env.fake.overrides["/values/t/6579/n1/all/n2/all/n3/all/v/9324/p/2003"] = lambda _r: (
+        httpx.Response(503)
+    )
     reports = env.runner.run_many(["ibge-sidra-6579", "ibge-sidra-4714", "ibge-dtb"])
     assert [r.status for r in reports] == ["failed", "succeeded", "succeeded"]
     failed = env.registry.by_status("failed")
     assert len(failed) == 1
     assert failed[0].http_status == 503
-    assert failed[0].partition_key == "p2003"
+    assert failed[0].partition_key == "n1n2n3-p2003"
     assert len(env.registry.synced) == 1
 
 
@@ -163,5 +165,5 @@ def test_concurrent_duplicate_is_resolved_as_reuse(env: Env) -> None:
 
 def test_plan_only(env: Env) -> None:
     plan = env.runner.plan("ibge-sidra-4714")
-    assert [r.partition_key for r in plan.requests] == ["p2022"]
+    assert [r.partition_key for r in plan.requests] == ["n1n2n3-p2022"]
     assert env.bronze_files() == []

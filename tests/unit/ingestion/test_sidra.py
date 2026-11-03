@@ -61,7 +61,7 @@ def _result(path: Path) -> DownloadResult:
 
 
 def _request(period: str) -> ExtractionRequest:
-    return ExtractionRequest(f"p{period}", "u", "a.json", reference_period=period)
+    return ExtractionRequest(f"n1n2n3-p{period}", "u", "a.json", reference_period=period)
 
 
 def test_discover_periods_from_real_fixture(connector: SidraConnector, http: HttpClient) -> None:
@@ -73,11 +73,13 @@ def test_plan_full_incremental_and_refresh(connector: SidraConnector, http: Http
     plan = connector.plan("ibge-sidra-6579", http, Watermark())
     assert [r.reference_period for r in plan.requests] == PERIODS_6579
     first = plan.requests[0]
-    assert first.url == "https://apisidra.ibge.gov.br/values/t/6579/n3/all/v/9324/p/2001"
-    assert first.artifact_name == "t6579-n3-p2001.json"
-    assert first.partition_key == "p2001"
+    assert (
+        first.url == "https://apisidra.ibge.gov.br/values/t/6579/n1/all/n2/all/n3/all/v/9324/p/2001"
+    )
+    assert first.artifact_name == "t6579-n1n2n3-p2001.json"
+    assert first.partition_key == "n1n2n3-p2001"
 
-    known = Watermark({f"p{p}": PartitionState(checksum_sha256="x") for p in PERIODS_6579})
+    known = Watermark({f"n1n2n3-p{p}": PartitionState(checksum_sha256="x") for p in PERIODS_6579})
     incremental = connector.plan("ibge-sidra-6579", http, known)
     assert [r.reference_period for r in incremental.requests] == ["2025", "2026"]
     assert any("fora da janela" in n for n in incremental.notes)
@@ -86,20 +88,21 @@ def test_plan_full_incremental_and_refresh(connector: SidraConnector, http: Http
 
     multi = connector.plan("ibge-sidra-4714", http, Watermark())
     assert [r.url for r in multi.requests] == [
-        "https://apisidra.ibge.gov.br/values/t/4714/n3/all/v/93,6318,614/p/2022"
+        "https://apisidra.ibge.gov.br/values/t/4714/n1/all/n2/all/n3/all/v/93,6318,614/p/2022"
     ]
 
 
 def test_real_fixtures_validate(connector: SidraConnector) -> None:
     result = connector.validate_raw(
-        "ibge-sidra-6579", _request("2025"), _result(SIDRA_FIXTURES / "t6579_n3_p2025.json")
+        "ibge-sidra-6579", _request("2025"), _result(SIDRA_FIXTURES / "t6579_n1n2n3_p2025.json")
     )
     assert result.valid, result.errors
-    assert result.stats["observations"] == 27
-    assert result.stats["territories"] == 27
+    assert result.stats["observations"] == 33
+    assert result.stats["territories"] == 33  # (nível, código): Brasil=1 e Norte=1 são distintos
+    assert result.stats["levels"] == {"1": 1, "2": 5, "3": 27}
     assert result.stats["units"] == ["Pessoas"]
     census = connector.validate_raw(
-        "ibge-sidra-4714", _request("2022"), _result(SIDRA_FIXTURES / "t4714_n3_p2022.json")
+        "ibge-sidra-4714", _request("2022"), _result(SIDRA_FIXTURES / "t4714_n1n2n3_p2022.json")
     )
     assert census.valid, census.errors
     assert census.stats["variables"] == ["614", "6318", "93"]
@@ -115,7 +118,7 @@ def test_empty_period_response_is_invalid(connector: SidraConnector) -> None:
 
 
 def _mutated(tmp_path: Path, mutate: object) -> Path:
-    payload = json.loads((SIDRA_FIXTURES / "t6579_n3_p2025.json").read_text("utf-8"))
+    payload = json.loads((SIDRA_FIXTURES / "t6579_n1n2n3_p2025.json").read_text("utf-8"))
     mutate(payload)  # type: ignore[operator]
     path = tmp_path / "m.json"
     path.write_text(json.dumps(payload), encoding="utf-8")
@@ -127,7 +130,7 @@ def _mutated(tmp_path: Path, mutate: object) -> Path:
     [
         (lambda p: p.__setitem__(slice(2, None), []), "observações, mínimo"),
         (lambda p: p.append(dict(p[1])), "máximo esperado"),
-        (lambda p: p[1].__setitem__("NC", "6"), "níveis territoriais"),
+        (lambda p: [r.__setitem__("NC", "3") for r in p[1:]], "níveis territoriais"),
         (lambda p: p[1].__setitem__("D3C", "2024"), "períodos inesperados"),
         (lambda p: p[1].__setitem__("D2C", "93"), "variáveis"),
         (lambda p: p.__setitem__(2, dict(p[1])), "duplicadas"),
@@ -197,7 +200,7 @@ def test_params_validation(connector: SidraConnector) -> None:
         connector.validate_params(with_params(estimated_values_per_period=100_001))
     ok = with_params(classifications={"c2": "all", "c1": "1,2"})
     connector.validate_params(ok)
-    url = connector._values_url(connector.params(ok), "n3", "9324", "2025")
+    url = connector._values_url(connector.params(ok), ("n3",), "9324", "2025")
     assert url.endswith("/p/2025/c1/1,2/c2/all")
 
 

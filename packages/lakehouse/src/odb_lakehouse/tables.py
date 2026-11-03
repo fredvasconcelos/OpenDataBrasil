@@ -17,7 +17,7 @@ na Fase 3 com benchmarks.
 from __future__ import annotations
 
 import re
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Literal
 
@@ -115,13 +115,23 @@ class DeltaWriter:
         mode: WriteMode = "append",
         partition_by: Sequence[str] | None = None,
         evolve_schema: bool = False,
+        replace_where: Mapping[str, str] | None = None,
     ) -> WriteResult:
         """Grava ``frame`` com o modo indicado e devolve a nova versão.
 
         ``evolve_schema=True`` permite apenas acrescentar colunas (``schema_mode
         = merge``). Remoção ou troca de tipo continua bloqueada pelo delta-rs.
+
+        ``replace_where`` (exige ``mode="overwrite"``) substitui apenas as linhas
+        que satisfazem as igualdades informadas, por exemplo
+        ``{"table_id": "6579"}``. Linhas que deixaram de existir na fonte são
+        removidas, o que um merge não faz. Todas as linhas de ``frame`` precisam
+        satisfazer o predicado.
         """
         self._preflight(table_uri, frame)
+        predicate = None
+        if replace_where is not None:
+            predicate = self._replace_predicate(frame, replace_where, mode)
         with self._lock.hold(table_uri):
             exists = DeltaTable.is_deltatable(table_uri)
             if exists:
@@ -144,8 +154,39 @@ class DeltaWriter:
                 options["partition_by"] = list(partition_by)
             if evolve_schema:
                 options["schema_mode"] = "merge"
+            operation = f"write:{mode}"
+            if predicate is not None and exists:
+                options["predicate"] = predicate
+                operation = "write:replace_where"
+                options["commit_properties"] = _commit_properties(run_id, operation)
+            elif predicate is not None:
+                mode = "error"  # primeira escrita cria a tabela
             frame.write_delta(table_uri, mode=mode, delta_write_options=options)
-            return self._committed(table_uri, f"write:{mode}", run_id)
+            return self._committed(table_uri, operation, run_id)
+
+    @staticmethod
+    def _replace_predicate(
+        frame: pl.DataFrame, replace_where: Mapping[str, str], mode: WriteMode
+    ) -> str:
+        if mode != "overwrite":
+            msg = "replace_where exige mode='overwrite'"
+            raise TableWriteError(msg)
+        if not replace_where:
+            msg = "replace_where exige ao menos uma coluna"
+            raise TableWriteError(msg)
+        _check_identifiers(list(replace_where), "colunas de replace_where")
+        for column, value in replace_where.items():
+            if column not in frame.columns:
+                msg = f"coluna de replace_where ausente no lote: {column}"
+                raise TableWriteError(msg)
+            outside = frame.filter(pl.col(column).cast(pl.String) != value).height
+            if outside:
+                msg = f"{outside} linhas do lote não satisfazem {column} = {value!r}"
+                raise TableWriteError(msg)
+        return " AND ".join(
+            f"{col} = '{str(val).replace(chr(39), chr(39) * 2)}'"
+            for col, val in replace_where.items()
+        )
 
     def merge(
         self,

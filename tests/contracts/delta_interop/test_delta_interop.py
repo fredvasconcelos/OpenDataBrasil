@@ -253,3 +253,25 @@ def test_csv_read_polars_and_duckdb(tmp_path: Path, duck: duckdb.DuckDBPyConnect
         [str(csv)],
     ).fetchall()
     assert rows == [("0012", "1234,5"), ("0034", "-")]
+
+
+def test_predicate_overwrite_keeps_protocol_and_history(
+    table_path: str, duck: duckdb.DuckDBPyConnection
+) -> None:
+    """Estratégia de reprocessamento da Silver: substituir uma partição lógica por inteiro."""
+    pl.concat([make_frame([1, 2], uf="SP"), make_frame([3], uf="RJ")]).write_delta(
+        table_path, delta_write_options={"partition_by": ["uf"]}
+    )
+    make_frame([7], uf="SP").write_delta(
+        table_path, mode="overwrite", delta_write_options={"predicate": "uf = 'SP'"}
+    )
+    _assert_conservative_protocol(table_path)
+    assert duck.execute(
+        "SELECT obs_id FROM delta_scan(?, version => 1) ORDER BY obs_id", [table_path]
+    ).fetchall() == [(3,), (7,)]
+    assert _duck_count(duck, table_path, 0) == 3
+    with pytest.raises(Exception, match="failed validation"):
+        make_frame([8], uf="MG").write_delta(
+            table_path, mode="overwrite", delta_write_options={"predicate": "uf = 'SP'"}
+        )
+    assert DeltaTable(table_path).version() == 1

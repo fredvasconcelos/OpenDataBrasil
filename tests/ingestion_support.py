@@ -26,7 +26,8 @@ DTB_MEMBERS = [
     "RELATORIO_DTB_BRASIL_2025_MUNICIPIOS.ods",
     "RELATORIO_DTB_BRASIL_2025_MUNICIPIOS.xls",
 ]
-_VALUES = re.compile(r"^/values/t/(\d+)/(n\d+)/all/v/([\d,]+|all)/p/(\w+)$")
+DTB_FIXTURES = FIXTURES / "ibge" / "dtb"
+_VALUES = re.compile(r"^/values/t/(\d+)/((?:n\d+/all/?)+)/v/([\d,]+|all)/p/(\w+)$")
 
 
 def fixture_bytes(name: str) -> bytes:
@@ -35,18 +36,27 @@ def fixture_bytes(name: str) -> bytes:
 
 def synthetic_period(period: str) -> bytes:
     """Resposta SINTÉTICA: fixture real de 2025 com o período trocado."""
-    payload = json.loads(fixture_bytes("t6579_n3_p2025.json"))
+    payload = json.loads(fixture_bytes("t6579_n1n2n3_p2025.json"))
     for row in payload[1:]:
         row["D3C"] = row["D3N"] = period
     return json.dumps(payload, ensure_ascii=False).encode()
 
 
 def make_dtb_zip(members: list[str] | None = None) -> bytes:
-    """ZIP SINTÉTICO com os nomes de membros do DTB_2025.zip real."""
+    """ZIP com os nomes de membros do DTB_2025.zip real.
+
+    A planilha de municípios (ODS) é o arquivo REAL da DTB 2025. Os demais
+    membros têm conteúdo fictício.
+    """
+    real = {
+        "RELATORIO_DTB_BRASIL_2025_MUNICIPIOS.ods": (
+            DTB_FIXTURES / "RELATORIO_DTB_BRASIL_2025_MUNICIPIOS.ods"
+        ).read_bytes()
+    }
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
         for name in members if members is not None else DTB_MEMBERS:
-            archive.writestr(name, f"conteúdo fictício de {name}\n" * 20)
+            archive.writestr(name, real.get(name, f"conteúdo fictício de {name}\n".encode() * 20))
     return buffer.getvalue()
 
 
@@ -81,7 +91,8 @@ class FakeSources:
         match = _VALUES.match(path)
         if not match:
             return httpx.Response(404, content=b"not found")
-        table, level, _vars, period = match.groups()
+        table, levels, _vars, period = match.groups()
+        level = "".join(part for part in levels.split("/") if part.startswith("n"))
         json_headers = {"content-type": "application/json; charset=utf-8"}
         if table == "999999":
             return httpx.Response(400, content=fixture_bytes("error_table_not_found.txt"))
@@ -108,6 +119,7 @@ class InMemoryRegistry:
         self.ingestions: dict[str, dict[str, Any]] = {}
         self.artifacts: list[ArtifactRecord] = []
         self.watermarks: dict[str, dict[str, PartitionState]] = {}
+        self.watermark_artifacts: dict[str, dict[str, str]] = {}
         self.fail_next_store_with_duplicate = False
 
     def sync_catalog(self, catalog: SourceCatalog) -> None:
@@ -145,6 +157,9 @@ class InMemoryRegistry:
         self, dataset_id: str, partitions: Mapping[str, tuple[PartitionState, str | None]]
     ) -> None:
         self.watermarks.setdefault(dataset_id, {}).update({k: v[0] for k, v in partitions.items()})
+        self.watermark_artifacts.setdefault(dataset_id, {}).update(
+            {k: v[1] for k, v in partitions.items() if v[1] is not None}
+        )
 
     def finish_ingestion(
         self,

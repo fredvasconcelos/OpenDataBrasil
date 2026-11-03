@@ -49,11 +49,16 @@ periodicity = "anual"
 [datasets.params]
 table = "6579"
 variables = ["9324"]
-territorial_level = "n3"
-estimated_values_per_period = 27
-min_rows = 27
-max_rows = 27
+territorial_levels = ["n1", "n2", "n3"]
+estimated_values_per_period = 33
+min_rows = 33
+max_rows = 33
 refresh_recent_periods = 2
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "9324" = "exact" }
 
 [[datasets]]
 id = "ibge-sidra-4714"
@@ -68,11 +73,16 @@ periodicity = "decenal"
 [datasets.params]
 table = "4714"
 variables = ["93", "6318", "614"]
-territorial_level = "n3"
-estimated_values_per_period = 81
-min_rows = 81
-max_rows = 81
+territorial_levels = ["n1", "n2", "n3"]
+estimated_values_per_period = 99
+min_rows = 99
+max_rows = 99
 refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "93" = "exact", "6318" = "rounding" }
 
 [[datasets]]
 id = "ibge-dtb"
@@ -91,3 +101,7 @@ reference_period = "2025"
 format = "zip"
 expected_members = ["RELATORIO_DTB_BRASIL_*_MUNICIPIOS.ods", "RELATORIO_DTB_BRASIL_*_MUNICIPIOS.xls"]
 min_bytes = 100
+
+[datasets.silver]
+transformer = "dtb_municipality"
+member = "RELATORIO_DTB_BRASIL_*_MUNICIPIOS.ods"
