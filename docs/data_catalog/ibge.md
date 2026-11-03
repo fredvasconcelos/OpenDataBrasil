@@ -106,12 +106,23 @@ exatamente a diferença nacional:
 | 2012 | Rio Grande do Sul (43) | +2.578 |
 | 2012 | Mato Grosso do Sul (50) | +4.723 |
 
-- Testado também com a biblioteca `sidrapy` 0.1.4: valores idênticos. A
-  biblioteca consulta a mesma API, então a divergência está nos dados publicados.
-- As notas da tabela não puderam ser lidas: os endpoints de metadados
-  respondem 403 a clientes automatizados, e o bloqueio não foi contornado.
-- **Causa não confirmada.** Verificar as notas da tabela 6579 no navegador
-  antes de decidir o tratamento na Gold.
+**Causa confirmada** pelas notas oficiais da tabela
+([resumo e verificação](notas/ibge-sidra-6579.md)): nesses anos, a tabela inclui
+**municípios com instalação prevista** para o ano seguinte. A população deles
+também está no município de origem, então a soma municipal conta essas pessoas
+duas vezes, enquanto os totais oficiais de UF e Brasil contam uma vez. Cada
+diferença acima é igual à população desses municípios:
+
+| Ano | Municípios ainda não instalados |
+|---|---|
+| 2004 | Aroeiras do Itaim-PI (2.561), Figueirão-MS (2.908), Ipiranga do Norte-MT (2.445), Itanhangá-MT (4.054) |
+| 2008 | Nazária-PI (7.817) |
+| 2012 | Mojuí dos Campos-PA (15.018), Pescaria Brava-SC (9.416), Balneário Rincão-SC (11.136), Pinto Bandeira-RS (2.578), Paraíso das Águas-MS (4.723) |
+
+Os dados não estão errados. **Somar municípios para obter totais de UF ou
+Brasil nesses anos produz um valor incorreto.** Use os totais oficiais
+publicados (níveis N1, N2 e N3). A biblioteca `sidrapy` 0.1.4 retorna valores
+idênticos, porque consulta a mesma API.
 
 ### 4714: Censo 2022
 

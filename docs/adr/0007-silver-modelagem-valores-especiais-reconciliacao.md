@@ -84,5 +84,8 @@ SIDRA (teste `test_regions_convention_matches_sidra_n2`).
 - Uma observação é rastreável até o artefato Bronze `stored` (id + SHA-256).
 - Datasets com classificações exigirão validar a ordem das dimensões `D4+`
   contra a configuração quando forem incorporados.
-- As divergências encontradas estão documentadas em `docs/data_catalog/ibge.md`
-  e precisam de decisão na Gold.
+- As divergências da 6579 (2004, 2008 e 2012) foram **explicadas pelas notas
+  oficiais**: municípios com instalação prevista entram na estimativa sem sair
+  do município de origem (`docs/data_catalog/notas/ibge-sidra-6579.md`). A
+  Gold deve usar os totais oficiais por nível, e não somar municípios. Isso
+  confirma a decisão de manter a reconciliação como aviso, e não como bloqueio.
