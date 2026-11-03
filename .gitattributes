@@ -12,3 +12,6 @@ Dockerfile text eol=lf
 *.zip binary
 *.gz  binary
 *.parquet binary
+
+# Respostas reais de fontes: preservar os bytes exatos (sem normalizar finais de linha).
+tests/fixtures/** -text
