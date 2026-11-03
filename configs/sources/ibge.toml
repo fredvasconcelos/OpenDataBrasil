@@ -1,0 +1,106 @@
+# Fontes do IBGE.
+# Identificadores, períodos e contagens conferidos por requisição real em 2026-11-03
+# (ver docs/data_catalog/ibge.md). Não acrescente identificadores sem verificá-los na fonte.
+
+config_version = "1.0.0"
+
+[institution]
+id = "ibge"
+name = "Instituto Brasileiro de Geografia e Estatística"
+acronym = "IBGE"
+url = "https://www.ibge.gov.br"
+
+[[licenses]]
+id = "ibge-reuso-com-citacao"
+name = "Reuso de dados do IBGE com citação da fonte"
+url = "https://biblioteca.ibge.gov.br/biblioteca-servicos.html"
+conditions = "Uso permitido com citação obrigatória do IBGE como fonte. Transformações devem identificar o responsável."
+review_status = "requires_review"
+notes = "Texto oficial não verificado: a página respondeu 403 para clientes automatizados em 2026-11-03. Condições baseadas em fontes secundárias; confirmar antes de publicação pública (§23)."
+
+# ------------------------------------------------------------------ fontes
+
+[[sources]]
+id = "ibge-sidra"
+name = "SIDRA: Sistema IBGE de Recuperação Automática (API)"
+connector = "sidra"
+base_url = "https://apisidra.ibge.gov.br"
+documentation_url = "https://apisidra.ibge.gov.br/home/ajuda"
+
+[sources.http]
+min_interval_s = 2.0
+timeout_s = 120.0
+max_attempts = 5
+backoff_initial_s = 2.0
+
+[[sources]]
+id = "ibge-geoftp"
+name = "IBGE Geociências: downloads (geoftp)"
+connector = "http_file"
+base_url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/estrutura_territorial/divisao_territorial/"
+
+[sources.http]
+min_interval_s = 2.0
+timeout_s = 120.0
+
+# ------------------------------------------------------------------ datasets
+
+[[datasets]]
+id = "ibge-sidra-6579"
+source = "ibge-sidra"
+official_id = "6579"
+title = "População residente estimada"
+description = "Estimativas anuais da população residente (variável 9324, Pessoas), por município. Anos sem estimativa na tabela (por exemplo, anos censitários) não são interpolados."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/6579"
+
+[datasets.params]
+table = "6579"
+variables = ["9324"]
+territorial_level = "n6"
+estimated_values_per_period = 5600
+min_rows = 5500
+max_rows = 5700
+refresh_recent_periods = 2
+
+[[datasets]]
+id = "ibge-sidra-4714"
+source = "ibge-sidra"
+official_id = "4714"
+title = "Censo Demográfico 2022: população residente, área territorial e densidade demográfica"
+description = "População residente (93), área da unidade territorial (6318) e densidade demográfica (614), por município, no Censo 2022."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/4714"
+
+[datasets.params]
+table = "4714"
+variables = ["93", "6318", "614"]
+territorial_level = "n6"
+estimated_values_per_period = 17000
+min_rows = 16500
+max_rows = 17100
+refresh_recent_periods = 1
+
+[[datasets]]
+id = "ibge-dtb"
+source = "ibge-geoftp"
+official_id = "DTB_2025"
+title = "Divisão Territorial Brasileira 2025"
+description = "Relatórios oficiais da DTB (municípios, distritos e subdistritos, inclusive criados e extintos), em ODS e XLS."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/estrutura_territorial/divisao_territorial/2025/"
+
+[datasets.params]
+url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/estrutura_territorial/divisao_territorial/2025/DTB_2025.zip"
+artifact_name = "dtb-2025.zip"
+reference_period = "2025"
+format = "zip"
+expected_members = ["RELATORIO_DTB_BRASIL_*_MUNICIPIOS.ods", "RELATORIO_DTB_BRASIL_*_MUNICIPIOS.xls"]
+min_bytes = 500000
+max_bytes = 52428800

@@ -2,7 +2,7 @@
 
 **Validada em:** 2026-11-03, por execução (CLAUDE.md §4.3)
 **Evidência:** `tests/contracts/delta_interop/` (13 contratos) + suíte completa
-(105 testes) executada no host (Ubuntu 24.04 / WSL2) e no container `tests`.
+(105 testes na Fase 1; 165 na Fase 2) executada no host (Ubuntu 24.04 / WSL2) e no container `tests`.
 
 Regra de seleção: versão estável publicada há pelo menos 14 dias na data da
 seleção. Todas as dependências transitivas estão fixadas em `uv.lock`.
@@ -30,6 +30,7 @@ seleção. Todas as dependências transitivas estão fixadas em `uv.lock`.
 | psycopg[binary] | 3.3.6 | 2026-09-18 | |
 | pydantic / pydantic-settings | 2.14.1 / 2.16.0 | 2026-10 | |
 | typer | 0.27.3 | 2026-10-06 | |
+| httpx | 0.28.1 | 2024-12-06 | cliente HTTP da ingestão (Fase 2), via `MockTransport` nos testes |
 | ruff / mypy / pytest / pytest-cov | 0.17.1 / 2.4.0 / 9.1.1 / 7.1.0 | | desenvolvimento |
 
 ## Protocolo Delta (perfil conservador, ADR-0001)

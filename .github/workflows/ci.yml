@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, "fase-*"]
   pull_request:
 
 permissions:
@@ -17,8 +17,8 @@ jobs:
     name: Lint, formatação e tipos
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
           version: "0.13.2"
       - run: uv sync --frozen --all-packages
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: lint
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
       - name: Gerar .env efêmero
         run: |
           gen() { python3 -c 'import secrets; print(secrets.token_urlsafe(24))'; }
@@ -40,6 +40,16 @@ jobs:
               -e "s/^ODB_PIPELINE_PASSWORD=.*/ODB_PIPELINE_PASSWORD=$(gen)/" \
               -e "s/^ODB_READER_PASSWORD=.*/ODB_READER_PASSWORD=$(gen)/" \
               .env.example > .env
+          # Runner do GitHub: 4 vCPUs e 16 GB.
+          cat >> .env <<'ENV'
+          ODB_WORKER_CPUS=2
+          ODB_WORKER_MEMORY=4g
+          ODB_TESTS_CPUS=2
+          ODB_TESTS_MEMORY=4g
+          ODB_POSTGRES_CPUS=1
+          ODB_POSTGRES_MEMORY=1g
+          POLARS_MAX_THREADS=2
+          ENV
       - name: Build
         run: docker compose --profile test --profile data build --build-arg ODB_CODE_VERSION=${GITHUB_SHA::12}
       - name: Suíte completa (unit, contratos, integração; cobertura >= 80%)

@@ -1,0 +1,93 @@
+# Configuração de TESTE: mesmas fontes do configs/sources/ibge.toml, no nível UF (n3),
+# compatível com as fixtures reais em tests/fixtures/ibge.
+config_version = "test"
+
+[institution]
+id = "ibge"
+name = "Instituto Brasileiro de Geografia e Estatística"
+acronym = "IBGE"
+url = "https://www.ibge.gov.br"
+
+[[licenses]]
+id = "ibge-reuso-com-citacao"
+name = "Reuso de dados do IBGE com citação da fonte"
+conditions = "Citação obrigatória."
+review_status = "requires_review"
+
+[[sources]]
+id = "ibge-sidra"
+name = "SIDRA"
+connector = "sidra"
+base_url = "https://apisidra.ibge.gov.br"
+
+[sources.http]
+min_interval_s = 0.0
+max_attempts = 2
+backoff_initial_s = 0.0
+
+[[sources]]
+id = "ibge-geoftp"
+name = "geoftp"
+connector = "http_file"
+base_url = "https://geoftp.ibge.gov.br/"
+
+[sources.http]
+min_interval_s = 0.0
+max_attempts = 2
+backoff_initial_s = 0.0
+
+[[datasets]]
+id = "ibge-sidra-6579"
+source = "ibge-sidra"
+official_id = "6579"
+title = "População residente estimada"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+
+[datasets.params]
+table = "6579"
+variables = ["9324"]
+territorial_level = "n3"
+estimated_values_per_period = 27
+min_rows = 27
+max_rows = 27
+refresh_recent_periods = 2
+
+[[datasets]]
+id = "ibge-sidra-4714"
+source = "ibge-sidra"
+official_id = "4714"
+title = "Censo 2022"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "4714"
+variables = ["93", "6318", "614"]
+territorial_level = "n3"
+estimated_values_per_period = 81
+min_rows = 81
+max_rows = 81
+refresh_recent_periods = 1
+
+[[datasets]]
+id = "ibge-dtb"
+source = "ibge-geoftp"
+official_id = "DTB_2025"
+title = "DTB 2025"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+
+[datasets.params]
+url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/estrutura_territorial/divisao_territorial/2025/DTB_2025.zip"
+artifact_name = "dtb-2025.zip"
+reference_period = "2025"
+format = "zip"
+expected_members = ["RELATORIO_DTB_BRASIL_*_MUNICIPIOS.ods", "RELATORIO_DTB_BRASIL_*_MUNICIPIOS.xls"]
+min_bytes = 100

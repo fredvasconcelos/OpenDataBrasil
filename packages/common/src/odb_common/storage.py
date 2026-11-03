@@ -18,6 +18,8 @@ from urllib.parse import unquote, urlparse
 
 SUPPORTED_SCHEMES = frozenset({"file"})
 _SEGMENT = re.compile(r"^[a-z0-9][a-z0-9_\-]{0,127}$")
+# Nome de arquivo definido pela plataforma (nunca o nome fornecido pela fonte).
+_FILENAME = re.compile(r"^[a-z0-9][a-z0-9_\-]{0,100}(\.[a-z0-9]{1,10}){0,2}$")
 
 
 class StorageError(ValueError):
@@ -39,6 +41,14 @@ def validate_segment(segment: str) -> str:
         msg = f"segmento de caminho inválido: {segment!r}"
         raise StorageError(msg)
     return segment
+
+
+def validate_filename(name: str) -> str:
+    """Garante nome de arquivo minúsculo, com no máximo duas extensões e sem separadores."""
+    if not _FILENAME.fullmatch(name):
+        msg = f"nome de arquivo inválido: {name!r}"
+        raise StorageError(msg)
+    return name
 
 
 def uri_to_local_path(uri: str) -> PurePosixPath:
@@ -83,6 +93,10 @@ class LakehouseLayout:
             raise StorageError(msg)
         clean = "/".join(validate_segment(s) for s in segments)
         return f"{self.layer_uri(layer)}/{clean}"
+
+    def object_uri(self, layer: Layer, *segments: str, filename: str) -> str:
+        """URI de um arquivo (por exemplo, um artefato Bronze) dentro de diretórios validados."""
+        return f"{self.table_uri(layer, *segments)}/{validate_filename(filename)}"
 
     def layer_of(self, uri: str) -> Layer:
         """Identifica a camada de uma URI pertencente a este lakehouse."""

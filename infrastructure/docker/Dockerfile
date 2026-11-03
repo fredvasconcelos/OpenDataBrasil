@@ -33,6 +33,7 @@ COPY packages/lakehouse/pyproject.toml packages/lakehouse/pyproject.toml
 COPY packages/query_engine/pyproject.toml packages/query_engine/pyproject.toml
 COPY packages/catalog/pyproject.toml packages/catalog/pyproject.toml
 COPY packages/cli/pyproject.toml packages/cli/pyproject.toml
+COPY packages/ingestion/pyproject.toml packages/ingestion/pyproject.toml
 
 # ---------------------------------------------------------------- runtime
 FROM base AS runtime

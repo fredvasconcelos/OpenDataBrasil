@@ -37,3 +37,13 @@ def test_requires_segment_and_known_layer() -> None:
         layout.layer_of("file:///lakehouse/platinum/x")
     with pytest.raises(StorageError):
         uri_to_local_path("s3://bucket/key")
+
+
+def test_object_uri_and_filename_rules() -> None:
+    layout = LakehouseLayout("file:///lakehouse")
+    uri = layout.object_uri(Layer.BRONZE, "ibge-sidra", "ds", filename="p2025.json")
+    assert uri == "file:///lakehouse/bronze/ibge-sidra/ds/p2025.json"
+    assert layout.object_uri(Layer.BRONZE, "x", filename="dtb.tar.gz").endswith("/dtb.tar.gz")
+    for bad in ["../x.json", "a/b.json", "UPPER.json", "x.json.gz.bak", ".hidden", "x."]:
+        with pytest.raises(StorageError):
+            layout.object_uri(Layer.BRONZE, "x", filename=bad)

@@ -7,6 +7,7 @@
 #   web   -> reservado para API/portal (Fase 5); hoje inclui apenas postgres
 #
 # Orçamento total do projeto: 32 GB de RAM e 16 threads (ADR-0001).
+# Limites por serviço são sobrescritos por variáveis ODB_*_CPUS/ODB_*_MEMORY (ex.: no CI).
 
 name: opendatabrasil
 
@@ -69,7 +70,7 @@ services:
     restart: unless-stopped
     deploy:
       resources:
-        limits: { memory: 2g, cpus: "2" }
+        limits: { memory: "${ODB_POSTGRES_MEMORY:-2g}", cpus: "${ODB_POSTGRES_CPUS:-2}" }
 
   migrate:
     <<: *odb-image
@@ -101,7 +102,7 @@ services:
     restart: "no"
     deploy:
       resources:
-        limits: { memory: 16g, cpus: "8" }
+        limits: { memory: "${ODB_WORKER_MEMORY:-16g}", cpus: "${ODB_WORKER_CPUS:-8}" }
 
   tests:
     image: opendatabrasil/odb-test:${ODB_IMAGE_TAG:-dev}
@@ -127,7 +128,7 @@ services:
     restart: "no"
     deploy:
       resources:
-        limits: { memory: 6g, cpus: "4" }
+        limits: { memory: "${ODB_TESTS_MEMORY:-6g}", cpus: "${ODB_TESTS_CPUS:-4}" }
 
   dev:
     image: opendatabrasil/odb-test:${ODB_IMAGE_TAG:-dev}
@@ -153,7 +154,7 @@ services:
       postgres: { condition: service_healthy }
     deploy:
       resources:
-        limits: { memory: 8g, cpus: "4" }
+        limits: { memory: "${ODB_DEV_MEMORY:-8g}", cpus: "${ODB_DEV_CPUS:-4}" }
 
 volumes:
   lake_bronze:

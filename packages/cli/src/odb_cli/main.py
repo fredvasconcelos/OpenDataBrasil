@@ -12,6 +12,7 @@ import typer
 from odb_catalog import make_engine
 from odb_catalog.migrate import current_revision, head_revision, upgrade
 from odb_cli.doctor import Status, run_checks
+from odb_cli.ingest import ingest_app, sources_app
 from odb_cli.smoke import run_lakehouse_smoke
 from odb_common.logging import configure_logging
 from odb_common.settings import Settings, load_settings
@@ -23,6 +24,8 @@ db_app = typer.Typer(no_args_is_help=True, help="Banco operacional (PostgreSQL).
 smoke_app = typer.Typer(no_args_is_help=True, help="Smoke tests do ambiente.")
 app.add_typer(db_app, name="db")
 app.add_typer(smoke_app, name="smoke")
+app.add_typer(sources_app, name="sources")
+app.add_typer(ingest_app, name="ingest")
 
 logger = logging.getLogger("odb.cli")
 

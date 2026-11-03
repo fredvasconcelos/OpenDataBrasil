@@ -52,6 +52,8 @@ class Settings(BaseSettings):
     log_level: LogLevel = "INFO"
     # Commit do código em execução (injetado no build da imagem).
     code_version: str = "unknown"
+    # Configurações versionadas das fontes de dados (um TOML por fonte).
+    sources_config_dir: str = "configs/sources"
 
     # Lakehouse
     lakehouse_root_uri: str = "file:///lakehouse"
