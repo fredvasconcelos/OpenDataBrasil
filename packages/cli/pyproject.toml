@@ -1,0 +1,29 @@
+[project]
+name = "odb-cli"
+version = "0.1.0"
+description = "CLI operacional `odb`: diagnóstico, migrações e smoke tests."
+requires-python = ">=3.12,<3.13"
+license = "MIT"
+dependencies = [
+    "odb-common",
+    "odb-lakehouse",
+    "odb-query-engine",
+    "odb-catalog",
+    "typer==0.27.3",
+]
+
+[project.scripts]
+odb = "odb_cli.main:app"
+
+[tool.uv.sources]
+odb-common = { workspace = true }
+odb-lakehouse = { workspace = true }
+odb-query-engine = { workspace = true }
+odb-catalog = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.13.2,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "odb_cli"

@@ -1,0 +1,165 @@
+# OpenDataBrasil: ambiente local da Fase 1.
+#
+# Profiles:
+#   data  -> postgres + migrate + worker (pipelines, `docker compose run --rm worker odb ...`)
+#   test  -> postgres + tests (suíte completa contra o banco odb_test)
+#   dev   -> postgres + dev (shell com o código montado do host)
+#   web   -> reservado para API/portal (Fase 5); hoje inclui apenas postgres
+#
+# Orçamento total do projeto: 32 GB de RAM e 16 threads (ADR-0001).
+
+name: opendatabrasil
+
+x-odb-image: &odb-image
+  image: opendatabrasil/odb:${ODB_IMAGE_TAG:-dev}
+  build:
+    context: .
+    dockerfile: infrastructure/docker/Dockerfile
+    target: runtime
+
+x-odb-env: &odb-env
+  ODB_ENV: ${ODB_ENV:-dev}
+  ODB_CONFIG_DIR: /app/configs/environments
+  ODB_LAKEHOUSE_ROOT_URI: file:///lakehouse
+  ODB_PG_HOST: postgres
+  ODB_LOG_LEVEL: ${ODB_LOG_LEVEL:-INFO}
+  ODB_DUCKDB_EXTENSION_DIRECTORY: /opt/duckdb/extensions
+  POLARS_MAX_THREADS: ${POLARS_MAX_THREADS:-8}
+
+x-lake-volumes-rw: &lake-volumes-rw
+  - lake_bronze:/lakehouse/bronze
+  - lake_silver:/lakehouse/silver
+  - lake_gold:/lakehouse/gold
+  - lake_tmp:/lakehouse/tmp
+  - odb_logs:/var/log/odb
+
+services:
+  postgres:
+    image: postgres:17-bookworm@sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5
+    profiles: [data, web, test, dev]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?defina no .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina no .env}
+      POSTGRES_DB: ${POSTGRES_DB:-odb}
+      ODB_OWNER_PASSWORD: ${ODB_OWNER_PASSWORD:?defina no .env}
+      ODB_PIPELINE_PASSWORD: ${ODB_PIPELINE_PASSWORD:?defina no .env}
+      ODB_READER_PASSWORD: ${ODB_READER_PASSWORD:?defina no .env}
+      TZ: UTC
+    command:
+      - postgres
+      - -c
+      - shared_buffers=512MB
+      - -c
+      - max_connections=50
+      - -c
+      - timezone=UTC
+      - -c
+      - log_timezone=UTC
+    ports:
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - pg_backups:/backups
+      - ./infrastructure/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: 2g, cpus: "2" }
+
+  migrate:
+    <<: *odb-image
+    profiles: [data, test, dev]
+    command: ["odb", "db", "upgrade"]
+    environment:
+      <<: *odb-env
+      ODB_PG_USER: odb_owner
+      ODB_PG_PASSWORD: ${ODB_OWNER_PASSWORD:?defina no .env}
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: "no"
+    deploy:
+      resources:
+        limits: { memory: 512m, cpus: "1" }
+
+  worker:
+    <<: *odb-image
+    profiles: [data]
+    command: ["odb", "doctor"]
+    environment:
+      <<: *odb-env
+      ODB_PG_USER: odb_pipeline
+      ODB_PG_PASSWORD: ${ODB_PIPELINE_PASSWORD:?defina no .env}
+    volumes: *lake-volumes-rw
+    depends_on:
+      postgres: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    restart: "no"
+    deploy:
+      resources:
+        limits: { memory: 16g, cpus: "8" }
+
+  tests:
+    image: opendatabrasil/odb-test:${ODB_IMAGE_TAG:-dev}
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile
+      target: test
+    profiles: [test]
+    command: ["pytest", "--cov", "-p", "no:cacheprovider"]
+    environment:
+      <<: *odb-env
+      ODB_ENV: test
+      ODB_PG_DATABASE: odb_test
+      ODB_PG_USER: odb_owner
+      ODB_PG_PASSWORD: ${ODB_OWNER_PASSWORD:?defina no .env}
+      ODB_TEST_PIPELINE_PASSWORD: ${ODB_PIPELINE_PASSWORD:?defina no .env}
+      ODB_TEST_READER_PASSWORD: ${ODB_READER_PASSWORD:?defina no .env}
+      ODB_REQUIRE_INTEGRATION: "1"
+    tmpfs:
+      - /lakehouse/tmp:size=2g,uid=1000,gid=1000
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: "no"
+    deploy:
+      resources:
+        limits: { memory: 6g, cpus: "4" }
+
+  dev:
+    image: opendatabrasil/odb-test:${ODB_IMAGE_TAG:-dev}
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile
+      target: test
+    profiles: [dev]
+    command: ["sleep", "infinity"]
+    environment:
+      <<: *odb-env
+      ODB_PG_USER: odb_owner
+      ODB_PG_PASSWORD: ${ODB_OWNER_PASSWORD:?defina no .env}
+    volumes:
+      - ./packages:/app/packages
+      - ./tests:/app/tests
+      - ./configs:/app/configs
+      - lake_bronze:/lakehouse/bronze
+      - lake_silver:/lakehouse/silver
+      - lake_gold:/lakehouse/gold
+      - lake_tmp:/lakehouse/tmp
+    depends_on:
+      postgres: { condition: service_healthy }
+    deploy:
+      resources:
+        limits: { memory: 8g, cpus: "4" }
+
+volumes:
+  lake_bronze:
+  lake_silver:
+  lake_gold:
+  lake_tmp:
+  odb_logs:
+  pg_data:
+  pg_backups:

@@ -1,0 +1,76 @@
+# Raiz virtual do workspace uv (não é um pacote instalável).
+# Cada pacote em packages/ declara suas próprias dependências.
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv]
+required-version = "==0.13.2"
+default-groups = ["dev"]
+
+[dependency-groups]
+dev = [
+    "ruff==0.17.1",
+    "mypy==2.4.0",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+]
+
+# ---------------------------------------------------------------- ruff
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["packages/*/src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "B", "UP", "N", "S", "SIM", "RUF", "PL", "PT", "DTZ", "TID", "ANN",
+]
+ignore = [
+    "PLR0913", # muitos argumentos: aceitável em construtores de configuração
+    "ANN401",  # Any explícito permitido em fronteiras de bibliotecas
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "PLR2004", "ANN", "S608"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+# ---------------------------------------------------------------- mypy
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+# Atualizar ao criar novos pacotes (mypy não expande globs aqui).
+mypy_path = ["packages/common/src", "packages/lakehouse/src", "packages/query_engine/src", "packages/catalog/src", "packages/cli/src"]
+files = ["packages", "tests"]
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["deltalake.*", "duckdb.*", "pyarrow.*"]
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config", "--import-mode=importlib"]
+markers = [
+    "integration: requer serviços externos locais (PostgreSQL)",
+    "interop: testes de interoperabilidade Delta entre Polars, delta-rs e DuckDB",
+]
+xfail_strict = true
+filterwarnings = ["error"]
+
+# ---------------------------------------------------------------- coverage
+[tool.coverage.run]
+branch = true
+source = ["packages"]
+omit = ["*/migrations/versions/*"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_covered = true
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError", "@overload"]

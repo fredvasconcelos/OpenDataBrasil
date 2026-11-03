@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint, formatação e tipos
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.2"
+      - run: uv sync --frozen --all-packages
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+
+  compose:
+    name: Testes, migração, doctor e smoke (Docker Compose)
+    runs-on: ubuntu-24.04
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gerar .env efêmero
+        run: |
+          gen() { python3 -c 'import secrets; print(secrets.token_urlsafe(24))'; }
+          sed -e "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$(gen)/" \
+              -e "s/^ODB_OWNER_PASSWORD=.*/ODB_OWNER_PASSWORD=$(gen)/" \
+              -e "s/^ODB_PIPELINE_PASSWORD=.*/ODB_PIPELINE_PASSWORD=$(gen)/" \
+              -e "s/^ODB_READER_PASSWORD=.*/ODB_READER_PASSWORD=$(gen)/" \
+              .env.example > .env
+      - name: Build
+        run: docker compose --profile test --profile data build --build-arg ODB_CODE_VERSION=${GITHUB_SHA::12}
+      - name: Suíte completa (unit, contratos, integração; cobertura >= 80%)
+        run: docker compose --profile test run --rm tests
+      - name: Migrações
+        run: docker compose --profile data run --rm migrate
+      - name: odb doctor
+        run: docker compose --profile data run --rm worker odb doctor
+      - name: odb smoke lakehouse
+        run: docker compose --profile data run --rm worker odb smoke lakehouse
+      - name: Logs do PostgreSQL em caso de falha
+        if: failure()
+        run: docker compose --profile data logs postgres
+      - name: Encerrar
+        if: always()
+        run: docker compose --profile data --profile test down -v
