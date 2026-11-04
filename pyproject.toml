@@ -33,6 +33,8 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S105", "S106", "PLR2004", "ANN", "S608"]
+# SQL montado só com fragmentos fixos do planejador; valores entram como $parâmetros.
+"packages/semantics/src/odb_semantics/query.py" = ["S608"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
@@ -43,7 +45,7 @@ python_version = "3.12"
 strict = true
 warn_unreachable = true
 # Atualizar ao criar novos pacotes (mypy não expande globs aqui).
-mypy_path = ["packages/common/src", "packages/lakehouse/src", "packages/query_engine/src", "packages/catalog/src", "packages/cli/src", "packages/ingestion/src", "packages/processing/src"]
+mypy_path = ["packages/common/src", "packages/lakehouse/src", "packages/query_engine/src", "packages/catalog/src", "packages/cli/src", "packages/ingestion/src", "packages/processing/src", "packages/semantics/src", "packages/modeling/src"]
 files = ["packages", "tests"]
 explicit_package_bases = true
 

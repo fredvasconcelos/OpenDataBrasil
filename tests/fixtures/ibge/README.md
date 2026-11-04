@@ -13,6 +13,12 @@ Não edite: os testes dependem dos bytes exatos.
 | `sidra/t4714_n1_periods.json` | `/t/4714/n1/all/v/93/p/all` | 200 | só 2022 |
 | `sidra/t4714_n3_p2022.json` | `/t/4714/n3/all/v/all/p/2022` | 200 | 27 UFs × variáveis 93, 6318, 614 |
 | `sidra/error_table_not_found.txt` | `/t/999999/n1/all/v/all/p/all` | **400** | texto `Tabela 999999: Tabela inválida` |
+| `sidra/t9605_n1_periods.json` | `/t/9605/n1/all/v/93/p/all/c86/all` | 200 | 2010 e 2022 (capturado em 2026-11-04) |
+| `sidra/t9605_n1n2n3_p2010.json`, `…_p2022.json` | `/t/9605/n1/all/n2/all/n3/all/v/93/p/<ano>/c86/all` | 200 | 6 categorias × 33 territórios |
+| `sidra/t9718_n1_periods.json` | `/t/9718/n1/all/v/93/p/all/c1714/all/c2661/32776,12869,12870` | 200 | só 2022 |
+| `sidra/t9718_n1n2n3_p2022_v<var>_c2661-<cat>.json` | `/t/9718/n1/all/n2/all/n3/all/v/<var>/p/2022/c1714/all/c2661/<cat>` | 200 | 9 arquivos: variáveis 93, 350, 4727 × localizações 32776, 12869, 12870; 4 quesitos × 33 territórios cada |
+| `sidra/t9578_n1_periods.json` | `/t/9578/n1/all/v/4709/p/all/c2661/all` | 200 | só 2022 |
+| `sidra/t9578_n1n2n3_p2022_v<var>.json` | `/t/9578/n1/all/n2/all/n3/all/v/<var>/p/2022/c2661/all` | 200 | 3 arquivos: variáveis 4709, 93, 4728; 3 localizações × 33 territórios |
 
 Dados **sintéticos** usados nos testes, gerados em código e identificados como tal:
 

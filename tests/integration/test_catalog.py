@@ -11,12 +11,12 @@ pytestmark = pytest.mark.integration
 
 
 def test_migration_roundtrip(engine: Engine, pg_settings: Settings) -> None:
-    assert current_revision(engine) == head_revision() == "0004"
+    assert current_revision(engine) == head_revision() == "0005"
     url = pg_settings.postgres_url()
     downgrade(url, "base")
     assert current_revision(engine) is None
     upgrade(url)
-    assert current_revision(engine) == "0004"
+    assert current_revision(engine) == "0005"
 
 
 def test_tracked_run_success_and_failure(engine: Engine) -> None:

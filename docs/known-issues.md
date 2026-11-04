@@ -44,6 +44,7 @@ navegador automatizado ou credenciais pessoais.
 - **Impacto:** sem metadados estruturados (KI-001) e sem a API de localidades.
 - **Ação:** retestar periodicamente e, quando voltar, avaliar um conector de
   metadados.
+- **Retestes:** 2026-11-04, ainda sem resposta (HTTP 000).
 
 ## KI-003: licença do IBGE em `requires_review`
 
@@ -65,3 +66,16 @@ navegador automatizado ou credenciais pessoais.
   entram na área da UF e não na dos municípios.
 - **Ação:** confirmar nas notas da tabela 4714 ou na metodologia de áreas
   territoriais do IBGE. Até lá, a Gold usa a área oficial publicada por nível.
+
+## KI-005: portal Séries Estatísticas bloqueia clientes automatizados
+
+- **Estado:** aberto (sem ação de contorno)
+- **Detectado em:** 2026-11-04
+- **Sintoma:** `seriesestatisticas.ibge.gov.br` responde 403, com desafio do
+  Cloudflare.
+- **Decisão:** não contornar (§7.3). As séries equivalentes (Censo 2022: cor ou
+  raça, indígenas e quilombolas) foram localizadas no SIDRA (9605, 9718, 9578,
+  9970, 9971, 9954 e 9723) e conferidas na API oficial.
+- **Impacto:** a lista de séries do portal não é usada como fonte automática do
+  catálogo temático. A árvore temática é curada em
+  `configs/indicators/demografia.toml`.

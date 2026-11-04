@@ -11,6 +11,8 @@ dependencies = [
     "odb-catalog",
     "odb-ingestion",
     "odb-processing",
+    "odb-modeling",
+    "odb-semantics",
     "typer==0.27.3",
 ]
 
@@ -24,6 +26,8 @@ odb-query-engine = { workspace = true }
 odb-catalog = { workspace = true }
 odb-ingestion = { workspace = true }
 odb-processing = { workspace = true }
+odb-modeling = { workspace = true }
+odb-semantics = { workspace = true }
 
 [build-system]
 requires = ["uv_build>=0.13.2,<0.14"]

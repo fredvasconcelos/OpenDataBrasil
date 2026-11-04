@@ -54,6 +54,8 @@ class Settings(BaseSettings):
     code_version: str = "unknown"
     # Configurações versionadas das fontes de dados (um TOML por fonte).
     sources_config_dir: str = "configs/sources"
+    # Catálogo semântico (indicadores, classificações e fatos; um TOML por escopo).
+    indicators_config_dir: str = "configs/indicators"
 
     # Lakehouse
     lakehouse_root_uri: str = "file:///lakehouse"

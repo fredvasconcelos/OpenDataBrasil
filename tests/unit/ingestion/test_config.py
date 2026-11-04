@@ -10,7 +10,14 @@ REPO_SOURCES = Path(__file__).parents[3] / "configs" / "sources"
 
 def test_repository_sources_are_valid() -> None:
     catalog = load_sources(REPO_SOURCES)
-    assert set(catalog.datasets) == {"ibge-sidra-6579", "ibge-sidra-4714", "ibge-dtb"}
+    assert set(catalog.datasets) == {
+        "ibge-sidra-6579",
+        "ibge-sidra-4714",
+        "ibge-sidra-9605",
+        "ibge-sidra-9718",
+        "ibge-sidra-9578",
+        "ibge-dtb",
+    }
     assert catalog.source_institution["ibge-sidra"] == "ibge"
     assert catalog.licenses["ibge-reuso-com-citacao"].review_status == "requires_review"
     assert set(build_connectors(catalog)) == {"ibge-sidra", "ibge-geoftp"}

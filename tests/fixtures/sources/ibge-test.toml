@@ -85,6 +85,84 @@ territorial_reference = "ibge-dtb"
 additive_variables = { "93" = "exact", "6318" = "rounding" }
 
 [[datasets]]
+id = "ibge-sidra-9605"
+source = "ibge-sidra"
+official_id = "9605"
+title = "Cor ou raça"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9605"
+variables = ["93"]
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c86" = "all" }
+estimated_values_per_period = 198
+min_rows = 198
+max_rows = 198
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "93" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9718"
+source = "ibge-sidra"
+official_id = "9718"
+title = "Indígenas"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9718"
+variables = ["93", "350", "4727"]
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c1714" = "all", "c2661" = "32776,12869,12870" }
+split_by_variable = true
+split_by_classification = "c2661"
+estimated_values_per_period = 132
+min_rows = 132
+max_rows = 132
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "93" = "exact", "350" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9578"
+source = "ibge-sidra"
+official_id = "9578"
+title = "Quilombolas"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9578"
+variables = ["4709", "93", "4728"]
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c2661" = "all" }
+split_by_variable = true
+estimated_values_per_period = 99
+min_rows = 99
+max_rows = 99
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "4709" = "exact", "93" = "exact" }
+
+[[datasets]]
 id = "ibge-dtb"
 source = "ibge-geoftp"
 official_id = "DTB_2025"

@@ -101,6 +101,97 @@ territorial_reference = "ibge-dtb"
 additive_variables = { "93" = "exact", "6318" = "rounding" }
 
 [[datasets]]
+id = "ibge-sidra-9605"
+source = "ibge-sidra"
+official_id = "9605"
+title = "População residente, por cor ou raça (Censos 2010 e 2022)"
+description = "População residente (93) por cor ou raça (classificação c86: Branca, Preta, Amarela, Parda, Indígena e Total), nos Censos 2010 e 2022. As cinco categorias não somam o Total: a tabela não publica a categoria sem declaração."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9605"
+
+[datasets.params]
+table = "9605"
+# 1000093 (percentual do total geral) é derivado da própria tabela e não é ingerido.
+variables = ["93"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+# c86 conferido na API em 2026-11-04 (HTTP 200; códigos inválidos geram HTTP 400).
+classifications = { "c86" = "all" }
+estimated_values_per_period = 33618
+min_rows = 33400
+max_rows = 33700
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "93" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9718"
+source = "ibge-sidra"
+official_id = "9718"
+title = "Censo 2022: população residente, total e indígena, por localização do domicílio e quesito de declaração indígena"
+description = "População residente (93), pessoas indígenas (350) e percentual de pessoas indígenas (4727), por quesito de declaração indígena (c1714) e localização do domicílio em relação a terras indígenas (c2661)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9718"
+
+[datasets.params]
+table = "9718"
+# 1000093 e 1000350 (percentuais do total geral) são derivados e não são ingeridos.
+variables = ["93", "350", "4727"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+# c2661 com as categorias listadas (Total, em e fora de terras indígenas), para
+# dividir as requisições por categoria.
+classifications = { "c1714" = "all", "c2661" = "32776,12869,12870" }
+# A API limita cada consulta a 50.000 valores (HTTP 400 com 67.236 em 2026-11-04).
+# Uma requisição por variável e por localização: 4 quesitos x 5603 territórios = 22.412.
+split_by_variable = true
+split_by_classification = "c2661"
+estimated_values_per_period = 22412
+min_rows = 22300
+max_rows = 22500
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "93" = "exact", "350" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9578"
+source = "ibge-sidra"
+official_id = "9578"
+title = "Censo 2022: população residente, total e quilombola, por localização do domicílio"
+description = "Pessoas quilombolas (4709), população residente (93) e percentual de pessoas quilombolas (4728), por localização do domicílio em relação a territórios quilombolas (c2661). Valores da segunda apuração (1.330.186 pessoas quilombolas no Brasil)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9578"
+
+[datasets.params]
+table = "9578"
+# 1004709 (percentual do total geral) é derivado e não é ingerido.
+variables = ["4709", "93", "4728"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+classifications = { "c2661" = "all" }
+# 3 variáveis x 3 localizações x 5603 territórios = 50.427 passa do limite de 50.000:
+# uma requisição por variável (16.809 valores).
+split_by_variable = true
+estimated_values_per_period = 16809
+min_rows = 16700
+max_rows = 16850
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "4709" = "exact", "93" = "exact" }
+
+[[datasets]]
 id = "ibge-dtb"
 source = "ibge-geoftp"
 official_id = "DTB_2025"

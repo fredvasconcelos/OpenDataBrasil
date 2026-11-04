@@ -8,6 +8,7 @@ dependencies = [
     "odb-common",
     "odb-ingestion",
     "odb-processing",
+    "odb-modeling",
     "sqlalchemy==2.0.55",
     "alembic==1.20.0",
     "psycopg[binary]==3.3.6",
@@ -17,6 +18,7 @@ dependencies = [
 odb-common = { workspace = true }
 odb-ingestion = { workspace = true }
 odb-processing = { workspace = true }
+odb-modeling = { workspace = true }
 
 [build-system]
 requires = ["uv_build>=0.13.2,<0.14"]

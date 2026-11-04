@@ -25,9 +25,9 @@ def test_db_commands(lake: Path) -> None:
     runner = CliRunner()
     up = runner.invoke(app, ["db", "upgrade"])
     assert up.exit_code == 0, up.output
-    assert "revisão 0004" in up.output
+    assert "revisão 0005" in up.output
     cur = runner.invoke(app, ["db", "current"])
-    assert "atual=0004 head=0004" in cur.output
+    assert "atual=0005 head=0005" in cur.output
 
 
 def test_doctor_all_green(lake: Path) -> None:

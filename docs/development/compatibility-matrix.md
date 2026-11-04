@@ -2,7 +2,7 @@
 
 **Validada em:** 2026-11-03, por execução (CLAUDE.md §4.3)
 **Evidência:** `tests/contracts/delta_interop/` (13 contratos) + suíte completa
-(105 testes na Fase 1; 165 na Fase 2; 212 na Fase 3) executada no host (Ubuntu 24.04 / WSL2) e no container `tests`.
+(105 testes na Fase 1; 165 na Fase 2; 212 na Fase 3; 251 na Fase 4) executada no host (Ubuntu 24.04 / WSL2) e no container `tests`.
 
 Regra de seleção: versão estável publicada há pelo menos 14 dias na data da
 seleção. Todas as dependências transitivas estão fixadas em `uv.lock`.

@@ -9,8 +9,10 @@ members = [
     "odb-common",
     "odb-ingestion",
     "odb-lakehouse",
+    "odb-modeling",
     "odb-processing",
     "odb-query-engine",
+    "odb-semantics",
 ]
 
 [manifest.dependency-groups]
@@ -425,6 +427,7 @@ dependencies = [
     { name = "alembic" },
     { name = "odb-common" },
     { name = "odb-ingestion" },
+    { name = "odb-modeling" },
     { name = "odb-processing" },
     { name = "psycopg", extra = ["binary"] },
     { name = "sqlalchemy" },
@@ -435,6 +438,7 @@ requires-dist = [
     { name = "alembic", specifier = "==1.20.0" },
     { name = "odb-common", editable = "packages/common" },
     { name = "odb-ingestion", editable = "packages/ingestion" },
+    { name = "odb-modeling", editable = "packages/modeling" },
     { name = "odb-processing", editable = "packages/processing" },
     { name = "psycopg", extras = ["binary"], specifier = "==3.3.6" },
     { name = "sqlalchemy", specifier = "==2.0.55" },
@@ -449,8 +453,10 @@ dependencies = [
     { name = "odb-common" },
     { name = "odb-ingestion" },
     { name = "odb-lakehouse" },
+    { name = "odb-modeling" },
     { name = "odb-processing" },
     { name = "odb-query-engine" },
+    { name = "odb-semantics" },
     { name = "typer" },
 ]
 
@@ -460,8 +466,10 @@ requires-dist = [
     { name = "odb-common", editable = "packages/common" },
     { name = "odb-ingestion", editable = "packages/ingestion" },
     { name = "odb-lakehouse", editable = "packages/lakehouse" },
+    { name = "odb-modeling", editable = "packages/modeling" },
     { name = "odb-processing", editable = "packages/processing" },
     { name = "odb-query-engine", editable = "packages/query_engine" },
+    { name = "odb-semantics", editable = "packages/semantics" },
     { name = "typer", specifier = "==0.27.3" },
 ]
 
@@ -517,6 +525,27 @@ requires-dist = [
 ]
 
 [[package]]
+name = "odb-modeling"
+version = "0.1.0"
+source = { editable = "packages/modeling" }
+dependencies = [
+    { name = "odb-common" },
+    { name = "odb-ingestion" },
+    { name = "odb-lakehouse" },
+    { name = "odb-processing" },
+    { name = "odb-semantics" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "odb-common", editable = "packages/common" },
+    { name = "odb-ingestion", editable = "packages/ingestion" },
+    { name = "odb-lakehouse", editable = "packages/lakehouse" },
+    { name = "odb-processing", editable = "packages/processing" },
+    { name = "odb-semantics", editable = "packages/semantics" },
+]
+
+[[package]]
 name = "odb-processing"
 version = "0.1.0"
 source = { editable = "packages/processing" }
@@ -548,6 +577,23 @@ dependencies = [
 requires-dist = [
     { name = "duckdb", specifier = "==1.5.6" },
     { name = "odb-common", editable = "packages/common" },
+]
+
+[[package]]
+name = "odb-semantics"
+version = "0.1.0"
+source = { editable = "packages/semantics" }
+dependencies = [
+    { name = "odb-common" },
+    { name = "odb-query-engine" },
+    { name = "pydantic" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "odb-common", editable = "packages/common" },
+    { name = "odb-query-engine", editable = "packages/query_engine" },
+    { name = "pydantic", specifier = "==2.14.1" },
 ]
 
 [[package]]

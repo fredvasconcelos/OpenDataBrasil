@@ -1,0 +1,296 @@
+# Catálogo semântico do escopo "demografia" (Fase 4, ADR-0008).
+#
+# Este arquivo define:
+#   * classificações, com a hierarquia curada das categorias (partições);
+#   * indicadores, com a posição na árvore temática e as regras semânticas;
+#   * fatos temáticos da Gold;
+#   * marcações vindas das notas oficiais transcritas.
+#
+# Códigos de classificação e de categoria foram conferidos na API SIDRA em
+# 2026-11-04 (tests/fixtures/ibge/sidra). Não acrescente códigos sem verificá-los.
+# Rótulos de categoria vêm da Silver. Aqui só se declara a estrutura.
+
+config_version = "1.0.0"
+scope = "demografia"
+
+# ------------------------------------------------------------------ classificações
+#
+# Uma partição é um conjunto de categorias filhas do Total.
+#   exhaustive = true  -> a soma das categorias deve ser igual ao Total
+#   exhaustive = false -> a soma não pode passar do Total (há categoria não publicada)
+
+[[classifications]]
+id = "c86"
+name = "Cor ou raça"
+silver_dimension = "Cor ou raça"
+total = "95251"
+
+[[classifications.partitions]]
+id = "cor_ou_raca"
+label = "Cor ou raça"
+categories = ["2776", "2777", "2778", "2779", "2780"]
+exhaustive = false
+note = "A tabela 9605 não publica a categoria 'sem declaração': as cinco categorias somam menos que o Total (6.608 pessoas a menos em 2010 e 11.119 em 2022, no Brasil)."
+
+[[classifications]]
+id = "c1714"
+name = "Quesito de declaração indígena"
+silver_dimension = "Quesito de declaração indígena"
+total = "60024"
+
+[[classifications.partitions]]
+id = "quesito"
+label = "Quesito de declaração"
+categories = ["60025", "60026", "60029"]
+exhaustive = true
+note = "Cor ou raça indígena + Se considera indígena (pergunta de cobertura nas localidades indígenas) + Não se declarou indígena."
+
+[[classifications]]
+id = "c2661"
+name = "Localização do domicílio"
+silver_dimension = "Localização do domicílio"
+total = "32776"
+
+[[classifications.partitions]]
+id = "terras_indigenas"
+label = "Em relação a terras indígenas"
+categories = ["12869", "12870"]
+exhaustive = true
+
+[[classifications.partitions]]
+id = "territorios_quilombolas"
+label = "Em relação a territórios quilombolas"
+categories = ["60027", "60028"]
+exhaustive = true
+
+# ------------------------------------------------------------------ fatos temáticos
+#
+# Cada fato tem granularidade explícita. As medidas são as variáveis dos
+# indicadores que apontam para o fato. As classificações viram colunas de
+# chave de categoria.
+
+[[facts]]
+id = "fact_population_estimate"
+dataset = "ibge-sidra-6579"
+grain = "território (Brasil, Grande Região, UF, município) x ano"
+description = "Estimativas anuais oficiais da população residente. Municípios com instalação prevista para o ano seguinte são marcados (notas oficiais da tabela 6579)."
+
+[[facts]]
+id = "fact_census_population"
+dataset = "ibge-sidra-4714"
+grain = "território x ano censitário"
+description = "População residente, área territorial e densidade demográfica do Censo 2022."
+
+[[facts]]
+id = "fact_population_by_race"
+dataset = "ibge-sidra-9605"
+grain = "território x ano censitário x cor ou raça"
+description = "População residente por cor ou raça, nos Censos 2010 e 2022."
+classifications = { "c86" = "race_category_key" }
+
+[[facts]]
+id = "fact_indigenous_population"
+dataset = "ibge-sidra-9718"
+grain = "território x ano censitário x quesito de declaração indígena x localização do domicílio"
+description = "População residente, pessoas indígenas e percentual de indígenas por quesito de declaração e localização em relação a terras indígenas."
+classifications = { "c1714" = "declaration_category_key", "c2661" = "location_category_key" }
+
+[[facts]]
+id = "fact_quilombola_population"
+dataset = "ibge-sidra-9578"
+grain = "território x ano censitário x localização do domicílio"
+description = "População residente, pessoas quilombolas e percentual de quilombolas por localização em relação a territórios quilombolas."
+classifications = { "c2661" = "location_category_key" }
+
+# ------------------------------------------------------------------ indicadores
+#
+# id          identificador interno estável (§15.3); os oficiais ficam em dataset/variable
+# path        posição na árvore temática (raiz → grupo); o indicador é a folha do grupo
+# unit        unidade publicada pela fonte (conferida contra a Silver na construção)
+# additivity  additive: somável entre territórios e categorias
+#             non_additive: razões, percentuais e densidades nunca são somados
+# concept     conceito medido; indicadores com conceitos incompatíveis não são combinados
+
+[[indicators]]
+id = "populacao_estimada"
+name = "População residente estimada"
+description = "Estimativa anual oficial da população residente, publicada pelo IBGE para o cálculo de cotas do Fundo de Participação dos Estados e Municípios."
+dataset = "ibge-sidra-6579"
+variable = "9324"
+fact = "fact_population_estimate"
+column = "population"
+unit = "Pessoas"
+additivity = "additive"
+concept = "populacao_residente"
+path = ["Estimativas de População"]
+caveats = [
+    "Em 2004, 2008 e 2012 a soma dos municípios supera o total oficial: municípios com instalação prevista entram na estimativa sem sair do município de origem. Use os totais oficiais de UF, Grande Região e Brasil (docs/data_catalog/notas/ibge-sidra-6579.md).",
+    "Populações definidas por decisão judicial para o FPM não substituem o valor publicado.",
+]
+
+[[indicators]]
+id = "censo_populacao_residente"
+name = "População residente"
+description = "População residente recenseada no Censo Demográfico 2022."
+dataset = "ibge-sidra-4714"
+variable = "93"
+fact = "fact_census_population"
+column = "population"
+unit = "Pessoas"
+additivity = "additive"
+concept = "populacao_residente"
+path = ["Censo Demográfico", "População"]
+
+[[indicators]]
+id = "censo_area_territorial"
+name = "Área da unidade territorial"
+description = "Área territorial oficial, em quilômetros quadrados, na data de referência do Censo 2022."
+dataset = "ibge-sidra-4714"
+variable = "6318"
+fact = "fact_census_population"
+column = "area_km2"
+unit = "Quilômetros quadrados"
+additivity = "additive"
+concept = "area_territorial"
+path = ["Censo Demográfico", "Território"]
+caveats = [
+    "A soma das áreas municipais do RS é 13.085,868 km² menor que a área oficial da UF (KI-004). Use a área oficial publicada por nível.",
+]
+
+[[indicators]]
+id = "censo_densidade_demografica"
+name = "Densidade demográfica"
+description = "Habitantes por quilômetro quadrado no Censo 2022."
+dataset = "ibge-sidra-4714"
+variable = "614"
+fact = "fact_census_population"
+column = "density"
+unit = "Habitante por quilômetro quadrado"
+additivity = "non_additive"
+concept = "densidade_demografica"
+path = ["Censo Demográfico", "Território"]
+
+[[indicators]]
+id = "censo_populacao_cor_raca"
+name = "População residente por cor ou raça"
+description = "População residente por cor ou raça declarada, nos Censos 2010 e 2022."
+dataset = "ibge-sidra-9605"
+variable = "93"
+fact = "fact_population_by_race"
+column = "population"
+unit = "Pessoas"
+additivity = "additive"
+concept = "populacao_residente"
+path = ["Censo Demográfico", "Cor ou raça"]
+caveats = [
+    "A categoria Indígena desta tabela conta só quem declarou cor ou raça indígena. Ela não equivale a 'Pessoas indígenas' (tabela 9718), que inclui quem se considera indígena.",
+]
+
+[[indicators]]
+id = "censo_pessoas_indigenas"
+name = "Pessoas indígenas"
+description = "Pessoas indígenas: quem declarou cor ou raça indígena e, nas localidades indígenas, quem não declarou mas se considera indígena."
+dataset = "ibge-sidra-9718"
+variable = "350"
+fact = "fact_indigenous_population"
+column = "indigenous_persons"
+unit = "Pessoas"
+additivity = "additive"
+concept = "pessoas_indigenas"
+path = ["Censo Demográfico", "Pessoas indígenas"]
+incompatible_with = [
+    { indicator = "censo_populacao_cor_raca", reason = "definições diferentes de população indígena: 'Pessoas indígenas' (quesito de declaração, 9718) inclui quem se considera indígena; a categoria Indígena de cor ou raça (9605) não inclui" },
+]
+
+[[indicators]]
+id = "censo_residentes_declaracao_indigena"
+name = "População residente por quesito de declaração indígena"
+description = "População residente total por quesito de declaração indígena e localização do domicílio em relação a terras indígenas."
+dataset = "ibge-sidra-9718"
+variable = "93"
+fact = "fact_indigenous_population"
+column = "population"
+unit = "Pessoas"
+additivity = "additive"
+concept = "populacao_residente"
+path = ["Censo Demográfico", "Pessoas indígenas"]
+
+[[indicators]]
+id = "censo_percentual_indigenas"
+name = "Percentual de pessoas indígenas na população residente"
+description = "Pessoas indígenas em relação à população residente, em percentual, publicado pelo IBGE."
+dataset = "ibge-sidra-9718"
+variable = "4727"
+fact = "fact_indigenous_population"
+column = "indigenous_share_pct"
+unit = "%"
+additivity = "non_additive"
+concept = "percentual_pessoas_indigenas"
+path = ["Censo Demográfico", "Pessoas indígenas"]
+
+[[indicators]]
+id = "censo_pessoas_quilombolas"
+name = "Pessoas quilombolas"
+description = "Pessoas quilombolas recenseadas no Censo 2022 (segunda apuração)."
+dataset = "ibge-sidra-9578"
+variable = "4709"
+fact = "fact_quilombola_population"
+column = "quilombola_persons"
+unit = "Pessoas"
+additivity = "additive"
+concept = "pessoas_quilombolas"
+path = ["Censo Demográfico", "Pessoas quilombolas"]
+caveats = [
+    "Valores da segunda apuração (1.330.186 no Brasil). A primeira divulgação, de 2023, informou 1.327.802.",
+]
+
+[[indicators]]
+id = "censo_residentes_territorio_quilombola"
+name = "População residente por localização em relação a territórios quilombolas"
+description = "População residente total, em territórios quilombolas e fora deles."
+dataset = "ibge-sidra-9578"
+variable = "93"
+fact = "fact_quilombola_population"
+column = "population"
+unit = "Pessoas"
+additivity = "additive"
+concept = "populacao_residente"
+path = ["Censo Demográfico", "Pessoas quilombolas"]
+
+[[indicators]]
+id = "censo_percentual_quilombolas"
+name = "Percentual de pessoas quilombolas na população residente"
+description = "Pessoas quilombolas em relação à população residente, em percentual, publicado pelo IBGE."
+dataset = "ibge-sidra-9578"
+variable = "4728"
+fact = "fact_quilombola_population"
+column = "quilombola_share_pct"
+unit = "%"
+additivity = "non_additive"
+concept = "percentual_pessoas_quilombolas"
+path = ["Censo Demográfico", "Pessoas quilombolas"]
+
+# ------------------------------------------------------------------ notas oficiais
+#
+# Municípios com instalação prevista para o ano seguinte, segundo as notas da
+# tabela 6579 transcritas pelo mantenedor (docs/data_catalog/notas/ibge-sidra-6579.md).
+# Os nomes são resolvidos para códigos pela DTB vigente. Nome ausente ou
+# ambíguo bloqueia a construção da Gold.
+
+[[pending_installation]]
+dataset = "ibge-sidra-6579"
+period = "2004"
+municipalities = [["Aroeiras do Itaim", "PI"], ["Figueirão", "MS"], ["Ipiranga do Norte", "MT"], ["Itanhangá", "MT"]]
+source = "Nota da tabela 6579 (2004): 'Inclusive 4 municípios com instalação prevista para 1º de janeiro de 2005'"
+
+[[pending_installation]]
+dataset = "ibge-sidra-6579"
+period = "2008"
+municipalities = [["Nazária", "PI"]]
+source = "Nota da tabela 6579 (2008): 'Inclusive o Município de Nazária - PI, com previsão de instalação em 1º de janeiro de 2009'"
+
+[[pending_installation]]
+dataset = "ibge-sidra-6579"
+period = "2012"
+municipalities = [["Mojuí dos Campos", "PA"], ["Pescaria Brava", "SC"], ["Balneário Rincão", "SC"], ["Pinto Bandeira", "RS"], ["Paraíso das Águas", "MS"]]
+source = "Nota da tabela 6579 (2012): 'Municípios instalados em 1º de janeiro de 2013'"

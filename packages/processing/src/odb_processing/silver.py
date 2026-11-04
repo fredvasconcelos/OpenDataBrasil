@@ -228,9 +228,9 @@ class SilverBuilder:
     def _inputs(self, dataset: DatasetConfig) -> list[SilverInput]:
         inputs = self._registry.current_inputs(dataset.id)
         if self.transformer(dataset) == "sidra_observation":
-            params = SidraConnector.params(dataset)
-            prefix = f"{params.level_signature}-p"
-            inputs = [i for i in inputs if i.partition_key.startswith(prefix)]
+            # Só as partições da configuração atual (níveis e divisão por variável).
+            pattern = SidraConnector.params(dataset).partition_pattern()
+            inputs = [i for i in inputs if pattern.fullmatch(i.partition_key)]
         return sorted(inputs, key=lambda i: i.partition_key)
 
     def _fingerprint(

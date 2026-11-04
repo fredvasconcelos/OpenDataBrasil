@@ -49,6 +49,9 @@ def test_silver_end_to_end(lake: Path, engine: Engine, tmp_path: Path) -> None:
         ("ibge-dtb", "succeeded"),
         ("ibge-sidra-6579", "succeeded"),
         ("ibge-sidra-4714", "succeeded"),
+        ("ibge-sidra-9605", "succeeded"),
+        ("ibge-sidra-9718", "succeeded"),
+        ("ibge-sidra-9578", "succeeded"),
     ]
     sidra_uri = summary[2]["target_uri"]
     version = summary[2]["delta_version"]
@@ -72,7 +75,7 @@ def test_silver_end_to_end(lake: Path, engine: Engine, tmp_path: Path) -> None:
         "SELECT dataset_id, status, delta_version FROM operations.transformation_run "
         "ORDER BY started_at",
     )
-    assert [r[1] for r in runs] == ["succeeded"] * 3
+    assert [r[1] for r in runs] == ["succeeded"] * 6
     checks = _pairs(
         engine,
         "SELECT c.check_id, c.status FROM quality.check_result c "
@@ -85,7 +88,7 @@ def test_silver_end_to_end(lake: Path, engine: Engine, tmp_path: Path) -> None:
     again = runner.invoke(app, ["silver", "build", "--all"])
     assert again.exit_code == 0
     assert {s["status"] for s in json.loads(again.stdout)} == {"skipped"}
-    assert DeltaTable(sidra_uri).version() == version
+    assert DeltaTable(sidra_uri).version() == summary[-1]["delta_version"]
 
     report = runner.invoke(app, ["quality", "report", "ibge-sidra-6579"])
     assert report.exit_code == 0

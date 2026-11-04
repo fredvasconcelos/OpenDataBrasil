@@ -161,7 +161,11 @@ def check_reconciliation(
       ``true_zero``). Ausências não são tratadas como zero;
     * ``exact``: a diferença precisa ser 0;
     * ``rounding``: tolera ``0,5 * 10**-d * (n_filhos + 1)``, em que ``d`` é o
-      maior número de casas publicadas.
+      maior número de casas publicadas;
+    * grupos com filhos sem valor quantitativo (por exemplo, ``X``, suprimido
+      para não identificar o informante) são **incompletos**: a soma conhecida
+      só pode ficar abaixo do total oficial. Passar dele é divergência; ficar
+      abaixo é esperado e vai para os detalhes, sem aviso.
     """
     results: list[CheckResult] = []
     quantitative = [s.value for s in QUANTITATIVE]
@@ -178,15 +182,20 @@ def check_reconciliation(
             if not {child, parent} <= present:
                 continue
             check_id = f"reconciliation.{variable}.n{child}_n{parent}"
+            is_quant = pl.col("value_status").is_in(quantitative)
             sums = (
-                rows.filter(pl.col("territorial_level") == child)
+                frame.filter(
+                    (pl.col("variable_id") == variable) & (pl.col("territorial_level") == child)
+                )
                 .with_columns(parent_code.alias("parent_id"))
                 .group_by("period", "classification_key", "parent_id")
                 .agg(
-                    pl.col("value").sum().alias("children_sum"),
-                    pl.len().alias("children"),
+                    pl.col("value").filter(is_quant).sum().alias("children_sum"),
+                    is_quant.sum().alias("children"),
+                    (~is_quant).sum().alias("missing"),
                     pl.col("value_decimals").max().alias("decimals"),
                 )
+                .filter(pl.col("children") > 0)
             )
             parents = rows.filter(pl.col("territorial_level") == parent).select(
                 "period",
@@ -199,6 +208,7 @@ def check_reconciliation(
                 sums, on=["period", "classification_key", "parent_id"], how="inner"
             )
             divergent: list[dict[str, Any]] = []
+            incomplete = 0
             for r in joined.iter_rows(named=True):
                 diff: Decimal = r["children_sum"] - r["official"]
                 decimals = max(r["decimals"] or 0, r["parent_decimals"] or 0)
@@ -207,6 +217,9 @@ def check_reconciliation(
                     if mode == "exact"
                     else Decimal("0.5") * Decimal(10) ** -decimals * (r["children"] + 1)
                 )
+                if r["missing"] and diff <= tolerance:
+                    incomplete += 1
+                    continue
                 if abs(diff) > tolerance:
                     divergent.append(
                         {
@@ -217,6 +230,7 @@ def check_reconciliation(
                             "children_sum": str(r["children_sum"]),
                             "difference": str(diff),
                             "children": r["children"],
+                            "children_without_value": r["missing"],
                         }
                     )
             compared = joined.height
@@ -230,16 +244,26 @@ def check_reconciliation(
                         f"(períodos {periods})",
                         observed=len(divergent),
                         expected=0,
-                        details={"mode": mode, "divergent": divergent[:200]},
+                        details={
+                            "mode": mode,
+                            "incomplete": incomplete,
+                            "divergent": divergent[:200],
+                        },
                     )
                 )
             else:
+                suffix = (
+                    f"; {incomplete} incompletos por valores sem número (soma abaixo do oficial)"
+                    if incomplete
+                    else ""
+                )
                 results.append(
                     CheckResult(
                         check_id,
                         CheckStatus.PASS,
-                        f"{compared} totais conferem ({mode})",
+                        f"{compared} totais conferem ({mode}){suffix}",
                         observed=compared,
+                        details={"incomplete": incomplete},
                     )
                 )
     return results

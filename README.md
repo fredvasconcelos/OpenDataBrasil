@@ -4,9 +4,10 @@ Plataforma de dados abertos oficiais do Brasil, com arquitetura lakehouse local:
 **Python · Polars · Delta Lake (delta-rs) · DuckDB · PostgreSQL**. A
 especificação completa está em [`CLAUDE.md`](CLAUDE.md).
 
-> **Estado:** Fases 1 (fundação), 2 (ingestão para a Bronze) e 3 (Silver em
-> Delta Lake, com qualidade e reconciliação) implementadas. Ainda não há Gold,
-> API ou portal.
+> **Estado:** Fases 1 (fundação), 2 (ingestão para a Bronze), 3 (Silver em
+> Delta Lake, com qualidade e reconciliação) e 4 (Gold em Delta Lake, com
+> hierarquias territorial e temática, publicação por release e consulta DuckDB)
+> implementadas. Ainda não há API nem portal.
 
 ## Pacotes (`packages/`)
 
@@ -18,7 +19,9 @@ especificação completa está em [`CLAUDE.md`](CLAUDE.md).
 | `catalog` | PostgreSQL: migrações Alembic, execuções, publicação de releases, advisory locks |
 | `ingestion` | contrato de conectores, HTTP robusto, Bronze imutável com deduplicação, conectores `sidra` e `http_file` |
 | `processing` | parsers Bronze → Silver (Polars), contratos de schema, classificação de valores especiais e verificações de qualidade |
-| `cli` | `odb doctor`, `odb db`, `odb smoke lakehouse`, `odb sources`, `odb ingest`, `odb silver`, `odb quality` |
+| `semantics` | catálogo semântico (indicadores, classificações, hierarquias de categorias), níveis territoriais e planejador de consultas com regras semânticas |
+| `modeling` | Silver → Gold (Polars): dimensões, fatos temáticos, `indicator_observation`, qualidade e construtor |
+| `cli` | `odb doctor`, `odb db`, `odb smoke lakehouse`, `odb sources`, `odb ingest`, `odb silver`, `odb quality`, `odb gold`, `odb release`, `odb indicators`, `odb query` |
 
 ## Início rápido
 
@@ -31,6 +34,8 @@ docker compose --profile data run --rm worker odb smoke lakehouse
 docker compose --profile test run --rm tests
 docker compose --profile data run --rm worker odb ingest run --all   # IBGE para a Bronze
 docker compose --profile data run --rm worker odb silver build --all # Bronze para a Silver
+docker compose --profile data run --rm worker odb gold build --activate  # Silver para a Gold e publicação
+docker compose --profile data run --rm worker odb query -i censo_pessoas_quilombolas --level uf
 ```
 
 Guia completo: [`docs/development/setup-windows-wsl2.md`](docs/development/setup-windows-wsl2.md).
@@ -45,8 +50,10 @@ Guia completo: [`docs/development/setup-windows-wsl2.md`](docs/development/setup
   - 0005: somente leitura e escritor único
   - 0006: framework de ingestão e Bronze
   - 0007: Silver, valores especiais e reconciliação
+  - 0008: Gold, modelo hierárquico e camada semântica
 - Fontes e datasets: [`docs/data_catalog/ibge.md`](docs/data_catalog/ibge.md)
-- Operação: [ingestão](docs/runbooks/ingestao.md) e [Silver](docs/runbooks/silver.md)
+- Indicadores da Gold: [`docs/data_catalog/gold-demografia.md`](docs/data_catalog/gold-demografia.md)
+- Operação: [ingestão](docs/runbooks/ingestao.md), [Silver](docs/runbooks/silver.md) e [Gold](docs/runbooks/gold.md)
 - Problemas conhecidos: [`docs/known-issues.md`](docs/known-issues.md)
 - Compatibilidade: [`docs/development/compatibility-matrix.md`](docs/development/compatibility-matrix.md)
 

@@ -27,7 +27,9 @@ DTB_MEMBERS = [
     "RELATORIO_DTB_BRASIL_2025_MUNICIPIOS.xls",
 ]
 DTB_FIXTURES = FIXTURES / "ibge" / "dtb"
-_VALUES = re.compile(r"^/values/t/(\d+)/((?:n\d+/all/?)+)/v/([\d,]+|all)/p/(\w+)$")
+_VALUES = re.compile(
+    r"^/values/t/(\d+)/((?:n\d+/all/?)+)/v/([\d,]+|all)/p/(\w+)((?:/c\d+/[\d,a-z]+)*)$"
+)
 
 
 def fixture_bytes(name: str) -> bytes:
@@ -91,7 +93,7 @@ class FakeSources:
         match = _VALUES.match(path)
         if not match:
             return httpx.Response(404, content=b"not found")
-        table, levels, _vars, period = match.groups()
+        table, levels, variables, period, classifications = match.groups()
         level = "".join(part for part in levels.split("/") if part.startswith("n"))
         json_headers = {"content-type": "application/json; charset=utf-8"}
         if table == "999999":
@@ -101,6 +103,16 @@ class FakeSources:
                 200, content=fixture_bytes(f"t{table}_n1_periods.json"), headers=json_headers
             )
         name = f"t{table}_{level}_p{period}.json"
+        # Classificações com categorias listadas entram no nome (divisão por categoria).
+        parts = classifications.strip("/").split("/") if classifications else []
+        listed = "".join(
+            f"_{cid}-{cats}"
+            for cid, cats in zip(parts[::2], parts[1::2], strict=True)
+            if cats != "all" and "," not in cats
+        )
+        by_variable = f"t{table}_{level}_p{period}_v{variables}{listed}.json"
+        if (SIDRA_FIXTURES / by_variable).exists():
+            return httpx.Response(200, content=fixture_bytes(by_variable), headers=json_headers)
         if (SIDRA_FIXTURES / name).exists():
             return httpx.Response(200, content=fixture_bytes(name), headers=json_headers)
         if table == "6579":

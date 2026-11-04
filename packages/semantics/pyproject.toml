@@ -1,0 +1,22 @@
+[project]
+name = "odb-semantics"
+version = "0.1.0"
+description = "Camada semântica: definições de indicadores, hierarquias de categorias e regras de consulta."
+requires-python = ">=3.12,<3.13"
+license = "MIT"
+dependencies = [
+    "odb-common",
+    "odb-query-engine",
+    "pydantic==2.14.1",
+]
+
+[tool.uv.sources]
+odb-common = { workspace = true }
+odb-query-engine = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.13.2,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "odb_semantics"

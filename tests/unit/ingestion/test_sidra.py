@@ -228,3 +228,82 @@ def test_healthcheck(connector: SidraConnector, fake: FakeSources, http: HttpCli
     assert not empty.healthcheck(http).ok
     with pytest.raises(KeyError, match="não pertence"):
         empty.describe("ibge-sidra-6579")
+
+
+def test_split_by_variable_and_category(connector: SidraConnector, http: HttpClient) -> None:
+    plan = connector.plan("ibge-sidra-9718", http, Watermark())
+    keys = [r.partition_key for r in plan.requests]
+    assert len(keys) == 9
+    assert keys[:3] == [
+        "n1n2n3-p2022-v93-c2661-32776",
+        "n1n2n3-p2022-v93-c2661-12869",
+        "n1n2n3-p2022-v93-c2661-12870",
+    ]
+    request = plan.requests[4]
+    assert request.partition_key == "n1n2n3-p2022-v350-c2661-12869"
+    assert request.url == (
+        "https://apisidra.ibge.gov.br/values/t/9718/n1/all/n2/all/n3/all/v/350/p/2022"
+        "/c1714/all/c2661/12869"
+    )
+    assert request.artifact_name == "t9718-n1n2n3-p2022-v350-c2661-12869.json"
+    params = connector.params(connector.describe("ibge-sidra-9718"))
+    assert params.request_variables("n1n2n3-p2022-v350-c2661-12869") == ("350",)
+    assert params.partition_pattern().fullmatch("n1n2n3-p2022-v350") is None
+    with pytest.raises(ValueError, match="fora da configuração"):
+        params.request_variables("n1n2n3-p2022")
+    with pytest.raises(ValueError, match="exige o grupo"):
+        params.partition_key("2022")
+
+    ok = connector.validate_raw(
+        "ibge-sidra-9718",
+        request,
+        _result(SIDRA_FIXTURES / "t9718_n1n2n3_p2022_v350_c2661-12869.json"),
+    )
+    assert ok.valid, ok.errors
+    assert ok.stats["observations"] == 4 * 33
+    assert ok.stats["dimensions"] == ["D1C", "D2C", "D3C", "D4C", "D5C"]
+    wrong = connector.validate_raw(
+        "ibge-sidra-9718",
+        request,
+        _result(SIDRA_FIXTURES / "t9718_n1n2n3_p2022_v93_c2661-12869.json"),
+    )
+    assert any("variáveis ['93'] diferem das esperadas ['350']" in e for e in wrong.errors)
+
+    quilombola = connector.plan("ibge-sidra-9578", http, Watermark())
+    assert [r.partition_key for r in quilombola.requests] == [
+        "n1n2n3-p2022-v4709",
+        "n1n2n3-p2022-v93",
+        "n1n2n3-p2022-v4728",
+    ]
+
+
+def test_split_by_classification_requires_listed_categories(connector: SidraConnector) -> None:
+    dataset = connector.describe("ibge-sidra-9718")
+    bad = dataset.model_copy(
+        update={"params": {**dataset.params, "classifications": {"c2661": "all"}}}
+    )
+    with pytest.raises(ConfigError, match="exige as categorias listadas"):
+        connector.params(bad)
+
+
+def test_classifications_in_url_and_real_fixtures(
+    connector: SidraConnector, http: HttpClient
+) -> None:
+    race = connector.plan("ibge-sidra-9605", http, Watermark())
+    assert [r.reference_period for r in race.requests] == ["2010", "2022"]
+    assert race.requests[0].url.endswith("/v/93/p/2010/c86/all")
+    for period in ("2010", "2022"):
+        result = connector.validate_raw(
+            "ibge-sidra-9605",
+            _request(period),
+            _result(SIDRA_FIXTURES / f"t9605_n1n2n3_p{period}.json"),
+        )
+        assert result.valid, result.errors
+        assert result.stats["observations"] == 198
+    quilombola = connector.validate_raw(
+        "ibge-sidra-9578",
+        ExtractionRequest("n1n2n3-p2022-v4709", "u", "a.json", reference_period="2022"),
+        _result(SIDRA_FIXTURES / "t9578_n1n2n3_p2022_v4709.json"),
+    )
+    assert quilombola.valid, quilombola.errors
+    assert quilombola.stats["variables"] == ["4709"]

@@ -133,6 +133,24 @@ class PublicationService:
         with self._engine.connect() as conn:
             return self._load(conn, "WHERE scope = :s AND status = 'active'", {"s": scope})
 
+    def list_releases(self, scope: str | None = None, limit: int = 20) -> list[Release]:
+        """Releases mais recentes (de um escopo ou de todos)."""
+        where = "WHERE scope = :s " if scope else ""
+        with self._engine.connect() as conn:
+            ids = (
+                conn.execute(
+                    text(
+                        f"SELECT release_id::text FROM publication.release {where}"  # noqa: S608
+                        "ORDER BY created_at DESC LIMIT :n"
+                    ),
+                    {"s": scope, "n": limit},
+                )
+                .scalars()
+                .all()
+            )
+            releases = [self._load(conn, "WHERE release_id = :id", {"id": i}) for i in ids]
+        return [r for r in releases if r is not None]
+
     def resolve(self, scope: str, table_id: str) -> TableVersion:
         """Versão autorizada de uma tabela lógica no release vigente."""
         release = self.active(scope)

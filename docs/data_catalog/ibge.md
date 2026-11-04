@@ -1,6 +1,7 @@
 # Fontes e datasets do IBGE
 
-Tudo aqui foi verificado por requisição real em **2026-11-03**. Configuração:
+Tudo aqui foi verificado por requisição real em **2026-11-03** (tabelas 6579,
+4714 e DTB) e **2026-11-04** (tabelas 9605, 9718 e 9578). Configuração:
 [`configs/sources/ibge.toml`](../../configs/sources/ibge.toml).
 
 ## Situação das fontes pesquisadas
@@ -8,10 +9,11 @@ Tudo aqui foi verificado por requisição real em **2026-11-03**. Configuração
 | Fonte | Estado | Uso na plataforma |
 |---|---|---|
 | API SIDRA (`apisidra.ibge.gov.br/values`) | ✅ disponível | conector `sidra` |
-| API de agregados v3 e de localidades (`servicodados.ibge.gov.br`) | ❌ indisponível (`ECONNREFUSED`/timeout a partir do WSL, do Windows e de serviço externo) | não utilizada; reavaliar |
+| API de agregados v3 e de localidades (`servicodados.ibge.gov.br`) | ❌ indisponível (`ECONNREFUSED`/timeout a partir do WSL, do Windows e de serviço externo; retestado em 2026-11-04) | não utilizada; reavaliar (KI-002) |
 | Downloads de geociências (`geoftp.ibge.gov.br`) | ✅ disponível, com `ETag`/`Last-Modified` | conector `http_file` |
 | Estimativas em arquivo (`ftp.ibge.gov.br/Estimativas_de_Populacao/`) | ✅ disponível | não utilizada (o SIDRA cobre a série) |
 | Página de ajuda da API SIDRA | ⚠️ responde 403 a clientes automatizados | consultada via busca |
+| Portal Séries Estatísticas (`seriesestatisticas.ibge.gov.br`) | ⚠️ desafio Cloudflare (403) para clientes automatizados; **não contornado** (§7.3) | as séries equivalentes foram localizadas no SIDRA |
 
 ## Comportamentos da API SIDRA (com fixtures em `tests/fixtures/ibge/`)
 
@@ -19,7 +21,14 @@ Tudo aqui foi verificado por requisição real em **2026-11-03**. Configuração
 - Período inexistente: **HTTP 200 com apenas o cabeçalho**. O conector trata como erro e envia para a quarentena.
 - Tabela inexistente: HTTP 400 com texto simples (`Tabela 999999: Tabela inválida`).
 - Sem `ETag`/`Last-Modified`; `cache-control: no-cache`.
-- Limite de 100.000 valores por consulta (página de ajuda, via busca). O plano usa uma requisição por período.
+- **Limite efetivo de 50.000 valores por consulta.** A ajuda cita 100.000, mas a API respondeu
+  HTTP 400 `Quantidade de valores solicitados: 67236 excedeu o limite: 50000` em 2026-11-04.
+  O plano usa uma requisição por período e, quando necessário, por variável
+  (`split_by_variable`) e por categoria de uma classificação (`split_by_classification`).
+- Classificação inexistente na tabela: HTTP 400 `Parâmetro Cxx (Classificação) incompatível
+  com a tabela`. Os códigos `c86`, `c1714` e `c2661` foram conferidos assim (HTTP 200).
+- Os códigos de classificação foram localizados no catálogo não oficial
+  [Quantilica Fish](https://quantilica.com/fish/tabelas/9718) e **confirmados na API oficial**.
 
 ## Datasets
 
@@ -47,6 +56,50 @@ aparece com `...` em 2024.
 | Linhas | 16.809 = 3 variáveis × (1 + 5 + 27 + 5.570 municípios) |
 | Total Brasil (N1) | 203.080.756 pessoas |
 | Volume | 4,7 MB |
+
+### `ibge-sidra-9605`: População residente por cor ou raça (Censos 2010 e 2022)
+
+| Item | Valor |
+|---|---|
+| Variável | 93 População residente (Pessoas). A 1000093 (percentual do total geral) é derivada e não é ingerida |
+| Classificação | c86 Cor ou raça: 95251 Total, 2776 Branca, 2777 Preta, 2778 Amarela, 2779 Parda, 2780 Indígena |
+| Níveis / períodos | N1, N2, N3 e N6 / 2010 e 2022 (5.570 municípios nos dois anos) |
+| Linhas | 33.618 por período = 6 categorias × 5.603 territórios |
+| Volume | 20,2 MB (2 arquivos) |
+
+**As cinco categorias não somam o Total**: a tabela não publica a categoria
+"sem declaração". No Brasil, faltam 6.608 pessoas em 2010 e 11.119 em 2022. A
+partição é declarada não exaustiva (`exhaustive = false`).
+
+### `ibge-sidra-9718`: Censo 2022, população total e indígena
+
+| Item | Valor |
+|---|---|
+| Variáveis | 93 População residente, 350 Pessoas indígenas, 4727 Percentual de pessoas indígenas (%). 1000093 e 1000350 (percentuais do total geral) não são ingeridas |
+| Classificações | c1714 Quesito de declaração indígena: 60024 Total, 60025 Cor ou raça indígena, 60026 Se considera indígena, 60029 Não se declarou indígena; c2661 Localização do domicílio: 32776 Total, 12869 Em terras indígenas, 12870 Fora de terras indígenas |
+| Divisão | 3 variáveis × 3 localizações = 9 requisições de 22.412 valores (limite de 50.000) |
+| Linhas | 201.708 = 3 × 12 combinações × 5.603 territórios |
+| Brasil | 1.694.836 pessoas indígenas (1.227.642 por cor ou raça + 467.194 que se consideram indígenas); 689.532 residentes em terras indígenas |
+| Valores especiais | 522 valores municipais `X` (suprimidos para não identificar o informante) |
+| Volume | 76,5 MB (9 arquivos) |
+
+"Pessoas indígenas" (9718) e a categoria Indígena de cor ou raça (9605) são
+**conceitos diferentes**. O catálogo semântico impede combinar os dois.
+
+### `ibge-sidra-9578`: Censo 2022, população total e quilombola
+
+| Item | Valor |
+|---|---|
+| Variáveis | 4709 Pessoas quilombolas, 93 População residente, 4728 Percentual de pessoas quilombolas (%). 1004709 não é ingerida |
+| Classificação | c2661 Localização do domicílio: 32776 Total, 60027 Em territórios quilombolas, 60028 Fora de territórios quilombolas |
+| Divisão | uma requisição por variável (16.809 valores) |
+| Brasil | 1.330.186 pessoas quilombolas (segunda apuração; a primeira divulgação informou 1.327.802); 203.574 residentes em territórios quilombolas |
+| Valores especiais | 144 valores municipais `X` |
+| Volume | 16,6 MB (3 arquivos) |
+
+A classificação c2661 é a mesma nas duas tabelas, com categorias diferentes:
+terras indígenas na 9718 e territórios quilombolas na 9578. Na hierarquia de
+categorias, cada par forma uma partição própria do Total.
 
 ### `ibge-dtb`: Divisão Territorial Brasileira 2025
 
@@ -140,3 +193,24 @@ dos Patos e Mirim) entram na área da UF e não na dos municípios.
 Os 5.571 municípios com valor em 2025 (6579) e os 5.570 do Censo 2022 (4714)
 existem na DTB 2025. Boa Esperança do Norte (5101837) aparece como `...` até
 2024 e com 5.877 habitantes em 2025.
+
+### 9718 e 9578: valores suprimidos no nível municipal (Silver, 2026-11-04)
+
+Na primeira execução, a soma dos municípios ficou abaixo do total oficial da UF
+e do Brasil em 148 grupos, sempre nas categorias "em/fora de terras indígenas"
+ou "em/fora de territórios quilombolas". A verificação nos dados mostrou que:
+
+- **todos** os 148 grupos têm municípios com valor `X` (suprimido);
+- em nenhum grupo a soma conhecida passa do total oficial.
+
+Conclusão: a diferença é o valor suprimido, e não uma divergência. Desde então,
+a reconciliação trata grupos com filhos sem valor numérico como **incompletos**.
+A soma conhecida só pode ficar abaixo do oficial; se passar, é aviso. Os
+totais oficiais de UF e Brasil continuam sendo a referência.
+
+### 9605: categorias de cor ou raça (Gold, 2026-11-04)
+
+Em todos os 11.201 contextos (território × ano) com valores numéricos, a soma
+das cinco categorias fica **abaixo ou igual** ao Total, como esperado para uma
+partição não exaustiva. O resíduo nacional é de 6.608 pessoas (2010) e 11.119
+(2022).

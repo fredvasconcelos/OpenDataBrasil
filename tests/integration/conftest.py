@@ -56,7 +56,8 @@ def engine(owner_engine: Engine) -> Engine:
     with owner_engine.begin() as conn:
         conn.execute(
             text(
-                "TRUNCATE publication.release_event, publication.release_table, "
+                "TRUNCATE catalog.indicator, quality.gold_check_result, operations.gold_build, "
+                "publication.release_event, publication.release_table, "
                 "publication.release, quality.check_result, operations.transformation_run, "
                 "operations.watermark, operations.bronze_artifact, "
                 "operations.ingestion, operations.pipeline_run, catalog.dataset, catalog.source, "

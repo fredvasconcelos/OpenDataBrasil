@@ -55,7 +55,14 @@ def test_sync_catalog_is_idempotent(engine: Engine) -> None:
     first = _q(engine, "SELECT dataset_id, updated_at FROM catalog.dataset ORDER BY 1")
     registry.sync_catalog(catalog)
     assert _q(engine, "SELECT dataset_id, updated_at FROM catalog.dataset ORDER BY 1") == first
-    assert [r[0] for r in first] == ["ibge-dtb", "ibge-sidra-4714", "ibge-sidra-6579"]
+    assert [r[0] for r in first] == [
+        "ibge-dtb",
+        "ibge-sidra-4714",
+        "ibge-sidra-6579",
+        "ibge-sidra-9578",
+        "ibge-sidra-9605",
+        "ibge-sidra-9718",
+    ]
     assert _q(engine, "SELECT source_id, institution_id FROM catalog.source ORDER BY 1") == [
         ("ibge-geoftp", "ibge"),
         ("ibge-sidra", "ibge"),
@@ -70,12 +77,17 @@ def test_cli_ingest_run_rerun_and_status(lake: Path, fake: FakeSources, engine: 
     assert [(r["dataset_id"], r["status"]) for r in reports] == [
         ("ibge-sidra-6579", "succeeded"),
         ("ibge-sidra-4714", "succeeded"),
+        ("ibge-sidra-9605", "succeeded"),
+        ("ibge-sidra-9718", "succeeded"),
+        ("ibge-sidra-9578", "succeeded"),
         ("ibge-dtb", "succeeded"),
     ]
     files = sorted(p for p in (lake / "bronze").rglob("*") if p.is_file())
-    assert len(files) == 22 + 1 + 1
+    # 6579: 22 anos; 4714: 1; 9605: 2 censos; 9718: 3 variáveis x 3 localizações;
+    # 9578: 3 variáveis.
+    assert len(files) == 22 + 1 + 2 + 9 + 3 + 1
 
-    assert _counts(engine) == {"stored": 24}
+    assert _counts(engine) == {"stored": 38}
     meta = _q(
         engine,
         "SELECT source_url, checksum_sha256, file_size_bytes, http_status, license_id, "
@@ -94,7 +106,7 @@ def test_cli_ingest_run_rerun_and_status(lake: Path, fake: FakeSources, engine: 
     second = runner.invoke(app, ["ingest", "run", "--all"])
     assert second.exit_code == 0, second.output
     assert sorted(p for p in (lake / "bronze").rglob("*") if p.is_file()) == files
-    assert _counts(engine) == {"stored": 24, "reused": 3, "not_modified": 1}
+    assert _counts(engine) == {"stored": 38, "reused": 16, "not_modified": 1}
     runs = _q(engine, "SELECT status FROM operations.pipeline_run WHERE command = 'ingest.run'")
     assert runs == [("succeeded",), ("succeeded",)]
 
@@ -147,7 +159,7 @@ def test_roles_on_ingestion_tables(
     pipeline.start_ingestion("00000000-0000-0000-0000-000000000001", "ibge-dtb", None, {})
     pipeline.finish_ingestion("00000000-0000-0000-0000-000000000001", "succeeded", {}, None)
     with reader_engine.connect() as conn:
-        assert conn.execute(text("SELECT count(*) FROM catalog.dataset")).scalar() == 3
+        assert conn.execute(text("SELECT count(*) FROM catalog.dataset")).scalar() == 6
     with (
         pytest.raises(ProgrammingError, match="permission denied"),
         reader_engine.connect() as conn,

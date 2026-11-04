@@ -22,7 +22,7 @@ odb quality report ibge-sidra-6579 [--json]
 | `sidra_observation` | `file:///lakehouse/silver/ibge/sidra_observation` | `table_id` | tabela, variável, nível, território, período, classificações |
 | `dtb_municipality` | `file:///lakehouse/silver/ibge/dtb_municipality` | `reference_year` | ano de referência, município |
 
-A Silver **não é pública** (§9.6). O consumo público será pela Gold (Fase 4).
+A Silver **não é pública** (§9.6). O consumo é pela Gold ([runbook](gold.md)).
 
 ## Investigar
 

@@ -35,6 +35,8 @@ COPY packages/catalog/pyproject.toml packages/catalog/pyproject.toml
 COPY packages/cli/pyproject.toml packages/cli/pyproject.toml
 COPY packages/ingestion/pyproject.toml packages/ingestion/pyproject.toml
 COPY packages/processing/pyproject.toml packages/processing/pyproject.toml
+COPY packages/semantics/pyproject.toml packages/semantics/pyproject.toml
+COPY packages/modeling/pyproject.toml packages/modeling/pyproject.toml
 
 # ---------------------------------------------------------------- runtime
 FROM base AS runtime

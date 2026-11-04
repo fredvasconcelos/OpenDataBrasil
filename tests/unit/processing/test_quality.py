@@ -87,8 +87,27 @@ def test_not_available_is_excluded_not_zeroed() -> None:
     results = _by_id(
         check_reconciliation(_frame("t6579_n1n2n3_p2025.json", "6579", blank_ac), {"9324": "exact"})
     )
-    assert results["reconciliation.9324.n3_n1"].status is CheckStatus.WARN  # soma sem AC < Brasil
+    # Sem o valor do AC, a soma das UFs fica abaixo do Brasil: grupo incompleto, não divergente.
+    incomplete = results["reconciliation.9324.n3_n1"]
+    assert incomplete.status is CheckStatus.PASS
+    assert incomplete.details["incomplete"] == 1
+    assert "incompletos" in incomplete.message
     assert results["reconciliation.9324.n2_n1"].status is CheckStatus.PASS
+
+    def blank_ac_and_inflate_sp(payload: list[dict[str, str]]) -> None:
+        blank_ac(payload)
+        for row in payload[1:]:
+            if row["NC"] == "3" and row["D1C"] == "35":
+                row["V"] = str(int(row["V"]) + 10_000_000)
+
+    # Com valor suprimido, a soma conhecida ainda não pode passar do total oficial.
+    exceeded = _by_id(
+        check_reconciliation(
+            _frame("t6579_n1n2n3_p2025.json", "6579", blank_ac_and_inflate_sp), {"9324": "exact"}
+        )
+    )["reconciliation.9324.n3_n1"]
+    assert exceeded.status is CheckStatus.WARN
+    assert exceeded.details["divergent"][0]["children_without_value"] == 1
     assert (
         check_reconciliation(_frame("t6579_n1n2n3_p2025.json", "6579"), {"999": "exact"})[0].status
         is CheckStatus.WARN

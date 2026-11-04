@@ -10,12 +10,19 @@ Comportamentos verificados por requisição real em 2026-11-03 (fixtures em
 * uma tabela inexistente retorna HTTP 400 com texto simples;
 * não há ``ETag`` nem ``Last-Modified`` (``cache-control: no-cache``). A
   detecção de mudanças é por checksum de cada partição;
-* o limite documentado é de 100.000 valores por consulta. O plano divide por
-  período e falha se a estimativa por período passar do limite.
+* o limite efetivo é de 50.000 valores por consulta (a ajuda cita 100.000, mas
+  a API recusou 67.236 valores com HTTP 400 em 2026-11-04). O plano divide por
+  período e falha se a estimativa por requisição passar do limite;
+* classificações entram como ``/c<id>/<categorias>``. Uma classificação que não
+  pertence à tabela gera HTTP 400 ("incompatível com a tabela"), o que serve de
+  validação dos códigos configurados.
 
-A divisão é sempre por período, numa requisição por período. Os períodos
-recentes (``refresh_recent_periods``) são baixados de novo a cada execução,
-porque períodos antigos podem ser revisados (§7.6).
+A divisão é por período, numa requisição por período. Com ``split_by_variable``,
+cada variável vai em requisição própria; com ``split_by_classification``, cada
+categoria da classificação indicada (tabelas com classificações cruzadas passam
+do limite no nível municipal, por exemplo a 9718). Os períodos recentes
+(``refresh_recent_periods``) são baixados de novo a cada execução, porque
+períodos antigos podem ser revisados (§7.6).
 """
 
 from __future__ import annotations
@@ -24,9 +31,17 @@ import json
 import re
 import time
 from collections import Counter
+from dataclasses import dataclass
 from typing import Any, ClassVar
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    ValidationError,
+    field_validator,
+    model_validator,
+)
 
 from odb_ingestion.config import ConfigError, DatasetConfig
 from odb_ingestion.contract import (
@@ -40,7 +55,9 @@ from odb_ingestion.contract import (
 )
 from odb_ingestion.http import DownloadResult, HttpClient, HttpError
 
-SIDRA_VALUE_LIMIT = 100_000
+# A ajuda da API cita 100.000 valores, mas a API respondeu HTTP 400 "Quantidade de
+# valores solicitados: 67236 excedeu o limite: 50000" em 2026-11-04.
+SIDRA_VALUE_LIMIT = 50_000
 _LEVEL = re.compile(r"^n([1-9]|1[0-9]|[1-9][0-9]{2,3})$")
 _DIM = re.compile(r"^D[1-9]$")
 _NUMERIC = re.compile(r"^-?\d+(\.\d+)?$")
@@ -48,6 +65,15 @@ _NUMERIC = re.compile(r"^-?\d+(\.\d+)?$")
 # classificado na Silver (§9.4). Aqui o símbolo só é contado.
 KNOWN_SYMBOLS = frozenset({"-", "..", "...", "X"})
 _HEADER_KEYS = ("NC", "NN", "MC", "MN", "V")
+
+
+@dataclass(frozen=True, slots=True)
+class RequestGroup:
+    """Variáveis e classificações de uma requisição de um período."""
+
+    variables: tuple[str, ...]
+    classifications: dict[str, str]
+    suffix: str
 
 
 class SidraParams(BaseModel):
@@ -63,7 +89,13 @@ class SidraParams(BaseModel):
     territory_dimension: str = "D1"
     variable_dimension: str = "D2"
     period_dimension: str = "D3"
+    # Estimativa, mínimo e máximo valem por requisição: por período ou, com
+    # ``split_by_variable``, por período e variável.
     estimated_values_per_period: int = Field(ge=1)
+    split_by_variable: bool = False
+    # Classificação cujas categorias (listadas em ``classifications``) vão em
+    # requisições separadas.
+    split_by_classification: str | None = None
     min_rows: int = Field(default=1, ge=1)
     max_rows: int | None = Field(default=None, ge=1)
     refresh_recent_periods: int = Field(default=2, ge=0)
@@ -115,6 +147,16 @@ class SidraParams(BaseModel):
                 raise ValueError(msg)
         return value
 
+    @model_validator(mode="after")
+    def _split(self) -> SidraParams:
+        cid = self.split_by_classification
+        if cid is not None:
+            cats = self.classifications.get(cid)
+            if cats is None or cats == "all":
+                msg = f"split_by_classification={cid} exige as categorias listadas"
+                raise ValueError(msg)
+        return self
+
     @property
     def level_codes(self) -> frozenset[str]:
         """Códigos numéricos dos níveis (``n6`` → ``6``), como aparecem na coluna ``NC``."""
@@ -125,9 +167,60 @@ class SidraParams(BaseModel):
         """Assinatura dos níveis consultados (por exemplo, ``n1n2n3n6``)."""
         return "".join(self.territorial_levels)
 
-    def partition_key(self, period: str) -> str:
-        """Chave de partição; inclui os níveis (mudar os níveis gera partições novas)."""
-        return f"{self.level_signature}-p{period}"
+    def request_groups(self) -> list[RequestGroup]:
+        """Requisições de um período, conforme a divisão configurada.
+
+        Sem divisão, uma requisição. ``split_by_variable`` gera uma por
+        variável; ``split_by_classification`` gera uma por categoria da
+        classificação indicada (as categorias precisam estar listadas).
+        """
+        variable_groups = (
+            [(v,) for v in self.variables] if self.split_by_variable else [self.variables]
+        )
+        categories: list[str | None] = [None]
+        if self.split_by_classification is not None:
+            categories = list(self.classifications[self.split_by_classification].split(","))
+        groups: list[RequestGroup] = []
+        for variables in variable_groups:
+            for category in categories:
+                suffix = f"-v{variables[0]}" if self.split_by_variable else ""
+                classes = dict(self.classifications)
+                if category is not None:
+                    cid = str(self.split_by_classification)
+                    suffix += f"-{cid}-{category}"
+                    classes[cid] = category
+                groups.append(RequestGroup(variables, classes, suffix))
+        return groups
+
+    def partition_key(self, period: str, group: RequestGroup | None = None) -> str:
+        """Chave de partição; inclui os níveis (mudar os níveis gera partições novas).
+
+        Com divisão, o sufixo do grupo entra na chave (``n1n2n3n6-p2022-v350-c2661-12869``).
+        """
+        if group is None:
+            if self.split_by_variable or self.split_by_classification:
+                msg = "a divisão configurada exige o grupo na chave de partição"
+                raise ValueError(msg)
+            group = self.request_groups()[0]
+        return f"{self.level_signature}-p{period}{group.suffix}"
+
+    def partition_pattern(self) -> re.Pattern[str]:
+        """Padrão das chaves de partição vigentes para esta configuração."""
+        base = re.escape(self.level_signature) + r"-p(?P<period>[0-9A-Za-z]+)"
+        suffixes = "|".join(re.escape(g.suffix) for g in self.request_groups())
+        return re.compile(rf"^{base}(?P<suffix>{suffixes})$")
+
+    def request_group(self, partition_key: str) -> RequestGroup:
+        """Grupo (variáveis e classificações) de uma partição."""
+        match = self.partition_pattern().fullmatch(partition_key)
+        if match is None:
+            msg = f"chave de partição fora da configuração atual: {partition_key}"
+            raise ValueError(msg)
+        return next(g for g in self.request_groups() if g.suffix == match["suffix"])
+
+    def request_variables(self, partition_key: str) -> tuple[str, ...]:
+        """Variáveis esperadas na resposta de uma partição."""
+        return self.request_group(partition_key).variables
 
 
 class SidraConnector(BaseConnector):
@@ -144,12 +237,13 @@ class SidraConnector(BaseConnector):
     )
 
     def validate_params(self, dataset: DatasetConfig) -> None:
-        """Valida os parâmetros e o limite de 100 mil valores por requisição."""
+        """Valida os parâmetros e o limite de valores por requisição."""
         params = self.params(dataset)
         if params.estimated_values_per_period > SIDRA_VALUE_LIMIT:
             msg = (
                 f"{dataset.id}: estimativa de {params.estimated_values_per_period} valores por "
-                f"período excede o limite do SIDRA ({SIDRA_VALUE_LIMIT})"
+                f"requisição excede o limite do SIDRA ({SIDRA_VALUE_LIMIT}); "
+                "considere split_by_variable ou split_by_classification"
             )
             raise ConfigError(msg)
 
@@ -165,11 +259,17 @@ class SidraConnector(BaseConnector):
     # ------------------------------------------------------------- URLs
 
     def _values_url(
-        self, params: SidraParams, levels: tuple[str, ...], variables: str, period: str
+        self,
+        params: SidraParams,
+        levels: tuple[str, ...],
+        variables: str,
+        period: str,
+        classifications: dict[str, str] | None = None,
     ) -> str:
         territory = "/".join(f"{level}/all" for level in levels)
         path = f"/values/t/{params.table}/{territory}/v/{variables}/p/{period}"
-        for key, cats in sorted(params.classifications.items()):
+        chosen = params.classifications if classifications is None else classifications
+        for key, cats in sorted(chosen.items()):
             path += f"/{key}/{cats}"
         return self.source.base_url.rstrip("/") + path
 
@@ -199,7 +299,7 @@ class SidraConnector(BaseConnector):
     def plan(
         self, dataset_id: str, http: HttpClient, watermark: Watermark, *, full: bool = False
     ) -> ExtractionPlan:
-        """Uma requisição por período novo, recente ou (com ``full``) todos."""
+        """Uma requisição por período (e variável, se dividido) novo, recente ou todos."""
         dataset = self.describe(dataset_id)
         params = self.params(dataset)
         periods = self.discover_periods(dataset, http)
@@ -211,24 +311,29 @@ class SidraConnector(BaseConnector):
         requests: list[ExtractionRequest] = []
         skipped: list[str] = []
         for period in periods:
-            key = params.partition_key(period)
-            if full or key not in watermark.partitions or period in recent:
-                requests.append(
-                    ExtractionRequest(
-                        partition_key=key,
-                        url=self._values_url(
-                            params, params.territorial_levels, ",".join(params.variables), period
-                        ),
-                        artifact_name=f"t{params.table}-{params.level_signature}-p{period}.json",
-                        reference_period=period,
-                        max_bytes=params.max_bytes,
+            for group in params.request_groups():
+                key = params.partition_key(period, group)
+                if full or key not in watermark.partitions or period in recent:
+                    requests.append(
+                        ExtractionRequest(
+                            partition_key=key,
+                            url=self._values_url(
+                                params,
+                                params.territorial_levels,
+                                ",".join(group.variables),
+                                period,
+                                group.classifications,
+                            ),
+                            artifact_name=f"t{params.table}-{key}.json",
+                            reference_period=period,
+                            max_bytes=params.max_bytes,
+                        )
                     )
-                )
-            else:
-                skipped.append(period)
+                else:
+                    skipped.append(key)
         notes = [f"períodos disponíveis: {len(periods)}"]
         if skipped:
-            notes.append(f"períodos já ingeridos e fora da janela de revisão: {skipped}")
+            notes.append(f"partições já ingeridas e fora da janela de revisão: {skipped}")
         return ExtractionPlan(
             dataset_id=dataset_id,
             requests=tuple(requests),
@@ -285,9 +390,10 @@ class SidraConnector(BaseConnector):
             errors.append(f"períodos inesperados: {dict(periods)}")
         var_key = f"{params.variable_dimension}C"
         variables = set(Counter(r[var_key] for r in rows))
-        if variables != set(params.variables):
+        expected_vars = params.request_variables(request.partition_key)
+        if variables != set(expected_vars):
             errors.append(
-                f"variáveis {sorted(variables)} diferem das esperadas {list(params.variables)}"
+                f"variáveis {sorted(variables)} diferem das esperadas {list(expected_vars)}"
             )
 
         dim_keys = sorted(k for k in keys if re.fullmatch(r"D\d+C", k))
