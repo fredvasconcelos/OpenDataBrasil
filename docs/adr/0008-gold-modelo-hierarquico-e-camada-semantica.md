@@ -152,6 +152,18 @@ um manifesto com SHA-256 e um aviso de cópia não oficial. A invalidação é p
 release, e as pastas antigas podem ser apagadas. Como as exportações do portal
 (§19.3), a cópia não é fonte oficial e não é lida pela plataforma.
 
+### 11. Etapa 4b: hierarquias aninhadas e divisão por várias classificações
+
+- Uma partição pode declarar `parent` (uma categoria, e não o Total). A idade
+  simples (c287) fica Total → 21 grupos quinquenais → idades simples, e
+  "Menos de 1 ano" → 12 meses. A profundidade e a ordem vêm da hierarquia, e a
+  reconciliação compara cada partição com a sua categoria-pai.
+- `split_by_classification` aceita várias classificações (produto
+  cartesiano das categorias listadas). A 9971 usa 171 requisições.
+- A 9970 entra só até UF: o nível municipal (6,8 milhões de valores) não
+  compensa, porque a 9971 já cobre a idade por município em grupos.
+- 9954 e 9723 aguardam o código dos níveis territoriais especiais (KI-006).
+
 ## Consequências
 
 - O mesmo modelo recebe novas tabelas com classificações cruzadas só por

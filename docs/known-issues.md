@@ -67,6 +67,23 @@ navegador automatizado ou credenciais pessoais.
 - **Ação:** confirmar nas notas da tabela 4714 ou na metodologia de áreas
   territoriais do IBGE. Até lá, a Gold usa a área oficial publicada por nível.
 
+## KI-006: código dos níveis territoriais de terras indígenas e territórios quilombolas
+
+- **Estado:** aberto (aguarda o mantenedor)
+- **Detectado em:** 2026-11-04
+- **Sintoma:** as tabelas 9954 (terras indígenas) e 9723 (territórios
+  quilombolas) publicam dados "segundo as Terras Indígenas" e "segundo os
+  Territórios Quilombolas", que são níveis territoriais especiais. O código
+  numérico desses níveis aparece na descrição da tabela
+  (`https://apisidra.ibge.gov.br/desctabapi.aspx?c=9954`) e na página da
+  pesquisa, que respondem 403 a clientes automatizados. A API de metadados
+  está fora do ar (KI-002).
+- **Decisão:** não contornar e não adivinhar códigos por varredura.
+- **Ação:** o mantenedor abre a descrição das tabelas 9954 e 9723 no navegador
+  e informa os códigos dos níveis (por exemplo, "N... Terra Indígena"). Com
+  eles, a etapa 4b é concluída: ingestão, sistema territorial próprio e
+  relação com municípios e UFs.
+
 ## KI-005: portal Séries Estatísticas bloqueia clientes automatizados
 
 - **Estado:** aberto (sem ação de contorno)

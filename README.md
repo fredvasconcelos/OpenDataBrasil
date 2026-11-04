@@ -6,8 +6,10 @@ especificação completa está em [`CLAUDE.md`](CLAUDE.md).
 
 > **Estado:** Fases 1 (fundação), 2 (ingestão para a Bronze), 3 (Silver em
 > Delta Lake, com qualidade e reconciliação) e 4 (Gold em Delta Lake, com
-> hierarquias territorial e temática, publicação por release e consulta DuckDB)
-> implementadas. Ainda não há API nem portal.
+> hierarquias territorial e temática, publicação por release, consulta DuckDB
+> e exportação para análise) implementadas. A etapa 4b (sexo e idade dos
+> indígenas) está concluída, exceto terras indígenas e territórios quilombolas
+> como unidades territoriais (KI-006). Ainda não há API nem portal.
 
 ## Pacotes (`packages/`)
 

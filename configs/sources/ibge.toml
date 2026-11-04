@@ -192,6 +192,64 @@ territorial_reference = "ibge-dtb"
 additive_variables = { "4709" = "exact", "93" = "exact" }
 
 [[datasets]]
+id = "ibge-sidra-9971"
+source = "ibge-sidra"
+official_id = "9971"
+title = "Censo 2022: pessoas indígenas, por sexo, grupos de idade, localização e situação do domicílio"
+description = "Pessoas indígenas (350) por sexo (c2), grupos quinquenais de idade (c58), localização do domicílio em relação a terras indígenas (c2661) e situação do domicílio (c1)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9971"
+
+[datasets.params]
+table = "9971"
+# 1000350 (percentual do total geral) é derivado e não é ingerido.
+variables = ["350"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+# Códigos conferidos na API em 2026-11-04 (HTTP 200).
+classifications = { "c1" = "6795,1,2", "c2" = "6794,4,5", "c58" = "95253,1140,1141,1142,1143,1144,1145,1146,1147,1148,1149,1150,1151,1152,1153,1154,1155,6802,74120", "c2661" = "all" }
+# 513 combinações x 5603 territórios = 2,87 milhões de valores. Limite: 50.000 por consulta.
+# Uma requisição por sexo, grupo de idade e situação (3 x 19 x 3 = 171): 3 localizações x 5603 = 16.809.
+split_by_classification = ["c2", "c58", "c1"]
+estimated_values_per_period = 16809
+min_rows = 16700
+max_rows = 16850
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "350" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9970"
+source = "ibge-sidra"
+official_id = "9970"
+title = "Censo 2022: pessoas indígenas, por idade, localização e situação do domicílio"
+description = "Pessoas indígenas (350) por idade (c287: grupos quinquenais, idades simples e meses de vida), localização do domicílio (c2661) e situação do domicílio (c1). Só Brasil, Grandes Regiões e UFs: o nível municipal teria 6,8 milhões de valores, e a idade por município é coberta pela tabela 9971."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9970"
+
+[datasets.params]
+table = "9970"
+variables = ["350"]
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c1" = "all", "c2661" = "all", "c287" = "all" }
+# 134 idades x 3 localizações x 3 situações = 1.206 combinações x 33 territórios.
+estimated_values_per_period = 39798
+min_rows = 39700
+max_rows = 39800
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "350" = "exact" }
+
+[[datasets]]
 id = "ibge-dtb"
 source = "ibge-geoftp"
 official_id = "DTB_2025"

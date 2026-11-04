@@ -16,6 +16,8 @@ def test_repository_sources_are_valid() -> None:
         "ibge-sidra-9605",
         "ibge-sidra-9718",
         "ibge-sidra-9578",
+        "ibge-sidra-9971",
+        "ibge-sidra-9970",
         "ibge-dtb",
     }
     assert catalog.source_institution["ibge-sidra"] == "ibge"

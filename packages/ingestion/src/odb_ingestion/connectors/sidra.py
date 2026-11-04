@@ -93,9 +93,9 @@ class SidraParams(BaseModel):
     # ``split_by_variable``, por período e variável.
     estimated_values_per_period: int = Field(ge=1)
     split_by_variable: bool = False
-    # Classificação cujas categorias (listadas em ``classifications``) vão em
-    # requisições separadas.
-    split_by_classification: str | None = None
+    # Classificações cujas categorias (listadas em ``classifications``) vão em
+    # requisições separadas. Com várias, cada combinação de categorias é uma requisição.
+    split_by_classification: tuple[str, ...] = ()
     min_rows: int = Field(default=1, ge=1)
     max_rows: int | None = Field(default=None, ge=1)
     refresh_recent_periods: int = Field(default=2, ge=0)
@@ -136,6 +136,11 @@ class SidraParams(BaseModel):
             raise ValueError(msg)
         return value
 
+    @field_validator("split_by_classification", mode="before")
+    @classmethod
+    def _split_list(cls, value: object) -> object:
+        return (value,) if isinstance(value, str) else value
+
     @field_validator("classifications")
     @classmethod
     def _classes(cls, value: dict[str, str]) -> dict[str, str]:
@@ -149,8 +154,12 @@ class SidraParams(BaseModel):
 
     @model_validator(mode="after")
     def _split(self) -> SidraParams:
-        cid = self.split_by_classification
-        if cid is not None:
+        if len(set(self.split_by_classification)) != len(self.split_by_classification):
+            msg = (
+                f"classificação repetida em split_by_classification: {self.split_by_classification}"
+            )
+            raise ValueError(msg)
+        for cid in self.split_by_classification:
             cats = self.classifications.get(cid)
             if cats is None or cats == "all":
                 msg = f"split_by_classification={cid} exige as categorias listadas"
@@ -171,24 +180,25 @@ class SidraParams(BaseModel):
         """Requisições de um período, conforme a divisão configurada.
 
         Sem divisão, uma requisição. ``split_by_variable`` gera uma por
-        variável; ``split_by_classification`` gera uma por categoria da
-        classificação indicada (as categorias precisam estar listadas).
+        variável; ``split_by_classification`` gera uma por combinação de
+        categorias das classificações indicadas (as categorias precisam estar
+        listadas), na ordem declarada.
         """
         variable_groups = (
             [(v,) for v in self.variables] if self.split_by_variable else [self.variables]
         )
-        categories: list[str | None] = [None]
-        if self.split_by_classification is not None:
-            categories = list(self.classifications[self.split_by_classification].split(","))
+        combos: list[tuple[tuple[str, str], ...]] = [()]
+        for cid in self.split_by_classification:
+            cats = self.classifications[cid].split(",")
+            combos = [(*combo, (cid, cat)) for combo in combos for cat in cats]
         groups: list[RequestGroup] = []
         for variables in variable_groups:
-            for category in categories:
+            for combo in combos:
                 suffix = f"-v{variables[0]}" if self.split_by_variable else ""
                 classes = dict(self.classifications)
-                if category is not None:
-                    cid = str(self.split_by_classification)
-                    suffix += f"-{cid}-{category}"
-                    classes[cid] = category
+                for cid, cat in combo:
+                    suffix += f"-{cid}-{cat}"
+                    classes[cid] = cat
                 groups.append(RequestGroup(variables, classes, suffix))
         return groups
 

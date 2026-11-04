@@ -163,6 +163,56 @@ territorial_reference = "ibge-dtb"
 additive_variables = { "4709" = "exact", "93" = "exact" }
 
 [[datasets]]
+id = "ibge-sidra-9971"
+source = "ibge-sidra"
+official_id = "9971"
+title = "Indígenas por sexo e idade"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9971"
+variables = ["350"]
+territorial_levels = ["n1"]
+classifications = { "c1" = "all", "c2" = "all", "c2661" = "all", "c58" = "all" }
+estimated_values_per_period = 513
+min_rows = 513
+max_rows = 513
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "350" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9970"
+source = "ibge-sidra"
+official_id = "9970"
+title = "Indígenas por idade"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9970"
+variables = ["350"]
+territorial_levels = ["n1"]
+classifications = { "c1" = "all", "c2661" = "all", "c287" = "all" }
+estimated_values_per_period = 1206
+min_rows = 1206
+max_rows = 1206
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "350" = "exact" }
+
+[[datasets]]
 id = "ibge-dtb"
 source = "ibge-geoftp"
 official_id = "DTB_2025"

@@ -39,7 +39,7 @@ def test_build_tables_hierarchies_and_lineage(env: GoldEnv) -> None:
         assert DeltaTable(table.storage_uri).protocol().min_writer_version == 2
 
     obs = _read(build.tables["indicator_observation"])
-    assert obs.height == 2706
+    assert obs.height == 4425
     stored = {a.artifact_id for a in env.ingestion.by_status("stored")}
     assert set(obs["bronze_artifact_id"].unique().to_list()) <= stored
     assert obs["gold_build_id"].unique().to_list() == [build.build_id]

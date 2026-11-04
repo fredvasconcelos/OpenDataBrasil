@@ -17,13 +17,15 @@ def _write(tmp_path: Path, content: str, name: str = "demografia.toml") -> Path:
 def test_repository_catalog_is_valid() -> None:
     catalog = load_scope(REPO_INDICATORS, "demografia")
     assert catalog.scope == "demografia"
-    assert len(catalog.indicators) == 11
+    assert len(catalog.indicators) == 13
     assert catalog.datasets() == [
         "ibge-sidra-6579",
         "ibge-sidra-4714",
         "ibge-sidra-9605",
         "ibge-sidra-9718",
         "ibge-sidra-9578",
+        "ibge-sidra-9971",
+        "ibge-sidra-9970",
     ]
     c2661 = catalog.classification("c2661")
     assert c2661.partition_of("12869").id == "terras_indigenas"  # type: ignore[union-attr]
@@ -79,6 +81,34 @@ def test_repository_catalog_is_valid() -> None:
 )
 def test_invalid_catalogs(tmp_path: Path, old: str, new: str, message: str) -> None:
     assert old in BASE, old
+    with pytest.raises(SemanticConfigError, match=message):
+        load_catalog(_write(tmp_path, BASE.replace(old, new, 1)))
+
+
+def test_nested_partitions() -> None:
+    catalog = load_scope(REPO_INDICATORS, "demografia")
+    age = catalog.classification("c287")
+    assert age.depth("100362") == 0
+    assert age.depth("93070") == 1  # 0 a 4 anos
+    assert age.depth("6557") == 2  # menos de 1 ano
+    assert age.depth("93071") == 3  # menos de 1 mês
+    order = age.ordered()
+    assert len(order) == 134
+    assert order[:4] == ["100362", "93070", "6557", "93071"]
+    months = age.partition_of("93071")
+    assert months is not None
+    assert age.parent_of(months) == "6557"
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "message"),
+    [
+        ('parent = "6557"', 'parent = "99999"', "não declarado"),
+        ('parent = "93070"', 'parent = "6558"', "ciclo"),
+    ],
+)
+def test_invalid_nested_partitions(tmp_path: Path, old: str, new: str, message: str) -> None:
+    assert old in BASE
     with pytest.raises(SemanticConfigError, match=message):
         load_catalog(_write(tmp_path, BASE.replace(old, new, 1)))
 

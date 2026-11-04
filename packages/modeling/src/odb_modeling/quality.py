@@ -87,7 +87,9 @@ def input_checks(
 
     dims = dimension_map(catalog)
     exploded = (
-        selected.select("indicator_id", "fact_table", "classifications")
+        selected.select("indicator_id", "fact_table", "classification_key", "classifications")
+        .unique(["indicator_id", "classification_key"])
+        .drop("classification_key")
         .explode("classifications", empty_as_null=False)
         .drop_nulls("classifications")
         .unnest("classifications")
@@ -290,7 +292,6 @@ def category_reconciliation(
         rows = observations.filter(pl.col("indicator_id") == ind.id)
         for cid in catalog.fact(ind.fact).classifications:
             cls = catalog.classification(cid)
-            total_key = f"{cid}:{cls.total}"
             tagged = rows.with_columns(
                 category_column(cid).alias("category"),
                 pl.col("breakdown_key")
@@ -300,10 +301,11 @@ def category_reconciliation(
                 .alias("context"),
             )
             keys = ["geography_key", "period", "context"]
-            totals = tagged.filter(
-                (pl.col("category") == total_key) & pl.col("value_status").is_in(_QUANT)
-            ).select(*keys, pl.col("value").alias("official"))
             for part in cls.partitions:
+                parent_key = f"{cid}:{cls.parent_of(part)}"
+                totals = tagged.filter(
+                    (pl.col("category") == parent_key) & pl.col("value_status").is_in(_QUANT)
+                ).select(*keys, pl.col("value").alias("official"))
                 members = [f"{cid}:{c}" for c in part.categories]
                 children = (
                     tagged.filter(pl.col("category").is_in(members))
@@ -360,7 +362,8 @@ def category_reconciliation(
                         )
                     )
                 else:
-                    rule = "= Total" if part.exhaustive else "≤ Total"
+                    parent_label = "Total" if parent_key.endswith(f":{cls.total}") else parent_key
+                    rule = f"= {parent_label}" if part.exhaustive else f"≤ {parent_label}"
                     results.append(
                         CheckResult(
                             check_id,

@@ -101,6 +101,38 @@ A classificação c2661 é a mesma nas duas tabelas, com categorias diferentes:
 terras indígenas na 9718 e territórios quilombolas na 9578. Na hierarquia de
 categorias, cada par forma uma partição própria do Total.
 
+### `ibge-sidra-9971`: Censo 2022, pessoas indígenas por sexo e grupos de idade
+
+| Item | Valor |
+|---|---|
+| Variável | 350 Pessoas indígenas (a 1000350, percentual do total geral, não é ingerida) |
+| Classificações | c2 Sexo: 6794 Total, 4 Homens, 5 Mulheres; c58 Grupo de idade: 95253 Total + 18 grupos quinquenais (o último é 74120 "85 anos ou mais"); c2661 Localização do domicílio (terras indígenas); c1 Situação do domicílio: 6795 Total, 1 Urbana, 2 Rural |
+| Níveis / período | N1, N2, N3 e N6 / 2022 |
+| Linhas | 2.874.339 = 513 combinações × 5.603 territórios |
+| Divisão | 171 requisições (sexo × grupo de idade × situação), de 16.809 valores cada |
+
+### `ibge-sidra-9970`: Censo 2022, pessoas indígenas por idade
+
+| Item | Valor |
+|---|---|
+| Variável | 350 Pessoas indígenas |
+| Classificações | c287 Idade (134 categorias em 3 níveis: Total → 21 grupos quinquenais, até "100 anos ou mais" → 100 idades simples; "Menos de 1 ano" → 12 meses de vida); c2661; c1 |
+| Níveis / período | **N1, N2 e N3** / 2022 |
+| Linhas | 39.798 = 1.206 combinações × 33 territórios (uma requisição) |
+
+O nível municipal da 9970 teria 6,8 milhões de valores (cerca de 2,5 GB em
+JSON). A idade por município fica coberta pelos grupos quinquenais da 9971.
+Incluir o nível municipal depois exige só configuração (níveis e divisão).
+
+### Tabelas 9954 e 9723: terras indígenas e territórios quilombolas (pendente)
+
+Consultadas pelo nível Brasil, as duas respondem sem a dimensão "Terra
+Indígena" ou "Território Quilombola". Esses recortes são **níveis territoriais
+especiais** (a página da pesquisa lista os níveis TI e TF). O código numérico
+desses níveis, usado na API como `/n<código>/all`, só aparece na descrição da
+tabela, que responde 403 a clientes automatizados. A API de metadados está fora
+do ar. Ver KI-006.
+
 ### `ibge-dtb`: Divisão Territorial Brasileira 2025
 
 | Item | Valor |

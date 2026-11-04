@@ -41,12 +41,17 @@ class _Strict(BaseModel):
 
 
 class Partition(_Strict):
-    """Conjunto de categorias filhas do Total."""
+    """Conjunto de categorias filhas de uma categoria (por padrão, o Total).
+
+    ``parent`` permite hierarquias com vários níveis, por exemplo Total →
+    grupos de idade → idades simples → meses.
+    """
 
     id: str = Field(pattern=COLUMN_ID)
     label: str
     categories: tuple[str, ...] = Field(min_length=1)
     exhaustive: bool
+    parent: str | None = Field(default=None, pattern=CATEGORY_ID)
     note: str | None = None
 
 
@@ -77,7 +82,47 @@ class Classification(_Strict):
                     msg = f"{self.id}: categoria {c} em mais de uma partição"
                     raise ValueError(msg)
                 seen.add(c)
+        for p in self.partitions:
+            if p.parent is not None and p.parent != self.total and p.parent not in seen:
+                msg = f"{self.id}: partição {p.id} com pai {p.parent} não declarado"
+                raise ValueError(msg)
+        for c in seen:
+            self.depth(c)  # detecta ciclos
         return self
+
+    def parent_of(self, partition: Partition) -> str:
+        """Categoria-pai de uma partição (o Total quando não declarada)."""
+        return partition.parent or self.total
+
+    def depth(self, category_id: str) -> int:
+        """Profundidade na hierarquia (Total = 0)."""
+        depth = 0
+        current = category_id
+        while current != self.total:
+            partition = self.partition_of(current)
+            if partition is None:
+                msg = f"{self.id}: categoria {current} sem partição"
+                raise ValueError(msg)
+            current = self.parent_of(partition)
+            depth += 1
+            if depth > len(self.partitions) + 1:
+                msg = f"{self.id}: ciclo na hierarquia de categorias ({category_id})"
+                raise ValueError(msg)
+        return depth
+
+    def ordered(self) -> list[str]:
+        """Categorias em ordem hierárquica (pai antes dos filhos, ordem declarada)."""
+        out: list[str] = []
+
+        def visit(category: str) -> None:
+            out.append(category)
+            for p in self.partitions:
+                if self.parent_of(p) == category:
+                    for child in p.categories:
+                        visit(child)
+
+        visit(self.total)
+        return out
 
     def partition_of(self, category_id: str) -> Partition | None:
         """Partição de uma categoria (``None`` para o Total ou categoria não declarada)."""

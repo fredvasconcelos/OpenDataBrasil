@@ -12,6 +12,8 @@ from odb_ingestion.contract import ExtractionRequest, PartitionState, Watermark
 from odb_ingestion.http import DownloadResult
 from tests.ingestion_support import SIDRA_FIXTURES, TEST_SOURCES, FakeSources
 
+REPO_SOURCES = Path(__file__).parents[3] / "configs" / "sources"
+
 PERIODS_6579 = [
     "2001",
     "2002",
@@ -275,6 +277,24 @@ def test_split_by_variable_and_category(connector: SidraConnector, http: HttpCli
         "n1n2n3-p2022-v93",
         "n1n2n3-p2022-v4728",
     ]
+
+
+def test_split_by_several_classifications() -> None:
+    catalog = load_sources(REPO_SOURCES)
+    params = SidraConnector.params(catalog.dataset("ibge-sidra-9971"))
+    groups = params.request_groups()
+    assert len(groups) == 3 * 19 * 3
+    assert groups[0].suffix == "-c2-6794-c58-95253-c1-6795"
+    assert groups[0].classifications == {
+        "c1": "6795",
+        "c2": "6794",
+        "c58": "95253",
+        "c2661": "all",
+    }
+    key = params.partition_key("2022", groups[-1])
+    assert key == "n1n2n3n6-p2022-c2-5-c58-74120-c1-2"
+    assert params.request_variables(key) == ("350",)
+    assert params.estimated_values_per_period <= 50_000
 
 
 def test_split_by_classification_requires_listed_categories(connector: SidraConnector) -> None:

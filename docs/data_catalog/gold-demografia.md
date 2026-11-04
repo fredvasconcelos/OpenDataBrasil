@@ -4,9 +4,14 @@ Definição: [`configs/indicators/demografia.toml`](../../configs/indicators/dem
 (catálogo semântico 1.0.0). Modelo: [ADR-0008](../adr/0008-gold-modelo-hierarquico-e-camada-semantica.md).
 Operação: [runbook da Gold](../runbooks/gold.md).
 
-Primeiro release com dados reais: `22de665f-baa6-420d-96cd-1ea5f1daf4a9`
-(2026-11-04), com 459.468 observações e 71 verificações aprovadas. Release
-**interno**: a licença do IBGE ainda está em `requires_review` (KI-003).
+Releases com dados reais (2026-11-04):
+
+| Release | Conteúdo | Observações | Verificações |
+|---|---|---|---|
+| `22de665f-baa6-420d-96cd-1ea5f1daf4a9` (superseded) | Fase 4: 6579, 4714, 9605, 9718, 9578 | 459.468 | 71 aprovadas |
+| `26826057-8dc5-4f36-86b8-6e6efa33e591` (**ativo**) | + etapa 4b: 9971, 9970 | 3.373.605 | 112 aprovadas |
+
+Release **interno**: a licença do IBGE ainda está em `requires_review` (KI-003).
 
 ## Árvore temática
 
@@ -28,6 +33,10 @@ Censo Demográfico
     Percentual de pessoas indígenas                    censo_percentual_indigenas             (9718/4727, não aditivo)
       Quesito de declaração indígena: Cor ou raça indígena, Se considera indígena, Não se declarou indígena
       Localização do domicílio: Em terras indígenas, Fora de terras indígenas
+    Pessoas indígenas por sexo e grupo de idade        censo_pessoas_indigenas_sexo_idade     (9971/350)
+      Sexo: Homens, Mulheres; Grupo de idade: 0 a 4 ... 85 anos ou mais; Localização; Situação: Urbana, Rural
+    Pessoas indígenas por idade                        censo_pessoas_indigenas_idade          (9970/350; Brasil, Regiões, UFs)
+      Idade: 21 grupos quinquenais › idades simples › meses de vida (menos de 1 ano); Localização; Situação
   Pessoas quilombolas
     Pessoas quilombolas                                censo_pessoas_quilombolas              (9578/4709)
     População residente por localização                censo_residentes_territorio_quilombola (9578/93)
@@ -35,8 +44,8 @@ Censo Demográfico
       Localização do domicílio: Em territórios quilombolas, Fora de territórios quilombolas
 ```
 
-Todos os indicadores estão publicados nos níveis Brasil, Grande Região, UF e
-município. Regiões geográficas intermediárias e imediatas existem na
+Os indicadores estão publicados nos níveis Brasil, Grande Região, UF e
+município, exceto `censo_pessoas_indigenas_idade` (até UF). Regiões geográficas intermediárias e imediatas existem na
 hierarquia (para recortes e somas derivadas), mas não têm valores oficiais
 publicados nestas tabelas.
 
@@ -59,14 +68,19 @@ publicados nestas tabelas.
 | `fact_population_by_race` | território × ano × cor ou raça | `population` |
 | `fact_indigenous_population` | território × ano × quesito × localização | `population`, `indigenous_persons`, `indigenous_share_pct` |
 | `fact_quilombola_population` | território × ano × localização | `population`, `quilombola_persons`, `quilombola_share_pct` |
+| `fact_indigenous_by_sex_age` | território × ano × sexo × grupo de idade × localização × situação | `indigenous_persons` |
+| `fact_indigenous_by_age` | território (até UF) × ano × idade × localização × situação | `indigenous_persons` |
 
 Cada medida tem a coluna `<medida>_status`, com a legenda da Silver (`valid`,
 `true_zero`, `suppressed`...) ou `absent` quando a combinação não foi publicada.
 
-## Etapa 4b (aprovada, não implementada)
+## Etapa 4b
 
-- 9970 e 9971: pessoas indígenas por sexo e idade. A 9971 cruza 4 classificações.
-- 9954 e 9723: terras indígenas e territórios quilombolas como unidades
-  territoriais. Os códigos de nível no SIDRA ainda precisam ser verificados,
-  e o modelo pede um sistema territorial ligado aos municípios por relação
-  muitos-para-muitos.
+- **Concluído:** 9971 (sexo × grupos de idade × localização × situação, em todos
+  os níveis) e 9970 (idade simples em 3 níveis de hierarquia, até UF).
+- **Pendente (KI-006):** 9954 e 9723 (terras indígenas e territórios
+  quilombolas como unidades territoriais). Falta o código dos níveis
+  territoriais especiais no SIDRA.
+- **Derivados não publicados:** razão de sexo, 0 a 14 anos, 60 anos ou mais.
+  Podem ser calculados a partir das categorias (exportação ou consulta), mas
+  não são indicadores oficiais da plataforma.

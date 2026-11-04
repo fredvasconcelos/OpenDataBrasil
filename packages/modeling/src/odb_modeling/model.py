@@ -282,7 +282,9 @@ def category_names(selected: pl.DataFrame, catalog: SemanticCatalog) -> dict[str
     """Rótulo de cada categoria observada (o do período mais recente)."""
     dims = dimension_map(catalog)
     exploded = (
-        selected.select("period", "classifications")
+        selected.select("period", "classification_key", "classifications")
+        .unique(["period", "classification_key"])
+        .drop("classification_key")
         .explode("classifications", empty_as_null=False)
         .drop_nulls("classifications")
         .unnest("classifications")
@@ -326,48 +328,49 @@ def build_dim_classification(catalog: SemanticCatalog, used: Sequence[str]) -> p
 def build_dim_category(
     catalog: SemanticCatalog, used: Sequence[str], names: Mapping[str, str]
 ) -> pl.DataFrame:
-    """Categorias observadas, com a hierarquia curada (Total → partições → categorias)."""
+    """Categorias observadas, com a hierarquia curada (Total → partições, em vários níveis)."""
     rows: list[dict[str, object]] = []
     for c in catalog.classifications:
         if c.id not in used:
             continue
-        total_key = f"{c.id}:{c.total}"
-        rows.append(
-            {
-                "category_key": total_key,
-                "classification_id": c.id,
-                "category_id": c.total,
-                "name": names.get(total_key, "Total"),
-                "is_total": True,
-                "parent_category_key": None,
-                "partition_id": None,
-                "partition_label": None,
-                "partition_exhaustive": None,
-                "depth": 0,
-                "sort_order": 0,
-            }
-        )
-        order = 1
-        for p in c.partitions:
-            for cat in p.categories:
-                key = f"{c.id}:{cat}"
-                if key in names:
-                    rows.append(
-                        {
-                            "category_key": key,
-                            "classification_id": c.id,
-                            "category_id": cat,
-                            "name": names[key],
-                            "is_total": False,
-                            "parent_category_key": total_key,
-                            "partition_id": p.id,
-                            "partition_label": p.label,
-                            "partition_exhaustive": p.exhaustive,
-                            "depth": 1,
-                            "sort_order": order,
-                        }
-                    )
-                order += 1
+        for order, cat in enumerate(c.ordered()):
+            key = f"{c.id}:{cat}"
+            if cat == c.total:
+                rows.append(
+                    {
+                        "category_key": key,
+                        "classification_id": c.id,
+                        "category_id": cat,
+                        "name": names.get(key, "Total"),
+                        "is_total": True,
+                        "parent_category_key": None,
+                        "partition_id": None,
+                        "partition_label": None,
+                        "partition_exhaustive": None,
+                        "depth": 0,
+                        "sort_order": 0,
+                    }
+                )
+                continue
+            if key not in names:
+                continue
+            part = c.partition_of(cat)
+            assert part is not None  # noqa: S101 - toda categoria não Total tem partição
+            rows.append(
+                {
+                    "category_key": key,
+                    "classification_id": c.id,
+                    "category_id": cat,
+                    "name": names[key],
+                    "is_total": False,
+                    "parent_category_key": f"{c.id}:{c.parent_of(part)}",
+                    "partition_id": part.id,
+                    "partition_label": part.label,
+                    "partition_exhaustive": part.exhaustive,
+                    "depth": c.depth(cat),
+                    "sort_order": order,
+                }
+            )
     return _conform(pl.DataFrame(rows, schema=DIM_CATEGORY.frame_schema()), DIM_CATEGORY)
 
 
@@ -474,7 +477,9 @@ def build_dim_indicator_node(
     cats = {r["category_key"]: r for r in categories.iter_rows(named=True)}
     classes = {c.id: c.name for c in catalog.classifications}
     used = (
-        observations.select("indicator_id", pl.col("breakdown_key").str.split("|"))
+        observations.select("indicator_id", "breakdown_key")
+        .unique()
+        .with_columns(pl.col("breakdown_key").str.split("|"))
         .explode("breakdown_key", empty_as_null=False)
         .unique()
     )
@@ -530,19 +535,26 @@ def build_dim_indicator_node(
                 (k for k in used_by.get(ind.id, set()) if k.startswith(f"{cid}:")),
                 key=lambda k: cats[k]["sort_order"] if k in cats else 10**6,
             )
+            category_nodes: dict[str, tuple[str, list[str]]] = {}
             for cat_key in observed:
                 cat = cats.get(cat_key)
                 if cat is None or cat["is_total"]:
                     continue
+                parent_key, parent_labels = category_nodes.get(
+                    str(cat["parent_category_key"]), (cls_key, cls_labels)
+                )
+                node_key = f"{cls_key}/{cat['category_id']}"
+                labels = [*parent_labels, str(cat["name"])]
                 add(
-                    f"{cls_key}/{cat['category_id']}",
-                    cls_key,
+                    node_key,
+                    parent_key,
                     "category",
-                    [*cls_labels, str(cat["name"])],
+                    labels,
                     indicator_id=ind.id,
                     classification_id=cid,
                     category_key=cat_key,
                 )
+                category_nodes[cat_key] = (node_key, labels)
     return _conform(
         pl.DataFrame(list(nodes.values()), schema=DIM_INDICATOR_NODE.frame_schema()),
         DIM_INDICATOR_NODE,
