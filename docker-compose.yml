@@ -27,13 +27,6 @@ x-odb-env: &odb-env
   ODB_DUCKDB_EXTENSION_DIRECTORY: /opt/duckdb/extensions
   POLARS_MAX_THREADS: ${POLARS_MAX_THREADS:-8}
 
-x-lake-volumes-rw: &lake-volumes-rw
-  - lake_bronze:/lakehouse/bronze
-  - lake_silver:/lakehouse/silver
-  - lake_gold:/lakehouse/gold
-  - lake_tmp:/lakehouse/tmp
-  - odb_logs:/var/log/odb
-
 services:
   postgres:
     image: postgres:17-bookworm@sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5
@@ -95,7 +88,14 @@ services:
       <<: *odb-env
       ODB_PG_USER: odb_pipeline
       ODB_PG_PASSWORD: ${ODB_PIPELINE_PASSWORD:?defina no .env}
-    volumes: *lake-volumes-rw
+    volumes:
+      - lake_bronze:/lakehouse/bronze
+      - lake_silver:/lakehouse/silver
+      - lake_gold:/lakehouse/gold
+      - lake_tmp:/lakehouse/tmp
+      - odb_logs:/var/log/odb
+      # Exportações para análise local (`odb gold export`). Pasta do host, fora do Git (/data/).
+      - ${ODB_EXPORT_HOST_DIR:-./data/exports}:/export
     depends_on:
       postgres: { condition: service_healthy }
       migrate: { condition: service_completed_successfully }

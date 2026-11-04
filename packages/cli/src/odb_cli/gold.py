@@ -8,6 +8,7 @@ import json
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from decimal import Decimal
+from pathlib import Path
 from typing import Annotated, Any
 
 import polars as pl
@@ -31,6 +32,7 @@ from odb_ingestion import load_sources
 from odb_lakehouse import DeltaReader, DeltaWriter
 from odb_modeling.builder import GoldBuild, GoldBuilder
 from odb_modeling.contracts import DIM_INDICATOR, DIM_INDICATOR_NODE
+from odb_modeling.export import ExportError, ReleaseToExport, export_release
 from odb_query_engine import DuckDBConfig, DuckDBReadEngine, PinnedTable, QueryError, ReadQuery
 from odb_semantics import IndicatorQuery, SemanticError, load_scope, meta_from_rows, plan_query
 
@@ -186,6 +188,77 @@ def _publish(
     if activate:
         release = publication.activate(release_id)
     return _release_json(release)
+
+
+@gold_app.command("export")
+def gold_export(
+    scope: Annotated[str, typer.Option(help="Escopo de publicação.")] = DEFAULT_SCOPE,
+    release_id: Annotated[
+        str | None, typer.Option("--release", help="Release publicado (padrão: o ativo).")
+    ] = None,
+    out: Annotated[
+        str | None, typer.Option(help="Pasta de destino (padrão: ODB_EXPORT_DIR, /export).")
+    ] = None,
+    force: Annotated[bool, typer.Option(help="Refaz a exportação se ela já existir.")] = False,
+) -> None:
+    """Exporta um release publicado (Parquet + DuckDB) para análise local. Cópia não oficial."""
+    settings = _settings()
+    engine = make_engine(settings, pool_size=1)
+    try:
+        publication = _publication(settings, engine)
+        try:
+            release = publication.get(release_id) if release_id else publication.active(scope)
+        except PublicationError as exc:
+            typer.echo(str(exc), err=True)
+            raise typer.Exit(code=1) from None
+    finally:
+        engine.dispose()
+    if release is None:
+        typer.echo(f"nenhum release ativo no escopo {scope!r}", err=True)
+        raise typer.Exit(code=1)
+    target = Path(out or settings.export_dir)
+    if not target.is_dir():
+        typer.echo(
+            f"pasta de destino inexistente: {target} (no host: mkdir -p data/exports)", err=True
+        )
+        raise typer.Exit(code=1)
+    sources = load_sources(settings.sources_config_dir)
+    catalog = load_scope(settings.indicators_config_dir, release.scope)
+    datasets = [sources.dataset(d) for d in catalog.datasets()]
+    licenses = {d.license for d in datasets}
+    provenance = {
+        "license": ", ".join(sorted(sources.licenses[lic].name for lic in licenses)),
+        "license_review_status": ", ".join(
+            sorted({sources.licenses[lic].review_status for lic in licenses})
+        ),
+        "sources": [f"{d.title} ({d.reference_url or d.id})" for d in datasets],
+        "code_version": settings.code_version,
+    }
+    try:
+        result = export_release(
+            ReleaseToExport(
+                release_id=release.release_id,
+                scope=release.scope,
+                status=release.status,
+                activated_at=release.activated_at,
+                tables=release.tables,
+            ),
+            target,
+            provenance=provenance,
+            force=force,
+        )
+    except ExportError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=1) from None
+    _echo_json(
+        {
+            "release_id": result.release_id,
+            "status": result.status,
+            "path": str(result.path),
+            "duckdb": str(result.path / "gold.duckdb"),
+            "tables": {t: info["rows"] for t, info in result.tables.items()},
+        }
+    )
 
 
 # ------------------------------------------------------------------ release

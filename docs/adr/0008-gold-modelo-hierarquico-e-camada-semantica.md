@@ -143,6 +143,15 @@ resolvidos pelo release ativo (ADR-0003). Regras:
   do oficial não gera aviso; acima, gera. Isso veio de 148 avisos na
   9718/9578, todos explicados por supressão.
 
+### 10. Exportação para análise local
+
+`odb gold export` copia um release **publicado** (ativo ou por `--release`)
+para `data/exports/<escopo>/<release_id>/`, fora do lakehouse. A cópia leva
+Parquet por tabela, um `gold.duckdb` autocontido (tabelas e views de análise),
+um manifesto com SHA-256 e um aviso de cópia não oficial. A invalidação é por
+release, e as pastas antigas podem ser apagadas. Como as exportações do portal
+(§19.3), a cópia não é fonte oficial e não é lida pela plataforma.
+
 ## Consequências
 
 - O mesmo modelo recebe novas tabelas com classificações cruzadas só por

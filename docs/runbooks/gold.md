@@ -14,7 +14,10 @@ odb gold build --force                # reconstrói mesmo sem mudança nas entra
 odb release list [--scope demografia]
 odb release activate <release_id>     # ativa um release validado; o anterior vira superseded
 odb quality gold [--json]             # verificações da última construção
+odb gold export [--release <id>]      # cópia Parquet + DuckDB para análise local
 ```
+
+Exportação, DBeaver e Python: [exportacao.md](exportacao.md).
 
 | Estado da construção | Significado |
 |---|---|

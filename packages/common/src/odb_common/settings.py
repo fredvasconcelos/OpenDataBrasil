@@ -56,6 +56,8 @@ class Settings(BaseSettings):
     sources_config_dir: str = "configs/sources"
     # Catálogo semântico (indicadores, classificações e fatos; um TOML por escopo).
     indicators_config_dir: str = "configs/indicators"
+    # Destino de `odb gold export` (cópias descartáveis para análise local, fora do lakehouse).
+    export_dir: str = "/export"
 
     # Lakehouse
     lakehouse_root_uri: str = "file:///lakehouse"

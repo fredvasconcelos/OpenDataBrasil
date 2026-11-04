@@ -161,6 +161,19 @@ def test_gold_publish_query_and_preserve_on_failure(  # noqa: PLR0915 - cenário
     assert report.exit_code == 0
     assert "reconciliation.category.censo_populacao_cor_raca.c86.cor_ou_raca" in report.stdout
 
+    # Exportação do release ativo para análise local.
+    exports = tmp_path / "exports"
+    exports.mkdir()
+    exported = runner.invoke(app, ["gold", "export", "--out", str(exports)])
+    assert exported.exit_code == 0, exported.output
+    export_info = json.loads(exported.stdout)
+    assert export_info["release_id"] == release_id
+    assert export_info["tables"]["indicator_observation"] == 2706
+    manifest = json.loads((Path(export_info["path"]) / "manifest.json").read_text())
+    assert manifest["provenance"]["license_review_status"] == "requires_review"
+    missing_dir = runner.invoke(app, ["gold", "export", "--out", str(tmp_path / "nao-existe")])
+    assert missing_dir.exit_code == 1
+
     # Reexecução sem mudança: skipped, sem release novo.
     again = json.loads(runner.invoke(app, ["gold", "build", "--activate"]).stdout)
     assert again["status"] == "skipped"

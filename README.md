@@ -36,6 +36,7 @@ docker compose --profile data run --rm worker odb ingest run --all   # IBGE para
 docker compose --profile data run --rm worker odb silver build --all # Bronze para a Silver
 docker compose --profile data run --rm worker odb gold build --activate  # Silver para a Gold e publicação
 docker compose --profile data run --rm worker odb query -i censo_pessoas_quilombolas --level uf
+mkdir -p data/exports && docker compose --profile data run --rm worker odb gold export  # Parquet + DuckDB para análise
 ```
 
 Guia completo: [`docs/development/setup-windows-wsl2.md`](docs/development/setup-windows-wsl2.md).
@@ -53,7 +54,7 @@ Guia completo: [`docs/development/setup-windows-wsl2.md`](docs/development/setup
   - 0008: Gold, modelo hierárquico e camada semântica
 - Fontes e datasets: [`docs/data_catalog/ibge.md`](docs/data_catalog/ibge.md)
 - Indicadores da Gold: [`docs/data_catalog/gold-demografia.md`](docs/data_catalog/gold-demografia.md)
-- Operação: [ingestão](docs/runbooks/ingestao.md), [Silver](docs/runbooks/silver.md) e [Gold](docs/runbooks/gold.md)
+- Operação: [ingestão](docs/runbooks/ingestao.md), [Silver](docs/runbooks/silver.md), [Gold](docs/runbooks/gold.md) e [exportação para análise](docs/runbooks/exportacao.md)
 - Problemas conhecidos: [`docs/known-issues.md`](docs/known-issues.md)
 - Compatibilidade: [`docs/development/compatibility-matrix.md`](docs/development/compatibility-matrix.md)
 
