@@ -79,6 +79,7 @@ cor = con.sql("""
 
 # Polars direto do Parquet; valores em decimal: converta para gráficos
 from odb_modeling.export import read_observations
+
 obs = read_observations(pasta).filter(pl.col("indicator_id") == "censo_pessoas_indigenas").collect()
 ```
 
