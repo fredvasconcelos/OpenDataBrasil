@@ -17,7 +17,7 @@ def _write(tmp_path: Path, content: str, name: str = "demografia.toml") -> Path:
 def test_repository_catalog_is_valid() -> None:
     catalog = load_scope(REPO_INDICATORS, "demografia")
     assert catalog.scope == "demografia"
-    assert len(catalog.indicators) == 16
+    assert len(catalog.indicators) == 18
     assert catalog.datasets() == [
         "ibge-sidra-6579",
         "ibge-sidra-4714",
@@ -27,6 +27,7 @@ def test_repository_catalog_is_valid() -> None:
         "ibge-sidra-9971",
         "ibge-sidra-9970",
         "ibge-sidra-9723",
+        "ibge-sidra-9954",
     ]
     c2661 = catalog.classification("c2661")
     assert c2661.partition_of("12869").id == "terras_indigenas"  # type: ignore[union-attr]

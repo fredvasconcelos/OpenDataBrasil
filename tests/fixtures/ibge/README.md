@@ -20,6 +20,7 @@ Não edite: os testes dependem dos bytes exatos.
 | `sidra/t9971_n1_periods.json`, `sidra/t9971_n1_p2022.json` | `/t/9971/n1/all/v/350/p/<all\|2022>/c1/all/c2/all/c2661/all/c58/all` | 200 | 513 combinações (situação × sexo × localização × grupo de idade) |
 | `sidra/t9970_n1_periods.json`, `sidra/t9970_n1_p2022.json` | `/t/9970/n1/all/v/350/p/<all\|2022>/c1/all/c2661/all/c287/all` | 200 | 1.206 combinações (situação × localização × 134 idades) |
 | `sidra/t9723_n1_periods.json`, `sidra/t9723_n1n2n3n131n134n145n1145_p2022.json` | `/t/9723/n1/all/v/6559/p/all` e `/t/9723/n1/all/n2/all/n3/all/n131/all/n134/all/n145/all/n1145/all/v/6559,7079,7080/p/2022` | 200 | níveis especiais: 495 territórios quilombolas, 503 partes por UF, Amazônia Legal e 9 partes de UF (3.123 valores) |
+| `sidra/t9954_n1_periods.json`, `sidra/t9954_n1n3n125n1124n1125_p2022_v<var>_c1-6795_c2-6794_c287-100362.json` | `/t/9954/n1/all/v/576/p/all/c1/6795/c2/6794/c287/100362` e `/t/9954/n1/all/n3/all/n125/all/n1124/all/n1125/all/v/<var>/p/2022/c1/6795/c2/6794/c287/100362` | 200 | variáveis 576 e 1432, só os Totais de sexo, idade e situação; 573 terras, 602 partes por UF e 39 Coordenações Regionais da Funai |
 | `sidra/t9578_n1_periods.json` | `/t/9578/n1/all/v/4709/p/all/c2661/all` | 200 | só 2022 |
 | `sidra/t9578_n1n2n3_p2022_v<var>.json` | `/t/9578/n1/all/n2/all/n3/all/v/<var>/p/2022/c2661/all` | 200 | 3 arquivos: variáveis 4709, 93, 4728; 3 localizações × 33 territórios |
 

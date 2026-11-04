@@ -278,6 +278,39 @@ territorial_reference = "ibge-dtb"
 additive_variables = { "6559" = "exact", "7079" = "exact" }
 
 [[datasets]]
+id = "ibge-sidra-9954"
+source = "ibge-sidra"
+official_id = "9954"
+title = "Censo 2022: população, total e indígena, residente em Terras Indígenas, por sexo, idade, segundo as Terras Indígenas e situação do domicílio"
+description = "Pessoas residentes (576) e pessoas indígenas (1432) em terras indígenas, por sexo (c2), grupos quinquenais de idade (c287) e situação do domicílio (c1), por Terra Indígena (N1125), Terra Indígena por UF (N125), Coordenação Regional da Funai (N1124), Amazônia Legal (N131, N134), Brasil, Grandes Regiões e UFs."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9954"
+
+[datasets.params]
+table = "9954"
+variables = ["576", "1432"]
+# Níveis especiais informados pelo mantenedor e conferidos na API em 2026-11-04
+# (docs/data_catalog/ibge-niveis-territoriais.md). Sem o nível municipal: residentes e
+# indígenas em terras indígenas por município já vêm da 9718.
+territorial_levels = ["n1", "n2", "n3", "n131", "n134", "n125", "n1124", "n1125"]
+# Idade: Total e os 21 grupos quinquenais (as 134 idades simples somariam 3 milhões de valores).
+classifications = { "c1" = "6795,1,2", "c2" = "6794,4,5", "c287" = "100362,93070,93084,93085,93086,93087,93088,93089,93090,93091,93092,93093,93094,93095,93096,93097,93098,49108,49109,60040,60041,6653" }
+# 2 variáveis x 3 sexos x 3 situações = 18 requisições de 22 idades x 1257 territórios = 27.654.
+split_by_variable = true
+split_by_classification = ["c2", "c1"]
+estimated_values_per_period = 27654
+min_rows = 27500
+max_rows = 27700
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "576" = "exact", "1432" = "exact" }
+
+[[datasets]]
 id = "ibge-dtb"
 source = "ibge-geoftp"
 official_id = "DTB_2025"

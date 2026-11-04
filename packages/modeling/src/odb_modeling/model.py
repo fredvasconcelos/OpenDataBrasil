@@ -34,7 +34,8 @@ from odb_semantics import LEVELS, FactConfig, SemanticCatalog
 # rótulos NN das respostas: 1 Brasil, 2 Grande Região, 3 Unidade da Federação,
 # 6 Município; recortes especiais da tabela 9723 (2026-11-04): 131 Amazônia
 # Legal, 134 Amazônia Legal de UF, 145 Território Quilombola por UF, 1145
-# Território Quilombola (docs/data_catalog/ibge-niveis-territoriais.md).
+# Território Quilombola; da 9954: 125 Terra Indígena por UF, 1124 Coordenação
+# Regional da Funai, 1125 Terra Indígena (docs/data_catalog/ibge-niveis-territoriais.md).
 SIDRA_LEVELS = {
     "1": "brasil",
     "2": "regiao",
@@ -44,6 +45,9 @@ SIDRA_LEVELS = {
     "134": "amazonia_legal_uf",
     "145": "territorio_quilombola_uf",
     "1145": "territorio_quilombola",
+    "125": "terra_indigena_uf",
+    "1124": "coordenacao_regional_funai",
+    "1125": "terra_indigena",
 }
 NO_BREAKDOWN = "none"
 ABSENT = "absent"

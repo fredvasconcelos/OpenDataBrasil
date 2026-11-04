@@ -8,8 +8,8 @@ especificação completa está em [`CLAUDE.md`](CLAUDE.md).
 > Delta Lake, com qualidade e reconciliação) e 4 (Gold em Delta Lake, com
 > hierarquias territorial e temática, publicação por release, consulta DuckDB
 > e exportação para análise) implementadas. A etapa 4b (sexo e idade dos
-> indígenas, territórios quilombolas) está concluída, exceto terras indígenas como
-> unidades territoriais (KI-006). Ainda não há API nem portal.
+> indígenas, territórios quilombolas e terras indígenas como recortes
+> territoriais) está concluída. Ainda não há API nem portal.
 
 ## Pacotes (`packages/`)
 

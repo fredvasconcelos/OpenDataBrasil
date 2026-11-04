@@ -24,6 +24,7 @@ SIDRA_DATASETS = [
     "ibge-sidra-9971",
     "ibge-sidra-9970",
     "ibge-sidra-9723",
+    "ibge-sidra-9954",
 ]
 ALL_DATASETS = ["ibge-dtb", *SIDRA_DATASETS]
 

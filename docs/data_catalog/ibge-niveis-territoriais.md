@@ -70,7 +70,60 @@ casas); 7079 Pessoas quilombolas residentes em territórios quilombolas
 territórios quilombolas (%, 2 casas). Última atualização da tabela:
 2024-05-14.
 
-## Pendente
+## Níveis especiais da tabela 9954 (terras indígenas)
 
-- **9954 (terras indígenas):** a página da pesquisa indica níveis especiais
-  (siglas TI e TF). Os códigos ainda não foram fornecidos (KI-006).
+Fonte: descrição da tabela 9954 e PDFs de unidades fornecidos pelo mantenedor
+em 2026-11-04. Conferido na API no mesmo dia.
+
+| Nível SIDRA | Nome | Unidades | Nível interno | Pai na hierarquia | Outros ancestrais |
+|---|---|---|---|---|---|
+| N1125 | Terra Indígena | 573 | `terra_indigena` | `brasil` | |
+| N125 | Terra Indígena por Unidade da Federação | 602 | `terra_indigena_uf` | `uf` | `terra_indigena` |
+| N1124 | Coordenação Regional da Funai | 39 (códigos 19001 a 19039) | `coordenacao_regional_funai` | `brasil` | |
+| N131, N134 | Amazônia Legal e Amazônia Legal de UF | 1 e 9 | (como na 9723) | | |
+
+Regras de código, verificadas em todas as unidades:
+
+- **N125 = código da UF (2 dígitos) + código da terra indígena (5 dígitos)**.
+  Por exemplo, `1209482` = Acre (12) + Alto Rio Purus (9482); `2935000` = Bahia
+  (29) + Kiriri (35000). Toda unidade N125 tem terra indígena N1125
+  correspondente.
+- **27 terras indígenas atravessam divisas estaduais**, por exemplo Parque do
+  Aripuanã (RO 1101406, MT 5101406), Yanomami (AM, RR), Trombetas/Mapuera (AM,
+  PA, RR) e Kariri de Serra Grande (BA, PE, PI).
+- Há nomes repetidos com códigos diferentes (por exemplo, "Buriti" 50157 e 50781,
+  "Rio Gregório" 9466 e 50799). O código é a identidade, nunca o nome.
+- A ligação entre terra indígena e Coordenação Regional da Funai **não está nos
+  códigos**. As coordenações entram como recorte próprio, sem vínculo com as
+  terras.
+
+Conferência na API (Total de sexo, idade e situação, 2022):
+
+| Variável | Brasil | Soma das terras | Soma das partes por UF | Soma das coordenações |
+|---|---|---|---|---|
+| 576 Pessoas residentes em terras indígenas | 689.532 | 689.532 | 689.532 | 689.532 |
+| 1432 Pessoas indígenas residentes em terras indígenas | 622.844 | 621.659 (25 terras com `X`) | 621.659 | 508.384 (5 coordenações com `X`) |
+
+Classificações (iguais às das tabelas 9970 e 9971): C2 Sexo, C287 Idade (134
+categorias), C1 Situação do domicílio.
+
+Lista completa (1.214 unidades, gerada da resposta da API de 2026-11-04):
+[`referencias/sidra-9954-unidades-territoriais-especiais.csv`](referencias/sidra-9954-unidades-territoriais-especiais.csv).
+
+### Notas oficiais da tabela 9954 (transcritas da descrição)
+
+1. Dados do Universo.
+2. Indígena é a pessoa residente em localidades indígenas que se declarou
+   indígena pelo quesito de cor ou raça ou pelo quesito "se considera
+   indígena", ou a pessoa residente fora das localidades indígenas que se
+   declarou indígena no quesito de cor ou raça. Por isso, o total de pessoas
+   indígenas é maior ou igual ao de pessoas de cor ou raça indígena, em
+   qualquer recorte.
+3. Localidades indígenas: as Terras Indígenas, os agrupamentos indígenas e as
+   demais áreas de conhecida ou potencial ocupação indígena.
+4. Terras Indígenas consideradas: declaradas, homologadas, regularizadas ou
+   encaminhadas como Reservas Indígenas até 31/07/2022, conforme a FUNAI.
+
+Variáveis: 576 Pessoas residentes em terras indígenas e 1432 Pessoas indígenas
+residentes em terras indígenas (Pessoas, 0 casas). Última atualização da
+tabela: 2024-12-19.

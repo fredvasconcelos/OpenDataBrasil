@@ -16,7 +16,8 @@ da DTB. A parte do recorte numa UF (N145, N134) tem a UF como pai e o recorte
 como ancestral adicional. Por isso a tabela de ancestrais é o fecho de um
 grafo, não de uma árvore. Regras de código conferidas na API
 (``docs/data_catalog/ibge-niveis-territoriais.md``): N145 = UF (2 dígitos) +
-território (3 dígitos); N134 = UF.
+território (3 dígitos); N125 = UF (2 dígitos) + terra indígena (5 dígitos);
+N134 = UF.
 """
 
 from __future__ import annotations
@@ -33,9 +34,14 @@ class GeographyError(ValueError):
 
 SPECIAL_LEVELS = frozenset(lv.id for lv in LEVELS if lv.special)
 # Níveis cujo código começa pelo código da UF (2 dígitos).
-_UF_PREFIXED = ["municipio", "territorio_quilombola_uf", "amazonia_legal_uf"]
+_UF_PREFIXED = ["municipio", "territorio_quilombola_uf", "terra_indigena_uf", "amazonia_legal_uf"]
 # Recortes nacionais (pai direto: Brasil).
-_NATIONAL_SPECIAL = ["territorio_quilombola", "amazonia_legal"]
+_NATIONAL_SPECIAL = [
+    "territorio_quilombola",
+    "terra_indigena",
+    "coordenacao_regional_funai",
+    "amazonia_legal",
+]
 
 
 def _rows(level: str, frame: pl.DataFrame) -> pl.DataFrame:
@@ -207,6 +213,11 @@ def extra_ancestor_edges(geography: pl.DataFrame) -> pl.DataFrame:
         pl.when(pl.col("level_id") == "territorio_quilombola_uf")
         .then(
             pl.lit("territorio_quilombola:")
+            + code.str.slice(2).cast(pl.Int64, strict=False).cast(pl.String)
+        )
+        .when(pl.col("level_id") == "terra_indigena_uf")
+        .then(
+            pl.lit("terra_indigena:")
             + code.str.slice(2).cast(pl.Int64, strict=False).cast(pl.String)
         )
         .when(pl.col("level_id") == "amazonia_legal_uf")

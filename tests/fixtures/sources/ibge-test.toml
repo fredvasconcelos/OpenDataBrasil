@@ -237,6 +237,32 @@ territorial_reference = "ibge-dtb"
 additive_variables = { "6559" = "exact", "7079" = "exact" }
 
 [[datasets]]
+id = "ibge-sidra-9954"
+source = "ibge-sidra"
+official_id = "9954"
+title = "Terras indígenas"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9954"
+variables = ["576", "1432"]
+territorial_levels = ["n1", "n3", "n125", "n1124", "n1125"]
+classifications = { "c1" = "6795", "c2" = "6794", "c287" = "100362" }
+split_by_variable = true
+estimated_values_per_period = 1242
+min_rows = 1242
+max_rows = 1242
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "576" = "exact", "1432" = "exact" }
+
+[[datasets]]
 id = "ibge-dtb"
 source = "ibge-geoftp"
 official_id = "DTB_2025"

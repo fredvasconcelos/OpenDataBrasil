@@ -42,7 +42,8 @@ odb query ... --format json|csv --limit 10000
 ```
 
 - `--level`: `brasil`, `regiao`, `uf`, `regiao_intermediaria`, `regiao_imediata`, `municipio`,
-  `territorio_quilombola`, `territorio_quilombola_uf`, `amazonia_legal`, `amazonia_legal_uf`
+  `territorio_quilombola`, `territorio_quilombola_uf`, `terra_indigena`, `terra_indigena_uf`,
+  `coordenacao_regional_funai`, `amazonia_legal`, `amazonia_legal_uf`
   (só os publicados para o indicador).
 - `--within` e `--sum-to` só aceitam níveis que contêm o nível consultado
   (por exemplo, `--level territorio_quilombola_uf --within uf:29`).

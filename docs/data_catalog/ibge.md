@@ -138,14 +138,29 @@ Reconciliação (Silver, 2026-11-04): as partes por UF (N145) somam exatamente o
 territórios (N1145) e as UFs; os territórios somam o Brasil; a Amazônia Legal
 de UF soma a Amazônia Legal. Grupos com `X` ficam como incompletos.
 
-### Tabela 9954: terras indígenas (pendente)
+### `ibge-sidra-9954`: Censo 2022, população em terras indígenas
 
-Consultadas pelo nível Brasil, as duas respondem sem a dimensão "Terra
+| Item | Valor |
+|---|---|
+| Variáveis | 576 Pessoas residentes em terras indígenas, 1432 Pessoas indígenas residentes em terras indígenas |
+| Classificações | c2 Sexo; c287 Idade (só Total e os 21 grupos quinquenais); c1 Situação do domicílio |
+| Níveis | N1, N2, N3 e os recortes N131, N134, N125, N1124 e N1125 ([níveis](ibge-niveis-territoriais.md)); sem N6 |
+| Divisão | 18 requisições (variável × sexo × situação) de 27.654 valores |
+| Linhas | 497.772 |
+| Brasil | 689.532 residentes; 622.844 indígenas (iguais à categoria "Em terras indígenas" da 9718) |
+
+Por que não o nível municipal e as idades simples: a tabela completa teria
+cerca de 16,5 milhões de valores. Os totais por município em terras indígenas
+já vêm da 9718. Ampliar exige só configuração.
+
+### Como os níveis especiais foram obtidos
+
+Consultadas pelo nível Brasil, a 9954 e a 9723 respondiam sem a dimensão "Terra
 Indígena" ou "Território Quilombola". Esses recortes são **níveis territoriais
 especiais** (a página da pesquisa lista os níveis TI e TF). O código numérico
 desses níveis, usado na API como `/n<código>/all`, só aparece na descrição da
 tabela, que responde 403 a clientes automatizados. A API de metadados está fora
-do ar. Ver KI-006.
+do ar. Resolvido com os códigos fornecidos pelo mantenedor (KI-006).
 
 ### `ibge-dtb`: Divisão Territorial Brasileira 2025
 

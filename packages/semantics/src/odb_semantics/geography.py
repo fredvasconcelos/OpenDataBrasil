@@ -6,7 +6,8 @@ IBGE de 2017).
 
 Há também **recortes especiais**, que não cabem na árvore porque atravessam as
 divisões administrativas: territórios quilombolas (um território pode estar em
-duas UFs) e Amazônia Legal (o Maranhão e o Mato Grosso estão só em parte).
+duas UFs), terras indígenas, Coordenações Regionais da Funai e Amazônia
+Legal (o Maranhão e o Mato Grosso estão só em parte).
 Cada recorte tem um nível próprio e um nível de "parte por UF", que fica dentro
 de uma UF e dentro do recorte. Por isso um nível pode ter mais de um nível
 ancestral, e a hierarquia é um grafo, não uma árvore (``ANCESTOR_LEVELS``).
@@ -47,6 +48,11 @@ LEVELS: tuple[GeographyLevel, ...] = (
         "Território Quilombola por Unidade da Federação",
         special=True,
     ),
+    GeographyLevel("terra_indigena", 11, "Terra Indígena", special=True),
+    GeographyLevel(
+        "terra_indigena_uf", 12, "Terra Indígena por Unidade da Federação", special=True
+    ),
+    GeographyLevel("coordenacao_regional_funai", 13, "Coordenação Regional da Funai", special=True),
 )
 LEVELS_BY_ID = {level.id: level for level in LEVELS}
 
@@ -62,6 +68,9 @@ ANCESTOR_LEVELS: dict[str, frozenset[str]] = {
     "amazonia_legal_uf": frozenset({"amazonia_legal", "uf", "regiao", "brasil"}),
     "territorio_quilombola": frozenset({"brasil"}),
     "territorio_quilombola_uf": frozenset({"territorio_quilombola", "uf", "regiao", "brasil"}),
+    "terra_indigena": frozenset({"brasil"}),
+    "terra_indigena_uf": frozenset({"terra_indigena", "uf", "regiao", "brasil"}),
+    "coordenacao_regional_funai": frozenset({"brasil"}),
 }
 
 

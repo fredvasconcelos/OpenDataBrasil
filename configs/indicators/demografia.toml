@@ -10,7 +10,7 @@
 # 2026-11-04 (tests/fixtures/ibge/sidra). Não acrescente códigos sem verificá-los.
 # Rótulos de categoria vêm da Silver. Aqui só se declara a estrutura.
 
-config_version = "1.2.0"
+config_version = "1.3.0"
 scope = "demografia"
 
 # ------------------------------------------------------------------ classificações
@@ -320,6 +320,13 @@ dataset = "ibge-sidra-9723"
 grain = "território (níveis administrativos, Amazônia Legal, territórios quilombolas e suas partes por UF) x ano censitário"
 description = "População residente e pessoas quilombolas em territórios quilombolas oficialmente delimitados, por território quilombola e por nível administrativo."
 
+[[facts]]
+id = "fact_indigenous_land"
+dataset = "ibge-sidra-9954"
+grain = "território (Brasil, Grandes Regiões, UFs, terras indígenas e suas partes por UF, Coordenações Regionais da Funai, Amazônia Legal) x ano censitário x sexo x grupo de idade x situação do domicílio"
+description = "Pessoas residentes e pessoas indígenas em terras indígenas, por sexo, grupos quinquenais de idade e situação do domicílio."
+classifications = { "c2" = "sex_category_key", "c287" = "age_category_key", "c1" = "situation_category_key" }
+
 # ------------------------------------------------------------------ indicadores
 #
 # id          identificador interno estável (§15.3); os oficiais ficam em dataset/variable
@@ -567,6 +574,43 @@ unit = "%"
 additivity = "non_additive"
 concept = "percentual_quilombolas_territorios"
 path = ["Censo Demográfico", "Pessoas quilombolas", "Territórios quilombolas"]
+
+[[indicators]]
+id = "censo_residentes_terras_indigenas"
+name = "Pessoas residentes em terras indígenas"
+description = "Pessoas residentes em terras indígenas declaradas, homologadas, regularizadas ou encaminhadas como reservas até 31/07/2022 (FUNAI), indígenas ou não."
+dataset = "ibge-sidra-9954"
+variable = "576"
+fact = "fact_indigenous_land"
+column = "residents"
+unit = "Pessoas"
+additivity = "additive"
+concept = "residentes_terras_indigenas"
+path = ["Censo Demográfico", "Pessoas indígenas", "Terras indígenas"]
+caveats = [
+    "Vinte e sete terras indígenas atravessam divisas estaduais; o valor por terra soma as partes de cada UF (nível terra_indigena_uf).",
+    "A plataforma ingere a idade em grupos quinquenais; as idades simples por terra indígena não foram ingeridas.",
+]
+
+[[indicators]]
+id = "censo_indigenas_em_terras_indigenas"
+name = "Pessoas indígenas residentes em terras indígenas"
+description = "Pessoas indígenas (cor ou raça indígena ou que se consideram indígenas) residentes em terras indígenas."
+dataset = "ibge-sidra-9954"
+variable = "1432"
+fact = "fact_indigenous_land"
+column = "indigenous_persons"
+unit = "Pessoas"
+additivity = "additive"
+concept = "pessoas_indigenas"
+path = ["Censo Demográfico", "Pessoas indígenas", "Terras indígenas"]
+caveats = [
+    "Há valores suprimidos (X) em 25 terras e 5 Coordenações Regionais da Funai: as somas desses recortes ficam abaixo do total do Brasil.",
+    "A ligação entre terras indígenas e Coordenações Regionais da Funai não está nos dados do SIDRA.",
+]
+incompatible_with = [
+    { indicator = "censo_populacao_cor_raca", reason = "definições diferentes de população indígena: 'Pessoas indígenas' (quesito de declaração) inclui quem se considera indígena; a categoria Indígena de cor ou raça (9605) não inclui" },
+]
 
 # ------------------------------------------------------------------ notas oficiais
 #

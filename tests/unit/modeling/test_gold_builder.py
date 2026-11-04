@@ -39,7 +39,7 @@ def test_build_tables_hierarchies_and_lineage(env: GoldEnv) -> None:
         assert DeltaTable(table.storage_uri).protocol().min_writer_version == 2
 
     obs = _read(build.tables["indicator_observation"])
-    assert obs.height == 7548
+    assert obs.height == 10032
     stored = {a.artifact_id for a in env.ingestion.by_status("stored")}
     assert set(obs["bronze_artifact_id"].unique().to_list()) <= stored
     assert obs["gold_build_id"].unique().to_list() == [build.build_id]
@@ -240,6 +240,16 @@ def test_special_levels_have_two_ancestors(env: GoldEnv) -> None:
         "territorio_quilombola:3",
         "territorio_quilombola_uf:15003",
         "territorio_quilombola_uf:21003",
+    ]
+    # Terras indígenas: Yanomami (8656) está em AM e RR.
+    assert counts["terra_indigena"] == 573
+    assert counts["terra_indigena_uf"] == 602
+    assert counts["coordenacao_regional_funai"] == 39
+    yanomami = bridge.filter(pl.col("ancestor_key") == "terra_indigena:8656")["geography_key"]
+    assert sorted(yanomami.to_list()) == [
+        "terra_indigena:8656",
+        "terra_indigena_uf:1308656",
+        "terra_indigena_uf:1408656",
     ]
     checks = {c.check_id: c.status for c in build.checks}
     assert checks["geography.reference"] is CheckStatus.PASS

@@ -70,11 +70,11 @@ def test_gold_publish_query_and_preserve_on_failure(  # noqa: PLR0915 - cenário
     assert first["status"] == "succeeded"
     assert first["release"]["status"] == "active"
     release_id = first["release"]["release_id"]
-    assert len(first["tables"]) == 17
+    assert len(first["tables"]) == 18
     assert "fact_indigenous_population" in first["tables"]
 
     # Catálogo de indicadores e vínculo construção → release no PostgreSQL.
-    assert _q(engine, "SELECT count(*) FROM catalog.indicator")[0][0] == 16
+    assert _q(engine, "SELECT count(*) FROM catalog.indicator")[0][0] == 18
     assert _q(engine, "SELECT release_id::text FROM operations.gold_build")[0][0] == release_id
     statuses = {
         str(k): v
@@ -156,7 +156,7 @@ def test_gold_publish_query_and_preserve_on_failure(  # noqa: PLR0915 - cenário
     assert tree.exit_code == 0
     assert "        Se considera indígena  [c1714=60026]" in tree.stdout
     listing = runner.invoke(app, ["indicators", "list", "--json"])
-    assert len(json.loads(listing.stdout)["indicators"]) == 16
+    assert len(json.loads(listing.stdout)["indicators"]) == 18
     report = runner.invoke(app, ["quality", "gold"])
     assert report.exit_code == 0
     assert "reconciliation.category.censo_populacao_cor_raca.c86.cor_ou_raca" in report.stdout
@@ -168,7 +168,7 @@ def test_gold_publish_query_and_preserve_on_failure(  # noqa: PLR0915 - cenário
     assert exported.exit_code == 0, exported.output
     export_info = json.loads(exported.stdout)
     assert export_info["release_id"] == release_id
-    assert export_info["tables"]["indicator_observation"] == 7548
+    assert export_info["tables"]["indicator_observation"] == 10032
     manifest = json.loads((Path(export_info["path"]) / "manifest.json").read_text())
     assert manifest["provenance"]["license_review_status"] == "requires_review"
     missing_dir = runner.invoke(app, ["gold", "export", "--out", str(tmp_path / "nao-existe")])
