@@ -41,8 +41,11 @@ odb query -i censo_pessoas_quilombolas --level municipio --sum-to uf   # soma de
 odb query ... --format json|csv --limit 10000
 ```
 
-- `--level`: `brasil`, `regiao`, `uf`, `regiao_intermediaria`, `regiao_imediata`, `municipio`
+- `--level`: `brasil`, `regiao`, `uf`, `regiao_intermediaria`, `regiao_imediata`, `municipio`,
+  `territorio_quilombola`, `territorio_quilombola_uf`, `amazonia_legal`, `amazonia_legal_uf`
   (só os publicados para o indicador).
+- `--within` e `--sum-to` só aceitam níveis que contêm o nível consultado
+  (por exemplo, `--level territorio_quilombola_uf --within uf:29`).
 - `--within nível:código`: recorte pela hierarquia (`uf:29`, `regiao:2`).
 - `--by cXX` traz todas as categorias. `--by cXX=a,b` filtra. Classificações não
   pedidas ficam no Total.

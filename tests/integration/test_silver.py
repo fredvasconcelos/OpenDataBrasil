@@ -54,6 +54,7 @@ def test_silver_end_to_end(lake: Path, engine: Engine, tmp_path: Path) -> None:
         ("ibge-sidra-9578", "succeeded"),
         ("ibge-sidra-9971", "succeeded"),
         ("ibge-sidra-9970", "succeeded"),
+        ("ibge-sidra-9723", "succeeded"),
     ]
     sidra_uri = summary[2]["target_uri"]
     version = summary[2]["delta_version"]
@@ -77,7 +78,7 @@ def test_silver_end_to_end(lake: Path, engine: Engine, tmp_path: Path) -> None:
         "SELECT dataset_id, status, delta_version FROM operations.transformation_run "
         "ORDER BY started_at",
     )
-    assert [r[1] for r in runs] == ["succeeded"] * 8
+    assert [r[1] for r in runs] == ["succeeded"] * 9
     checks = _pairs(
         engine,
         "SELECT c.check_id, c.status FROM quality.check_result c "

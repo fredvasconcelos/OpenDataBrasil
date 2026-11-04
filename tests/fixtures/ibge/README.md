@@ -19,6 +19,7 @@ Não edite: os testes dependem dos bytes exatos.
 | `sidra/t9718_n1n2n3_p2022_v<var>_c2661-<cat>.json` | `/t/9718/n1/all/n2/all/n3/all/v/<var>/p/2022/c1714/all/c2661/<cat>` | 200 | 9 arquivos: variáveis 93, 350, 4727 × localizações 32776, 12869, 12870; 4 quesitos × 33 territórios cada |
 | `sidra/t9971_n1_periods.json`, `sidra/t9971_n1_p2022.json` | `/t/9971/n1/all/v/350/p/<all\|2022>/c1/all/c2/all/c2661/all/c58/all` | 200 | 513 combinações (situação × sexo × localização × grupo de idade) |
 | `sidra/t9970_n1_periods.json`, `sidra/t9970_n1_p2022.json` | `/t/9970/n1/all/v/350/p/<all\|2022>/c1/all/c2661/all/c287/all` | 200 | 1.206 combinações (situação × localização × 134 idades) |
+| `sidra/t9723_n1_periods.json`, `sidra/t9723_n1n2n3n131n134n145n1145_p2022.json` | `/t/9723/n1/all/v/6559/p/all` e `/t/9723/n1/all/n2/all/n3/all/n131/all/n134/all/n145/all/n1145/all/v/6559,7079,7080/p/2022` | 200 | níveis especiais: 495 territórios quilombolas, 503 partes por UF, Amazônia Legal e 9 partes de UF (3.123 valores) |
 | `sidra/t9578_n1_periods.json` | `/t/9578/n1/all/v/4709/p/all/c2661/all` | 200 | só 2022 |
 | `sidra/t9578_n1n2n3_p2022_v<var>.json` | `/t/9578/n1/all/n2/all/n3/all/v/<var>/p/2022/c2661/all` | 200 | 3 arquivos: variáveis 4709, 93, 4728; 3 localizações × 33 territórios |
 

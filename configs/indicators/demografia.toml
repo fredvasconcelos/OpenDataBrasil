@@ -10,7 +10,7 @@
 # 2026-11-04 (tests/fixtures/ibge/sidra). Não acrescente códigos sem verificá-los.
 # Rótulos de categoria vêm da Silver. Aqui só se declara a estrutura.
 
-config_version = "1.1.0"
+config_version = "1.2.0"
 scope = "demografia"
 
 # ------------------------------------------------------------------ classificações
@@ -314,6 +314,12 @@ grain = "território (Brasil, Grande Região, UF) x ano censitário x idade x lo
 description = "Pessoas indígenas por idade (grupos, idades simples e meses de vida), localização em relação a terras indígenas e situação urbana ou rural."
 classifications = { "c287" = "age_category_key", "c2661" = "location_category_key", "c1" = "situation_category_key" }
 
+[[facts]]
+id = "fact_quilombola_territory"
+dataset = "ibge-sidra-9723"
+grain = "território (níveis administrativos, Amazônia Legal, territórios quilombolas e suas partes por UF) x ano censitário"
+description = "População residente e pessoas quilombolas em territórios quilombolas oficialmente delimitados, por território quilombola e por nível administrativo."
+
 # ------------------------------------------------------------------ indicadores
 #
 # id          identificador interno estável (§15.3); os oficiais ficam em dataset/variable
@@ -519,6 +525,48 @@ caveats = [
 incompatible_with = [
     { indicator = "censo_populacao_cor_raca", reason = "definições diferentes de população indígena: 'Pessoas indígenas' (quesito de declaração) inclui quem se considera indígena; a categoria Indígena de cor ou raça (9605) não inclui" },
 ]
+
+[[indicators]]
+id = "censo_residentes_territorios_quilombolas"
+name = "Pessoas residentes em territórios quilombolas"
+description = "Pessoas residentes em territórios quilombolas oficialmente delimitados em 31/07/2022 (cadastros do INCRA e de órgãos fundiários estaduais e municipais), quilombolas ou não."
+dataset = "ibge-sidra-9723"
+variable = "6559"
+fact = "fact_quilombola_territory"
+column = "residents"
+unit = "Pessoas"
+additivity = "additive"
+concept = "residentes_territorios_quilombolas"
+path = ["Censo Demográfico", "Pessoas quilombolas", "Territórios quilombolas"]
+caveats = [
+    "Oito territórios atravessam divisas estaduais; o valor por território soma as partes de cada UF (nível territorio_quilombola_uf).",
+]
+
+[[indicators]]
+id = "censo_quilombolas_em_territorios"
+name = "Pessoas quilombolas residentes em territórios quilombolas"
+description = "Pessoas que se declararam quilombolas e residem em territórios quilombolas oficialmente delimitados."
+dataset = "ibge-sidra-9723"
+variable = "7079"
+fact = "fact_quilombola_territory"
+column = "quilombola_persons"
+unit = "Pessoas"
+additivity = "additive"
+concept = "pessoas_quilombolas_em_territorios"
+path = ["Censo Demográfico", "Pessoas quilombolas", "Territórios quilombolas"]
+
+[[indicators]]
+id = "censo_percentual_quilombolas_territorios"
+name = "Percentual de pessoas quilombolas nos territórios quilombolas"
+description = "Pessoas quilombolas em relação ao total de residentes em territórios quilombolas, em percentual, publicado pelo IBGE."
+dataset = "ibge-sidra-9723"
+variable = "7080"
+fact = "fact_quilombola_territory"
+column = "quilombola_share_pct"
+unit = "%"
+additivity = "non_additive"
+concept = "percentual_quilombolas_territorios"
+path = ["Censo Demográfico", "Pessoas quilombolas", "Territórios quilombolas"]
 
 # ------------------------------------------------------------------ notas oficiais
 #

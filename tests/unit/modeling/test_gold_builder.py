@@ -39,7 +39,7 @@ def test_build_tables_hierarchies_and_lineage(env: GoldEnv) -> None:
         assert DeltaTable(table.storage_uri).protocol().min_writer_version == 2
 
     obs = _read(build.tables["indicator_observation"])
-    assert obs.height == 4425
+    assert obs.height == 7548
     stored = {a.artifact_id for a in env.ingestion.by_status("stored")}
     assert set(obs["bronze_artifact_id"].unique().to_list()) <= stored
     assert obs["gold_build_id"].unique().to_list() == [build.build_id]
@@ -209,6 +209,40 @@ def test_geography_orphans_and_inconsistent_reference() -> None:
             reference="teste",
             uf_abbreviations={},
         )
+
+
+def test_special_levels_have_two_ancestors(env: GoldEnv) -> None:
+    build = env.gold.build()
+    geo = _read(build.tables["dim_geography"])
+    counts = dict(geo.group_by("level_id").len().iter_rows())
+    assert counts["territorio_quilombola"] == 495
+    assert counts["territorio_quilombola_uf"] == 503
+    assert counts["amazonia_legal_uf"] == 9
+    part = geo.filter(pl.col("geography_key") == "territorio_quilombola_uf:21003").row(
+        0, named=True
+    )
+    assert part["parent_key"] == "uf:21"
+    assert part["name"] == "Itamoari - MA"
+    bridge = _read(build.tables["bridge_geography_ancestor"])
+    ancestors = set(
+        bridge.filter(pl.col("geography_key") == "territorio_quilombola_uf:21003")["ancestor_key"]
+    )
+    assert ancestors == {
+        "territorio_quilombola_uf:21003",
+        "territorio_quilombola:3",
+        "uf:21",
+        "regiao:2",
+        "brasil:1",
+    }
+    # Itamoari atravessa PA e MA: as duas partes têm o mesmo território como ancestral.
+    parts = bridge.filter(pl.col("ancestor_key") == "territorio_quilombola:3")["geography_key"]
+    assert sorted(parts.to_list()) == [
+        "territorio_quilombola:3",
+        "territorio_quilombola_uf:15003",
+        "territorio_quilombola_uf:21003",
+    ]
+    checks = {c.check_id: c.status for c in build.checks}
+    assert checks["geography.reference"] is CheckStatus.PASS
 
 
 def test_category_reconciliation_flags_exhaustive_divergence() -> None:

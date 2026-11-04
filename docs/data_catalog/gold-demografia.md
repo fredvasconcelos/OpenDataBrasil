@@ -9,7 +9,8 @@ Releases com dados reais (2026-11-04):
 | Release | Conteúdo | Observações | Verificações |
 |---|---|---|---|
 | `22de665f-baa6-420d-96cd-1ea5f1daf4a9` (superseded) | Fase 4: 6579, 4714, 9605, 9718, 9578 | 459.468 | 71 aprovadas |
-| `26826057-8dc5-4f36-86b8-6e6efa33e591` (**ativo**) | + etapa 4b: 9971, 9970 | 3.373.605 | 112 aprovadas |
+| `26826057-8dc5-4f36-86b8-6e6efa33e591` (superseded) | + etapa 4b: 9971, 9970 | 3.373.605 | 112 aprovadas |
+| `963a5558-68d4-4881-ac41-4bd65008fb9a` (**ativo**) | + 9723 (territórios quilombolas e Amazônia Legal) | 3.393.438 | 115 aprovadas |
 
 Release **interno**: a licença do IBGE ainda está em `requires_review` (KI-003).
 
@@ -38,6 +39,10 @@ Censo Demográfico
     Pessoas indígenas por idade                        censo_pessoas_indigenas_idade          (9970/350; Brasil, Regiões, UFs)
       Idade: 21 grupos quinquenais › idades simples › meses de vida (menos de 1 ano); Localização; Situação
   Pessoas quilombolas
+    Territórios quilombolas
+      Pessoas residentes em territórios quilombolas     censo_residentes_territorios_quilombolas (9723/6559)
+      Pessoas quilombolas em territórios quilombolas    censo_quilombolas_em_territorios       (9723/7079)
+      Percentual de quilombolas nos territórios         censo_percentual_quilombolas_territorios (9723/7080, não aditivo)
     Pessoas quilombolas                                censo_pessoas_quilombolas              (9578/4709)
     População residente por localização                censo_residentes_territorio_quilombola (9578/93)
     Percentual de pessoas quilombolas                  censo_percentual_quilombolas           (9578/4728, não aditivo)
@@ -45,7 +50,10 @@ Censo Demográfico
 ```
 
 Os indicadores estão publicados nos níveis Brasil, Grande Região, UF e
-município, exceto `censo_pessoas_indigenas_idade` (até UF). Regiões geográficas intermediárias e imediatas existem na
+município, exceto `censo_pessoas_indigenas_idade` (até UF). Os indicadores da
+9723 também estão nos recortes especiais `territorio_quilombola` (495),
+`territorio_quilombola_uf` (503), `amazonia_legal` e `amazonia_legal_uf`
+([níveis](ibge-niveis-territoriais.md)). Regiões geográficas intermediárias e imediatas existem na
 hierarquia (para recortes e somas derivadas), mas não têm valores oficiais
 publicados nestas tabelas.
 
@@ -70,6 +78,7 @@ publicados nestas tabelas.
 | `fact_quilombola_population` | território × ano × localização | `population`, `quilombola_persons`, `quilombola_share_pct` |
 | `fact_indigenous_by_sex_age` | território × ano × sexo × grupo de idade × localização × situação | `indigenous_persons` |
 | `fact_indigenous_by_age` | território (até UF) × ano × idade × localização × situação | `indigenous_persons` |
+| `fact_quilombola_territory` | território (inclusive recortes especiais) × ano | `residents`, `quilombola_persons`, `quilombola_share_pct` |
 
 Cada medida tem a coluna `<medida>_status`, com a legenda da Silver (`valid`,
 `true_zero`, `suppressed`...) ou `absent` quando a combinação não foi publicada.
@@ -78,9 +87,11 @@ Cada medida tem a coluna `<medida>_status`, com a legenda da Silver (`valid`,
 
 - **Concluído:** 9971 (sexo × grupos de idade × localização × situação, em todos
   os níveis) e 9970 (idade simples em 3 níveis de hierarquia, até UF).
-- **Pendente (KI-006):** 9954 e 9723 (terras indígenas e territórios
-  quilombolas como unidades territoriais). Falta o código dos níveis
-  territoriais especiais no SIDRA.
+- **Concluído:** 9723 (territórios quilombolas como recorte territorial
+  próprio, com as partes por UF, e Amazônia Legal), com os códigos de nível
+  informados pelo mantenedor e conferidos na API.
+- **Pendente (KI-006):** 9954 (terras indígenas). Falta a descrição da tabela
+  com os códigos dos níveis especiais.
 - **Derivados não publicados:** razão de sexo, 0 a 14 anos, 60 anos ou mais.
   Podem ser calculados a partir das categorias (exportação ou consulta), mas
   não são indicadores oficiais da plataforma.

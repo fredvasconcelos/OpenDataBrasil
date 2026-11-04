@@ -213,6 +213,30 @@ territorial_reference = "ibge-dtb"
 additive_variables = { "350" = "exact" }
 
 [[datasets]]
+id = "ibge-sidra-9723"
+source = "ibge-sidra"
+official_id = "9723"
+title = "Territórios quilombolas"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9723"
+variables = ["6559", "7079", "7080"]
+territorial_levels = ["n1", "n2", "n3", "n131", "n134", "n145", "n1145"]
+estimated_values_per_period = 3123
+min_rows = 3123
+max_rows = 3123
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "6559" = "exact", "7079" = "exact" }
+
+[[datasets]]
 id = "ibge-dtb"
 source = "ibge-geoftp"
 official_id = "DTB_2025"

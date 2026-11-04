@@ -250,6 +250,34 @@ territorial_reference = "ibge-dtb"
 additive_variables = { "350" = "exact" }
 
 [[datasets]]
+id = "ibge-sidra-9723"
+source = "ibge-sidra"
+official_id = "9723"
+title = "Censo 2022: população residente em territórios quilombolas, total e quilombola, segundo os Territórios Quilombolas"
+description = "Pessoas residentes (6559), pessoas quilombolas (7079) e percentual de quilombolas (7080) em territórios quilombolas oficialmente delimitados, por nível administrativo e pelos recortes especiais Território Quilombola (N1145), Território Quilombola por UF (N145), Amazônia Legal (N131) e Amazônia Legal de UF (N134)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9723"
+
+[datasets.params]
+table = "9723"
+variables = ["6559", "7079", "7080"]
+# Níveis especiais informados pelo mantenedor (descrição da tabela) e conferidos na
+# API em 2026-11-04: docs/data_catalog/ibge-niveis-territoriais.md.
+territorial_levels = ["n1", "n2", "n3", "n6", "n131", "n134", "n145", "n1145"]
+# 3 variáveis x (1 + 5 + 27 + 5570 + 1 + 9 + 503 + 495) = 19.833 valores.
+estimated_values_per_period = 19833
+min_rows = 19700
+max_rows = 19900
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "6559" = "exact", "7079" = "exact" }
+
+[[datasets]]
 id = "ibge-dtb"
 source = "ibge-geoftp"
 official_id = "DTB_2025"

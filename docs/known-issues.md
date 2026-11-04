@@ -69,7 +69,7 @@ navegador automatizado ou credenciais pessoais.
 
 ## KI-006: código dos níveis territoriais de terras indígenas e territórios quilombolas
 
-- **Estado:** aberto (aguarda o mantenedor)
+- **Estado:** parcialmente resolvido: 9723 resolvida em 2026-11-04 (códigos N1145, N145, N131 e N134 fornecidos pelo mantenedor e conferidos na API; ver `docs/data_catalog/ibge-niveis-territoriais.md`). Falta a 9954.
 - **Detectado em:** 2026-11-04
 - **Sintoma:** as tabelas 9954 (terras indígenas) e 9723 (territórios
   quilombolas) publicam dados "segundo as Terras Indígenas" e "segundo os

@@ -62,6 +62,7 @@ def test_sync_catalog_is_idempotent(engine: Engine) -> None:
         "ibge-sidra-9578",
         "ibge-sidra-9605",
         "ibge-sidra-9718",
+        "ibge-sidra-9723",
         "ibge-sidra-9970",
         "ibge-sidra-9971",
     ]
@@ -84,14 +85,15 @@ def test_cli_ingest_run_rerun_and_status(lake: Path, fake: FakeSources, engine: 
         ("ibge-sidra-9578", "succeeded"),
         ("ibge-sidra-9971", "succeeded"),
         ("ibge-sidra-9970", "succeeded"),
+        ("ibge-sidra-9723", "succeeded"),
         ("ibge-dtb", "succeeded"),
     ]
     files = sorted(p for p in (lake / "bronze").rglob("*") if p.is_file())
     # 6579: 22 anos; 4714: 1; 9605: 2 censos; 9718: 3 variáveis x 3 localizações;
-    # 9578: 3 variáveis; 9971 e 9970: 1 cada (teste só no nível Brasil, sem divisão).
-    assert len(files) == 22 + 1 + 2 + 9 + 3 + 1 + 1 + 1
+    # 9578: 3 variáveis; 9971 e 9970: 1 cada (teste só no nível Brasil, sem divisão); 9723: 1.
+    assert len(files) == 22 + 1 + 2 + 9 + 3 + 1 + 1 + 1 + 1
 
-    assert _counts(engine) == {"stored": 40}
+    assert _counts(engine) == {"stored": 41}
     meta = _q(
         engine,
         "SELECT source_url, checksum_sha256, file_size_bytes, http_status, license_id, "
@@ -110,7 +112,7 @@ def test_cli_ingest_run_rerun_and_status(lake: Path, fake: FakeSources, engine: 
     second = runner.invoke(app, ["ingest", "run", "--all"])
     assert second.exit_code == 0, second.output
     assert sorted(p for p in (lake / "bronze").rglob("*") if p.is_file()) == files
-    assert _counts(engine) == {"stored": 40, "reused": 18, "not_modified": 1}
+    assert _counts(engine) == {"stored": 41, "reused": 19, "not_modified": 1}
     runs = _q(engine, "SELECT status FROM operations.pipeline_run WHERE command = 'ingest.run'")
     assert runs == [("succeeded",), ("succeeded",)]
 
@@ -163,7 +165,7 @@ def test_roles_on_ingestion_tables(
     pipeline.start_ingestion("00000000-0000-0000-0000-000000000001", "ibge-dtb", None, {})
     pipeline.finish_ingestion("00000000-0000-0000-0000-000000000001", "succeeded", {}, None)
     with reader_engine.connect() as conn:
-        assert conn.execute(text("SELECT count(*) FROM catalog.dataset")).scalar() == 8
+        assert conn.execute(text("SELECT count(*) FROM catalog.dataset")).scalar() == 9
     with (
         pytest.raises(ProgrammingError, match="permission denied"),
         reader_engine.connect() as conn,

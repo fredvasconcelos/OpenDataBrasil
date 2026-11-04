@@ -124,7 +124,21 @@ O nível municipal da 9970 teria 6,8 milhões de valores (cerca de 2,5 GB em
 JSON). A idade por município fica coberta pelos grupos quinquenais da 9971.
 Incluir o nível municipal depois exige só configuração (níveis e divisão).
 
-### Tabelas 9954 e 9723: terras indígenas e territórios quilombolas (pendente)
+### `ibge-sidra-9723`: Censo 2022, população em territórios quilombolas
+
+| Item | Valor |
+|---|---|
+| Variáveis | 6559 Pessoas residentes em territórios quilombolas, 7079 Pessoas quilombolas residentes em territórios quilombolas, 7080 Percentual (%) |
+| Níveis | N1, N2, N3, N6 e os recortes especiais N131, N134, N145 e N1145 ([níveis](ibge-niveis-territoriais.md)) |
+| Linhas | 19.833 = 3 variáveis × 6.611 territórios (uma requisição) |
+| Brasil | 203.574 residentes em territórios quilombolas; 167.769 quilombolas (igual à categoria "Em territórios quilombolas" da 9578) |
+| Valores especiais | 152 `X` (suprimidos) e 15.783 `-` (zero absoluto, sobretudo municípios sem território) |
+
+Reconciliação (Silver, 2026-11-04): as partes por UF (N145) somam exatamente os
+territórios (N1145) e as UFs; os territórios somam o Brasil; a Amazônia Legal
+de UF soma a Amazônia Legal. Grupos com `X` ficam como incompletos.
+
+### Tabela 9954: terras indígenas (pendente)
 
 Consultadas pelo nível Brasil, as duas respondem sem a dimensão "Terra
 Indígena" ou "Território Quilombola". Esses recortes são **níveis territoriais

@@ -32,8 +32,19 @@ from odb_semantics import LEVELS, FactConfig, SemanticCatalog
 
 # Níveis territoriais do SIDRA (coluna NC) → níveis internos. Conferidos pelos
 # rótulos NN das respostas: 1 Brasil, 2 Grande Região, 3 Unidade da Federação,
-# 6 Município.
-SIDRA_LEVELS = {"1": "brasil", "2": "regiao", "3": "uf", "6": "municipio"}
+# 6 Município; recortes especiais da tabela 9723 (2026-11-04): 131 Amazônia
+# Legal, 134 Amazônia Legal de UF, 145 Território Quilombola por UF, 1145
+# Território Quilombola (docs/data_catalog/ibge-niveis-territoriais.md).
+SIDRA_LEVELS = {
+    "1": "brasil",
+    "2": "regiao",
+    "3": "uf",
+    "6": "municipio",
+    "131": "amazonia_legal",
+    "134": "amazonia_legal_uf",
+    "145": "territorio_quilombola_uf",
+    "1145": "territorio_quilombola",
+}
 NO_BREAKDOWN = "none"
 ABSENT = "absent"
 _RANK = {lv.id: lv.rank for lv in LEVELS}

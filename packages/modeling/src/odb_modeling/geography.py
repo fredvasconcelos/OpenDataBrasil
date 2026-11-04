@@ -10,6 +10,13 @@ Grande Região), e não há vínculo com as regiões geográficas.
 ``bridge_geography_ancestor`` traz, para cada território, todos os seus
 ancestrais, inclusive ele mesmo (distância 0). Com ela, "municípios da Bahia"
 ou "soma até a UF" são junções simples.
+
+Recortes especiais (territórios quilombolas, Amazônia Legal) vêm do SIDRA, não
+da DTB. A parte do recorte numa UF (N145, N134) tem a UF como pai e o recorte
+como ancestral adicional. Por isso a tabela de ancestrais é o fecho de um
+grafo, não de uma árvore. Regras de código conferidas na API
+(``docs/data_catalog/ibge-niveis-territoriais.md``): N145 = UF (2 dígitos) +
+território (3 dígitos); N134 = UF.
 """
 
 from __future__ import annotations
@@ -22,6 +29,13 @@ from odb_semantics import LEVELS, LEVELS_BY_ID
 
 class GeographyError(ValueError):
     """Referência territorial inconsistente."""
+
+
+SPECIAL_LEVELS = frozenset(lv.id for lv in LEVELS if lv.special)
+# Níveis cujo código começa pelo código da UF (2 dígitos).
+_UF_PREFIXED = ["municipio", "territorio_quilombola_uf", "amazonia_legal_uf"]
+# Recortes nacionais (pai direto: Brasil).
+_NATIONAL_SPECIAL = ["territorio_quilombola", "amazonia_legal"]
 
 
 def _rows(level: str, frame: pl.DataFrame) -> pl.DataFrame:
@@ -153,22 +167,25 @@ def build_dim_geography(
             pl.col("level_id")
             .replace_strict({lv.id: lv.name for lv in LEVELS}, return_dtype=pl.String)
             .alias("level_name"),
-            pl.when(pl.col("level_id") == "municipio")
+            pl.when(pl.col("level_id").is_in(_UF_PREFIXED))
             .then(pl.lit("uf:") + code.str.slice(0, 2))
             .when(pl.col("level_id") == "uf")
             .then(pl.lit("regiao:") + code.str.slice(0, 1))
-            .when(pl.col("level_id") == "regiao")
+            .when(pl.col("level_id").is_in(["regiao", *_NATIONAL_SPECIAL]))
             .then(pl.lit("brasil:1"))
             .otherwise(None)
             .alias("parent_key"),
-            pl.when(pl.col("level_id").is_in(["municipio", "uf", "regiao"]))
+            pl.when(pl.col("level_id").is_in(["uf", "regiao", *_UF_PREFIXED]))
             .then(code.str.slice(0, 1))
             .alias("region_code"),
-            pl.when(pl.col("level_id").is_in(["municipio", "uf"]))
+            pl.when(pl.col("level_id").is_in(["uf", *_UF_PREFIXED]))
             .then(code.str.slice(0, 2))
             .alias("uf_code"),
             pl.lit(value=False).alias("in_reference"),
-            pl.lit("observações (ausente da referência)").alias("reference"),
+            pl.when(pl.col("level_id").is_in(list(SPECIAL_LEVELS)))
+            .then(pl.lit("SIDRA: recorte territorial especial"))
+            .otherwise(pl.lit("observações (ausente da referência)"))
+            .alias("reference"),
         )
         frames.append(orphan)
     frame = (
@@ -182,41 +199,75 @@ def build_dim_geography(
     return frame.select(DIM_GEOGRAPHY.frame_schema().names()).cast(DIM_GEOGRAPHY.frame_schema())
 
 
+def extra_ancestor_edges(geography: pl.DataFrame) -> pl.DataFrame:
+    """Arestas além do pai: a parte do recorte numa UF também pertence ao recorte."""
+    code = pl.col("territory_code")
+    edges = geography.select(
+        pl.col("geography_key").alias("child_key"),
+        pl.when(pl.col("level_id") == "territorio_quilombola_uf")
+        .then(
+            pl.lit("territorio_quilombola:")
+            + code.str.slice(2).cast(pl.Int64, strict=False).cast(pl.String)
+        )
+        .when(pl.col("level_id") == "amazonia_legal_uf")
+        .then(pl.lit("amazonia_legal:131"))
+        .otherwise(None)
+        .alias("parent_key"),
+    ).drop_nulls("parent_key")
+    # Só liga a recortes presentes na dimensão.
+    return edges.filter(pl.col("parent_key").is_in(geography["geography_key"].implode()))
+
+
 def build_ancestor_bridge(geography: pl.DataFrame) -> pl.DataFrame:
-    """Fecho transitivo da relação pai → filho, inclusive o próprio território."""
+    """Fecho transitivo das relações de pertencimento, inclusive o próprio território.
+
+    Usa o pai de cada território e as arestas adicionais dos recortes
+    especiais. Quando um ancestral é alcançado por dois caminhos, fica a menor
+    distância.
+    """
     nodes = geography.select("geography_key", "parent_key", "level_id", "level_rank")
     level_of = nodes.select(
         pl.col("geography_key").alias("ancestor_key"),
         pl.col("level_id").alias("ancestor_level"),
         pl.col("level_rank").alias("ancestor_rank"),
     )
+    edges = pl.concat(
+        [
+            nodes.select(pl.col("geography_key").alias("child_key"), "parent_key").drop_nulls(
+                "parent_key"
+            ),
+            extra_ancestor_edges(geography),
+        ]
+    ).unique()
     current = nodes.select(
         "geography_key",
         pl.col("geography_key").alias("ancestor_key"),
-        pl.col("parent_key").alias("next_key"),
         pl.lit(0, dtype=pl.Int16).alias("distance"),
     )
-    found = [current.select("geography_key", "ancestor_key", "distance")]
-    parents = nodes.select(pl.col("geography_key").alias("next_key"), "parent_key")
-    for _ in range(len(LEVELS) + 1):
+    found = [current]
+    for _ in range(2 * len(LEVELS) + 1):
         step = (
-            current.filter(pl.col("next_key").is_not_null())
-            .join(parents, on="next_key", how="left")
+            current.join(edges, left_on="ancestor_key", right_on="child_key", how="inner")
             .select(
                 "geography_key",
-                pl.col("next_key").alias("ancestor_key"),
-                pl.col("parent_key").alias("next_key"),
+                pl.col("parent_key").alias("ancestor_key"),
                 (pl.col("distance") + 1).cast(pl.Int16).alias("distance"),
             )
+            .unique()
         )
         if step.is_empty():
             break
-        found.append(step.select("geography_key", "ancestor_key", "distance"))
+        found.append(step)
         current = step
     else:
         msg = "hierarquia territorial com ciclo ou profundidade inesperada"
         raise GeographyError(msg)
-    bridge = pl.concat(found).join(level_of, on="ancestor_key", how="left")
+    bridge = (
+        pl.concat(found)
+        .group_by("geography_key", "ancestor_key")
+        .agg(pl.col("distance").min())
+        .join(level_of, on="ancestor_key", how="left")
+    )
     if bridge["ancestor_level"].null_count():
         missing = bridge.filter(pl.col("ancestor_level").is_null())["ancestor_key"].unique()
         msg = f"pais inexistentes na dimensão territorial: {missing.head(10).to_list()}"
@@ -224,5 +275,5 @@ def build_ancestor_bridge(geography: pl.DataFrame) -> pl.DataFrame:
     return (
         bridge.select(BRIDGE_GEOGRAPHY_ANCESTOR.frame_schema().names())
         .cast(BRIDGE_GEOGRAPHY_ANCESTOR.frame_schema())
-        .sort("geography_key", "distance")
+        .sort("geography_key", "distance", "ancestor_key")
     )

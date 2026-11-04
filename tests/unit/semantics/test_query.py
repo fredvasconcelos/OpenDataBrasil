@@ -89,8 +89,8 @@ def test_sum_plan_is_derived() -> None:
         (IndicatorQuery(("pct",), "municipio"), "níveis disponíveis"),
         (IndicatorQuery(("cor",), "uf", breakdown={"c1": None}), "não tem as classificações"),
         (IndicatorQuery(("pct",), "uf", sum_to="brasil"), "não aditivos"),
-        (IndicatorQuery(("cor",), "uf", sum_to="municipio"), "nível acima"),
-        (IndicatorQuery(("cor",), "uf", within="municipio:2927408"), "mais detalhado"),
+        (IndicatorQuery(("cor",), "uf", sum_to="municipio"), "nível que contém"),
+        (IndicatorQuery(("cor",), "uf", within="municipio:2927408"), "não contém unidades"),
         (IndicatorQuery(("cor",), "distrito"), "desconhecido"),
         (IndicatorQuery(("cor",), "uf", within="uf;drop"), "recorte territorial inválido"),
         (IndicatorQuery(("cor",), "uf", periods=("2022'",)), "períodos inválidos"),
@@ -122,3 +122,20 @@ def test_meta_from_rows() -> None:
     )
     assert meta["a"].incompatible_with == {"b": "r"}
     assert meta["a"].classification_ids == ()
+
+
+def test_special_levels_use_ancestor_graph() -> None:
+    tq_levels = ("brasil", "uf", "territorio_quilombola", "territorio_quilombola_uf")
+    meta = {"tq": IndicatorMeta("tq", "TQ", "Pessoas", "additive", "tq", tq_levels, ("2022",), ())}
+    summed = plan_query(
+        IndicatorQuery(("tq",), "territorio_quilombola_uf", sum_to="territorio_quilombola"), meta
+    )
+    assert summed.derived
+    within_uf = plan_query(
+        IndicatorQuery(("tq",), "territorio_quilombola_uf", within="uf:29"), meta
+    )
+    assert within_uf.params["within"] == "uf:29"
+    with pytest.raises(SemanticError, match="não contém unidades"):
+        plan_query(IndicatorQuery(("tq",), "territorio_quilombola", within="uf:29"), meta)
+    with pytest.raises(SemanticError, match="nível que contém"):
+        plan_query(IndicatorQuery(("tq",), "territorio_quilombola", sum_to="uf"), meta)

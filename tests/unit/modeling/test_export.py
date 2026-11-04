@@ -25,7 +25,7 @@ def test_export_parquet_duckdb_and_manifest(release: ReleaseToExport, tmp_path: 
     assert result.path == out / "demografia" / "r-1"
     manifest = json.loads((result.path / "manifest.json").read_text(encoding="utf-8"))
     assert manifest["official"] is False
-    assert manifest["tables"]["indicator_observation"]["rows"] == 4425
+    assert manifest["tables"]["indicator_observation"]["rows"] == 7548
     assert manifest["tables"]["dim_geography"]["delta_version"] == 0
     assert "NÃO É FONTE OFICIAL" in (result.path / "LEIAME.txt").read_text(encoding="utf-8")
     assert json.loads((out / "demografia" / "latest.json").read_text())["release_id"] == "r-1"
@@ -41,7 +41,7 @@ def test_export_parquet_duckdb_and_manifest(release: ReleaseToExport, tmp_path: 
             "AND non_total_count = 0"
         ).fetchall()
         assert row == [("Bahia", 397502.0, "Total")]
-        assert con.execute("SELECT count(*) FROM arvore_indicadores").fetchone() == (224,)
+        assert con.execute("SELECT count(*) FROM arvore_indicadores").fetchone() == (228,)
 
     lazy = read_observations(result.path)
     brasil = lazy.filter(

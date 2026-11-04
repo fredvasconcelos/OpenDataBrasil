@@ -26,7 +26,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
-from odb_semantics.geography import level_rank
+from odb_semantics.geography import is_ancestor_level, level_rank
 
 _GEOGRAPHY_KEY = re.compile(r"^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$")
 _PERIOD = re.compile(r"^[0-9A-Za-z]{1,16}$")
@@ -148,12 +148,12 @@ def check_semantics(query: IndicatorQuery, meta: Mapping[str, IndicatorMeta]) ->
     warnings = [f"{ind.indicator_id}: {c}" for ind in selected for c in ind.caveats]
     if query.within is not None:
         within_level = query.within.split(":", 1)[0]
-        if level_rank(within_level) > level_rank(query.level):
-            msg = f"o recorte {query.within} é mais detalhado que o nível {query.level}"
+        if within_level != query.level and not is_ancestor_level(within_level, query.level):
+            msg = f"o recorte {query.within} não contém unidades do nível {query.level}"
             raise SemanticError(msg)
     if query.sum_to is not None:
-        if level_rank(query.sum_to) >= level_rank(query.level):
-            msg = f"sum_to={query.sum_to} precisa ser um nível acima de {query.level}"
+        if not is_ancestor_level(query.sum_to, query.level):
+            msg = f"sum_to={query.sum_to} precisa ser um nível que contém {query.level}"
             raise SemanticError(msg)
         not_additive = [i.indicator_id for i in selected if i.additivity != "additive"]
         if not_additive:

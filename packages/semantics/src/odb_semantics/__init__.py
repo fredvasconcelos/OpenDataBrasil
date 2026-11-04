@@ -10,7 +10,15 @@ from odb_semantics.config import (
     load_catalog,
     load_scope,
 )
-from odb_semantics.geography import LEVELS, LEVELS_BY_ID, GeographyLevel, geography_key, level_rank
+from odb_semantics.geography import (
+    ANCESTOR_LEVELS,
+    LEVELS,
+    LEVELS_BY_ID,
+    GeographyLevel,
+    geography_key,
+    is_ancestor_level,
+    level_rank,
+)
 from odb_semantics.query import (
     IndicatorMeta,
     IndicatorQuery,
@@ -22,6 +30,7 @@ from odb_semantics.query import (
 )
 
 __all__ = [
+    "ANCESTOR_LEVELS",
     "LEVELS",
     "LEVELS_BY_ID",
     "Classification",
@@ -37,6 +46,7 @@ __all__ = [
     "SemanticError",
     "check_semantics",
     "geography_key",
+    "is_ancestor_level",
     "level_rank",
     "load_catalog",
     "load_scope",

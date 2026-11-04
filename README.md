@@ -8,8 +8,8 @@ especificação completa está em [`CLAUDE.md`](CLAUDE.md).
 > Delta Lake, com qualidade e reconciliação) e 4 (Gold em Delta Lake, com
 > hierarquias territorial e temática, publicação por release, consulta DuckDB
 > e exportação para análise) implementadas. A etapa 4b (sexo e idade dos
-> indígenas) está concluída, exceto terras indígenas e territórios quilombolas
-> como unidades territoriais (KI-006). Ainda não há API nem portal.
+> indígenas, territórios quilombolas) está concluída, exceto terras indígenas como
+> unidades territoriais (KI-006). Ainda não há API nem portal.
 
 ## Pacotes (`packages/`)
 
@@ -55,6 +55,7 @@ Guia completo: [`docs/development/setup-windows-wsl2.md`](docs/development/setup
   - 0007: Silver, valores especiais e reconciliação
   - 0008: Gold, modelo hierárquico e camada semântica
 - Fontes e datasets: [`docs/data_catalog/ibge.md`](docs/data_catalog/ibge.md)
+- Níveis territoriais do SIDRA (inclusive recortes especiais): [`docs/data_catalog/ibge-niveis-territoriais.md`](docs/data_catalog/ibge-niveis-territoriais.md)
 - Indicadores da Gold: [`docs/data_catalog/gold-demografia.md`](docs/data_catalog/gold-demografia.md)
 - Operação: [ingestão](docs/runbooks/ingestao.md), [Silver](docs/runbooks/silver.md), [Gold](docs/runbooks/gold.md) e [exportação para análise](docs/runbooks/exportacao.md)
 - Problemas conhecidos: [`docs/known-issues.md`](docs/known-issues.md)

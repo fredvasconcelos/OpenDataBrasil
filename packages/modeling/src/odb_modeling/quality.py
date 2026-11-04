@@ -22,7 +22,7 @@ from odb_modeling.model import SIDRA_LEVELS, DatasetInfo, category_column, dimen
 from odb_processing.contracts import Contract
 from odb_processing.quality import CheckResult, CheckStatus, check_contract, check_required
 from odb_processing.values import QUANTITATIVE
-from odb_semantics import SemanticCatalog
+from odb_semantics import LEVELS, SemanticCatalog
 
 _QUANT = [s.value for s in QUANTITATIVE]
 
@@ -225,7 +225,9 @@ def geography_checks(geography: pl.DataFrame, bridge: pl.DataFrame) -> list[Chec
             "municípios sem a hierarquia completa",
         )
     )
-    outside = geography.filter(~pl.col("in_reference"))
+    # Recortes especiais vêm do SIDRA e não estão na DTB por definição.
+    special = [lv.id for lv in LEVELS if lv.special]
+    outside = geography.filter(~pl.col("in_reference") & ~pl.col("level_id").is_in(special))
     results.append(
         CheckResult(
             "geography.reference",

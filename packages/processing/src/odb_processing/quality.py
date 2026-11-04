@@ -102,7 +102,19 @@ def check_unique(frame: pl.DataFrame, contract: Contract) -> CheckResult:
 # ------------------------------------------------------------------------- SIDRA
 
 # Domínio dos códigos territoriais por nível (estrutura de códigos do IBGE).
-TERRITORY_PATTERNS = {"1": r"^1$", "2": r"^[1-5]$", "3": r"^[1-5]\d$", "6": r"^[1-5]\d{6}$"}
+# Recortes especiais (docs/data_catalog/ibge-niveis-territoriais.md): 131 Amazônia
+# Legal; 134 Amazônia Legal de UF (código da UF); 145 Território Quilombola por UF
+# (UF + 3 dígitos do território); 1145 Território Quilombola.
+TERRITORY_PATTERNS = {
+    "1": r"^1$",
+    "2": r"^[1-5]$",
+    "3": r"^[1-5]\d$",
+    "6": r"^[1-5]\d{6}$",
+    "131": r"^131$",
+    "134": r"^[1-5]\d$",
+    "145": r"^[1-5]\d{4}$",
+    "1145": r"^\d{1,3}$",
+}
 # Pares (filho → pai) reconciliáveis e como obter o código do pai a partir do filho.
 RECONCILIATION_PAIRS: tuple[tuple[str, str, pl.Expr], ...] = (
     ("6", "1", pl.lit("1")),
@@ -110,6 +122,10 @@ RECONCILIATION_PAIRS: tuple[tuple[str, str, pl.Expr], ...] = (
     ("2", "1", pl.lit("1")),
     ("6", "3", pl.col("territory_id").str.slice(0, 2)),
     ("3", "2", pl.col("territory_id").str.slice(0, 1)),
+    ("1145", "1", pl.lit("1")),
+    ("145", "1145", pl.col("territory_id").str.slice(2).cast(pl.Int64).cast(pl.String)),
+    ("145", "3", pl.col("territory_id").str.slice(0, 2)),
+    ("134", "131", pl.lit("131")),
 )
 
 

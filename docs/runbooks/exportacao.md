@@ -29,7 +29,7 @@ data/exports/demografia/
 
 Cada release tem a sua pasta. Um release novo não altera as exportações
 anteriores, e qualquer uma pode ser apagada. O release ativo
-(`26826057…`, cerca de 95 MB exportados, licença em `requires_review`) é
+(`963a5558…`, licença em `requires_review`) é
 **só para uso interno**.
 
 ## DBeaver (Windows)

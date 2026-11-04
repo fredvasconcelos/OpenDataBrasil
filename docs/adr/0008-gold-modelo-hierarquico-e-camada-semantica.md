@@ -164,6 +164,22 @@ release, e as pastas antigas podem ser apagadas. Como as exportações do portal
   compensa, porque a 9971 já cobre a idade por município em grupos.
 - 9954 e 9723 aguardam o código dos níveis territoriais especiais (KI-006).
 
+### 12. Recortes territoriais especiais (territórios quilombolas, Amazônia Legal)
+
+- Níveis internos `territorio_quilombola` (SIDRA N1145), `territorio_quilombola_uf`
+  (N145), `amazonia_legal` (N131) e `amazonia_legal_uf` (N134), com os códigos
+  conferidos na API ([níveis](../data_catalog/ibge-niveis-territoriais.md)).
+- A parte do recorte numa UF tem a UF como pai e o recorte como ancestral
+  adicional (N145 = UF + 3 dígitos do território). A hierarquia passa a ser um
+  grafo: `bridge_geography_ancestor` é o fecho de todas as arestas e guarda a
+  menor distância. Oito territórios atravessam divisas estaduais.
+- O planejador usa `ANCESTOR_LEVELS` em vez da ordem dos níveis: `--within` e
+  `--sum-to` só aceitam níveis que contêm inteiramente o nível consultado.
+  `territorio_quilombola` dentro de `uf:29` é recusado; `territorio_quilombola_uf`
+  dentro de `uf:29` e a soma das partes até `territorio_quilombola` são aceitos.
+- A reconciliação da Silver passou a cobrir N145 → N1145, N145 → UF,
+  N1145 → Brasil e N134 → N131. Todas conferem com os dados reais.
+
 ## Consequências
 
 - O mesmo modelo recebe novas tabelas com classificações cruzadas só por
