@@ -1,17 +1,18 @@
 # Gold do escopo `demografia`
 
 Definição: [`configs/indicators/demografia.toml`](../../configs/indicators/demografia.toml)
-(catálogo semântico 1.3.0). Modelo: [ADR-0008](../adr/0008-gold-modelo-hierarquico-e-camada-semantica.md).
+(catálogo semântico 1.4.0). Modelo: [ADR-0008](../adr/0008-gold-modelo-hierarquico-e-camada-semantica.md).
 Operação: [runbook da Gold](../runbooks/gold.md).
 
-Releases com dados reais (2026-11-04):
+Releases com dados reais:
 
 | Release | Conteúdo | Observações | Verificações |
 |---|---|---|---|
 | `22de665f-baa6-420d-96cd-1ea5f1daf4a9` (superseded) | Fase 4: 6579, 4714, 9605, 9718, 9578 | 459.468 | 71 aprovadas |
 | `26826057-8dc5-4f36-86b8-6e6efa33e591` (superseded) | + etapa 4b: 9971, 9970 | 3.373.605 | 112 aprovadas |
 | `963a5558-68d4-4881-ac41-4bd65008fb9a` (superseded) | + 9723 (territórios quilombolas e Amazônia Legal) | 3.393.438 | 115 aprovadas |
-| `c9c90f26-6439-4559-9195-5c829472cee2` (**ativo**) | + 9954 (terras indígenas e Coordenações Regionais da Funai) | 3.891.210 | 127 aprovadas |
+| `c9c90f26-6439-4559-9195-5c829472cee2` (superseded) | + 9954 (terras indígenas e Coordenações Regionais da Funai) | 3.891.210 | 127 aprovadas |
+| `35489cf6-6d87-46cb-8c93-75de8f0b8e77` (**ativo**, 2026-11-05) | + Fase 5.0: 9606 (cor ou raça × sexo), 8176 e 9765 (quilombolas por sexo) | 4.183.011 | 156 aprovadas, 6 de consistência |
 
 Release **interno**: a licença do IBGE ainda está em `requires_review` (KI-003).
 
@@ -23,6 +24,8 @@ Estimativas de População
 Censo Demográfico
   População
     População residente                                censo_populacao_residente              (4714/93)
+    População residente por cor ou raça e sexo         censo_populacao_cor_raca_sexo          (9606/93; 2010 e 2022)
+      Cor ou raça; Sexo
   Território
     Área da unidade territorial                        censo_area_territorial                 (4714/6318)
     Densidade demográfica                              censo_densidade_demografica            (4714/614, não aditivo)
@@ -47,8 +50,11 @@ Censo Demográfico
     Territórios quilombolas
       Pessoas residentes em territórios quilombolas     censo_residentes_territorios_quilombolas (9723/6559)
       Pessoas quilombolas em territórios quilombolas    censo_quilombolas_em_territorios       (9723/7079)
+      Residentes em territórios quilombolas por sexo    censo_residentes_territorios_quilombolas_sexo (9765/6559)
+      Quilombolas em territórios quilombolas por sexo   censo_quilombolas_em_territorios_sexo  (9765/7079)
       Percentual de quilombolas nos territórios         censo_percentual_quilombolas_territorios (9723/7080, não aditivo)
     Pessoas quilombolas                                censo_pessoas_quilombolas              (9578/4709)
+    Pessoas quilombolas por sexo                       censo_pessoas_quilombolas_sexo         (8176/4709)
     População residente por localização                censo_residentes_territorio_quilombola (9578/93)
     Percentual de pessoas quilombolas                  censo_percentual_quilombolas           (9578/4728, não aditivo)
       Localização do domicílio: Em territórios quilombolas, Fora de territórios quilombolas
@@ -56,7 +62,7 @@ Censo Demográfico
 
 Os indicadores estão publicados nos níveis Brasil, Grande Região, UF e
 município, exceto `censo_pessoas_indigenas_idade` (até UF). Os indicadores da
-9723 também estão nos recortes especiais `territorio_quilombola` (495),
+9723 e da 9765 também estão nos recortes especiais `territorio_quilombola` (495),
 `territorio_quilombola_uf` (503), `amazonia_legal` e `amazonia_legal_uf`; os da
 9954 em `terra_indigena` (573), `terra_indigena_uf` (602) e
 `coordenacao_regional_funai` (39), sem o nível municipal
@@ -73,6 +79,7 @@ publicados nestas tabelas.
 | Classificações não pedidas ficam no Total | planejador (`list_has_all`) |
 | Totais de UF, Grande Região e Brasil são os oficiais, não a soma dos municípios | modelo; `--sum-to` marca o resultado como derivado |
 | 2004, 2008 e 2012 (6579): a soma municipal inclui municípios com instalação prevista | `pending_installation` no fato e `flags` na observação |
+| Tabelas sobrepostas publicam os mesmos números (9606 × 9605 e 4714, 8176 × 9578, 9765 × 9723, 9971 × 9718) | `[[consistency]]`: compara as classificações comuns com as demais no Total; divergência gera aviso |
 
 ## Fatos
 
@@ -87,6 +94,9 @@ publicados nestas tabelas.
 | `fact_indigenous_by_age` | território (até UF) × ano × idade × localização × situação | `indigenous_persons` |
 | `fact_quilombola_territory` | território (inclusive recortes especiais) × ano | `residents`, `quilombola_persons`, `quilombola_share_pct` |
 | `fact_indigenous_land` | território (inclusive terras indígenas) × ano × sexo × grupo de idade × situação | `residents`, `indigenous_persons` |
+| `fact_population_by_race_sex` | território × ano censitário × cor ou raça × sexo × idade (só Total) | `population` |
+| `fact_quilombola_by_sex` | território × ano × sexo × idade (só Total) × localização | `quilombola_persons` |
+| `fact_quilombola_territory_by_sex` | território (inclusive recortes especiais) × ano × sexo × idade (só Total) | `residents`, `quilombola_persons` |
 
 Cada medida tem a coluna `<medida>_status`, com a legenda da Silver (`valid`,
 `true_zero`, `suppressed`...) ou `absent` quando a combinação não foi publicada.

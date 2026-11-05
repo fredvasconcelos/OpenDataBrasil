@@ -311,6 +311,95 @@ territorial_reference = "ibge-dtb"
 additive_variables = { "576" = "exact", "1432" = "exact" }
 
 [[datasets]]
+id = "ibge-sidra-9606"
+source = "ibge-sidra"
+official_id = "9606"
+title = "População residente, por cor ou raça, segundo o sexo e a idade"
+description = "População residente (93) por cor ou raça (c86), sexo (c2) e idade (c287), nos Censos 2010 e 2022. Ingerida só com o Total de idade (escopo do MVP: docs/data_catalog/escopo-mvp-e-expansao.md)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9606"
+
+[datasets.params]
+table = "9606"
+variables = ["93"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+# Códigos conferidos na API em 2026-11-05 (HTTP 200).
+classifications = { "c86" = "all", "c2" = "6794,4,5", "c287" = "100362" }
+# 6 cores ou raças x 3 sexos x 5603 territórios = 100.854 por ano, acima do limite de 50.000:
+# uma requisição por sexo (33.618 valores).
+split_by_classification = "c2"
+estimated_values_per_period = 33618
+min_rows = 33500
+max_rows = 33650
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "93" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-8176"
+source = "ibge-sidra"
+official_id = "8176"
+title = "Censo 2022: pessoas quilombolas, por localização do domicílio, sexo e idade"
+description = "Pessoas quilombolas (4709) por sexo (c2), idade (c287) e localização do domicílio em relação a territórios quilombolas (c2661). Ingerida só com o Total de idade (escopo do MVP)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/8176"
+
+[datasets.params]
+table = "8176"
+# 1004709 (percentual do total geral) é derivado e não é ingerido.
+variables = ["4709"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+# Códigos conferidos na API em 2026-11-05 (HTTP 200).
+classifications = { "c2" = "6794,4,5", "c287" = "100362", "c2661" = "all" }
+# 3 sexos x 3 localizações x 5603 territórios = 50.427, acima do limite: uma requisição por sexo.
+split_by_classification = "c2"
+estimated_values_per_period = 16809
+min_rows = 16700
+max_rows = 16850
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "4709" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9765"
+source = "ibge-sidra"
+official_id = "9765"
+title = "Censo 2022: população residente em territórios quilombolas, total e quilombola, por sexo e idade"
+description = "Pessoas residentes (6559) e pessoas quilombolas (7079) em territórios quilombolas, por sexo (c2) e idade (c287), nos níveis administrativos e nos recortes Território Quilombola (N1145), Território Quilombola por UF (N145), Amazônia Legal (N131) e Amazônia Legal de UF (N134). Ingerida só com o Total de idade (escopo do MVP)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9765"
+
+[datasets.params]
+table = "9765"
+# Os percentuais do total geral (1006559, 1007079) são derivados e não são ingeridos.
+variables = ["6559", "7079"]
+# Mesmos níveis da 9723 (docs/data_catalog/ibge-niveis-territoriais.md), conferidos em 2026-11-05.
+territorial_levels = ["n1", "n2", "n3", "n6", "n131", "n134", "n145", "n1145"]
+classifications = { "c2" = "6794,4,5", "c287" = "100362" }
+# 2 variáveis x 3 sexos x 6611 territórios = 39.666 valores.
+estimated_values_per_period = 39666
+min_rows = 39500
+max_rows = 39700
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "6559" = "exact", "7079" = "exact" }
+
+[[datasets]]
 id = "ibge-dtb"
 source = "ibge-geoftp"
 official_id = "DTB_2025"

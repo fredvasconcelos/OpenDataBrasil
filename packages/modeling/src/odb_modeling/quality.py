@@ -7,7 +7,8 @@ Severidade, como na Silver:
   declarada, nível territorial desconhecido, nota oficial não resolvida e
   divergência entre Gold e Silver;
 * ``warn`` é registrado, sem bloquear: divergências da reconciliação por
-  categoria e territórios ausentes da referência.
+  categoria, divergências entre tabelas sobrepostas (consistência) e
+  territórios ausentes da referência.
 """
 
 from __future__ import annotations
@@ -18,7 +19,13 @@ from typing import Any
 
 import polars as pl
 
-from odb_modeling.model import SIDRA_LEVELS, DatasetInfo, category_column, dimension_map
+from odb_modeling.model import (
+    NO_BREAKDOWN,
+    SIDRA_LEVELS,
+    DatasetInfo,
+    category_column,
+    dimension_map,
+)
 from odb_processing.contracts import Contract
 from odb_processing.quality import CheckResult, CheckStatus, check_contract, check_required
 from odb_processing.values import QUANTITATIVE
@@ -375,4 +382,101 @@ def category_reconciliation(
                             details=details,
                         )
                     )
+    return results
+
+
+# ------------------------------------------------------------------ consistência
+
+
+def _restricted(frame: pl.DataFrame, common: Sequence[str], totals: Sequence[str]) -> pl.DataFrame:
+    """Observações com as classificações não comuns no Total, e o contexto comum."""
+    prefix = pl.element().str.extract(r"^([^:]+):", 1)
+    parts = (
+        pl.when(pl.col("breakdown_key") == NO_BREAKDOWN)
+        .then(pl.lit([], dtype=pl.List(pl.String)))
+        .otherwise(pl.col("breakdown_key").str.split("|"))
+    )
+    return (
+        frame.with_columns(parts.alias("_parts"))
+        .with_columns(
+            pl.col("_parts")
+            .list.eval(~prefix.is_in(list(common)) & ~pl.element().is_in(list(totals)))
+            .list.any()
+            .alias("_other"),
+            pl.col("_parts")
+            .list.eval(pl.element().filter(prefix.is_in(list(common))))
+            .list.sort()
+            .list.join("|")
+            .alias("context"),
+        )
+        .filter(~pl.col("_other"))
+        .select("geography_key", "period", "context", "value", "value_status")
+    )
+
+
+def consistency_checks(observations: pl.DataFrame, catalog: SemanticCatalog) -> list[CheckResult]:
+    """Valores iguais entre indicadores de tabelas sobrepostas (``[[consistency]]``).
+
+    Compara território, período e categorias das classificações comuns, com as
+    demais classificações no Total. Só entram pares em que os dois lados têm
+    valor quantitativo; ausências não são comparadas. Divergência gera aviso.
+    """
+    totals = [f"{c.id}:{c.total}" for c in catalog.classifications]
+    by_id = {i.id: i for i in catalog.indicators}
+    results: list[CheckResult] = []
+    for pair in catalog.consistency:
+        left, right = by_id[pair.indicator], by_id[pair.reference]
+        common = sorted(
+            set(catalog.fact(left.fact).classifications)
+            & set(catalog.fact(right.fact).classifications)
+        )
+        keys = ["geography_key", "period", "context"]
+        a = _restricted(observations.filter(pl.col("indicator_id") == left.id), common, totals)
+        b = _restricted(observations.filter(pl.col("indicator_id") == right.id), common, totals)
+        joined = a.join(b, on=keys, how="inner", suffix="_ref")
+        both = joined.filter(
+            pl.col("value_status").is_in(_QUANT) & pl.col("value_status_ref").is_in(_QUANT)
+        )
+        bad = both.filter(pl.col("value") != pl.col("value_ref"))
+        check_id = f"consistency.{left.id}.{right.id}"
+        details: dict[str, Any] = {
+            "common_classifications": common,
+            "compared": both.height,
+            "not_comparable": joined.height - both.height,
+            "note": pair.note,
+        }
+        if both.is_empty():
+            results.append(
+                CheckResult(
+                    check_id,
+                    CheckStatus.WARN,
+                    "nenhum valor em comum para comparar",
+                    observed=0,
+                    details=details,
+                )
+            )
+        elif bad.height:
+            details["divergent"] = [
+                {k: str(v) for k, v in r.items()} for r in bad.head(200).iter_rows(named=True)
+            ]
+            results.append(
+                CheckResult(
+                    check_id,
+                    CheckStatus.WARN,
+                    f"{bad.height} de {both.height} valores divergem de {right.id}",
+                    observed=bad.height,
+                    expected=0,
+                    details=details,
+                )
+            )
+        else:
+            results.append(
+                CheckResult(
+                    check_id,
+                    CheckStatus.PASS,
+                    f"{both.height} valores iguais aos de {right.id}",
+                    observed=both.height,
+                    details=details,
+                )
+            )
     return results

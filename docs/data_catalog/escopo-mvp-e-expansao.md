@@ -34,10 +34,13 @@ dimensão da população geral, combinável com o sexo (2026-11-05).
 
 ## 2. Tabelas para completar o MVP (sexo)
 
+**Situação:** 9606, 8176 e 9765 ingeridas e publicadas no release
+`35489cf6` (2026-11-05), com as verificações de consistência aprovadas.
+
 Conferidas na API `/values` em 2026-11-05 (HTTP 200, cabeçalhos e totais do
-Brasil abaixo). Os níveis N134 da 9765 e a descrição completa das tabelas
-ainda precisam ser confirmados com o mantenedor (o `desctabapi` responde 403,
-ver KI-006).
+Brasil abaixo). Os níveis da 9765 (inclusive N134, 9 unidades) foram
+conferidos na ingestão. As notas oficiais das tabelas ainda não foram
+transcritas (o `desctabapi` responde 403, ver KI-001 e KI-006).
 
 | Tabela | Conteúdo | Variáveis | Classificações | Conferência |
 |---|---|---|---|---|

@@ -23,6 +23,9 @@ Não edite: os testes dependem dos bytes exatos.
 | `sidra/t9954_n1_periods.json`, `sidra/t9954_n1n3n125n1124n1125_p2022_v<var>_c1-6795_c2-6794_c287-100362.json` | `/t/9954/n1/all/v/576/p/all/c1/6795/c2/6794/c287/100362` e `/t/9954/n1/all/n3/all/n125/all/n1124/all/n1125/all/v/<var>/p/2022/c1/6795/c2/6794/c287/100362` | 200 | variáveis 576 e 1432, só os Totais de sexo, idade e situação; 573 terras, 602 partes por UF e 39 Coordenações Regionais da Funai |
 | `sidra/t9578_n1_periods.json` | `/t/9578/n1/all/v/4709/p/all/c2661/all` | 200 | só 2022 |
 | `sidra/t9578_n1n2n3_p2022_v<var>.json` | `/t/9578/n1/all/n2/all/n3/all/v/<var>/p/2022/c2661/all` | 200 | 3 arquivos: variáveis 4709, 93, 4728; 3 localizações × 33 territórios |
+| `sidra/t9606_n1_periods.json`, `sidra/t9606_n1n2n3_p<ano>.json` | `/t/9606/n1/all/v/93/p/all/c2/all/c287/100362/c86/all` e `/t/9606/n1/all/n2/all/n3/all/v/93/p/<2010\|2022>/c2/all/c287/100362/c86/all` | 200 | 2010 e 2022; 6 cores ou raças × 3 sexos × 33 territórios (capturado em 2026-11-05) |
+| `sidra/t8176_n1_periods.json`, `sidra/t8176_n1n2n3_p2022.json` | `/t/8176/n1/all/v/4709/p/all/c2/all/c2661/all/c287/100362` e `/t/8176/n1/all/n2/all/n3/all/v/4709/p/2022/c2/all/c2661/all/c287/100362` | 200 | 3 sexos × 3 localizações × 33 territórios (capturado em 2026-11-05) |
+| `sidra/t9765_n1_periods.json`, `sidra/t9765_n1n2n3n131n134n145n1145_p2022.json` | `/t/9765/n1/all/v/6559/p/all/c2/all/c287/100362` e `/t/9765/n1/all/n2/all/n3/all/n131/all/n134/all/n145/all/n1145/all/v/6559,7079/p/2022/c2/all/c287/100362` | 200 | 2 variáveis × 3 sexos × 1.041 territórios (6.246 valores; capturado em 2026-11-05) |
 
 Dados **sintéticos** usados nos testes, gerados em código e identificados como tal:
 

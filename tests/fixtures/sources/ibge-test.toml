@@ -263,6 +263,81 @@ territorial_reference = "ibge-dtb"
 additive_variables = { "576" = "exact", "1432" = "exact" }
 
 [[datasets]]
+id = "ibge-sidra-9606"
+source = "ibge-sidra"
+official_id = "9606"
+title = "Cor ou raça e sexo"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9606"
+variables = ["93"]
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c86" = "all", "c2" = "all", "c287" = "100362" }
+estimated_values_per_period = 594
+min_rows = 594
+max_rows = 594
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "93" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-8176"
+source = "ibge-sidra"
+official_id = "8176"
+title = "Quilombolas por sexo"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "8176"
+variables = ["4709"]
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c2" = "all", "c287" = "100362", "c2661" = "all" }
+estimated_values_per_period = 297
+min_rows = 297
+max_rows = 297
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "4709" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9765"
+source = "ibge-sidra"
+official_id = "9765"
+title = "Territórios quilombolas por sexo"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9765"
+variables = ["6559", "7079"]
+territorial_levels = ["n1", "n2", "n3", "n131", "n134", "n145", "n1145"]
+classifications = { "c2" = "all", "c287" = "100362" }
+estimated_values_per_period = 6246
+min_rows = 6246
+max_rows = 6246
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "6559" = "exact", "7079" = "exact" }
+
+[[datasets]]
 id = "ibge-dtb"
 source = "ibge-geoftp"
 official_id = "DTB_2025"

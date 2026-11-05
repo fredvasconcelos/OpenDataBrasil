@@ -17,7 +17,8 @@ def _write(tmp_path: Path, content: str, name: str = "demografia.toml") -> Path:
 def test_repository_catalog_is_valid() -> None:
     catalog = load_scope(REPO_INDICATORS, "demografia")
     assert catalog.scope == "demografia"
-    assert len(catalog.indicators) == 18
+    assert len(catalog.indicators) == 22
+    assert len(catalog.consistency) == 6
     assert catalog.datasets() == [
         "ibge-sidra-6579",
         "ibge-sidra-4714",
@@ -28,6 +29,9 @@ def test_repository_catalog_is_valid() -> None:
         "ibge-sidra-9970",
         "ibge-sidra-9723",
         "ibge-sidra-9954",
+        "ibge-sidra-9606",
+        "ibge-sidra-8176",
+        "ibge-sidra-9765",
     ]
     c2661 = catalog.classification("c2661")
     assert c2661.partition_of("12869").id == "terras_indigenas"  # type: ignore[union-attr]
@@ -73,6 +77,16 @@ def test_repository_catalog_is_valid() -> None:
             'categories = ["60027", "60028"]',
             'categories = ["12869", "60028"]',
             "mais de uma partição",
+        ),
+        (
+            'reference = "censo_populacao_residente"',
+            'reference = "censo_area_territorial"',
+            "conceito ou unidade diferentes",
+        ),
+        (
+            'reference = "censo_pessoas_quilombolas"',
+            'reference = "nao_existe"',
+            "consistência inválida",
         ),
         (
             'dataset = "ibge-sidra-9578"\nvariable = "4709"',

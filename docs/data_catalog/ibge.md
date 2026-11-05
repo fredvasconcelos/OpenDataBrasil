@@ -153,6 +153,43 @@ Por que não o nível municipal e as idades simples: a tabela completa teria
 cerca de 16,5 milhões de valores. Os totais por município em terras indígenas
 já vêm da 9718. Ampliar exige só configuração.
 
+### `ibge-sidra-9606`: População residente por cor ou raça, sexo e idade (Censos 2010 e 2022)
+
+| Item | Valor |
+|---|---|
+| Variável | 93 População residente |
+| Classificações | c86 Cor ou raça (Total e 5 categorias); c2 Sexo; c287 Idade (só o Total, escopo do MVP) |
+| Níveis | N1, N2, N3, N6 |
+| Divisão | 6 requisições (ano × sexo) de 33.618 valores |
+| Linhas | 201.708 |
+| Brasil | 2022: 203.080.756 = 98.532.431 homens + 104.548.325 mulheres; 2010: 190.755.799 |
+
+Com o sexo no Total, os valores são iguais aos da 9605 em todos os territórios
+(verificação `consistency`). Em 2010, os municípios instalados depois do Censo
+vêm com `...` (não disponível).
+
+### `ibge-sidra-8176`: Censo 2022, pessoas quilombolas por sexo, idade e localização
+
+| Item | Valor |
+|---|---|
+| Variável | 4709 Pessoas quilombolas (o percentual 1004709 não é ingerido) |
+| Classificações | c2 Sexo; c287 Idade (só o Total); c2661 Localização do domicílio (32776, 60027, 60028) |
+| Níveis | N1, N2, N3, N6 |
+| Divisão | 3 requisições (sexo) de 16.809 valores |
+| Linhas | 50.427 |
+| Brasil | 1.330.186 = 665.353 homens + 664.833 mulheres (igual à 9578) |
+
+### `ibge-sidra-9765`: Censo 2022, população em territórios quilombolas por sexo e idade
+
+| Item | Valor |
+|---|---|
+| Variáveis | 6559 Pessoas residentes em territórios quilombolas, 7079 Pessoas quilombolas residentes em territórios quilombolas (os percentuais 1006559 e 1007079 não são ingeridos) |
+| Classificações | c2 Sexo; c287 Idade (só o Total) |
+| Níveis | N1, N2, N3, N6 e os recortes N131, N134, N145 e N1145 (os mesmos da 9723) |
+| Divisão | 1 requisição de 39.666 valores |
+| Linhas | 39.666 |
+| Brasil | 203.574 residentes (104.555 homens + 99.019 mulheres); 167.769 quilombolas (86.284 + 81.485), iguais à 9723 |
+
 ### Como os níveis especiais foram obtidos
 
 Consultadas pelo nível Brasil, a 9954 e a 9723 respondiam sem a dimensão "Terra

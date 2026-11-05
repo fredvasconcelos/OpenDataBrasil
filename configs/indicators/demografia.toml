@@ -10,7 +10,7 @@
 # 2026-11-04 (tests/fixtures/ibge/sidra). Não acrescente códigos sem verificá-los.
 # Rótulos de categoria vêm da Silver. Aqui só se declara a estrutura.
 
-config_version = "1.3.0"
+config_version = "1.4.0"
 scope = "demografia"
 
 # ------------------------------------------------------------------ classificações
@@ -327,6 +327,27 @@ grain = "território (Brasil, Grandes Regiões, UFs, terras indígenas e suas pa
 description = "Pessoas residentes e pessoas indígenas em terras indígenas, por sexo, grupos quinquenais de idade e situação do domicílio."
 classifications = { "c2" = "sex_category_key", "c287" = "age_category_key", "c1" = "situation_category_key" }
 
+[[facts]]
+id = "fact_population_by_race_sex"
+dataset = "ibge-sidra-9606"
+grain = "território x ano censitário x cor ou raça x sexo x idade"
+description = "População residente por cor ou raça, sexo e idade, nos Censos 2010 e 2022. Ingerida só com o Total de idade (escopo do MVP)."
+classifications = { "c86" = "race_category_key", "c2" = "sex_category_key", "c287" = "age_category_key" }
+
+[[facts]]
+id = "fact_quilombola_by_sex"
+dataset = "ibge-sidra-8176"
+grain = "território x ano censitário x sexo x idade x localização do domicílio"
+description = "Pessoas quilombolas por sexo, idade e localização em relação a territórios quilombolas. Ingerida só com o Total de idade (escopo do MVP)."
+classifications = { "c2" = "sex_category_key", "c287" = "age_category_key", "c2661" = "location_category_key" }
+
+[[facts]]
+id = "fact_quilombola_territory_by_sex"
+dataset = "ibge-sidra-9765"
+grain = "território (níveis administrativos, Amazônia Legal, territórios quilombolas e suas partes por UF) x ano censitário x sexo x idade"
+description = "Pessoas residentes e pessoas quilombolas em territórios quilombolas, por sexo e idade. Ingerida só com o Total de idade (escopo do MVP)."
+classifications = { "c2" = "sex_category_key", "c287" = "age_category_key" }
+
 # ------------------------------------------------------------------ indicadores
 #
 # id          identificador interno estável (§15.3); os oficiais ficam em dataset/variable
@@ -425,6 +446,7 @@ concept = "pessoas_indigenas"
 path = ["Censo Demográfico", "Pessoas indígenas"]
 incompatible_with = [
     { indicator = "censo_populacao_cor_raca", reason = "definições diferentes de população indígena: 'Pessoas indígenas' (quesito de declaração, 9718) inclui quem se considera indígena; a categoria Indígena de cor ou raça (9605) não inclui" },
+    { indicator = "censo_populacao_cor_raca_sexo", reason = "definições diferentes de população indígena: 'Pessoas indígenas' (quesito de declaração, 9718) inclui quem se considera indígena; a categoria Indígena de cor ou raça (9606) não inclui" },
 ]
 
 [[indicators]]
@@ -512,6 +534,7 @@ caveats = [
 ]
 incompatible_with = [
     { indicator = "censo_populacao_cor_raca", reason = "definições diferentes de população indígena: 'Pessoas indígenas' (quesito de declaração) inclui quem se considera indígena; a categoria Indígena de cor ou raça (9605) não inclui" },
+    { indicator = "censo_populacao_cor_raca_sexo", reason = "definições diferentes de população indígena: 'Pessoas indígenas' (quesito de declaração) inclui quem se considera indígena; a categoria Indígena de cor ou raça (9606) não inclui" },
 ]
 
 [[indicators]]
@@ -531,6 +554,7 @@ caveats = [
 ]
 incompatible_with = [
     { indicator = "censo_populacao_cor_raca", reason = "definições diferentes de população indígena: 'Pessoas indígenas' (quesito de declaração) inclui quem se considera indígena; a categoria Indígena de cor ou raça (9605) não inclui" },
+    { indicator = "censo_populacao_cor_raca_sexo", reason = "definições diferentes de população indígena: 'Pessoas indígenas' (quesito de declaração) inclui quem se considera indígena; a categoria Indígena de cor ou raça (9606) não inclui" },
 ]
 
 [[indicators]]
@@ -610,7 +634,100 @@ caveats = [
 ]
 incompatible_with = [
     { indicator = "censo_populacao_cor_raca", reason = "definições diferentes de população indígena: 'Pessoas indígenas' (quesito de declaração) inclui quem se considera indígena; a categoria Indígena de cor ou raça (9605) não inclui" },
+    { indicator = "censo_populacao_cor_raca_sexo", reason = "definições diferentes de população indígena: 'Pessoas indígenas' (quesito de declaração) inclui quem se considera indígena; a categoria Indígena de cor ou raça (9606) não inclui" },
 ]
+
+[[indicators]]
+id = "censo_populacao_cor_raca_sexo"
+name = "População residente por cor ou raça e sexo"
+description = "População residente recenseada, por cor ou raça declarada e sexo, nos Censos 2010 e 2022."
+dataset = "ibge-sidra-9606"
+variable = "93"
+fact = "fact_population_by_race_sex"
+column = "population"
+unit = "Pessoas"
+additivity = "additive"
+concept = "populacao_residente"
+path = ["Censo Demográfico", "População"]
+caveats = [
+    "A categoria Indígena de cor ou raça conta só quem declarou cor ou raça indígena. Ela não equivale a 'Pessoas indígenas', que inclui quem se considera indígena.",
+    "As cinco categorias de cor ou raça somam menos que o Total: a categoria 'sem declaração' não é publicada.",
+    "Em 2010, municípios instalados depois do Censo aparecem sem valor ('...').",
+]
+
+[[indicators]]
+id = "censo_pessoas_quilombolas_sexo"
+name = "Pessoas quilombolas por sexo"
+description = "Pessoas quilombolas por sexo e localização do domicílio em relação a territórios quilombolas (segunda apuração do Censo 2022)."
+dataset = "ibge-sidra-8176"
+variable = "4709"
+fact = "fact_quilombola_by_sex"
+column = "quilombola_persons"
+unit = "Pessoas"
+additivity = "additive"
+concept = "pessoas_quilombolas"
+path = ["Censo Demográfico", "Pessoas quilombolas"]
+
+[[indicators]]
+id = "censo_residentes_territorios_quilombolas_sexo"
+name = "Pessoas residentes em territórios quilombolas por sexo"
+description = "Pessoas residentes em territórios quilombolas oficialmente delimitados, quilombolas ou não, por sexo."
+dataset = "ibge-sidra-9765"
+variable = "6559"
+fact = "fact_quilombola_territory_by_sex"
+column = "residents"
+unit = "Pessoas"
+additivity = "additive"
+concept = "residentes_territorios_quilombolas"
+path = ["Censo Demográfico", "Pessoas quilombolas", "Territórios quilombolas"]
+
+[[indicators]]
+id = "censo_quilombolas_em_territorios_sexo"
+name = "Pessoas quilombolas residentes em territórios quilombolas por sexo"
+description = "Pessoas quilombolas residentes em territórios quilombolas oficialmente delimitados, por sexo."
+dataset = "ibge-sidra-9765"
+variable = "7079"
+fact = "fact_quilombola_territory_by_sex"
+column = "quilombola_persons"
+unit = "Pessoas"
+additivity = "additive"
+concept = "pessoas_quilombolas_em_territorios"
+path = ["Censo Demográfico", "Pessoas quilombolas", "Territórios quilombolas"]
+
+# ------------------------------------------------------------------ consistência
+#
+# Tabelas sobrepostas que devem publicar os mesmos números. Cada KPI do portal
+# usa uma única tabela; estes pares conferem as demais (aviso se divergirem).
+
+[[consistency]]
+indicator = "censo_populacao_cor_raca_sexo"
+reference = "censo_populacao_cor_raca"
+note = "9606 com sexo no Total = 9605, por cor ou raça, em 2010 e 2022."
+
+[[consistency]]
+indicator = "censo_populacao_cor_raca_sexo"
+reference = "censo_populacao_residente"
+note = "9606 nos Totais = população residente da 4714 (2022)."
+
+[[consistency]]
+indicator = "censo_pessoas_quilombolas_sexo"
+reference = "censo_pessoas_quilombolas"
+note = "8176 com sexo no Total = 9578, por localização (segunda apuração)."
+
+[[consistency]]
+indicator = "censo_residentes_territorios_quilombolas_sexo"
+reference = "censo_residentes_territorios_quilombolas"
+note = "9765 com sexo no Total = 9723."
+
+[[consistency]]
+indicator = "censo_quilombolas_em_territorios_sexo"
+reference = "censo_quilombolas_em_territorios"
+note = "9765 com sexo no Total = 9723."
+
+[[consistency]]
+indicator = "censo_pessoas_indigenas_sexo_idade"
+reference = "censo_pessoas_indigenas"
+note = "9971 com sexo, idade e situação no Total = 9718 com quesito no Total, por localização."
 
 # ------------------------------------------------------------------ notas oficiais
 #

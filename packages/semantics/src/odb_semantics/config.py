@@ -179,6 +179,19 @@ class PendingInstallation(_Strict):
     source: str
 
 
+class Consistency(_Strict):
+    """Par de indicadores de tabelas diferentes que publicam os mesmos números.
+
+    Os valores são comparados nas classificações comuns aos dois fatos, com as
+    demais classificações de cada lado no Total. Serve para usar uma única
+    tabela por KPI sem perder a conferência com as tabelas sobrepostas.
+    """
+
+    indicator: str = Field(pattern=INDICATOR_ID)
+    reference: str = Field(pattern=INDICATOR_ID)
+    note: str = ""
+
+
 class SemanticCatalog(_Strict):
     """Catálogo de um escopo de publicação."""
 
@@ -188,6 +201,7 @@ class SemanticCatalog(_Strict):
     facts: tuple[FactConfig, ...] = Field(min_length=1)
     indicators: tuple[IndicatorConfig, ...] = Field(min_length=1)
     pending_installation: tuple[PendingInstallation, ...] = ()
+    consistency: tuple[Consistency, ...] = ()
     # Hash do arquivo de origem, para a impressão digital da construção.
     content_sha256: str = ""
 
@@ -226,6 +240,17 @@ class SemanticCatalog(_Strict):
             for inc in ind.incompatible_with:
                 if inc.indicator not in indicators or inc.indicator == ind.id:
                     problems.append(f"{ind.id}: incompatibilidade inválida com {inc.indicator}")
+        by_id = {i.id: i for i in self.indicators}
+        for pair in self.consistency:
+            left, right = by_id.get(pair.indicator), by_id.get(pair.reference)
+            if left is None or right is None or left.id == right.id:
+                problems.append(f"consistência inválida: {pair.indicator} x {pair.reference}")
+            elif (left.concept, left.unit) != (right.concept, right.unit):
+                problems.append(
+                    f"consistência {left.id} x {right.id}: conceito ou unidade diferentes"
+                )
+            elif left.dataset == right.dataset:
+                problems.append(f"consistência {left.id} x {right.id}: mesmo dataset")
         variables = [(i.dataset, i.variable) for i in self.indicators]
         repeated_vars = sorted({v for v in variables if variables.count(v) > 1})
         if repeated_vars:

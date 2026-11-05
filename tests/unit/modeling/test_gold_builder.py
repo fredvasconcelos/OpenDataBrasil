@@ -9,7 +9,7 @@ from odb_lakehouse import DeltaReader
 from odb_modeling import model
 from odb_modeling.builder import GoldBuilder
 from odb_modeling.geography import GeographyError, build_ancestor_bridge, build_dim_geography
-from odb_modeling.quality import category_reconciliation
+from odb_modeling.quality import category_reconciliation, consistency_checks
 from odb_processing.quality import CheckStatus
 from odb_semantics import load_catalog
 from tests.gold_support import REPO_INDICATORS, GoldEnv
@@ -39,7 +39,7 @@ def test_build_tables_hierarchies_and_lineage(env: GoldEnv) -> None:
         assert DeltaTable(table.storage_uri).protocol().min_writer_version == 2
 
     obs = _read(build.tables["indicator_observation"])
-    assert obs.height == 10032
+    assert obs.height == 17763
     stored = {a.artifact_id for a in env.ingestion.by_status("stored")}
     assert set(obs["bronze_artifact_id"].unique().to_list()) <= stored
     assert obs["gold_build_id"].unique().to_list() == [build.build_id]
@@ -82,6 +82,43 @@ def test_build_tables_hierarchies_and_lineage(env: GoldEnv) -> None:
         "2022": "11119.000000",
     }
     assert checks["notes.pending_installation"].status is CheckStatus.PASS
+    consistency = {k: c for k, c in checks.items() if k.startswith("consistency.")}
+    assert len(consistency) == 6
+    assert {c.status for c in consistency.values()} == {CheckStatus.PASS}, {
+        k: c.message for k, c in consistency.items()
+    }
+    # 9606 = 9605: 6 categorias de cor ou raça x 33 territórios x 2 anos.
+    assert (
+        consistency["consistency.censo_populacao_cor_raca_sexo.censo_populacao_cor_raca"].observed
+        == 396
+    )
+
+    sex = _read(build.tables["fact_population_by_race_sex"]).filter(
+        (pl.col("geography_key") == "brasil:1") & (pl.col("race_category_key") == "c86:95251")
+    )
+    by_sex = {
+        (r["period"], r["sex_category_key"]): r["population"] for r in sex.iter_rows(named=True)
+    }
+    assert by_sex[("2022", "c2:4")] == Decimal("98532431")
+    assert by_sex[("2022", "c2:5")] == Decimal("104548325")
+    assert by_sex[("2010", "c2:6794")] == Decimal("190755799")
+    quilombola = _read(build.tables["fact_quilombola_by_sex"]).filter(
+        (pl.col("geography_key") == "brasil:1") & (pl.col("location_category_key") == "c2661:32776")
+    )
+    assert sorted(quilombola["quilombola_persons"].to_list()) == [
+        Decimal("664833"),
+        Decimal("665353"),
+        Decimal("1330186"),
+    ]
+    territory = (
+        _read(build.tables["fact_quilombola_territory_by_sex"])
+        .filter((pl.col("geography_key") == "brasil:1") & (pl.col("sex_category_key") == "c2:4"))
+        .row(0, named=True)
+    )
+    assert (territory["residents"], territory["quilombola_persons"]) == (
+        Decimal("104555"),
+        Decimal("86284"),
+    )
 
 
 def test_skip_force_and_versions(env: GoldEnv) -> None:
@@ -279,3 +316,39 @@ def test_category_reconciliation_flags_exhaustive_divergence() -> None:
     ]
     assert check.status is CheckStatus.WARN
     assert check.details["divergent"][0]["residual"] == "10.000000"
+
+
+def test_consistency_compares_common_categories_with_others_at_total() -> None:
+    catalog = load_catalog(REPO_INDICATORS / "demografia.toml")
+    rows = [
+        # 8176: sexo no Total entra na comparação; Homens fica de fora.
+        ("censo_pessoas_quilombolas_sexo", "c287:100362|c2661:32776|c2:6794", "100", "valid"),
+        ("censo_pessoas_quilombolas_sexo", "c287:100362|c2661:60027|c2:6794", "41", "valid"),
+        ("censo_pessoas_quilombolas_sexo", "c287:100362|c2661:60028|c2:6794", "59", "valid"),
+        ("censo_pessoas_quilombolas_sexo", "c287:100362|c2661:32776|c2:4", "999", "valid"),
+        # 9578: 60027 diverge; 60028 é suprimido e não é comparado.
+        ("censo_pessoas_quilombolas", "c2661:32776", "100", "valid"),
+        ("censo_pessoas_quilombolas", "c2661:60027", "40", "valid"),
+        ("censo_pessoas_quilombolas", "c2661:60028", None, "suppressed"),
+    ]
+    obs = pl.DataFrame(
+        {
+            "indicator_id": [r[0] for r in rows],
+            "geography_key": ["uf:29"] * len(rows),
+            "period": ["2022"] * len(rows),
+            "breakdown_key": [r[1] for r in rows],
+            "value": [None if r[2] is None else Decimal(r[2]) for r in rows],
+            "value_status": [r[3] for r in rows],
+        },
+        schema_overrides={"value": pl.Decimal(38, 6)},
+    )
+    results = {c.check_id: c for c in consistency_checks(obs, catalog)}
+    check = results["consistency.censo_pessoas_quilombolas_sexo.censo_pessoas_quilombolas"]
+    assert check.status is CheckStatus.WARN
+    assert check.details["compared"] == 2
+    assert check.details["not_comparable"] == 1
+    assert check.details["divergent"][0]["context"] == "c2661:60027"
+    # Pares sem observações avisam em vez de passar em silêncio.
+    empty = results["consistency.censo_populacao_cor_raca_sexo.censo_populacao_cor_raca"]
+    assert empty.status is CheckStatus.WARN
+    assert empty.observed == 0

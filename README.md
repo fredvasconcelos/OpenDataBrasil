@@ -54,6 +54,7 @@ Guia completo: [`docs/development/setup-windows-wsl2.md`](docs/development/setup
   - 0006: framework de ingestão e Bronze
   - 0007: Silver, valores especiais e reconciliação
   - 0008: Gold, modelo hierárquico e camada semântica
+  - 0009: API e portal do MVP (Fase 5)
 - Fontes e datasets: [`docs/data_catalog/ibge.md`](docs/data_catalog/ibge.md)
 - Níveis territoriais do SIDRA (inclusive recortes especiais): [`docs/data_catalog/ibge-niveis-territoriais.md`](docs/data_catalog/ibge-niveis-territoriais.md)
 - Indicadores da Gold: [`docs/data_catalog/gold-demografia.md`](docs/data_catalog/gold-demografia.md)

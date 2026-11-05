@@ -55,6 +55,7 @@ from odb_modeling.contracts import (
 from odb_modeling.geography import GeographyError, build_ancestor_bridge, build_dim_geography
 from odb_modeling.quality import (
     category_reconciliation,
+    consistency_checks,
     foreign_key,
     geography_checks,
     input_checks,
@@ -457,6 +458,7 @@ class GoldBuilder:
         results.extend(geography_checks(geo, frames[BRIDGE_GEOGRAPHY_ANCESTOR.name]))
         results.append(silver_fidelity(selected, obs))
         results.extend(category_reconciliation(obs, self._catalog))
+        results.extend(consistency_checks(obs, self._catalog))
         return results
 
     def _write(self, build: GoldBuild, frames: Mapping[str, pl.DataFrame]) -> None:
