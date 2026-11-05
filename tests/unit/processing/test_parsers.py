@@ -7,16 +7,24 @@ from pathlib import Path
 import polars as pl
 import pytest
 
-from odb_processing.contracts import DTB_MUNICIPALITY, SIDRA_OBSERVATION
+from odb_processing.contracts import DTB_MUNICIPALITY, SIDRA_OBSERVATION, TERRITORIAL_MESH
 from odb_processing.parsers import (
     REGIONS,
     Lineage,
+    MeshSpec,
     ParseError,
     extract_member,
     parse_dtb_municipalities,
     parse_sidra,
+    parse_territorial_mesh,
 )
-from tests.ingestion_support import DTB_FIXTURES, SIDRA_FIXTURES
+from odb_processing.quality import CheckStatus, mesh_checks
+from tests.ingestion_support import (
+    DTB_FIXTURES,
+    MESH_MUNICIPALITIES,
+    SIDRA_FIXTURES,
+    make_mesh_zip,
+)
 
 LINEAGE = Lineage(
     bronze_artifact_id="artifact-1",
@@ -158,3 +166,85 @@ def test_dtb_structure_errors(
     monkeypatch.setattr(pl, "read_excel", lambda *_a, **_k: _sheet(rows))
     with pytest.raises(ParseError, match=message):
         parse_dtb_municipalities(b"", member="m.ods", reference_year="2025", lineage=LINEAGE)
+
+
+MUNI_SPEC = MeshSpec(
+    dataset_id="ibge-malha-municipios-2022",
+    member="BR_Municipios_2022",
+    level_id="municipio",
+    code_field="CD_MUN",
+    name_field="NM_MUN",
+    uf_field="SIGLA_UF",
+)
+
+
+def _mesh(tmp_path: Path, content: bytes) -> Path:
+    path = tmp_path / "malha.zip"
+    path.write_bytes(content)
+    return path
+
+
+def test_parse_territorial_mesh_and_checks(tmp_path: Path) -> None:
+    content = make_mesh_zip(
+        "BR_Municipios_2022", ["CD_MUN", "NM_MUN", "SIGLA_UF"], MESH_MUNICIPALITIES
+    )
+    frame = parse_territorial_mesh(
+        _mesh(tmp_path, content), MUNI_SPEC, reference_year="2022", lineage=LINEAGE
+    )
+    assert frame.schema == TERRITORIAL_MESH.frame_schema()
+    assert frame["code"].to_list()[:2] == ["1100015", "2927408"]
+    assert set(frame["crs"].to_list()) == {"EPSG:4674"}
+    assert frame["vertex_count"].to_list() == [5] * 5
+    checks = {
+        c.check_id: c
+        for c in mesh_checks(
+            frame,
+            TERRITORIAL_MESH,
+            expected_count=5,
+            reference_ids={"1100015", "2927408", "5103403", "5101837"},
+            reference_label="DTB",
+        )
+    }
+    assert checks["geometry.valid"].status is CheckStatus.PASS
+    assert checks["coverage.count"].status is CheckStatus.PASS
+    reference = checks["reference.territory"]
+    assert reference.status is CheckStatus.WARN
+    assert [d["name"] for d in reference.details["not_in_reference"]] == [
+        "Lagoa Mirim",
+        "Lagoa dos Patos",
+    ]
+    assert reference.details["without_geometry"] == ["5101837"]
+
+
+def test_mesh_rejects_wrong_crs_members_and_fields(tmp_path: Path) -> None:
+    good = make_mesh_zip("BR_Municipios_2022", ["CD_MUN", "NM_MUN", "SIGLA_UF"], [("1", "a", "b")])
+    with zipfile.ZipFile(_mesh(tmp_path, good)) as src:
+        files = {n: src.read(n) for n in src.namelist()}
+
+    def rebuild(**changes: bytes | None) -> Path:
+        out = tmp_path / "alterada.zip"
+        with zipfile.ZipFile(out, "w") as dst:
+            for name, data in {**files, **changes}.items():
+                if data is not None:
+                    dst.writestr(name, data)
+        return out
+
+    with pytest.raises(ParseError, match="sistema de referência"):
+        parse_territorial_mesh(
+            rebuild(**{"BR_Municipios_2022.prj": b'PROJCS["SIRGAS_2000_UTM"]'}),
+            MUNI_SPEC,
+            reference_year="2022",
+            lineage=LINEAGE,
+        )
+    with pytest.raises(ParseError, match="membros ausentes"):
+        parse_territorial_mesh(
+            rebuild(**{"BR_Municipios_2022.dbf": None}),
+            MUNI_SPEC,
+            reference_year="2022",
+            lineage=LINEAGE,
+        )
+    other = make_mesh_zip("BR_Municipios_2022", ["CD_X", "NM_MUN", "SIGLA_UF"], [("1", "a", "b")])
+    with pytest.raises(ParseError, match="campos ausentes"):
+        parse_territorial_mesh(
+            _mesh(tmp_path, other), MUNI_SPEC, reference_year="2022", lineage=LINEAGE
+        )

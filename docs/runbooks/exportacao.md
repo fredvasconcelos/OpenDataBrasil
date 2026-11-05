@@ -103,3 +103,6 @@ uv run --with jupyterlab --with matplotlib==3.10.0 jupyter lab   # notebooks
   valor ausente (`suppressed` = `X`). Ausente **não é zero**.
 - "Pessoas indígenas" (9718) e a categoria Indígena de cor ou raça (9605) são
   conceitos diferentes.
+- `dim_geometry` traz o GeoJSON simplificado de cada território (Brasil,
+  Regiões, UFs e municípios) para mapas. Ele serve para visualização, não para
+  calcular áreas: use a área oficial publicada (`censo_area_territorial`).

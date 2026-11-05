@@ -125,7 +125,40 @@ DTB_MUNICIPALITY = Contract(
     partition_by=("reference_year",),
 )
 
-CONTRACTS = {c.name: c for c in (SIDRA_OBSERVATION, DTB_MUNICIPALITY)}
+TERRITORIAL_MESH = Contract(
+    name="territorial_mesh",
+    version="1.0.0",
+    schema={
+        "dataset_id": pl.String(),
+        "reference_year": pl.String(),
+        "level_id": pl.String(),
+        "code": pl.String(),
+        "name": pl.String(),
+        "uf_abbreviation": pl.String(),
+        "area_km2": pl.Float64(),
+        "crs": pl.String(),
+        # Geometria original, sem simplificação, em WKB.
+        "geometry_wkb": pl.Binary(),
+        "vertex_count": pl.Int64(),
+        "source_member": pl.String(),
+        **LINEAGE,
+    },
+    key=("dataset_id", "code"),
+    required=(
+        "dataset_id",
+        "reference_year",
+        "level_id",
+        "code",
+        "name",
+        "crs",
+        "geometry_wkb",
+        "vertex_count",
+        *LINEAGE,
+    ),
+    partition_by=("dataset_id",),
+)
+
+CONTRACTS = {c.name: c for c in (SIDRA_OBSERVATION, DTB_MUNICIPALITY, TERRITORIAL_MESH)}
 
 
 class SchemaChange(StrEnum):

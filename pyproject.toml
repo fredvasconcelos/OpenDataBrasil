@@ -50,7 +50,7 @@ files = ["packages", "tests"]
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
-module = ["deltalake.*", "duckdb.*", "pyarrow.*"]
+module = ["deltalake.*", "duckdb.*", "pyarrow.*", "shapely", "shapely.*", "shapefile"]
 ignore_missing_imports = true
 
 # ---------------------------------------------------------------- pytest

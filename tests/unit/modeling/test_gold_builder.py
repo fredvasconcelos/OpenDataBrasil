@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 from pathlib import Path
 
@@ -119,6 +120,31 @@ def test_build_tables_hierarchies_and_lineage(env: GoldEnv) -> None:
         Decimal("104555"),
         Decimal("86284"),
     )
+
+
+def test_geometry_levels_and_lagoons(env: GoldEnv) -> None:
+    build = env.gold.build()
+    assert build.status == "succeeded", build.error
+    checks = {c.check_id: c for c in build.checks}
+    geometry = _read(build.tables["dim_geometry"])
+    assert dict(geometry.group_by("level_id").len().iter_rows()) == {
+        "municipio": 3,  # as lagoas (4300001, 4300002) não são municípios
+        "uf": 27,
+        "regiao": 5,
+        "brasil": 1,
+    }
+    nordeste = geometry.filter(pl.col("geography_key") == "regiao:2").row(0, named=True)
+    assert nordeste["derivation"] == "union:uf"
+    assert nordeste["crs"] == "EPSG:4674"
+    assert json.loads(nordeste["geometry_geojson"])["type"] in {"Polygon", "MultiPolygon"}
+    coverage = checks["geometry.coverage"]
+    assert coverage.status is CheckStatus.WARN  # 5.568 municípios sem polígono na malha sintética
+    assert coverage.details["dropped_polygons"]["municipio"] == [
+        {"code": "4300001", "name": "Lagoa Mirim"},
+        {"code": "4300002", "name": "Lagoa dos Patos"},
+    ]
+    assert checks["geometry.valid"].status is CheckStatus.PASS
+    assert checks["fk.geometry.geography"].status is CheckStatus.PASS
 
 
 def test_skip_force_and_versions(env: GoldEnv) -> None:

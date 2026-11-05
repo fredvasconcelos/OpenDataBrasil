@@ -3,6 +3,7 @@
 from odb_semantics.config import (
     Classification,
     FactConfig,
+    GeometryLevel,
     IndicatorConfig,
     Partition,
     SemanticCatalog,
@@ -36,6 +37,7 @@ __all__ = [
     "Classification",
     "FactConfig",
     "GeographyLevel",
+    "GeometryLevel",
     "IndicatorConfig",
     "IndicatorMeta",
     "IndicatorQuery",

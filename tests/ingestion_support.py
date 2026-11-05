@@ -4,7 +4,7 @@ import io
 import json
 import re
 import zipfile
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Literal
@@ -27,6 +27,30 @@ DTB_MEMBERS = [
     "RELATORIO_DTB_BRASIL_2025_MUNICIPIOS.xls",
 ]
 DTB_FIXTURES = FIXTURES / "ibge" / "dtb"
+MESH_BASE = (
+    "/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/Brasil/BR/"
+)
+# Códigos reais de UF (DTB) com a Grande Região pelo 1º dígito.
+UF_CODES = [
+    ("11", "Rondônia", "RO"), ("12", "Acre", "AC"), ("13", "Amazonas", "AM"),
+    ("14", "Roraima", "RR"), ("15", "Pará", "PA"), ("16", "Amapá", "AP"),
+    ("17", "Tocantins", "TO"), ("21", "Maranhão", "MA"), ("22", "Piauí", "PI"),
+    ("23", "Ceará", "CE"), ("24", "Rio Grande do Norte", "RN"), ("25", "Paraíba", "PB"),
+    ("26", "Pernambuco", "PE"), ("27", "Alagoas", "AL"), ("28", "Sergipe", "SE"),
+    ("29", "Bahia", "BA"), ("31", "Minas Gerais", "MG"), ("32", "Espírito Santo", "ES"),
+    ("33", "Rio de Janeiro", "RJ"), ("35", "São Paulo", "SP"), ("41", "Paraná", "PR"),
+    ("42", "Santa Catarina", "SC"), ("43", "Rio Grande do Sul", "RS"),
+    ("50", "Mato Grosso do Sul", "MS"), ("51", "Mato Grosso", "MT"), ("52", "Goiás", "GO"),
+    ("53", "Distrito Federal", "DF"),
+]  # fmt: skip
+# Municípios reais (DTB 2025) e as duas lagoas da malha municipal real, que não são municípios.
+MESH_MUNICIPALITIES = [
+    ("1100015", "Alta Floresta D'Oeste", "RO"),
+    ("2927408", "Salvador", "BA"),
+    ("5103403", "Cuiabá", "MT"),
+    ("4300001", "Lagoa Mirim", "RS"),
+    ("4300002", "Lagoa dos Patos", "RS"),
+]
 _VALUES = re.compile(
     r"^/values/t/(\d+)/((?:n\d+/all/?)+)/v/([\d,]+|all)/p/(\w+)((?:/c\d+/[\d,a-z]+)*)$"
 )
@@ -42,6 +66,52 @@ def synthetic_period(period: str) -> bytes:
     for row in payload[1:]:
         row["D3C"] = row["D3N"] = period
     return json.dumps(payload, ensure_ascii=False).encode()
+
+
+def make_mesh_zip(member: str, fields: list[str], records: Sequence[tuple[str, ...]]) -> bytes:
+    """Malha SINTÉTICA no formato da Malha Municipal 2022 (shapefile em ZIP).
+
+    Nomes de membros, campos do DBF e ``.prj`` (SIRGAS 2000) seguem o arquivo
+    real. As geometrias são quadrados de 1° numa grade, vizinhos entre si, e
+    não representam os territórios.
+    """
+    import shapefile  # noqa: PLC0415 - só os testes de malha precisam
+
+    shp, shx, dbf = io.BytesIO(), io.BytesIO(), io.BytesIO()
+    with shapefile.Writer(shp=shp, shx=shx, dbf=dbf, shapeType=shapefile.POLYGON) as writer:
+        for name in fields:
+            writer.field(name, "C", size=60)
+        writer.field("AREA_KM2", "N", size=12, decimal=3)
+        for i, record in enumerate(records):
+            x, y = -60 + i % 6, -10 - i // 6
+            writer.poly([[[x, y], [x, y + 1], [x + 1, y + 1], [x + 1, y], [x, y]]])
+            writer.record(*record, 12345.678)
+    prj = (
+        'GEOGCS["GCS_SIRGAS_2000",DATUM["D_SIRGAS_2000",SPHEROID["GRS_1980",6378137.0,'
+        '298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]'
+    )
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        archive.writestr(f"{member}.shp", shp.getvalue())
+        archive.writestr(f"{member}.shx", shx.getvalue())
+        archive.writestr(f"{member}.dbf", dbf.getvalue())
+        archive.writestr(f"{member}.prj", prj)
+        archive.writestr(f"{member}.cpg", "UTF-8")
+    return buffer.getvalue()
+
+
+def make_meshes() -> dict[str, bytes]:
+    """Malhas sintéticas de UF e de municípios, por caminho no geoftp."""
+    return {
+        MESH_BASE + "BR_UF_2022.zip": make_mesh_zip(
+            "BR_UF_2022",
+            ["CD_UF", "NM_UF", "SIGLA_UF", "NM_REGIAO"],
+            [(c, n, s, "") for c, n, s in UF_CODES],
+        ),
+        MESH_BASE + "BR_Municipios_2022.zip": make_mesh_zip(
+            "BR_Municipios_2022", ["CD_MUN", "NM_MUN", "SIGLA_UF"], MESH_MUNICIPALITIES
+        ),
+    }
 
 
 def make_dtb_zip(members: list[str] | None = None) -> bytes:
@@ -69,6 +139,7 @@ class FakeSources:
     overrides: dict[str, Callable[[httpx.Request], httpx.Response]] = field(default_factory=dict)
     dtb_zip: bytes = field(default_factory=make_dtb_zip)
     dtb_etag: str = '"dtb-v1"'
+    meshes: dict[str, bytes] = field(default_factory=make_meshes)
     requests: list[httpx.Request] = field(default_factory=list)
 
     def handler(self, request: httpx.Request) -> httpx.Response:  # noqa: PLR0911 - roteador
@@ -88,6 +159,10 @@ class FakeSources:
                         "etag": self.dtb_etag,
                         "last-modified": "Thu, 26 Mar 2026 21:07:36 GMT",
                     },
+                )
+            if path in self.meshes:
+                return httpx.Response(
+                    200, content=self.meshes[path], headers={"content-type": "application/zip"}
                 )
             return httpx.Response(200, content=b"<html>index</html>")
         match = _VALUES.match(path)

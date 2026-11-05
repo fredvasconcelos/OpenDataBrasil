@@ -92,7 +92,7 @@ Preta …
 
 O portal é uma aplicação Next.js (React, TypeScript), como pede o §4.2. Mapa e
 gráficos usam **d3** (d3-geo, d3-scale, d3-scale-chromatic, d3-shape), com o
-React renderizando o SVG. A geometria vai em TopoJSON. Se o mapa municipal
+React renderizando o SVG. A geometria vem em GeoJSON (seção 7). Se o mapa municipal
 pesar em SVG, o desenho passa para canvas sem mudar o contrato dos componentes.
 
 - Escala de cor por **quantis, em 7 faixas**, com legenda. Uma escala linear
@@ -102,12 +102,30 @@ pesar em SVG, o desenho passa para canvas sem mudar o contrato dos componentes.
 
 ### 7. Geometria
 
-Malhas territoriais oficiais de 2022 do `geoftp.ibge.gov.br` (Brasil,
-Grandes Regiões, UFs e municípios): Bronze (arquivo original), Silver
-(polígonos com o código IBGE) e Gold (`dim_geometry` em Delta, simplificada
-por nível, versionada no release). A API de malhas (`servicodados`) está fora
-do ar (KI-002). Terras indígenas e territórios quilombolas ficam sem mapa no
-MVP e aparecem na tabela.
+Malhas territoriais oficiais de 2022 do `geoftp.ibge.gov.br`:
+
+- **Bronze:** os arquivos originais de UFs e de municípios.
+- **Silver** (`territorial_mesh`): polígonos originais em WKB, com o código IBGE.
+- **Gold** (`dim_geometry`, em Delta e versionada no release): GeoJSON
+  simplificado por nível.
+
+A API de malhas (`servicodados`) está fora do ar (KI-002).
+
+- Grandes Regiões e Brasil são derivados por `union_all` das UFs, agrupadas
+  pela hierarquia (a malha de Regiões não tem código). A união por cobertura
+  (`coverage_union_all`) falhou nas UFs reais, porque as divisas oficiais não
+  têm vértices exatamente coincidentes.
+- A simplificação usa `coverage_simplify`, com tolerância de 0,01° (UF e
+  município) e 0,02° (Região e Brasil). As coordenadas ficam com 4 casas: com
+  3, o arredondamento invalidava 59 municípios. Com 4, 17 municípios precisam
+  de reparo (`make_valid` estrutural), com perda de área de no máximo 0,2%.
+- Transporte: GeoJSON com compressão gzip na API. A malha municipal tem 5,5 MB,
+  ou 1,5 MB comprimida. O TopoJSON fica como otimização futura, se o tempo de
+  carga exigir.
+- As duas lagoas da malha municipal (4300001 e 4300002) não são municípios e
+  ficam de fora. Elas explicam a diferença de área do RS (KI-004).
+- Terras indígenas e territórios quilombolas ficam sem mapa no MVP e
+  aparecem na tabela.
 
 ### 8. API
 

@@ -2,7 +2,7 @@
 
 **Validada em:** 2026-11-03, por execução (CLAUDE.md §4.3)
 **Evidência:** `tests/contracts/delta_interop/` (13 contratos) + suíte completa
-(105 testes na Fase 1; 165 na Fase 2; 212 na Fase 3; 251 na Fase 4) executada no host (Ubuntu 24.04 / WSL2) e no container `tests`.
+(105 testes na Fase 1; 165 na Fase 2; 212 na Fase 3; 251 na Fase 4; 268 na etapa 5.0 da Fase 5) executada no host (Ubuntu 24.04 / WSL2) e no container `tests`.
 
 Regra de seleção: versão estável publicada há pelo menos 14 dias na data da
 seleção. Todas as dependências transitivas estão fixadas em `uv.lock`.
@@ -32,6 +32,9 @@ seleção. Todas as dependências transitivas estão fixadas em `uv.lock`.
 | typer | 0.27.3 | 2026-10-06 | |
 | httpx | 0.28.1 | 2024-12-06 | cliente HTTP da ingestão (Fase 2), via `MockTransport` nos testes |
 | fastexcel | 0.21.0 | 2026-08-19 | leitura de ODS/XLS (calamine) via `polars.read_excel` (Fase 3) |
+| shapely | 2.2.0 (GEOS 3.14.1) | 2026-10-07 | malhas territoriais: WKB, `coverage_simplify` (preserva divisas), `union_all`, `make_valid` (Fase 5) |
+| pyshp | 3.1.6 | 2026-07-25 | leitura de shapefile em Python puro, sem GDAL (Fase 5) |
+| numpy | 2.5.4 | 2026-10-10 | dependência do shapely; arredondamento das coordenadas (Fase 5) |
 | ruff / mypy / pytest / pytest-cov | 0.17.1 / 2.4.0 / 9.1.1 / 7.1.0 | | desenvolvimento |
 
 ## Protocolo Delta (perfil conservador, ADR-0001)

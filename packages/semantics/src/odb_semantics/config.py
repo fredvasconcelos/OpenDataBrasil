@@ -24,6 +24,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
+from odb_semantics.geography import LEVELS_BY_ID, is_ancestor_level
+
 INDICATOR_ID = r"^[a-z][a-z0-9_]{0,63}$"
 TABLE_ID = r"^(fact|dim|bridge)_[a-z0-9_]{1,60}$"
 COLUMN_ID = r"^[a-z][a-z0-9_]{0,62}$"
@@ -192,6 +194,29 @@ class Consistency(_Strict):
     note: str = ""
 
 
+class GeometryLevel(_Strict):
+    """Geometria de um nível territorial para mapas.
+
+    Cada nível vem de uma malha oficial (``dataset``) ou é derivado pela união
+    das geometrias de um nível com malha oficial (``derive_from``), agrupadas
+    pelo ancestral na hierarquia territorial (``bridge_geography_ancestor``).
+    """
+
+    level: str = Field(pattern=INDICATOR_ID)
+    dataset: str | None = None
+    derive_from: str | None = Field(default=None, pattern=INDICATOR_ID)
+    # Tolerância da simplificação (graus) e casas decimais das coordenadas.
+    tolerance: float = Field(gt=0, le=1)
+    decimals: int = Field(default=4, ge=2, le=6)
+
+    @model_validator(mode="after")
+    def _origin(self) -> GeometryLevel:
+        if (self.dataset is None) == (self.derive_from is None):
+            msg = f"geometria {self.level}: informe dataset ou derive_from (só um)"
+            raise ValueError(msg)
+        return self
+
+
 class SemanticCatalog(_Strict):
     """Catálogo de um escopo de publicação."""
 
@@ -202,6 +227,7 @@ class SemanticCatalog(_Strict):
     indicators: tuple[IndicatorConfig, ...] = Field(min_length=1)
     pending_installation: tuple[PendingInstallation, ...] = ()
     consistency: tuple[Consistency, ...] = ()
+    geometry: tuple[GeometryLevel, ...] = ()
     # Hash do arquivo de origem, para a impressão digital da construção.
     content_sha256: str = ""
 
@@ -251,6 +277,20 @@ class SemanticCatalog(_Strict):
                 )
             elif left.dataset == right.dataset:
                 problems.append(f"consistência {left.id} x {right.id}: mesmo dataset")
+        official = {g.level for g in self.geometry if g.dataset}
+        levels = [g.level for g in self.geometry]
+        for g in self.geometry:
+            if levels.count(g.level) > 1:
+                problems.append(f"geometria repetida para o nível {g.level}")
+            if g.level not in LEVELS_BY_ID:
+                problems.append(f"geometria: nível desconhecido {g.level}")
+            elif g.derive_from is not None and (
+                g.derive_from not in official or not is_ancestor_level(g.level, g.derive_from)
+            ):
+                problems.append(
+                    f"geometria {g.level}: derive_from {g.derive_from} precisa ser um nível "
+                    "com malha oficial e descendente dele"
+                )
         variables = [(i.dataset, i.variable) for i in self.indicators]
         repeated_vars = sorted({v for v in variables if variables.count(v) > 1})
         if repeated_vars:
@@ -281,6 +321,10 @@ class SemanticCatalog(_Strict):
     def indicators_of(self, fact_id: str) -> list[IndicatorConfig]:
         """Indicadores (medidas) de um fato, na ordem do arquivo."""
         return [i for i in self.indicators if i.fact == fact_id]
+
+    def geometry_datasets(self) -> list[str]:
+        """Datasets de malha usados pela geometria, na ordem do arquivo."""
+        return [g.dataset for g in self.geometry if g.dataset is not None]
 
     def datasets(self) -> list[str]:
         """Datasets usados pelo catálogo, sem repetição e na ordem dos fatos."""

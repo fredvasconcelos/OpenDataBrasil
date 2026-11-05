@@ -24,11 +24,17 @@ def test_repository_sources_are_valid() -> None:
         "ibge-sidra-8176",
         "ibge-sidra-9765",
         "ibge-dtb",
+        "ibge-malha-uf-2022",
+        "ibge-malha-municipios-2022",
     }
     assert catalog.source_institution["ibge-sidra"] == "ibge"
     assert catalog.licenses["ibge-reuso-com-citacao"].review_status == "requires_review"
     assert set(build_connectors(catalog)) == {"ibge-sidra", "ibge-geoftp"}
-    assert [d.id for d in catalog.datasets_of("ibge-geoftp")] == ["ibge-dtb"]
+    assert [d.id for d in catalog.datasets_of("ibge-geoftp")] == [
+        "ibge-dtb",
+        "ibge-malha-uf-2022",
+        "ibge-malha-municipios-2022",
+    ]
 
 
 def test_config_checksum_is_stable_and_sensitive() -> None:

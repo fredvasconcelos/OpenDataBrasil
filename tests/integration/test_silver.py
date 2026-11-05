@@ -47,6 +47,7 @@ def test_silver_end_to_end(lake: Path, engine: Engine, tmp_path: Path) -> None:
     summary = json.loads(built.stdout)
     assert [(s["dataset_id"], s["status"]) for s in summary] == [
         ("ibge-dtb", "succeeded"),
+        ("ibge-malha-uf-2022", "succeeded"),
         ("ibge-sidra-6579", "succeeded"),
         ("ibge-sidra-4714", "succeeded"),
         ("ibge-sidra-9605", "succeeded"),
@@ -59,9 +60,10 @@ def test_silver_end_to_end(lake: Path, engine: Engine, tmp_path: Path) -> None:
         ("ibge-sidra-9606", "succeeded"),
         ("ibge-sidra-8176", "succeeded"),
         ("ibge-sidra-9765", "succeeded"),
+        ("ibge-malha-municipios-2022", "succeeded"),
     ]
-    sidra_uri = summary[2]["target_uri"]
-    version = summary[2]["delta_version"]
+    sidra_uri = summary[3]["target_uri"]  # 4714
+    version = summary[3]["delta_version"]
     assert sidra_uri.endswith("/silver/ibge/sidra_observation")
 
     # Linhagem: toda observação aponta para um artefato Bronze stored com o mesmo checksum.
@@ -82,7 +84,7 @@ def test_silver_end_to_end(lake: Path, engine: Engine, tmp_path: Path) -> None:
         "SELECT dataset_id, status, delta_version FROM operations.transformation_run "
         "ORDER BY started_at",
     )
-    assert [r[1] for r in runs] == ["succeeded"] * 13
+    assert [r[1] for r in runs] == ["succeeded"] * 15
     checks = _pairs(
         engine,
         "SELECT c.check_id, c.status FROM quality.check_result c "
@@ -95,7 +97,7 @@ def test_silver_end_to_end(lake: Path, engine: Engine, tmp_path: Path) -> None:
     again = runner.invoke(app, ["silver", "build", "--all"])
     assert again.exit_code == 0
     assert {s["status"] for s in json.loads(again.stdout)} == {"skipped"}
-    assert DeltaTable(sidra_uri).version() == summary[-1]["delta_version"]
+    assert DeltaTable(sidra_uri).version() == summary[-2]["delta_version"]  # último SIDRA
 
     report = runner.invoke(app, ["quality", "report", "ibge-sidra-6579"])
     assert report.exit_code == 0

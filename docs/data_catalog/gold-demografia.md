@@ -1,7 +1,7 @@
 # Gold do escopo `demografia`
 
 Definição: [`configs/indicators/demografia.toml`](../../configs/indicators/demografia.toml)
-(catálogo semântico 1.4.0). Modelo: [ADR-0008](../adr/0008-gold-modelo-hierarquico-e-camada-semantica.md).
+(catálogo semântico 1.5.0). Modelo: [ADR-0008](../adr/0008-gold-modelo-hierarquico-e-camada-semantica.md).
 Operação: [runbook da Gold](../runbooks/gold.md).
 
 Releases com dados reais:
@@ -12,7 +12,8 @@ Releases com dados reais:
 | `26826057-8dc5-4f36-86b8-6e6efa33e591` (superseded) | + etapa 4b: 9971, 9970 | 3.373.605 | 112 aprovadas |
 | `963a5558-68d4-4881-ac41-4bd65008fb9a` (superseded) | + 9723 (territórios quilombolas e Amazônia Legal) | 3.393.438 | 115 aprovadas |
 | `c9c90f26-6439-4559-9195-5c829472cee2` (superseded) | + 9954 (terras indígenas e Coordenações Regionais da Funai) | 3.891.210 | 127 aprovadas |
-| `35489cf6-6d87-46cb-8c93-75de8f0b8e77` (**ativo**, 2026-11-05) | + Fase 5.0: 9606 (cor ou raça × sexo), 8176 e 9765 (quilombolas por sexo) | 4.183.011 | 156 aprovadas, 6 de consistência |
+| `35489cf6-6d87-46cb-8c93-75de8f0b8e77` (superseded) | + Fase 5.0: 9606 (cor ou raça × sexo), 8176 e 9765 (quilombolas por sexo) | 4.183.011 | 156 aprovadas, 6 de consistência |
+| `024556cf-9559-4bd7-982b-1051eed031c9` (**ativo**, 2026-11-05) | + `dim_geometry` (malhas 2022 para mapas) | 4.183.011 | 161 aprovadas, 1 aviso (município sem polígono) |
 
 Release **interno**: a licença do IBGE ainda está em `requires_review` (KI-003).
 
@@ -80,6 +81,27 @@ publicados nestas tabelas.
 | Totais de UF, Grande Região e Brasil são os oficiais, não a soma dos municípios | modelo; `--sum-to` marca o resultado como derivado |
 | 2004, 2008 e 2012 (6579): a soma municipal inclui municípios com instalação prevista | `pending_installation` no fato e `flags` na observação |
 | Tabelas sobrepostas publicam os mesmos números (9606 × 9605 e 4714, 8176 × 9578, 9765 × 9723, 9971 × 9718) | `[[consistency]]`: compara as classificações comuns com as demais no Total; divergência gera aviso |
+
+## Geometria (`dim_geometry`)
+
+Uma linha por território, com GeoJSON simplificado para mapas (ADR-0009).
+
+| Nível | Origem | Tolerância | Polígonos | Vértices | GeoJSON |
+|---|---|---|---|---|---|
+| `municipio` | malha oficial 2022 | 0,01° | 5.570 | 256.074 | 5,2 MB (1,5 MB com gzip) |
+| `uf` | malha oficial 2022 | 0,01° | 27 | 26.434 | 0,5 MB |
+| `regiao` | união das UFs | 0,02° | 5 | 9.559 | 0,2 MB |
+| `brasil` | união das UFs | 0,02° | 1 | 6.838 | 0,1 MB |
+
+- A simplificação preserva as divisas entre vizinhos (`coverage_simplify`).
+  As coordenadas têm 4 casas decimais, cerca de 11 m.
+- O arredondamento cruzou arestas em 17 municípios estreitos, reparados com
+  `make_valid` estrutural. A maior perda de área medida foi de 0,2%. A
+  verificação `geometry.valid` bloqueia geometria vazia ou não poligonal.
+- `geometry.coverage` avisa: Boa Esperança do Norte (MT) não tem polígono na
+  malha de 2022. As lagoas da malha municipal ficam de fora.
+- Terras indígenas, territórios quilombolas e Amazônia Legal ainda não têm
+  geometria.
 
 ## Fatos
 

@@ -89,6 +89,17 @@ def test_repository_catalog_is_valid() -> None:
             "consistência inválida",
         ),
         (
+            'level = "regiao"\nderive_from = "uf"',
+            'level = "regiao"\nderive_from = "brasil"',
+            "precisa ser um nível com malha oficial",
+        ),
+        (
+            'level = "brasil"\nderive_from = "uf"',
+            'level = "brasil"\ndataset = "x"\nderive_from = "uf"',
+            "informe dataset ou derive_from",
+        ),
+        ('level = "brasil"\nderive_from', 'level = "uf"\nderive_from', "geometria repetida"),
+        (
             'dataset = "ibge-sidra-9578"\nvariable = "4709"',
             'dataset = "ibge-sidra-9605"\nvariable = "4709"',
             "difere do fato",

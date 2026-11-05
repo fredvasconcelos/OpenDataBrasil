@@ -70,7 +70,7 @@ def test_gold_publish_query_and_preserve_on_failure(  # noqa: PLR0915 - cenário
     assert first["status"] == "succeeded"
     assert first["release"]["status"] == "active"
     release_id = first["release"]["release_id"]
-    assert len(first["tables"]) == 21
+    assert len(first["tables"]) == 22
     assert "fact_indigenous_population" in first["tables"]
 
     # Catálogo de indicadores e vínculo construção → release no PostgreSQL.

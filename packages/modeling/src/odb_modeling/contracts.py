@@ -225,6 +225,48 @@ INDICATOR_OBSERVATION = Contract(
     partition_by=("dataset_id",),
 )
 
+F64 = pl.Float64()
+
+# Geometria simplificada para mapas (§13.4). A geometria original fica na
+# Silver (``territorial_mesh``) e o arquivo original na Bronze.
+DIM_GEOMETRY = Contract(
+    name="dim_geometry",
+    version="1.0.0",
+    schema={
+        "geography_key": S,
+        "level_id": S,
+        "geometry_geojson": S,
+        "vertex_count": I64,
+        "bbox_min_lon": F64,
+        "bbox_min_lat": F64,
+        "bbox_max_lon": F64,
+        "bbox_max_lat": F64,
+        "tolerance_deg": F64,
+        "coordinate_decimals": I16,
+        # "official" (malha publicada) ou "union:<nível>" (união das geometrias do nível).
+        "derivation": S,
+        "crs": S,
+        "source_dataset_id": S,
+        "reference_year": S,
+        "silver_table_version": I64,
+        "bronze_artifact_id": S,
+    },
+    key=("geography_key",),
+    required=(
+        "geography_key",
+        "level_id",
+        "geometry_geojson",
+        "vertex_count",
+        "tolerance_deg",
+        "derivation",
+        "crs",
+        "source_dataset_id",
+        "reference_year",
+        "silver_table_version",
+    ),
+    partition_by=(),
+)
+
 FIXED_CONTRACTS: tuple[Contract, ...] = (
     DIM_GEOGRAPHY,
     BRIDGE_GEOGRAPHY_ANCESTOR,

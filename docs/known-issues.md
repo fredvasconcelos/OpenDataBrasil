@@ -58,14 +58,18 @@ navegador automatizado ou credenciais pessoais.
 
 ## KI-004: área municipal do RS diverge da área da UF (tabela 4714)
 
-- **Estado:** aberto
+- **Estado:** explicado em 2026-11-05 (sem correção a fazer)
 - **Detectado em:** 2026-11-03
 - **Sintoma:** a soma das áreas municipais do RS (268.621,283 km²) é
   13.085,868 km² menor que a área da UF (281.707,151 km²).
-- **Hipótese não verificada:** superfícies de água (lagoas dos Patos e Mirim)
-  entram na área da UF e não na dos municípios.
-- **Ação:** confirmar nas notas da tabela 4714 ou na metodologia de áreas
-  territoriais do IBGE. Até lá, a Gold usa a área oficial publicada por nível.
+- **Causa:** a Malha Municipal 2022 (`BR_Municipios_2022`) traz dois polígonos
+  que não são municípios: Lagoa Mirim (código 4300001, 2.884,340 km²) e Lagoa
+  dos Patos (4300002, 10.201,524 km²). Juntas somam 13.085,864 km², a
+  diferença observada, com 0,004 km² de arredondamento. As lagoas entram na
+  área da UF e não na de nenhum município.
+- **Tratamento:** a Gold usa a área oficial publicada por nível. Os dois
+  polígonos ficam na Silver da malha e não entram na `dim_geometry`, porque
+  não existem na `dim_geography`.
 
 ## KI-006: código dos níveis territoriais de terras indígenas e territórios quilombolas
 

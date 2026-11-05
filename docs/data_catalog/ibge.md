@@ -199,6 +199,28 @@ desses níveis, usado na API como `/n<código>/all`, só aparece na descrição 
 tabela, que responde 403 a clientes automatizados. A API de metadados está fora
 do ar. Resolvido com os códigos fornecidos pelo mantenedor (KI-006).
 
+### `ibge-malha-uf-2022` e `ibge-malha-municipios-2022`: Malha Municipal 2022
+
+| Item | UF | Municípios |
+|---|---|---|
+| URL | `https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/Brasil/BR/BR_UF_2022.zip` | `…/BR_Municipios_2022.zip` |
+| `Last-Modified` | Tue, 28 Mar 2023 12:50:59 GMT | Tue, 28 Mar 2023 12:51:07 GMT |
+| Volume | 13,7 MB | 203,6 MB |
+| Conteúdo | shapefile (`.shp`, `.shx`, `.dbf`, `.prj`, `.cpg` UTF-8), SIRGAS 2000 em coordenadas geográficas | idem |
+| Campos | `CD_UF`, `NM_UF`, `SIGLA_UF`, `NM_REGIAO`, `AREA_KM2` | `CD_MUN`, `NM_MUN`, `SIGLA_UF`, `AREA_KM2` |
+| Polígonos | 27 (1,14 milhão de vértices) | 5.572 (16,9 milhões de vértices) |
+
+- A malha municipal traz dois polígonos que não são municípios: **Lagoa Mirim**
+  (4300001) e **Lagoa dos Patos** (4300002). Eles explicam a diferença de área
+  do RS (KI-004) e não entram na `dim_geometry`.
+- Boa Esperança do Norte (MT, 5101837), criado depois de 2022, não tem polígono
+  nesta malha.
+- A malha de Grandes Regiões (`BR_Regioes_2022`) não tem código, só nome e
+  sigla. Por isso Regiões e Brasil são derivados por união das UFs, agrupadas
+  pela hierarquia da Gold. Não há tabela de correspondência à parte.
+- A Silver (`territorial_mesh`) guarda a geometria original em WKB. A Gold
+  (`dim_geometry`) guarda a geometria simplificada para mapas.
+
 ### `ibge-dtb`: Divisão Territorial Brasileira 2025
 
 | Item | Valor |

@@ -19,6 +19,7 @@ from typing import Any
 
 import polars as pl
 
+from odb_modeling.geometry import GeometryReport
 from odb_modeling.model import (
     NO_BREAKDOWN,
     SIDRA_LEVELS,
@@ -480,3 +481,44 @@ def consistency_checks(observations: pl.DataFrame, catalog: SemanticCatalog) -> 
                 )
             )
     return results
+
+
+# ------------------------------------------------------------------ geometria
+
+
+def geometry_checks(geometry: pl.DataFrame, report: GeometryReport) -> list[CheckResult]:
+    """Cobertura e validade da ``dim_geometry``.
+
+    ``fail``: geometria vazia ou inválida depois da simplificação.
+    ``warn``: territórios da ``dim_geography`` sem polígono no nível (por
+    exemplo, municípios criados depois da malha). Polígonos sem território (as
+    lagoas da malha municipal) são só informados.
+    """
+    counts = dict(geometry.group_by("level_id").len().iter_rows())
+    missing = {k: v for k, v in report.missing.items() if v}
+    return [
+        CheckResult(
+            "geometry.valid",
+            CheckStatus.FAIL if report.invalid else CheckStatus.PASS,
+            f"{len(report.invalid)} geometrias inválidas, vazias ou não poligonais "
+            f"({len(report.repaired)} reparadas após o arredondamento)",
+            observed=len(report.invalid),
+            expected=0,
+            details={"invalid": report.invalid[:50], "repaired": report.repaired[:200]},
+        ),
+        CheckResult(
+            "geometry.coverage",
+            CheckStatus.WARN if missing else CheckStatus.PASS,
+            "territórios sem geometria: "
+            + (", ".join(f"{lvl} {len(keys)}" for lvl, keys in missing.items()) or "nenhum"),
+            observed=sum(len(v) for v in missing.values()),
+            expected=0,
+            details={
+                "polygons_by_level": counts,
+                "without_geometry": {k: v[:50] for k, v in missing.items()},
+                "dropped_polygons": report.dropped,
+                "vertices": int(geometry["vertex_count"].sum()),
+                "geojson_bytes": int(geometry["geometry_geojson"].str.len_bytes().sum()),
+            },
+        ),
+    ]

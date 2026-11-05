@@ -29,7 +29,8 @@ SIDRA_DATASETS = [
     "ibge-sidra-8176",
     "ibge-sidra-9765",
 ]
-ALL_DATASETS = ["ibge-dtb", *SIDRA_DATASETS]
+MESH_DATASETS = ["ibge-malha-uf-2022", "ibge-malha-municipios-2022"]
+ALL_DATASETS = ["ibge-dtb", *SIDRA_DATASETS, *MESH_DATASETS]
 
 
 class InMemoryGoldRegistry:

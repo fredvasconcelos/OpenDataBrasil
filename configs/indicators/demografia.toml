@@ -10,7 +10,7 @@
 # 2026-11-04 (tests/fixtures/ibge/sidra). Não acrescente códigos sem verificá-los.
 # Rótulos de categoria vêm da Silver. Aqui só se declara a estrutura.
 
-config_version = "1.4.0"
+config_version = "1.5.0"
 scope = "demografia"
 
 # ------------------------------------------------------------------ classificações
@@ -728,6 +728,36 @@ note = "9765 com sexo no Total = 9723."
 indicator = "censo_pessoas_indigenas_sexo_idade"
 reference = "censo_pessoas_indigenas"
 note = "9971 com sexo, idade e situação no Total = 9718 com quesito no Total, por localização."
+
+# ------------------------------------------------------------------ geometria
+#
+# Malhas para os mapas do portal (ADR-0009). Tolerância em graus (0,01° ≈ 1,1 km);
+# 4 casas decimais ≈ 11 m (com 3 casas, o arredondamento invalidava 59 municípios).
+# Grandes Regiões e Brasil são a união das UFs oficiais, agrupadas pela hierarquia.
+
+[[geometry]]
+level = "municipio"
+dataset = "ibge-malha-municipios-2022"
+tolerance = 0.01
+decimals = 4
+
+[[geometry]]
+level = "uf"
+dataset = "ibge-malha-uf-2022"
+tolerance = 0.01
+decimals = 4
+
+[[geometry]]
+level = "regiao"
+derive_from = "uf"
+tolerance = 0.02
+decimals = 4
+
+[[geometry]]
+level = "brasil"
+derive_from = "uf"
+tolerance = 0.02
+decimals = 4
 
 # ------------------------------------------------------------------ notas oficiais
 #

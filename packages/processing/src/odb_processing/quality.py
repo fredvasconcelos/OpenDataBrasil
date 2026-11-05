@@ -20,6 +20,7 @@ from enum import StrEnum
 from typing import Any, Literal
 
 import polars as pl
+import shapely
 
 from odb_processing.contracts import Contract
 from odb_processing.values import QUANTITATIVE, ValueStatus
@@ -378,4 +379,70 @@ def dtb_checks(frame: pl.DataFrame, contract: Contract) -> list[CheckResult]:
             expected=27,
         )
     )
+    return results
+
+
+def mesh_checks(
+    frame: pl.DataFrame,
+    contract: Contract,
+    *,
+    expected_count: int | None,
+    reference_ids: set[str] | None,
+    reference_label: str,
+) -> list[CheckResult]:
+    """Verificações de uma malha territorial.
+
+    ``fail``: contrato, obrigatórios, chave única, geometria inválida ou vazia.
+    ``warn``: contagem diferente da esperada e códigos fora da referência
+    territorial (por exemplo, as lagoas da malha municipal) ou ausentes dela.
+    """
+    contract_check = check_contract(frame, contract)
+    if contract_check.status is CheckStatus.FAIL:
+        return [contract_check]
+    results = [contract_check, check_required(frame, contract), check_unique(frame, contract)]
+    geoms = shapely.from_wkb(frame["geometry_wkb"].to_list())
+    invalid = [
+        code
+        for code, geom in zip(frame["code"].to_list(), geoms, strict=True)
+        if geom is None or geom.is_empty or not geom.is_valid
+    ]
+    results.append(
+        CheckResult(
+            "geometry.valid",
+            CheckStatus.FAIL if invalid else CheckStatus.PASS,
+            f"{len(invalid)} geometrias inválidas ou vazias",
+            observed=len(invalid),
+            expected=0,
+            details={"codes": invalid[:50]} if invalid else {},
+        )
+    )
+    if expected_count is not None:
+        results.append(
+            CheckResult(
+                "coverage.count",
+                CheckStatus.PASS if frame.height == expected_count else CheckStatus.WARN,
+                f"{frame.height} polígonos (esperados {expected_count})",
+                observed=frame.height,
+                expected=expected_count,
+            )
+        )
+    if reference_ids is not None:
+        codes = set(frame["code"].to_list())
+        extra = sorted(codes - reference_ids)
+        missing = sorted(reference_ids - codes)
+        names = dict(zip(frame["code"].to_list(), frame["name"].to_list(), strict=True))
+        results.append(
+            CheckResult(
+                "reference.territory",
+                CheckStatus.WARN if extra or missing else CheckStatus.PASS,
+                f"{len(extra)} polígonos fora de {reference_label}; "
+                f"{len(missing)} territórios da referência sem polígono",
+                observed=len(extra) + len(missing),
+                expected=0,
+                details={
+                    "not_in_reference": [{"code": c, "name": names[c]} for c in extra[:50]],
+                    "without_geometry": missing[:50],
+                },
+            )
+        )
     return results

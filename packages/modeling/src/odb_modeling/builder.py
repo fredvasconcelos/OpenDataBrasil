@@ -45,6 +45,7 @@ from odb_modeling.contracts import (
     DIM_CATEGORY,
     DIM_CLASSIFICATION,
     DIM_GEOGRAPHY,
+    DIM_GEOMETRY,
     DIM_INDICATOR,
     DIM_INDICATOR_NODE,
     DIM_PERIOD,
@@ -53,11 +54,13 @@ from odb_modeling.contracts import (
     fact_contract,
 )
 from odb_modeling.geography import GeographyError, build_ancestor_bridge, build_dim_geography
+from odb_modeling.geometry import GeometryError, build_dim_geometry
 from odb_modeling.quality import (
     category_reconciliation,
     consistency_checks,
     foreign_key,
     geography_checks,
+    geometry_checks,
     input_checks,
     silver_fidelity,
     table_checks,
@@ -71,7 +74,7 @@ logger = logging.getLogger(__name__)
 
 # Versão das regras de modelagem. Sobe quando a transformação muda sem mudar
 # contratos nem catálogo, para forçar a reconstrução.
-MODEL_VERSION = "1.0.0"
+MODEL_VERSION = "1.1.0"
 GoldStatus = Literal["running", "succeeded", "skipped", "failed"]
 
 
@@ -214,6 +217,8 @@ class GoldBuilder:
         contracts = {c.name: c for c in FIXED_CONTRACTS}
         for fact in self._catalog.facts:
             contracts[fact.id] = fact_contract(self._catalog, fact, flags=fact.dataset in flagged)
+        if self._catalog.geometry:
+            contracts[DIM_GEOMETRY.name] = DIM_GEOMETRY
         return contracts
 
     # ------------------------------------------------------------- execução
@@ -264,9 +269,25 @@ class GoldBuilder:
             raise GoldBuildError(msg)
         reference = self.reference_dataset()
         ref_run = self._silver(reference)
+        geometry: dict[str, Any] = {}
+        meshes = {d: self._silver(d) for d in self._catalog.geometry_datasets()}
+        if meshes:
+            mesh_uris = {r.target_uri for r in meshes.values()}
+            if len(mesh_uris) != 1:
+                msg = f"malhas em tabelas Silver diferentes: {sorted(mesh_uris)}"
+                raise GoldBuildError(msg)
+            geometry = {
+                "uri": mesh_uris.pop(),
+                "silver_version": max(int(r.delta_version or 0) for r in meshes.values()),
+                "datasets": {
+                    d: {"run_id": r.run_id, "delta_version": r.delta_version}
+                    for d, r in sorted(meshes.items())
+                },
+            }
         # Cada build Silver substitui só a partição do próprio dataset: a versão
         # mais recente contém o estado vigente de todos.
         return {
+            "geometry": geometry,
             "silver_uri": uris.pop(),
             "silver_version": max(int(r.delta_version or 0) for r in runs.values()),
             "datasets": {
@@ -374,7 +395,29 @@ class GoldBuilder:
         used = sorted({cid for f in self._catalog.facts for cid in f.classifications})
         category_names = model.category_names(selected, self._catalog)
         categories = model.build_dim_category(self._catalog, used, category_names)
+        geometry_results: list[CheckResult] = []
+        extra: dict[str, pl.DataFrame] = {}
+        if self._catalog.geometry:
+            mesh_in = inputs["geometry"]
+            mesh = (
+                self._reader.scan(mesh_in["uri"], int(mesh_in["silver_version"]))
+                .filter(pl.col("dataset_id").is_in(self._catalog.geometry_datasets()))
+                .collect()
+            )
+            try:
+                geometry, report = build_dim_geometry(
+                    mesh,
+                    geography,
+                    bridge,
+                    self._catalog.geometry,
+                    silver_version=int(mesh_in["silver_version"]),
+                )
+            except GeometryError as exc:
+                raise GoldBuildError(str(exc)) from exc
+            extra[DIM_GEOMETRY.name] = geometry
+            geometry_results = geometry_checks(geometry, report)
         frames: dict[str, pl.DataFrame] = {
+            **extra,
             DIM_GEOGRAPHY.name: geography,
             BRIDGE_GEOGRAPHY_ANCESTOR.name: bridge,
             DIM_PERIOD.name: model.build_dim_period(observations),
@@ -399,6 +442,7 @@ class GoldBuilder:
                 observations, self._catalog, fact, contracts[fact.id]
             )
         build.checks.extend(self._checks(frames, selected, contracts))
+        build.checks.extend(geometry_results)
         return frames
 
     def _checks(
@@ -448,6 +492,16 @@ class GoldBuilder:
                 foreign_key("fk.geography.parent", geo, "parent_key", geo, "geography_key"),
             ]
         )
+        if DIM_GEOMETRY.name in frames:
+            results.append(
+                foreign_key(
+                    "fk.geometry.geography",
+                    frames[DIM_GEOMETRY.name],
+                    "geography_key",
+                    geo,
+                    "geography_key",
+                )
+            )
         for fact in self._catalog.facts:
             for column in fact.classifications.values():
                 results.append(

@@ -422,3 +422,62 @@ max_bytes = 52428800
 [datasets.silver]
 transformer = "dtb_municipality"
 member = "RELATORIO_DTB_BRASIL_*_MUNICIPIOS.ods"
+
+[[datasets]]
+id = "ibge-malha-uf-2022"
+source = "ibge-geoftp"
+official_id = "BR_UF_2022"
+title = "Malha territorial 2022: Unidades da Federação"
+description = "Polígonos oficiais das 27 UFs (shapefile, SIRGAS 2000), da Malha Municipal 2022. Grandes Regiões e Brasil são derivados por união das UFs na Gold."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/Brasil/BR/"
+
+[datasets.params]
+url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/Brasil/BR/BR_UF_2022.zip"
+artifact_name = "br-uf-2022.zip"
+reference_period = "2022"
+format = "zip"
+# Membros conferidos no arquivo oficial em 2026-11-05 (13,7 MB).
+expected_members = ["BR_UF_2022.shp", "BR_UF_2022.shx", "BR_UF_2022.dbf", "BR_UF_2022.prj", "BR_UF_2022.cpg"]
+min_bytes = 5000000
+max_bytes = 52428800
+
+[datasets.silver]
+transformer = "territorial_mesh"
+member = "BR_UF_2022"
+level = "uf"
+code_field = "CD_UF"
+name_field = "NM_UF"
+uf_field = "SIGLA_UF"
+expected_count = 27
+
+[[datasets]]
+id = "ibge-malha-municipios-2022"
+source = "ibge-geoftp"
+official_id = "BR_Municipios_2022"
+title = "Malha territorial 2022: Municípios"
+description = "Polígonos oficiais dos municípios (shapefile, SIRGAS 2000), da Malha Municipal 2022."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/Brasil/BR/"
+
+[datasets.params]
+url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/Brasil/BR/BR_Municipios_2022.zip"
+artifact_name = "br-municipios-2022.zip"
+reference_period = "2022"
+format = "zip"
+expected_members = ["BR_Municipios_2022.shp", "BR_Municipios_2022.shx", "BR_Municipios_2022.dbf", "BR_Municipios_2022.prj", "BR_Municipios_2022.cpg"]
+min_bytes = 100000000
+max_bytes = 314572800
+
+[datasets.silver]
+transformer = "territorial_mesh"
+member = "BR_Municipios_2022"
+level = "municipio"
+code_field = "CD_MUN"
+name_field = "NM_MUN"
+uf_field = "SIGLA_UF"
+territorial_reference = "ibge-dtb"

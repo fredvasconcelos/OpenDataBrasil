@@ -17,8 +17,16 @@ from datetime import date, datetime
 from pathlib import Path
 
 import polars as pl
+import shapefile  # pyshp
+import shapely
+from shapely.geometry import shape
 
-from odb_processing.contracts import CLASSIFICATION, DTB_MUNICIPALITY, SIDRA_OBSERVATION
+from odb_processing.contracts import (
+    CLASSIFICATION,
+    DTB_MUNICIPALITY,
+    SIDRA_OBSERVATION,
+    TERRITORIAL_MESH,
+)
 from odb_processing.values import classify_sidra_values
 
 # Grandes Regiões codificadas pelo 1º dígito do código da UF, convenção do IBGE
@@ -207,3 +215,101 @@ def parse_dtb_municipalities(
     return frame.select(DTB_MUNICIPALITY.frame_schema().names()).cast(
         DTB_MUNICIPALITY.frame_schema()
     )
+
+
+# ------------------------------------------------------------------ malhas
+
+
+# Datum das malhas do IBGE (o .prj não traz o código EPSG).
+SIRGAS_2000 = "EPSG:4674"
+
+
+@dataclass(frozen=True, slots=True)
+class MeshSpec:
+    """Como ler uma malha: membro do ZIP e campos do DBF."""
+
+    dataset_id: str
+    member: str
+    level_id: str
+    code_field: str
+    name_field: str
+    uf_field: str | None = None
+    area_field: str = "AREA_KM2"
+
+
+def parse_territorial_mesh(
+    zip_path: Path, spec: MeshSpec, *, reference_year: str, lineage: Lineage
+) -> pl.DataFrame:
+    """Shapefile de malha do IBGE (ZIP) → contrato ``territorial_mesh``.
+
+    A geometria é preservada sem simplificação, em WKB. O datum é conferido no
+    ``.prj`` (SIRGAS 2000, coordenadas geográficas). A leitura é eager: o
+    shapefile não tem leitura em fluxo útil aqui e cabe em memória (a malha
+    municipal tem cerca de 17 milhões de vértices).
+    """
+    with zipfile.ZipFile(zip_path) as archive:
+        names = set(archive.namelist())
+        needed = [f"{spec.member}.{ext}" for ext in ("shp", "shx", "dbf", "prj")]
+        missing = [n for n in needed if n not in names]
+        if missing:
+            msg = f"membros ausentes no ZIP: {missing}"
+            raise ParseError(msg)
+        prj = archive.read(f"{spec.member}.prj").decode("ascii", errors="replace")
+        if "SIRGAS_2000" not in prj or not prj.startswith("GEOGCS"):
+            msg = f"{spec.member}.prj: sistema de referência inesperado: {prj[:80]!r}"
+            raise ParseError(msg)
+        cpg = f"{spec.member}.cpg"
+        encoding = archive.read(cpg).decode().strip() if cpg in names else "utf-8"
+        reader = shapefile.Reader(
+            shp=io.BytesIO(archive.read(f"{spec.member}.shp")),
+            shx=io.BytesIO(archive.read(f"{spec.member}.shx")),
+            dbf=io.BytesIO(archive.read(f"{spec.member}.dbf")),
+            encoding=encoding,
+        )
+        fields = [f[0] for f in reader.fields[1:]]
+        wanted = [spec.code_field, spec.name_field, spec.area_field]
+        if spec.uf_field:
+            wanted.append(spec.uf_field)
+        absent = [f for f in wanted if f not in fields]
+        if absent:
+            msg = f"{spec.member}.dbf: campos ausentes {absent} (há {fields})"
+            raise ParseError(msg)
+        codes: list[str] = []
+        names_: list[str] = []
+        ufs: list[str | None] = []
+        areas: list[float | None] = []
+        wkbs: list[bytes] = []
+        for record in reader.iterShapeRecords():
+            attrs = record.record.as_dict()
+            geometry = shape(record.shape.__geo_interface__)
+            codes.append(str(attrs[spec.code_field]).strip())
+            names_.append(str(attrs[spec.name_field]).strip())
+            ufs.append(str(attrs[spec.uf_field]).strip() if spec.uf_field else None)
+            area = attrs[spec.area_field]
+            areas.append(None if area is None else float(area))
+            wkbs.append(shapely.to_wkb(geometry))
+    geoms = shapely.from_wkb(wkbs)
+    frame = pl.DataFrame(
+        {
+            "code": codes,
+            "name": names_,
+            "uf_abbreviation": ufs,
+            "area_km2": areas,
+            "geometry_wkb": wkbs,
+            "vertex_count": shapely.get_num_coordinates(geoms).tolist(),
+        },
+        schema_overrides={
+            "uf_abbreviation": pl.String(),
+            "area_km2": pl.Float64(),
+            "geometry_wkb": pl.Binary(),
+            "vertex_count": pl.Int64(),
+        },
+    )
+    return frame.with_columns(
+        pl.lit(spec.dataset_id).alias("dataset_id"),
+        pl.lit(reference_year).alias("reference_year"),
+        pl.lit(spec.level_id).alias("level_id"),
+        pl.lit(SIRGAS_2000).alias("crs"),
+        pl.lit(f"{spec.member}.shp").alias("source_member"),
+        *lineage.columns(),
+    ).select(list(TERRITORIAL_MESH.schema))

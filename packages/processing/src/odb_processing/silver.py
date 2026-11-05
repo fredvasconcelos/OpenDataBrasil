@@ -40,21 +40,36 @@ from odb_lakehouse import DeltaReader, DeltaWriter
 from odb_processing.contracts import (
     DTB_MUNICIPALITY,
     SIDRA_OBSERVATION,
+    TERRITORIAL_MESH,
     Contract,
     SchemaChange,
     compare_schema,
 )
 from odb_processing.parsers import (
     Lineage,
+    MeshSpec,
     extract_member,
     parse_dtb_municipalities,
     parse_sidra,
+    parse_territorial_mesh,
 )
-from odb_processing.quality import CheckResult, blocking, dtb_checks, sidra_checks
+from odb_processing.quality import (
+    CheckResult,
+    blocking,
+    dtb_checks,
+    mesh_checks,
+    sidra_checks,
+)
 
 logger = logging.getLogger(__name__)
 
 RunStatus = Literal["succeeded", "skipped", "failed"]
+
+CONTRACT_BY_TRANSFORMER = {
+    "sidra_observation": SIDRA_OBSERVATION,
+    "dtb_municipality": DTB_MUNICIPALITY,
+    "territorial_mesh": TERRITORIAL_MESH,
+}
 
 
 class SilverBuildError(RuntimeError):
@@ -161,18 +176,14 @@ class SilverBuilder:
     def transformer(self, dataset: DatasetConfig) -> str:
         """Transformação Silver declarada para o dataset."""
         name = dataset.silver.get("transformer")
-        if name not in {"sidra_observation", "dtb_municipality"}:
+        if name not in CONTRACT_BY_TRANSFORMER:
             msg = f"{dataset.id}: transformação Silver ausente ou desconhecida: {name!r}"
             raise SilverBuildError(msg)
         return str(name)
 
     def contract_for(self, dataset: DatasetConfig) -> Contract:
         """Contrato da tabela de destino."""
-        return (
-            SIDRA_OBSERVATION
-            if self.transformer(dataset) == "sidra_observation"
-            else DTB_MUNICIPALITY
-        )
+        return CONTRACT_BY_TRANSFORMER[self.transformer(dataset)]
 
     def target_uri(self, dataset: DatasetConfig) -> str:
         """URI da tabela Silver do dataset."""
@@ -274,13 +285,25 @@ class SilverBuilder:
                 raise SilverBuildError(msg)
 
         processed_at = datetime.now(UTC)
-        if self.transformer(dataset) == "sidra_observation":
+        transformer = self.transformer(dataset)
+        if transformer == "sidra_observation":
             frame, partition = self._sidra_frame(dataset, inputs, run, processed_at)
             run.checks = sidra_checks(
                 frame,
                 contract,
                 dataset.silver.get("additive_variables", {}),
                 *self._reference(dataset),
+            )
+        elif transformer == "territorial_mesh":
+            frame, partition = self._mesh_frame(dataset, inputs, run, processed_at)
+            reference_ids, reference_label = self._reference(dataset)
+            expected = dataset.silver.get("expected_count")
+            run.checks = mesh_checks(
+                frame,
+                contract,
+                expected_count=None if expected is None else int(expected),
+                reference_ids=reference_ids,
+                reference_label=reference_label,
             )
         else:
             frame, partition = self._dtb_frame(dataset, inputs, run, processed_at)
@@ -369,6 +392,41 @@ class SilverBuilder:
             lineage=self._lineage(item, run, processed_at),
         )
         return frame, {"reference_year": reference_year}
+
+    def _mesh_frame(
+        self,
+        dataset: DatasetConfig,
+        inputs: Sequence[SilverInput],
+        run: SilverRun,
+        processed_at: datetime,
+    ) -> tuple[pl.DataFrame, dict[str, str]]:
+        if len(inputs) != 1:
+            msg = f"malha espera 1 artefato vigente, encontrados {len(inputs)}"
+            raise SilverBuildError(msg)
+        item = inputs[0]
+        if not item.reference_period:
+            msg = f"{dataset.id}: artefato da malha sem período de referência"
+            raise SilverBuildError(msg)
+        cfg = dataset.silver
+        try:
+            spec = MeshSpec(
+                dataset_id=dataset.id,
+                member=str(cfg["member"]),
+                level_id=str(cfg["level"]),
+                code_field=str(cfg["code_field"]),
+                name_field=str(cfg["name_field"]),
+                uf_field=None if cfg.get("uf_field") is None else str(cfg["uf_field"]),
+            )
+        except KeyError as exc:
+            msg = f"{dataset.id}: configuração Silver da malha incompleta: {exc}"
+            raise SilverBuildError(msg) from exc
+        frame = parse_territorial_mesh(
+            Path(uri_to_local_path(item.storage_uri)),
+            spec,
+            reference_year=item.reference_period,
+            lineage=self._lineage(item, run, processed_at),
+        )
+        return frame, {"dataset_id": dataset.id}
 
     def _reference(self, dataset: DatasetConfig) -> tuple[set[str] | None, str]:
         """Códigos de município da referência territorial, na versão Silver vigente."""
