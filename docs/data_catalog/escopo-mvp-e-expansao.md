@@ -26,8 +26,11 @@ mudança de configuração.
 | Quilombola | 9723 | nenhuma | Brasil, Região, UF, Município, territórios quilombolas, partes por UF, Amazônia Legal |
 
 O sexo das pessoas indígenas já está publicado: na 9971 e na 9954, a categoria
-"Total" de idade traz o valor por sexo. **Faltam a população geral por sexo e
-os quilombolas por sexo.**
+"Total" de idade traz o valor por sexo. **Faltam a população geral por sexo
+(e por cor ou raça × sexo) e os quilombolas por sexo.**
+
+A cor ou raça (9605) já está publicada, mas sem sexo. Ela entra no MVP como
+dimensão da população geral, combinável com o sexo (2026-11-05).
 
 ## 2. Tabelas para completar o MVP (sexo)
 
@@ -38,7 +41,8 @@ ver KI-006).
 
 | Tabela | Conteúdo | Variáveis | Classificações | Conferência |
 |---|---|---|---|---|
-| **9514** | População residente por sexo, idade e forma de declaração da idade (Censo 2022) | 93 | c2 sexo (6794 Total, 4 Homens, 5 Mulheres), c287 idade (100362 Total), c286 forma de declaração (113635 Total) | Brasil 203.080.756 = 98.532.431 H + 104.548.325 M; N6 com 5.570 municípios; só 2022 |
+| **9606** | População residente por cor ou raça, sexo e idade (Censos 2010 e 2022) | 93 | c86 cor ou raça (95251 Total, 2776 Branca, 2777 Preta, 2778 Amarela, 2779 Parda, 2780 Indígena), c2 sexo (6794 Total, 4 Homens, 5 Mulheres), c287 idade (100362 Total) | 2022: Brasil 203.080.756 = 98.532.431 H + 104.548.325 M. 2010: 190.755.799 = 93.406.990 H + 97.348.809 M. N6 com 5.570 municípios nos dois anos (em 2010, 5 municípios ainda não instalados vêm com `...`). A c86 não é exaustiva, como na 9605 (resíduo de 6.608 pessoas em 2010) |
+| 9514 | População residente por sexo, idade e forma de declaração da idade (só 2022) | 93 | c2 sexo, c287 idade (100362 Total), c286 forma de declaração (113635 Total) | Totais por sexo idênticos aos da 9606 em 2022. **Não é necessária no MVP**; fica para a expansão por idade simples |
 | **8176** | Pessoas quilombolas por sexo, idade e localização do domicílio | 4709 (e o percentual 1004709, não usado) | c2 sexo, c287 idade (100362 Total), c2661 localização (32776 Total + 2) | Brasil 1.330.186 = 665.353 H + 664.833 M (igual à 9578); N6 com 5.570 municípios |
 | **9765** | Pessoas em territórios quilombolas por sexo e idade | 6559, 7079 (e os percentuais 1006559 e 1007079, não usados) | c2 sexo, c287 idade (100362 Total) | Brasil 203.574 residentes (104.555 H + 99.019 M) e 167.769 quilombolas (86.284 H + 81.485 M), iguais à 9723; N1145 495, N145 503, N6 5.570, N131 1 |
 
@@ -46,7 +50,7 @@ Volume para o MVP (Total de idade, limite de 50.000 valores por consulta):
 
 | Tabela | Cálculo | Valores | Requisições |
 |---|---|---|---|
-| 9514 | 5.603 territórios × 3 sexos | 16.809 | 1 |
+| 9606 | 5.603 territórios × 6 cores ou raças × 3 sexos, por ano (2010 e 2022) | 201.708 | 6 (`split_by_classification = "c2"`: 33.618 por requisição) |
 | 8176 | 5.603 × 3 sexos × 3 localizações | 50.427 | 3 (`split_by_classification = "c2661"`) |
 | 9765 | 6.611 territórios × 2 variáveis × 3 sexos | 39.666 | 1 |
 
@@ -67,8 +71,9 @@ descrição da tabela.
 | 9954 com o nível municipal | 9954 | não | ~16,5 milhões (com idades simples) | ampliar níveis; a 9718 já cobre o total municipal |
 | Quilombolas por grupos de idade | 8176 | não | ~1,1 milhão (≥ 23 requisições) | ampliar c287 |
 | Territórios quilombolas por grupos de idade | 9765 | não | ~0,87 milhão (≥ 18 requisições) | ampliar c287 |
-| População geral por idade | 9514 | não | a dimensionar (c287 completa) | ampliar c287 |
-| Série histórica por sexo (Censos anteriores) | a identificar | não | — | pesquisar a tabela; não inventar código |
+| População geral por cor ou raça, sexo e grupos de idade | 9606 | não | a dimensionar (categorias da c287 a confirmar) | ampliar c287 |
+| População geral por idade simples e forma de declaração | 9514 | não | a dimensionar | novo dataset |
+| Série por sexo antes de 2010 | a identificar | não | — | pesquisar a tabela; não inventar código |
 
 ## 4. Receita para ampliar o detalhe
 
@@ -96,3 +101,28 @@ descrição da tabela.
    (criada na Fase 5).
 9. **Documentação.** Atualizar este arquivo, [`ibge.md`](ibge.md) e
    [`gold-demografia.md`](gold-demografia.md).
+
+## 5. KPIs e dimensões do MVP (proposta da Fase 5, a aprovar)
+
+Cada KPI do portal aponta para **uma única tabela**, a que tem todas as
+dimensões oferecidas. Tabelas que se sobrepõem (por exemplo 9605 e 9606, ou
+9718 e 9971) ficam na Gold e são conferidas entre si por verificações de
+qualidade. A geografia é sempre a primeira dimensão. As demais seguem uma
+ordem fixa (cor ou raça, depois sexo), que também é a ordem de aninhamento do
+tooltip.
+
+| Tema › subtema | KPI | Tabela | Anos | Dimensões no MVP | Disponível por configuração |
+|---|---|---|---|---|---|
+| Demografia › População | População residente estimada | 6579 | 2001–2026 | — | — |
+| Demografia › População | População residente (Censo) | 9606 | 2010, 2022 | cor ou raça, sexo | grupos de idade (ampliar c287) |
+| Demografia › Território | Área territorial; densidade (não aditiva) | 4714 | 2022 | — | — |
+| Demografia › Povos indígenas | Pessoas indígenas | 9971 | 2022 | sexo | grupos de idade, localização, situação |
+| Demografia › Povos indígenas | Percentual de pessoas indígenas (não aditivo) | 9718 | 2022 | — | localização |
+| Demografia › Povos indígenas | Pessoas em terras indígenas | 9954 | 2022 | sexo | grupos de idade, situação |
+| Demografia › Quilombolas | Pessoas quilombolas | 8176 | 2022 | sexo | localização |
+| Demografia › Quilombolas | Percentual de pessoas quilombolas (não aditivo) | 9578 | 2022 | — | localização |
+| Demografia › Quilombolas | Pessoas em territórios quilombolas | 9765 | 2022 | sexo | — |
+
+A categoria "Indígena" de cor ou raça (9606) e "Pessoas indígenas" (9971)
+são conceitos diferentes (`incompatible_with`). O portal mostra essa
+diferença onde os dois aparecerem.
