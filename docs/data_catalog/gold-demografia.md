@@ -1,7 +1,7 @@
 # Gold do escopo `demografia`
 
 Definição: [`configs/indicators/demografia.toml`](../../configs/indicators/demografia.toml)
-(catálogo semântico 1.0.0). Modelo: [ADR-0008](../adr/0008-gold-modelo-hierarquico-e-camada-semantica.md).
+(catálogo semântico 1.3.0). Modelo: [ADR-0008](../adr/0008-gold-modelo-hierarquico-e-camada-semantica.md).
 Operação: [runbook da Gold](../runbooks/gold.md).
 
 Releases com dados reais (2026-11-04):
