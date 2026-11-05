@@ -103,3 +103,9 @@ Cada medida tem a coluna `<medida>_status`, com a legenda da Silver (`valid`,
 - **Derivados não publicados:** razão de sexo, 0 a 14 anos, 60 anos ou mais.
   Podem ser calculados a partir das categorias (exportação ou consulta), mas
   não são indicadores oficiais da plataforma.
+
+## Escopo do MVP
+
+No portal do MVP, as populações aparecem com Total e sexo; as idades ficam
+na Gold, mas fora do portal. Tabelas que faltam (9514, 8176, 9765) e
+expansões futuras: [escopo e plano de expansão](escopo-mvp-e-expansao.md).
