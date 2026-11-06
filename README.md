@@ -11,7 +11,8 @@ especificação completa está em [`CLAUDE.md`](CLAUDE.md).
 > e exportação para análise) implementadas. A etapa 4b (sexo e idade dos
 > indígenas, territórios quilombolas e terras indígenas como recortes
 > territoriais) está concluída. A Fase 5 (API FastAPI e portal Next.js com d3)
-está em andamento na branch `fase-5-api-portal`.
+está em **beta** (`v0.5.0-beta.1`), em teste pelo mantenedor antes das correções
+finais. Uso só interno (licença do IBGE em revisão, KI-003).
 
 ## Pacotes (`packages/`)
 
