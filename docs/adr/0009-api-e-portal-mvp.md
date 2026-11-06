@@ -138,6 +138,30 @@ do tooltip, série e tabela paginada. A exportação (CSV, XLSX, Parquet, JSON)
 Fase 6 (§18.3: sem endpoints fictícios). O container da API monta só a Gold, em
 modo somente leitura, e usa o papel `odb_reader`.
 
+Implementação (`apps/api`, [runbook](../runbooks/api.md)):
+
+- **Release por requisição:** o release é resolvido uma vez (`ReleaseResolver`,
+  com cache de 5 s) e todas as consultas da requisição usam as mesmas versões
+  Delta. O identificador vai no cabeçalho `X-ODB-Release` e no campo
+  `provenance` de cada resposta.
+- **Metadados vindos do release:** os metadados de indicador vêm do
+  `dim_indicator` do release, não do `catalog.indicator`, para ficarem
+  coerentes com os dados consultados. Fontes, datasets e licenças vêm do
+  PostgreSQL.
+- **Cache:** guarda metadados e coleções de geometria com o `release_id` na
+  chave. Um release novo invalida o cache.
+- **Paginação do `/query`:** devolve `has_more` em vez de um total que exigiria
+  uma contagem a mais.
+- **Concorrência (§11.5):** é testada com requisições paralelas pela API. O
+  motor ocupado responde 503 e o timeout responde 504.
+- **Medição local, release `024556cf`:**
+
+  | Consulta | Tempo |
+  |---|---|
+  | Mapa municipal | 25–55 ms |
+  | Detalhe (tooltip) | cerca de 50 ms |
+  | Malha municipal com gzip (1,57 MB) | 0,57 s na primeira carga, depois em cache |
+
 ## Consequências
 
 - O gráfico de evolução de KPIs por sexo tem 2010 e 2022 para a população

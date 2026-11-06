@@ -104,6 +104,47 @@ services:
       resources:
         limits: { memory: "${ODB_WORKER_MEMORY:-16g}", cpus: "${ODB_WORKER_CPUS:-8}" }
 
+  # API de consulta (Fase 5, ADR-0009). Só lê: papel odb_reader e Gold montada
+  # somente leitura. Bronze e Silver não são montadas (§23.4).
+  api:
+    <<: *odb-image
+    profiles: [web]
+    command:
+      - uvicorn
+      - --factory
+      - odb_api.app:create_default_app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --no-access-log
+    environment:
+      <<: *odb-env
+      ODB_PG_USER: odb_reader
+      ODB_PG_PASSWORD: ${ODB_READER_PASSWORD:?defina no .env}
+      ODB_DUCKDB_MEMORY_LIMIT: ${ODB_API_DUCKDB_MEMORY:-2GB}
+      ODB_DUCKDB_TEMP_DIRECTORY: /lakehouse/tmp/duckdb
+      ODB_API_CORS_ORIGINS: ${ODB_API_CORS_ORIGINS:-["http://localhost:3000"]}
+      ODB_API_PORTAL_CONFIG_DIR: /app/configs/portal
+    volumes:
+      - lake_gold:/lakehouse/gold:ro
+    tmpfs:
+      - /lakehouse/tmp:size=1g,uid=1000,gid=1000
+    ports:
+      - "127.0.0.1:${ODB_API_PORT:-8000}:8000"
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: "${ODB_API_MEMORY:-3g}", cpus: "${ODB_API_CPUS:-2}" }
+
   tests:
     image: opendatabrasil/odb-test:${ODB_IMAGE_TAG:-dev}
     build:

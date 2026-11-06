@@ -1,0 +1,104 @@
+# Navegação e exposição do portal (ADR-0009, seções 3 a 5).
+#
+# Cada KPI aponta para UM indicador da Gold (a tabela que tem todas as
+# dimensões oferecidas). As dimensões são as classificações liberadas no
+# portal, com a partição de categorias mostrada. A ordem de aninhamento do
+# tooltip é `dimension_order`.
+#
+# Escopo do MVP (docs/data_catalog/escopo-mvp-e-expansao.md): Total, cor ou raça
+# e sexo. Para liberar uma dimensão já publicada na Gold (por exemplo, grupos
+# de idade da 9971), acrescente-a ao KPI e a `dimension_order`.
+
+config_version = "1.0.0"
+scope = "demografia"
+dimension_order = ["c86", "c2"]
+
+[[themes]]
+id = "demografia"
+label = "Demografia"
+
+[[themes.subthemes]]
+id = "populacao"
+label = "População"
+
+[[themes.subthemes.kpis]]
+id = "populacao_residente"
+label = "População residente (Censo)"
+indicator = "censo_populacao_cor_raca_sexo"
+dimensions = [
+    { classification = "c86", partition = "cor_ou_raca", label = "Cor ou raça" },
+    { classification = "c2", partition = "sexo", label = "Sexo" },
+]
+
+[[themes.subthemes.kpis]]
+id = "populacao_estimada"
+label = "População estimada"
+indicator = "populacao_estimada"
+
+[[themes.subthemes]]
+id = "territorio"
+label = "Território"
+
+[[themes.subthemes.kpis]]
+id = "densidade_demografica"
+label = "Densidade demográfica"
+indicator = "censo_densidade_demografica"
+
+[[themes.subthemes.kpis]]
+id = "area_territorial"
+label = "Área territorial"
+indicator = "censo_area_territorial"
+
+[[themes.subthemes]]
+id = "povos_indigenas"
+label = "Povos indígenas"
+
+[[themes.subthemes.kpis]]
+id = "pessoas_indigenas"
+label = "Pessoas indígenas"
+indicator = "censo_pessoas_indigenas_sexo_idade"
+dimensions = [{ classification = "c2", partition = "sexo", label = "Sexo" }]
+
+[[themes.subthemes.kpis]]
+id = "percentual_indigenas"
+label = "Percentual de pessoas indígenas"
+indicator = "censo_percentual_indigenas"
+
+[[themes.subthemes.kpis]]
+id = "indigenas_em_terras_indigenas"
+label = "Pessoas indígenas em terras indígenas"
+indicator = "censo_indigenas_em_terras_indigenas"
+dimensions = [{ classification = "c2", partition = "sexo", label = "Sexo" }]
+
+[[themes.subthemes.kpis]]
+id = "residentes_em_terras_indigenas"
+label = "Pessoas residentes em terras indígenas"
+indicator = "censo_residentes_terras_indigenas"
+dimensions = [{ classification = "c2", partition = "sexo", label = "Sexo" }]
+
+[[themes.subthemes]]
+id = "quilombolas"
+label = "Quilombolas"
+
+[[themes.subthemes.kpis]]
+id = "pessoas_quilombolas"
+label = "Pessoas quilombolas"
+indicator = "censo_pessoas_quilombolas_sexo"
+dimensions = [{ classification = "c2", partition = "sexo", label = "Sexo" }]
+
+[[themes.subthemes.kpis]]
+id = "percentual_quilombolas"
+label = "Percentual de pessoas quilombolas"
+indicator = "censo_percentual_quilombolas"
+
+[[themes.subthemes.kpis]]
+id = "quilombolas_em_territorios"
+label = "Pessoas quilombolas em territórios quilombolas"
+indicator = "censo_quilombolas_em_territorios_sexo"
+dimensions = [{ classification = "c2", partition = "sexo", label = "Sexo" }]
+
+[[themes.subthemes.kpis]]
+id = "residentes_em_territorios_quilombolas"
+label = "Pessoas residentes em territórios quilombolas"
+indicator = "censo_residentes_territorios_quilombolas_sexo"
+dimensions = [{ classification = "c2", partition = "sexo", label = "Sexo" }]

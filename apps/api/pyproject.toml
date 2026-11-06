@@ -1,0 +1,32 @@
+[project]
+name = "odb-api"
+version = "0.1.0"
+description = "API de consulta (FastAPI) sobre o release Gold publicado: catálogo, territórios, mapas, séries e exportações."
+requires-python = ">=3.12,<3.13"
+license = "MIT"
+dependencies = [
+    "odb-common",
+    "odb-catalog",
+    "odb-query-engine",
+    "odb-semantics",
+    "fastapi==0.161.1",
+    # Transitiva do FastAPI, fixada na última versão com 14 dias ou mais (ADR-0002).
+    "starlette==1.9.0",
+    "opentelemetry-api==1.45.1",
+    "uvicorn==0.54.0",
+    "polars==1.44.2",
+    "xlsxwriter==3.3.0",
+]
+
+[tool.uv.sources]
+odb-common = { workspace = true }
+odb-catalog = { workspace = true }
+odb-query-engine = { workspace = true }
+odb-semantics = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.13.2,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "odb_api"

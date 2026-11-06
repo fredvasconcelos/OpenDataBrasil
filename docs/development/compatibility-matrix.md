@@ -2,7 +2,7 @@
 
 **Validada em:** 2026-11-03, por execução (CLAUDE.md §4.3)
 **Evidência:** `tests/contracts/delta_interop/` (13 contratos) + suíte completa
-(105 testes na Fase 1; 165 na Fase 2; 212 na Fase 3; 251 na Fase 4; 268 na etapa 5.0 da Fase 5) executada no host (Ubuntu 24.04 / WSL2) e no container `tests`.
+(105 testes na Fase 1; 165 na Fase 2; 212 na Fase 3; 251 na Fase 4; 268 na etapa 5.0 da Fase 5; 290 com a API) executada no host (Ubuntu 24.04 / WSL2) e no container `tests`.
 
 Regra de seleção: versão estável publicada há pelo menos 14 dias na data da
 seleção. Todas as dependências transitivas estão fixadas em `uv.lock`.
@@ -35,6 +35,12 @@ seleção. Todas as dependências transitivas estão fixadas em `uv.lock`.
 | shapely | 2.2.0 (GEOS 3.14.1) | 2026-10-07 | malhas territoriais: WKB, `coverage_simplify` (preserva divisas), `union_all`, `make_valid` (Fase 5) |
 | pyshp | 3.1.6 | 2026-07-25 | leitura de shapefile em Python puro, sem GDAL (Fase 5) |
 | numpy | 2.5.4 | 2026-10-10 | dependência do shapely; arredondamento das coordenadas (Fase 5) |
+| fastapi | 0.161.1 | 2026-10-22 | API (Fase 5) |
+| starlette | 1.9.0 | 2026-10-18 | transitiva do FastAPI, fixada (a 1.10.0 tinha menos de 14 dias) |
+| opentelemetry-api | 1.45.1 | 2026-10-06 | transitiva do FastAPI, fixada (a 1.45.2 tinha menos de 14 dias) |
+| uvicorn | 0.54.0 | 2026-09-25 | servidor ASGI da API |
+| xlsxwriter | 3.3.0 | 2026-10-22 | exportação XLSX (`polars.write_excel`) |
+| anyio | 4.15.1 | 2026-09-05 | transitiva do httpx e do Starlette. **Correção:** o lock da Fase 2 tinha a 4.16.0 (2026-11-01), contra a regra dos 14 dias. Agora fixada em `tool.uv.constraint-dependencies` |
 | ruff / mypy / pytest / pytest-cov | 0.17.1 / 2.4.0 / 9.1.1 / 7.1.0 | | desenvolvimento |
 
 ## Protocolo Delta (perfil conservador, ADR-0001)
@@ -89,3 +95,9 @@ esta matriz.
   há ambiente gratuito disponível. O perfil 1/2 é o mais amplamente suportado,
   mas não está validado nesses motores.
 - Polars 2.x e DuckDB 2.x serão avaliados em ADR próprio.
+
+## Observações da Fase 5
+
+- O `starlette.testclient` 1.9 avisa que o `httpx` está depreciado em favor do
+  `httpx2`. O aviso é filtrado na configuração do pytest, e o `httpx` 0.28.1
+  continua fixado. Trocar pelo `httpx2` é uma decisão à parte.

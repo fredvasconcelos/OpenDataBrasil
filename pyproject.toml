@@ -2,11 +2,13 @@
 # Cada pacote em packages/ declara suas próprias dependências.
 
 [tool.uv.workspace]
-members = ["packages/*"]
+members = ["packages/*", "apps/api"]
 
 [tool.uv]
 required-version = "==0.13.2"
 default-groups = ["dev"]
+# Transitivas fixadas pela regra dos 14 dias (docs/development/compatibility-matrix.md).
+constraint-dependencies = ["anyio==4.15.1"]
 
 [dependency-groups]
 dev = [
@@ -20,7 +22,7 @@ dev = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-src = ["packages/*/src", "tests"]
+src = ["packages/*/src", "apps/*/src", "tests"]
 
 [tool.ruff.lint]
 select = [
@@ -35,6 +37,9 @@ ignore = [
 "tests/**" = ["S101", "S105", "S106", "PLR2004", "ANN", "S608"]
 # SQL montado só com fragmentos fixos do planejador; valores entram como $parâmetros.
 "packages/semantics/src/odb_semantics/query.py" = ["S608"]
+# Mesma regra: fragmentos fixos e $parâmetros. Rotas FastAPI recebem parâmetros nomeados.
+"apps/api/src/odb_api/gold.py" = ["S608"]
+"apps/api/src/odb_api/routes/*.py" = ["PLR0917"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
@@ -45,12 +50,12 @@ python_version = "3.12"
 strict = true
 warn_unreachable = true
 # Atualizar ao criar novos pacotes (mypy não expande globs aqui).
-mypy_path = ["packages/common/src", "packages/lakehouse/src", "packages/query_engine/src", "packages/catalog/src", "packages/cli/src", "packages/ingestion/src", "packages/processing/src", "packages/semantics/src", "packages/modeling/src"]
-files = ["packages", "tests"]
+mypy_path = ["packages/common/src", "packages/lakehouse/src", "packages/query_engine/src", "packages/catalog/src", "packages/cli/src", "packages/ingestion/src", "packages/processing/src", "packages/semantics/src", "packages/modeling/src", "apps/api/src"]
+files = ["packages", "apps/api/src", "tests"]
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
-module = ["deltalake.*", "duckdb.*", "pyarrow.*", "shapely", "shapely.*", "shapefile"]
+module = ["deltalake.*", "duckdb.*", "pyarrow.*", "shapely", "shapely.*", "shapefile", "xlsxwriter"]
 ignore_missing_imports = true
 
 # ---------------------------------------------------------------- pytest
@@ -63,12 +68,16 @@ markers = [
     "interop: testes de interoperabilidade Delta entre Polars, delta-rs e DuckDB",
 ]
 xfail_strict = true
-filterwarnings = ["error"]
+filterwarnings = [
+    "error",
+    # Starlette 1.9 recomenda o httpx2 no TestClient; o httpx 0.28.1 já é fixado (ADR-0002).
+    "ignore:Using `httpx` with `starlette.testclient` is deprecated:UserWarning",
+]
 
 # ---------------------------------------------------------------- coverage
 [tool.coverage.run]
 branch = true
-source = ["packages"]
+source = ["packages", "apps/api/src"]
 omit = ["*/migrations/versions/*"]
 
 [tool.coverage.report]

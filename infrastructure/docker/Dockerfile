@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # Imagem única da plataforma (Fase 1), com dois alvos:
-#   runtime -> worker e migrate (sem dependências de desenvolvimento)
+#   runtime -> worker, migrate e api (sem dependências de desenvolvimento)
 #   test    -> runtime + ferramentas de teste + tests/
 # Imagens base fixadas por digest (ADR-0001). Atualize de forma deliberada.
 
@@ -37,12 +37,14 @@ COPY packages/ingestion/pyproject.toml packages/ingestion/pyproject.toml
 COPY packages/processing/pyproject.toml packages/processing/pyproject.toml
 COPY packages/semantics/pyproject.toml packages/semantics/pyproject.toml
 COPY packages/modeling/pyproject.toml packages/modeling/pyproject.toml
+COPY apps/api/pyproject.toml apps/api/pyproject.toml
 
 # ---------------------------------------------------------------- runtime
 FROM base AS runtime
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --no-install-workspace --all-packages
 COPY packages packages
+COPY apps/api apps/api
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --all-packages --no-editable
 # Extensão Delta do DuckDB pré-instalada. Em execução não há download nem autoload.
