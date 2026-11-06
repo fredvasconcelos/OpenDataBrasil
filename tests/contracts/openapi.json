@@ -1,0 +1,3477 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Plataforma de Dados Abertos do Brasil — API",
+    "description": "Consulta aos dados analíticos publicados (release Gold em Delta Lake). Nenhuma rota aceita SQL ou caminhos: as consultas são estruturadas e passam pelas regras semânticas do catálogo. Toda resposta informa o release usado.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/release": {
+      "get": {
+        "tags": [
+          "catálogo"
+        ],
+        "summary": "Release ativo",
+        "description": "Release vigente e as versões Delta de suas tabelas.",
+        "operationId": "release_api_v1_release_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sources": {
+      "get": {
+        "tags": [
+          "catálogo"
+        ],
+        "summary": "Fontes",
+        "description": "Fontes de dados cadastradas.",
+        "operationId": "sources_api_v1_sources_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SourceOut"
+                  },
+                  "type": "array",
+                  "title": "Response Sources Api V1 Sources Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/datasets": {
+      "get": {
+        "tags": [
+          "catálogo"
+        ],
+        "summary": "Datasets",
+        "description": "Datasets habilitados, com licença.",
+        "operationId": "datasets_api_v1_datasets_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DatasetOut"
+                  },
+                  "type": "array",
+                  "title": "Response Datasets Api V1 Datasets Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/datasets/{dataset_id}": {
+      "get": {
+        "tags": [
+          "catálogo"
+        ],
+        "summary": "Dataset",
+        "description": "Um dataset.",
+        "operationId": "dataset_api_v1_datasets__dataset_id__get",
+        "parameters": [
+          {
+            "name": "dataset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9\\-]{1,80}$",
+              "title": "Dataset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatasetOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/indicators": {
+      "get": {
+        "tags": [
+          "catálogo"
+        ],
+        "summary": "Indicadores",
+        "description": "Indicadores publicados no release ativo, com busca simples por texto.",
+        "operationId": "indicators_api_v1_indicators_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Texto no nome ou descrição.",
+              "title": "Q"
+            },
+            "description": "Texto no nome ou descrição."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IndicatorOut"
+                  },
+                  "title": "Response Indicators Api V1 Indicators Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/indicators/tree": {
+      "get": {
+        "tags": [
+          "catálogo"
+        ],
+        "summary": "Árvore temática",
+        "description": "Árvore temática da Gold: grupo → indicador → classificação → categoria.",
+        "operationId": "tree_api_v1_indicators_tree_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TreeNodeOut"
+                  },
+                  "type": "array",
+                  "title": "Response Tree Api V1 Indicators Tree Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/indicators/{indicator_id}": {
+      "get": {
+        "tags": [
+          "catálogo"
+        ],
+        "summary": "Indicador",
+        "description": "Metadados de um indicador no release ativo.",
+        "operationId": "indicator_api_v1_indicators__indicator_id__get",
+        "parameters": [
+          {
+            "name": "indicator_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "title": "Indicator Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndicatorOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/geographies": {
+      "get": {
+        "tags": [
+          "territórios"
+        ],
+        "summary": "Busca de territórios",
+        "description": "Busca por nome (ignora acentos e caixa), nível e recorte.",
+        "operationId": "geographies_api_v1_geographies_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Níveis (repetível).",
+              "title": "Level"
+            },
+            "description": "Níveis (repetível)."
+          },
+          {
+            "name": "within",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Within"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GeographyOut"
+                  },
+                  "title": "Response Geographies Api V1 Geographies Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/geographies/{geography_key}": {
+      "get": {
+        "tags": [
+          "territórios"
+        ],
+        "summary": "Território",
+        "description": "Um território.",
+        "operationId": "geography_api_v1_geographies__geography_key__get",
+        "parameters": [
+          {
+            "name": "geography_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$",
+              "title": "Geography Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeographyOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/geometries/{level}": {
+      "get": {
+        "tags": [
+          "territórios"
+        ],
+        "summary": "Geometria de um nível (GeoJSON)",
+        "description": "``FeatureCollection`` simplificada para mapas (``dim_geometry`` do release).",
+        "operationId": "geometries_api_v1_geometries__level__get",
+        "parameters": [
+          {
+            "name": "level",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "title": "Level"
+            }
+          },
+          {
+            "name": "within",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Within"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/geo+json": {}
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/portal/navigation": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Navegação do portal",
+        "description": "Temas, subtemas e KPIs, com níveis, períodos e dimensões disponíveis.",
+        "operationId": "navigation_api_v1_portal_navigation_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NavigationOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/kpis/{kpi_id}": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "KPI",
+        "description": "Metadados de um KPI.",
+        "operationId": "kpi_api_v1_kpis__kpi_id__get",
+        "parameters": [
+          {
+            "name": "kpi_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "title": "Kpi Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KpiOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/kpis/{kpi_id}/map": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Valores para o mapa",
+        "description": "Total do KPI em cada território do nível.",
+        "operationId": "kpi_map_api_v1_kpis__kpi_id__map_get",
+        "parameters": [
+          {
+            "name": "kpi_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "title": "Kpi Id"
+            }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "description": "Nível territorial, ex.: uf.",
+              "title": "Level"
+            },
+            "description": "Nível territorial, ex.: uf."
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[0-9A-Za-z]{1,16}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Padrão: o mais recente.",
+              "title": "Period"
+            },
+            "description": "Padrão: o mais recente."
+          },
+          {
+            "name": "within",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Recorte, ex.: uf:29.",
+              "title": "Within"
+            },
+            "description": "Recorte, ex.: uf:29."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/kpis/{kpi_id}/detail": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Detalhe (tooltip)",
+        "description": "Sub-KPIs aninhados de um território, na ordem das dimensões do portal.",
+        "operationId": "kpi_detail_api_v1_kpis__kpi_id__detail_get",
+        "parameters": [
+          {
+            "name": "kpi_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "title": "Kpi Id"
+            }
+          },
+          {
+            "name": "geography",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$",
+              "description": "Território, ex.: uf:29.",
+              "title": "Geography"
+            },
+            "description": "Território, ex.: uf:29."
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[0-9A-Za-z]{1,16}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Padrão: o mais recente.",
+              "title": "Period"
+            },
+            "description": "Padrão: o mais recente."
+          },
+          {
+            "name": "dimensions",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2.",
+              "title": "Dimensions"
+            },
+            "description": "Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetailOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/kpis/{kpi_id}/series": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Série temporal",
+        "description": "Todos os períodos publicados de um território.",
+        "operationId": "kpi_series_api_v1_kpis__kpi_id__series_get",
+        "parameters": [
+          {
+            "name": "kpi_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "title": "Kpi Id"
+            }
+          },
+          {
+            "name": "geography",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$",
+              "description": "Território, ex.: uf:29.",
+              "title": "Geography"
+            },
+            "description": "Território, ex.: uf:29."
+          },
+          {
+            "name": "dimensions",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2.",
+              "title": "Dimensions"
+            },
+            "description": "Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/kpis/{kpi_id}/table": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Tabela",
+        "description": "Territórios do nível com o Total e as combinações de categorias, paginados.",
+        "operationId": "kpi_table_api_v1_kpis__kpi_id__table_get",
+        "parameters": [
+          {
+            "name": "kpi_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "title": "Kpi Id"
+            }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "description": "Nível territorial, ex.: uf.",
+              "title": "Level"
+            },
+            "description": "Nível territorial, ex.: uf."
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[0-9A-Za-z]{1,16}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Padrão: o mais recente.",
+              "title": "Period"
+            },
+            "description": "Padrão: o mais recente."
+          },
+          {
+            "name": "within",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Recorte, ex.: uf:29.",
+              "title": "Within"
+            },
+            "description": "Recorte, ex.: uf:29."
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "value",
+                "name"
+              ],
+              "type": "string",
+              "default": "value",
+              "title": "Sort"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "type": "string",
+              "default": "desc",
+              "title": "Order"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 10000,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "dimensions",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2.",
+              "title": "Dimensions"
+            },
+            "description": "Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TableOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports": {
+      "post": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Exportação de um KPI",
+        "description": "CSV (ZIP com metadados), XLSX, Parquet ou JSON, sempre com metadados.",
+        "operationId": "export_api_v1_exports_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/zip": {},
+              "application/vnd.apache.parquet": {},
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {},
+              "application/json": {}
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Exportação acima do limite de linhas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/query": {
+      "post": {
+        "tags": [
+          "consulta"
+        ],
+        "summary": "Consulta de indicadores",
+        "description": "Indicadores x território x período x desagregação, com as regras semânticas.\n\n``breakdown`` mapeia classificação → categorias (``null`` traz todas). As\nclassificações não pedidas ficam no Total. ``sum_to`` soma os territórios\naté um nível superior e marca o resultado como derivado.",
+        "operationId": "query_api_v1_query_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "operação"
+        ],
+        "summary": "Saúde do serviço",
+        "description": "PostgreSQL acessível e release ativo resolvido.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CategoryOut": {
+        "properties": {
+          "category_key": {
+            "type": "string",
+            "title": "Category Key"
+          },
+          "category_id": {
+            "type": "string",
+            "title": "Category Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category_key",
+          "category_id",
+          "name"
+        ],
+        "title": "CategoryOut",
+        "description": "Categoria de uma dimensão exposta."
+      },
+      "CellOut": {
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "status"
+        ],
+        "title": "CellOut",
+        "description": "Célula da tabela."
+      },
+      "ColumnOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "depth": {
+            "type": "integer",
+            "title": "Depth"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "depth"
+        ],
+        "title": "ColumnOut",
+        "description": "Coluna da tabela (uma combinação de categorias)."
+      },
+      "DatasetOut": {
+        "properties": {
+          "dataset_id": {
+            "type": "string",
+            "title": "Dataset Id"
+          },
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          },
+          "official_id": {
+            "type": "string",
+            "title": "Official Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "periodicity": {
+            "type": "string",
+            "title": "Periodicity"
+          },
+          "reference_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Url"
+          },
+          "access_classification": {
+            "type": "string",
+            "title": "Access Classification"
+          },
+          "license": {
+            "$ref": "#/components/schemas/LicenseOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataset_id",
+          "source_id",
+          "official_id",
+          "title",
+          "description",
+          "periodicity",
+          "reference_url",
+          "access_classification",
+          "license"
+        ],
+        "title": "DatasetOut",
+        "description": "Dataset do catálogo."
+      },
+      "DetailNodeOut": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "classification_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classification Id"
+          },
+          "category_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Key"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "share_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Share Pct"
+          },
+          "children": {
+            "items": {
+              "$ref": "#/components/schemas/DetailNodeOut"
+            },
+            "type": "array",
+            "title": "Children"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "classification_id",
+          "category_key",
+          "value",
+          "status",
+          "share_pct"
+        ],
+        "title": "DetailNodeOut",
+        "description": "Nó do tooltip: categoria, valor e participação no nó de cima."
+      },
+      "DetailOut": {
+        "properties": {
+          "kpi_id": {
+            "type": "string",
+            "title": "Kpi Id"
+          },
+          "indicator_id": {
+            "type": "string",
+            "title": "Indicator Id"
+          },
+          "geography": {
+            "$ref": "#/components/schemas/GeographyRefOut"
+          },
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "additivity": {
+            "type": "string",
+            "title": "Additivity"
+          },
+          "dimensions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Dimensions"
+          },
+          "root": {
+            "$ref": "#/components/schemas/DetailNodeOut"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kpi_id",
+          "indicator_id",
+          "geography",
+          "period",
+          "unit",
+          "additivity",
+          "dimensions",
+          "root",
+          "notes",
+          "provenance"
+        ],
+        "title": "DetailOut",
+        "description": "Detalhe de um território (tooltip): sub-KPIs aninhados."
+      },
+      "DimensionOut": {
+        "properties": {
+          "classification_id": {
+            "type": "string",
+            "title": "Classification Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "partition_id": {
+            "type": "string",
+            "title": "Partition Id"
+          },
+          "total_category_key": {
+            "type": "string",
+            "title": "Total Category Key"
+          },
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryOut"
+            },
+            "type": "array",
+            "title": "Categories"
+          }
+        },
+        "type": "object",
+        "required": [
+          "classification_id",
+          "label",
+          "partition_id",
+          "total_category_key",
+          "categories"
+        ],
+        "title": "DimensionOut",
+        "description": "Dimensão exposta de um KPI."
+      },
+      "ErrorBody": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorBody",
+        "description": "Corpo de erro padronizado."
+      },
+      "ErrorOut": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorOut",
+        "description": "Resposta de erro."
+      },
+      "ExportIn": {
+        "properties": {
+          "kpi_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Kpi Id"
+          },
+          "level": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Level"
+          },
+          "within": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Within"
+          },
+          "periods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Periods"
+          },
+          "dimensions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "Dimensions"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "csv",
+              "xlsx",
+              "parquet",
+              "json"
+            ],
+            "title": "Format",
+            "default": "csv"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kpi_id",
+          "level"
+        ],
+        "title": "ExportIn",
+        "description": "Exportação de um KPI."
+      },
+      "GeographyOut": {
+        "properties": {
+          "geography_key": {
+            "type": "string",
+            "title": "Geography Key"
+          },
+          "level_id": {
+            "type": "string",
+            "title": "Level Id"
+          },
+          "level_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level Name"
+          },
+          "territory_code": {
+            "type": "string",
+            "title": "Territory Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "uf_abbreviation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uf Abbreviation"
+          },
+          "parent_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Key"
+          }
+        },
+        "type": "object",
+        "required": [
+          "geography_key",
+          "level_id",
+          "level_name",
+          "territory_code",
+          "name",
+          "uf_abbreviation",
+          "parent_key"
+        ],
+        "title": "GeographyOut",
+        "description": "Território."
+      },
+      "GeographyRefOut": {
+        "properties": {
+          "geography_key": {
+            "type": "string",
+            "title": "Geography Key"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "level_id": {
+            "type": "string",
+            "title": "Level Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "geography_key",
+          "name",
+          "level_id"
+        ],
+        "title": "GeographyRefOut",
+        "description": "Referência curta a um território."
+      },
+      "IndicatorOut": {
+        "properties": {
+          "indicator_id": {
+            "type": "string",
+            "title": "Indicator Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "additivity": {
+            "type": "string",
+            "title": "Additivity"
+          },
+          "concept": {
+            "type": "string",
+            "title": "Concept"
+          },
+          "theme_path": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Theme Path"
+          },
+          "dataset_id": {
+            "type": "string",
+            "title": "Dataset Id"
+          },
+          "source_table_id": {
+            "type": "string",
+            "title": "Source Table Id"
+          },
+          "source_variable_id": {
+            "type": "string",
+            "title": "Source Variable Id"
+          },
+          "source_variable_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Variable Name"
+          },
+          "classification_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Classification Ids"
+          },
+          "available_levels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Available Levels"
+          },
+          "periods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Periods"
+          },
+          "caveats": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Caveats"
+          },
+          "reference_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Url"
+          },
+          "license_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "indicator_id",
+          "name",
+          "description",
+          "unit",
+          "additivity",
+          "concept",
+          "theme_path",
+          "dataset_id",
+          "source_table_id",
+          "source_variable_id",
+          "source_variable_name",
+          "classification_ids",
+          "available_levels",
+          "periods",
+          "caveats",
+          "reference_url",
+          "license_id"
+        ],
+        "title": "IndicatorOut",
+        "description": "Indicador publicado no release."
+      },
+      "KpiOut": {
+        "properties": {
+          "kpi_id": {
+            "type": "string",
+            "title": "Kpi Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "theme_id": {
+            "type": "string",
+            "title": "Theme Id"
+          },
+          "subtheme_id": {
+            "type": "string",
+            "title": "Subtheme Id"
+          },
+          "indicator_id": {
+            "type": "string",
+            "title": "Indicator Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "additivity": {
+            "type": "string",
+            "title": "Additivity"
+          },
+          "periods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Periods"
+          },
+          "levels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Levels"
+          },
+          "map_levels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Map Levels"
+          },
+          "dimensions": {
+            "items": {
+              "$ref": "#/components/schemas/DimensionOut"
+            },
+            "type": "array",
+            "title": "Dimensions"
+          },
+          "caveats": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Caveats"
+          },
+          "source": {
+            "$ref": "#/components/schemas/KpiSourceOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kpi_id",
+          "label",
+          "theme_id",
+          "subtheme_id",
+          "indicator_id",
+          "name",
+          "description",
+          "unit",
+          "additivity",
+          "periods",
+          "levels",
+          "map_levels",
+          "dimensions",
+          "caveats",
+          "source"
+        ],
+        "title": "KpiOut",
+        "description": "KPI do portal com os metadados do indicador no release."
+      },
+      "KpiSourceOut": {
+        "properties": {
+          "dataset_id": {
+            "type": "string",
+            "title": "Dataset Id"
+          },
+          "source_table_id": {
+            "type": "string",
+            "title": "Source Table Id"
+          },
+          "source_variable_id": {
+            "type": "string",
+            "title": "Source Variable Id"
+          },
+          "source_variable_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Variable Name"
+          },
+          "reference_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Url"
+          },
+          "license_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataset_id",
+          "source_table_id",
+          "source_variable_id",
+          "source_variable_name",
+          "reference_url",
+          "license_id"
+        ],
+        "title": "KpiSourceOut",
+        "description": "Fonte oficial do KPI."
+      },
+      "LicenseOut": {
+        "properties": {
+          "license_id": {
+            "type": "string",
+            "title": "License Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "conditions": {
+            "type": "string",
+            "title": "Conditions"
+          },
+          "review_status": {
+            "type": "string",
+            "title": "Review Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "license_id",
+          "name",
+          "url",
+          "conditions",
+          "review_status"
+        ],
+        "title": "LicenseOut",
+        "description": "Licença de reutilização."
+      },
+      "MapOut": {
+        "properties": {
+          "kpi_id": {
+            "type": "string",
+            "title": "Kpi Id"
+          },
+          "indicator_id": {
+            "type": "string",
+            "title": "Indicator Id"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "additivity": {
+            "type": "string",
+            "title": "Additivity"
+          },
+          "values": {
+            "items": {
+              "$ref": "#/components/schemas/MapValueOut"
+            },
+            "type": "array",
+            "title": "Values"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kpi_id",
+          "indicator_id",
+          "level",
+          "period",
+          "unit",
+          "additivity",
+          "values",
+          "provenance"
+        ],
+        "title": "MapOut",
+        "description": "Valores do KPI por território (Total), para colorir o mapa."
+      },
+      "MapValueOut": {
+        "properties": {
+          "geography_key": {
+            "type": "string",
+            "title": "Geography Key"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "geography_key",
+          "name",
+          "value",
+          "status"
+        ],
+        "title": "MapValueOut",
+        "description": "Valor de um território no mapa."
+      },
+      "NavigationOut": {
+        "properties": {
+          "release_id": {
+            "type": "string",
+            "title": "Release Id"
+          },
+          "scope": {
+            "type": "string",
+            "title": "Scope"
+          },
+          "dimension_order": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Dimension Order"
+          },
+          "themes": {
+            "items": {
+              "$ref": "#/components/schemas/ThemeOut"
+            },
+            "type": "array",
+            "title": "Themes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "release_id",
+          "scope",
+          "dimension_order",
+          "themes"
+        ],
+        "title": "NavigationOut",
+        "description": "Navegação do portal no release ativo."
+      },
+      "PointOut": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "value",
+          "status"
+        ],
+        "title": "PointOut",
+        "description": "Ponto de uma série."
+      },
+      "Provenance": {
+        "properties": {
+          "release_id": {
+            "type": "string",
+            "title": "Release Id"
+          },
+          "tables": {
+            "items": {
+              "$ref": "#/components/schemas/TableVersionOut"
+            },
+            "type": "array",
+            "title": "Tables"
+          },
+          "derived": {
+            "type": "boolean",
+            "title": "Derived",
+            "default": false
+          },
+          "truncated": {
+            "type": "boolean",
+            "title": "Truncated",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "release_id",
+          "tables"
+        ],
+        "title": "Provenance",
+        "description": "De onde veio o resultado."
+      },
+      "QueryIn": {
+        "properties": {
+          "indicators": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Indicators"
+          },
+          "level": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Level"
+          },
+          "within": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Within"
+          },
+          "periods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Periods"
+          },
+          "breakdown": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "maxProperties": 6,
+            "title": "Breakdown"
+          },
+          "sum_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{0,63}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sum To"
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Offset",
+            "default": 0
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Limit",
+            "default": 1000
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "indicators",
+          "level"
+        ],
+        "title": "QueryIn",
+        "description": "Consulta estruturada sobre indicadores (sem SQL)."
+      },
+      "QueryOut": {
+        "properties": {
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/QueryRowOut"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "has_more": {
+            "type": "boolean",
+            "title": "Has More"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rows",
+          "has_more",
+          "offset",
+          "limit",
+          "warnings",
+          "provenance"
+        ],
+        "title": "QueryOut",
+        "description": "Resultado de ``/query``."
+      },
+      "QueryRowOut": {
+        "properties": {
+          "indicator_id": {
+            "type": "string",
+            "title": "Indicator Id"
+          },
+          "geography_key": {
+            "type": "string",
+            "title": "Geography Key"
+          },
+          "territory_name": {
+            "type": "string",
+            "title": "Territory Name"
+          },
+          "level_id": {
+            "type": "string",
+            "title": "Level Id"
+          },
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "breakdown_key": {
+            "type": "string",
+            "title": "Breakdown Key"
+          },
+          "breakdown_label": {
+            "type": "string",
+            "title": "Breakdown Label"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "value_status": {
+            "type": "string",
+            "title": "Value Status"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "indicator_id",
+          "geography_key",
+          "territory_name",
+          "level_id",
+          "period",
+          "breakdown_key",
+          "breakdown_label",
+          "value",
+          "value_status",
+          "unit"
+        ],
+        "title": "QueryRowOut",
+        "description": "Linha do resultado de ``/query``."
+      },
+      "ReleaseOut": {
+        "properties": {
+          "release_id": {
+            "type": "string",
+            "title": "Release Id"
+          },
+          "scope": {
+            "type": "string",
+            "title": "Scope"
+          },
+          "activated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activated At"
+          },
+          "code_version": {
+            "type": "string",
+            "title": "Code Version"
+          },
+          "tables": {
+            "items": {
+              "$ref": "#/components/schemas/TableVersionOut"
+            },
+            "type": "array",
+            "title": "Tables"
+          }
+        },
+        "type": "object",
+        "required": [
+          "release_id",
+          "scope",
+          "activated_at",
+          "code_version",
+          "tables"
+        ],
+        "title": "ReleaseOut",
+        "description": "Release ativo."
+      },
+      "SeriesItemOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "categories": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Categories"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/PointOut"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "categories",
+          "points"
+        ],
+        "title": "SeriesItemOut",
+        "description": "Série de uma combinação de categorias."
+      },
+      "SeriesOut": {
+        "properties": {
+          "kpi_id": {
+            "type": "string",
+            "title": "Kpi Id"
+          },
+          "indicator_id": {
+            "type": "string",
+            "title": "Indicator Id"
+          },
+          "geography": {
+            "$ref": "#/components/schemas/GeographyRefOut"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/SeriesItemOut"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kpi_id",
+          "indicator_id",
+          "geography",
+          "unit",
+          "series",
+          "provenance"
+        ],
+        "title": "SeriesOut",
+        "description": "Evolução temporal de um território."
+      },
+      "SourceOut": {
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          },
+          "institution_id": {
+            "type": "string",
+            "title": "Institution Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "connector_type": {
+            "type": "string",
+            "title": "Connector Type"
+          },
+          "base_url": {
+            "type": "string",
+            "title": "Base Url"
+          },
+          "documentation_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Documentation Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_id",
+          "institution_id",
+          "name",
+          "connector_type",
+          "base_url",
+          "documentation_url"
+        ],
+        "title": "SourceOut",
+        "description": "Fonte de dados."
+      },
+      "SubthemeOut": {
+        "properties": {
+          "subtheme_id": {
+            "type": "string",
+            "title": "Subtheme Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "kpis": {
+            "items": {
+              "$ref": "#/components/schemas/KpiOut"
+            },
+            "type": "array",
+            "title": "Kpis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "subtheme_id",
+          "label",
+          "kpis"
+        ],
+        "title": "SubthemeOut",
+        "description": "Subtema da navegação."
+      },
+      "TableOut": {
+        "properties": {
+          "kpi_id": {
+            "type": "string",
+            "title": "Kpi Id"
+          },
+          "indicator_id": {
+            "type": "string",
+            "title": "Indicator Id"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/ColumnOut"
+            },
+            "type": "array",
+            "title": "Columns"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/TableRowOut"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "total_rows": {
+            "type": "integer",
+            "title": "Total Rows"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kpi_id",
+          "indicator_id",
+          "level",
+          "period",
+          "unit",
+          "columns",
+          "rows",
+          "total_rows",
+          "offset",
+          "limit",
+          "provenance"
+        ],
+        "title": "TableOut",
+        "description": "Tabela paginada de territórios."
+      },
+      "TableRowOut": {
+        "properties": {
+          "geography_key": {
+            "type": "string",
+            "title": "Geography Key"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "uf_abbreviation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uf Abbreviation"
+          },
+          "cells": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CellOut"
+            },
+            "type": "object",
+            "title": "Cells"
+          }
+        },
+        "type": "object",
+        "required": [
+          "geography_key",
+          "name",
+          "uf_abbreviation",
+          "cells"
+        ],
+        "title": "TableRowOut",
+        "description": "Linha da tabela (um território)."
+      },
+      "TableVersionOut": {
+        "properties": {
+          "table_id": {
+            "type": "string",
+            "title": "Table Id"
+          },
+          "delta_version": {
+            "type": "integer",
+            "title": "Delta Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "table_id",
+          "delta_version"
+        ],
+        "title": "TableVersionOut",
+        "description": "Tabela Gold e versão Delta usadas na resposta."
+      },
+      "ThemeOut": {
+        "properties": {
+          "theme_id": {
+            "type": "string",
+            "title": "Theme Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "subthemes": {
+            "items": {
+              "$ref": "#/components/schemas/SubthemeOut"
+            },
+            "type": "array",
+            "title": "Subthemes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "theme_id",
+          "label",
+          "subthemes"
+        ],
+        "title": "ThemeOut",
+        "description": "Tema da navegação."
+      },
+      "TreeNodeOut": {
+        "properties": {
+          "node_key": {
+            "type": "string",
+            "title": "Node Key"
+          },
+          "parent_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Key"
+          },
+          "node_type": {
+            "type": "string",
+            "title": "Node Type"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "depth": {
+            "type": "integer",
+            "title": "Depth"
+          },
+          "indicator_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Indicator Id"
+          },
+          "classification_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classification Id"
+          },
+          "category_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Key"
+          }
+        },
+        "type": "object",
+        "required": [
+          "node_key",
+          "parent_key",
+          "node_type",
+          "label",
+          "depth",
+          "indicator_id",
+          "classification_id",
+          "category_key"
+        ],
+        "title": "TreeNodeOut",
+        "description": "Nó da árvore temática da Gold."
+      }
+    }
+  }
+}

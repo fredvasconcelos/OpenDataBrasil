@@ -7,7 +7,7 @@ from typing import Annotated
 from fastapi import APIRouter, Path, Query
 
 from odb_api.gold import NotFoundError
-from odb_api.routes.common import ID, Ctx, Deps
+from odb_api.routes.common import ERRORS, ID, Ctx, Deps
 from odb_api.schemas import (
     DatasetOut,
     IndicatorOut,
@@ -18,7 +18,7 @@ from odb_api.schemas import (
     TreeNodeOut,
 )
 
-router = APIRouter(prefix="/api/v1", tags=["catálogo"])
+router = APIRouter(prefix="/api/v1", tags=["catálogo"], responses=ERRORS)
 
 
 @router.get("/release", response_model=ReleaseOut, summary="Release ativo")

@@ -8,9 +8,10 @@ from fastapi import APIRouter, Path, Query
 from fastapi.responses import Response
 
 from odb_api import exports
-from odb_api.routes.common import GEOGRAPHY_KEY, ID, PERIOD, Ctx, Deps, Dims
+from odb_api.routes.common import ERRORS, GEOGRAPHY_KEY, ID, PERIOD, Ctx, Deps, Dims
 from odb_api.schemas import (
     DetailOut,
+    ErrorOut,
     ExportIn,
     KpiOut,
     MapOut,
@@ -19,7 +20,7 @@ from odb_api.schemas import (
     TableOut,
 )
 
-router = APIRouter(prefix="/api/v1", tags=["portal"])
+router = APIRouter(prefix="/api/v1", tags=["portal"], responses=ERRORS)
 KpiId = Annotated[str, Path(pattern=ID)]
 Level = Annotated[str, Query(pattern=ID, description="Nível territorial, ex.: uf.")]
 Period = Annotated[str | None, Query(pattern=PERIOD, description="Padrão: o mais recente.")]
@@ -100,7 +101,10 @@ def kpi_table(
     "/exports",
     summary="Exportação de um KPI",
     response_class=Response,
-    responses={200: {"content": {t: {} for t in exports.MEDIA_TYPES.values()}}},
+    responses={
+        200: {"content": {t: {} for t in exports.MEDIA_TYPES.values()}},
+        413: {"model": ErrorOut, "description": "Exportação acima do limite de linhas"},
+    },
 )
 def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
     """CSV (ZIP com metadados), XLSX, Parquet ou JSON, sempre com metadados."""

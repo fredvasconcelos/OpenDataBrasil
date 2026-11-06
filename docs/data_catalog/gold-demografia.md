@@ -13,7 +13,8 @@ Releases com dados reais:
 | `963a5558-68d4-4881-ac41-4bd65008fb9a` (superseded) | + 9723 (territórios quilombolas e Amazônia Legal) | 3.393.438 | 115 aprovadas |
 | `c9c90f26-6439-4559-9195-5c829472cee2` (superseded) | + 9954 (terras indígenas e Coordenações Regionais da Funai) | 3.891.210 | 127 aprovadas |
 | `35489cf6-6d87-46cb-8c93-75de8f0b8e77` (superseded) | + Fase 5.0: 9606 (cor ou raça × sexo), 8176 e 9765 (quilombolas por sexo) | 4.183.011 | 156 aprovadas, 6 de consistência |
-| `024556cf-9559-4bd7-982b-1051eed031c9` (**ativo**, 2026-11-05) | + `dim_geometry` (malhas 2022 para mapas) | 4.183.011 | 161 aprovadas, 1 aviso (município sem polígono) |
+| `024556cf-9559-4bd7-982b-1051eed031c9` (superseded) | + `dim_geometry` (malhas 2022 para mapas) | 4.183.011 | 161 aprovadas, 1 aviso (município sem polígono) |
+| `81f68da1-6c5f-4686-9ea9-6818a24b8db4` (**ativo**, 2026-11-06) | `dim_geometry` 1.1.0: anéis orientados pela RFC 7946 | 4.183.011 | 161 aprovadas, 1 aviso |
 
 Release **interno**: a licença do IBGE ainda está em `requires_review` (KI-003).
 

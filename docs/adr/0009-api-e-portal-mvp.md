@@ -162,6 +162,26 @@ Implementação (`apps/api`, [runbook](../runbooks/api.md)):
   | Detalhe (tooltip) | cerca de 50 ms |
   | Malha municipal com gzip (1,57 MB) | 0,57 s na primeira carga, depois em cache |
 
+### 9. Portal
+
+`apps/portal` ([runbook](../runbooks/portal.md)):
+
+- **Proxy:** o navegador fala com o proxy `/odb-api/*` do portal, com lista fechada
+  de prefixos e só `POST /exports`. A API fica na rede interna. Os tipos vêm do
+  contrato OpenAPI de referência (`tests/contracts/openapi.json`).
+- **Estado na URL:** KPI, nível, período, dimensões e território ficam na URL,
+  para o painel poder ser compartilhado.
+- **Orientação dos anéis:** a orientação foi normalizada na Gold (RFC 7946,
+  `dim_geometry` 1.1.0) e é invertida no portal para o d3-geo, que trabalha na
+  esfera. Antes da normalização, alguns polígonos reparados tinham a orientação
+  oposta, e o mapa colapsava.
+- **Escala de cor:** quantis em 7 faixas, com o zero em classe própria quando é
+  comum e limites inteiros para contagens.
+- **Exportação:** dados em CSV, XLSX, Parquet e JSON pela API, e imagem do
+  mapa em SVG e PNG no navegador, com legenda de fonte e release.
+- **Testes:** biblioteca e componentes (Vitest); ponta a ponta com navegador
+  real (Playwright, local).
+
 ## Consequências
 
 - O gráfico de evolução de KPIs por sexo tem 2010 e 2022 para a população

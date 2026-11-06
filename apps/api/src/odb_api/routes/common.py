@@ -8,6 +8,7 @@ from fastapi import Depends, Query, Request, Response
 
 from odb_api.deps import ApiDeps
 from odb_api.release import ReleaseContext
+from odb_api.schemas import ErrorOut
 
 GEOGRAPHY_KEY = r"^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$"
 ID = r"^[a-z][a-z0-9_]{0,63}$"
@@ -43,3 +44,16 @@ def dimension_list(
 Deps = Annotated[ApiDeps, Depends(deps)]
 Ctx = Annotated[ReleaseContext, Depends(context)]
 Dims = Annotated[list[str], Depends(dimension_list)]
+
+
+# Respostas de erro documentadas no OpenAPI (formato ``ErrorOut``).
+ERRORS: dict[int | str, dict[str, object]] = {
+    status: {"model": ErrorOut, "description": text}
+    for status, text in (
+        (404, "Recurso inexistente no release"),
+        (422, "Regra semântica ou parâmetro inválido"),
+        (429, "Limite de requisições"),
+        (503, "Sem release ativo ou motor ocupado"),
+        (504, "Tempo de consulta excedido"),
+    )
+}

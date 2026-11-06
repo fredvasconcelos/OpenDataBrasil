@@ -5,11 +5,11 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from odb_api.kpis import provenance, to_float
-from odb_api.routes.common import Ctx, Deps
+from odb_api.routes.common import ERRORS, Ctx, Deps
 from odb_api.schemas import QueryIn, QueryOut, QueryRowOut
 from odb_semantics import IndicatorQuery, check_semantics, plan_query
 
-router = APIRouter(prefix="/api/v1", tags=["consulta"])
+router = APIRouter(prefix="/api/v1", tags=["consulta"], responses=ERRORS)
 
 
 @router.post("/query", response_model=QueryOut, summary="Consulta de indicadores")

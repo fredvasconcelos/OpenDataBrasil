@@ -74,7 +74,7 @@ logger = logging.getLogger(__name__)
 
 # Versão das regras de modelagem. Sobe quando a transformação muda sem mudar
 # contratos nem catálogo, para forçar a reconstrução.
-MODEL_VERSION = "1.1.0"
+MODEL_VERSION = "1.2.0"
 GoldStatus = Literal["running", "succeeded", "skipped", "failed"]
 
 

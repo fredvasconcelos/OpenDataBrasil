@@ -16,6 +16,7 @@ são arredondadas depois, só para reduzir o tamanho do GeoJSON. O arredondament
 pode cruzar arestas de feições estreitas. Essas geometrias são reparadas com
 ``make_valid`` estrutural (só polígonos) e contadas no relatório. Na malha
 municipal de 2022, com 4 casas, a maior perda de área medida foi de 0,2%.
+A orientação dos anéis segue a RFC 7946 (externo anti-horário).
 """
 
 from __future__ import annotations
@@ -61,7 +62,9 @@ def _round(
         if not rounded.is_valid:
             rounded = shapely.make_valid(rounded, method="structure", keep_collapsed=False)
             report.repaired.append(key)
-        out.append(rounded)
+        # RFC 7946: anel externo anti-horário e furos no sentido horário. O
+        # shapefile usa o contrário e o reparo pode misturar as orientações.
+        out.append(shapely.orient_polygons(rounded, exterior_cw=False))
     return out
 
 

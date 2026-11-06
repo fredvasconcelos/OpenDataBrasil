@@ -231,7 +231,8 @@ F64 = pl.Float64()
 # Silver (``territorial_mesh``) e o arquivo original na Bronze.
 DIM_GEOMETRY = Contract(
     name="dim_geometry",
-    version="1.0.0",
+    # 1.1.0: anéis orientados pela RFC 7946 (mesmo schema).
+    version="1.1.0",
     schema={
         "geography_key": S,
         "level_id": S,

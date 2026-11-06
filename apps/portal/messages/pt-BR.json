@@ -1,0 +1,90 @@
+{
+  "site": {
+    "name": "Dados Abertos do Brasil",
+    "tagline": "Indicadores oficiais em um só lugar",
+    "internalNotice": "Versão de desenvolvimento, só para uso interno: a licença de reutilização dos dados do IBGE ainda está em revisão."
+  },
+  "nav": {
+    "home": "Início",
+    "dashboard": "Painel de análise",
+    "about": "Sobre os dados",
+    "api": "API",
+    "skip": "Pular para o conteúdo"
+  },
+  "home": {
+    "title": "Dados oficiais do Brasil, prontos para consultar",
+    "lead": "Explore indicadores do IBGE por território e período, veja a fonte de cada número e exporte os dados.",
+    "searchLabel": "Buscar indicador",
+    "searchPlaceholder": "Ex.: população, quilombolas, indígenas",
+    "searchEmpty": "Nenhum indicador encontrado.",
+    "open": "Abrir no painel",
+    "themes": "Temas"
+  },
+  "dashboard": {
+    "menu": "Temas e indicadores",
+    "dimensions": "Detalhar por",
+    "level": "Nível territorial",
+    "period": "Período",
+    "loading": "Carregando…",
+    "error": "Não foi possível carregar os dados.",
+    "retry": "Tentar de novo",
+    "selectKpi": "Escolha um indicador no menu.",
+    "mapTitle": "Distribuição por território",
+    "noMap": "Este nível não tem mapa. Os valores aparecem na tabela.",
+    "seriesTitle": "Evolução temporal",
+    "singlePeriod": "Só há um período publicado para esta combinação.",
+    "tableTitle": "Dados",
+    "selected": "Território selecionado",
+    "resetSelection": "Voltar para o Brasil",
+    "hoverHint": "Passe o ponteiro sobre o mapa para ver o detalhe; clique para selecionar.",
+    "derivedNote": "Percentuais calculados pela plataforma a partir dos valores publicados."
+  },
+  "levels": {
+    "brasil": "Brasil",
+    "regiao": "Grande Região",
+    "uf": "Estado (UF)",
+    "municipio": "Município",
+    "territorio_quilombola": "Território quilombola",
+    "territorio_quilombola_uf": "Território quilombola por UF",
+    "terra_indigena": "Terra indígena",
+    "terra_indigena_uf": "Terra indígena por UF",
+    "coordenacao_regional_funai": "Coordenação Regional da Funai",
+    "amazonia_legal": "Amazônia Legal",
+    "amazonia_legal_uf": "Amazônia Legal por UF"
+  },
+  "table": {
+    "territory": "Território",
+    "previous": "Anterior",
+    "next": "Próxima",
+    "page": "{from}–{to} de {total}",
+    "sortByName": "Ordenar por nome",
+    "sortByValue": "Ordenar por valor"
+  },
+  "export": {
+    "title": "Exportar",
+    "data": "Dados",
+    "image": "Imagem do mapa",
+    "running": "Gerando arquivo…",
+    "failed": "A exportação falhou: {message}"
+  },
+  "meta": {
+    "title": "Sobre este indicador",
+    "source": "Fonte",
+    "table": "Tabela SIDRA {table}, variável {variable}",
+    "unit": "Unidade",
+    "periods": "Períodos",
+    "license": "Licença",
+    "release": "Versão dos dados (release)",
+    "caveats": "Limitações",
+    "official": "Ver na fonte oficial"
+  },
+  "about": {
+    "title": "Sobre os dados",
+    "lead": "Todos os números vêm de um release publicado da camada Gold (Delta Lake), que registra a versão de cada tabela. A fonte oficial continua sendo a instituição que publicou os dados.",
+    "release": "Release ativo",
+    "activated": "ativado em {date}",
+    "datasets": "Conjuntos de dados",
+    "license": "Licença",
+    "review": "situação: {status}"
+  }
+}

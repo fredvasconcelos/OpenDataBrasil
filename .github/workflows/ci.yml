@@ -26,6 +26,24 @@ jobs:
       - run: uv run ruff format --check .
       - run: uv run mypy
 
+  portal:
+    name: Portal (tipos, lint, testes, build e contrato)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: Tipos, lint e testes de componentes
+        run: |
+          docker build -f infrastructure/docker/portal/Dockerfile --target test -t odb-portal-test .
+          docker run --rm odb-portal-test
+      - name: Imagem de produção
+        run: docker build -f infrastructure/docker/portal/Dockerfile --target runtime -t odb-portal .
+      - name: Tipos da API em dia com o contrato OpenAPI
+        run: |
+          docker run --rm -v "$PWD":/repo -w /repo/apps/portal \
+            node:24.22.1-bookworm-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c \
+            sh -c 'npm ci --no-audit --no-fund && npm run -s gen:api'
+          git diff --exit-code apps/portal/src/lib/api-schema.ts
+
   compose:
     name: Testes, migração, doctor e smoke (Docker Compose)
     runs-on: ubuntu-24.04

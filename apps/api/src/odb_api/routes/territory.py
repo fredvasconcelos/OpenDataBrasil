@@ -6,10 +6,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Path, Query, Request, Response
 
-from odb_api.routes.common import GEOGRAPHY_KEY, ID, Ctx, Deps
+from odb_api.routes.common import ERRORS, GEOGRAPHY_KEY, ID, Ctx, Deps
 from odb_api.schemas import GeographyOut
 
-router = APIRouter(prefix="/api/v1", tags=["territórios"])
+router = APIRouter(prefix="/api/v1", tags=["territórios"], responses=ERRORS)
 
 
 def _geo(row: dict[str, object]) -> GeographyOut:

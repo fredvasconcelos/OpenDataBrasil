@@ -15,3 +15,7 @@ lakehouse
 docs
 *.md
 !README.md
+**/node_modules
+apps/portal/.next
+apps/portal/test-results
+apps/portal/playwright-report

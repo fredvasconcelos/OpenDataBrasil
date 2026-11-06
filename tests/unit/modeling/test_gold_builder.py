@@ -4,6 +4,7 @@ from pathlib import Path
 
 import polars as pl
 import pytest
+import shapely
 from deltalake import DeltaTable
 
 from odb_lakehouse import DeltaReader
@@ -137,6 +138,11 @@ def test_geometry_levels_and_lagoons(env: GoldEnv) -> None:
     assert nordeste["derivation"] == "union:uf"
     assert nordeste["crs"] == "EPSG:4674"
     assert json.loads(nordeste["geometry_geojson"])["type"] in {"Polygon", "MultiPolygon"}
+    # RFC 7946: anel externo anti-horário em todas as geometrias.
+    for text in geometry["geometry_geojson"].to_list():
+        geom = shapely.from_geojson(text)
+        polygons = getattr(geom, "geoms", [geom])
+        assert all(p.exterior.is_ccw for p in polygons)
     coverage = checks["geometry.coverage"]
     assert coverage.status is CheckStatus.WARN  # 5.568 municípios sem polígono na malha sintética
     assert coverage.details["dropped_polygons"]["municipio"] == [
