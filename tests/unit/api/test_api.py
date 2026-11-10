@@ -12,6 +12,7 @@ from typing import Any
 import polars as pl
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy.exc import OperationalError
 
 from odb_api.app import create_app
 from odb_api.config import ApiSettings
@@ -31,9 +32,16 @@ PORTAL_DIR = REPO / "configs" / "portal"
 
 
 class FakeCatalog:
-    """Catálogo operacional em memória."""
+    """Catálogo operacional em memória (``down`` simula o PostgreSQL fora do ar)."""
+
+    down = False
+
+    def _check(self) -> None:
+        if self.down:
+            raise OperationalError("SELECT 1", {}, Exception("failed to resolve host 'postgres'"))
 
     def sources(self) -> list[dict[str, Any]]:
+        self._check()
         return [
             {
                 "source_id": "ibge-sidra",
@@ -64,7 +72,7 @@ class FakeCatalog:
         return [row] if dataset_id in {None, "ibge-sidra-9606"} else []
 
     def ping(self) -> None:
-        return None
+        self._check()
 
 
 def _release(env: GoldEnv, release_id: str = "rel-1") -> Release:
@@ -101,23 +109,39 @@ def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[dict[str, Any]]:
     )
     gold = GoldGateway(duck)
     settings = ApiSettings(portal_config_dir=str(PORTAL_DIR), rate_limit_per_minute=0)
+    catalog = FakeCatalog()
     deps = ApiDeps(
         settings=settings,
         resolver=ReleaseResolver(lambda: state["release"], ttl_s=0),
         gold=gold,
         kpis=KpiService(gold, load_portal(PORTAL_DIR, "demografia"), page_max=1000),
-        catalog=FakeCatalog(),  # type: ignore[arg-type]
+        catalog=catalog,  # type: ignore[arg-type]
         engine=duck,
         closers=[duck],
     )
     with TestClient(create_app(deps)) as client:
-        yield {"client": client, "state": state, "env": env, "gold": gold}
+        yield {"client": client, "state": state, "env": env, "gold": gold, "catalog": catalog}
 
 
 def _get(stack: dict[str, Any], path: str, status: int = 200) -> Any:
     response = stack["client"].get(path)
     assert response.status_code == status, response.text
     return response.json()
+
+
+def test_catalog_down_is_503_and_recovers(stack: dict[str, Any]) -> None:
+    # Ex.: o PostgreSQL não voltou depois de um reinício do Docker. Sem traceback
+    # (500): 503 com nova tentativa, e a API volta sozinha quando o banco volta.
+    stack["catalog"].down = True
+    try:
+        for path in ("/health", "/api/v1/sources"):
+            response = stack["client"].get(path)
+            assert response.status_code == 503, response.text
+            assert response.json()["error"]["code"] == "catalog_unavailable"
+            assert response.headers["Retry-After"] == "1"
+    finally:
+        stack["catalog"].down = False
+    assert _get(stack, "/health")["status"] == "ok"
 
 
 def test_health_release_and_catalog(stack: dict[str, Any]) -> None:

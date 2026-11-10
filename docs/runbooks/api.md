@@ -17,7 +17,10 @@ curl -s localhost:8000/health               # {"status":"ok","release_id":"..."}
 Depois de `odb gold build --activate`, a API passa a usar o release novo em
 até `ODB_API_RELEASE_TTL_S` segundos (padrão 5), sem reiniciar. Se o
 PostgreSQL cair, a API continua com o último release lido. Sem release
-nenhum, responde 503.
+nenhum, responde 503. As rotas que precisam do catálogo (`/health`,
+`/sources`, `/datasets`) também respondem 503 (`catalog_unavailable`, com
+`Retry-After`), com uma linha `catalog unavailable` no log, sem traceback.
+Quando o banco volta, tudo se normaliza sem reiniciar a API.
 
 ## Rotas
 
@@ -56,6 +59,7 @@ curl -s -X POST localhost:8000/api/v1/exports -H 'Content-Type: application/json
 | `too_large` | 413 | exportação acima de `ODB_API_EXPORT_MAX_ROWS` |
 | `rate_limited` | 429 | acima de `ODB_API_RATE_LIMIT_PER_MINUTE` por IP |
 | `busy` / `release_unavailable` | 503 | motor ocupado ou sem release ativo |
+| `catalog_unavailable` | 503 | PostgreSQL inacessível (erro de conexão). Erros de SQL continuam 500 |
 | `timeout` | 504 | consulta acima de `ODB_DUCKDB_QUERY_TIMEOUT_S` |
 
 ## Configuração

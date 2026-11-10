@@ -29,7 +29,12 @@ x-odb-env: &odb-env
 
 services:
   postgres:
-    image: postgres:17-bookworm@sha256:839fbb5a4942a7758dd93e18b42ea5649807491a0545b5eeeb8f0b8bb11857a5
+    # Imagem oficial fixada + scripts de inicialização embutidos (sem bind mount:
+    # ver infrastructure/docker/postgres/Dockerfile).
+    build:
+      context: .
+      dockerfile: infrastructure/docker/postgres/Dockerfile
+    image: opendatabrasil/postgres:dev
     profiles: [data, web, test, dev]
     environment:
       POSTGRES_USER: ${POSTGRES_USER:?defina no .env}
@@ -54,7 +59,6 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
       - pg_backups:/backups
-      - ./infrastructure/postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s

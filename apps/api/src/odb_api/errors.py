@@ -7,6 +7,7 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import InterfaceError, OperationalError
 
 from odb_api.exports import ExportTooLargeError
 from odb_api.gold import NotFoundError
@@ -64,5 +65,14 @@ def install(app: FastAPI) -> None:
         logger.error("portal config incoherent with release", extra={"error": str(exc)})
         return error_response(500, "portal_config", str(exc))
 
+    async def catalog(_request: Request, exc: Exception) -> JSONResponse:
+        # Banco operacional fora do ar (ex.: reinício do Docker): 503 com nova
+        # tentativa, uma linha de log em vez do traceback a cada requisição.
+        logger.warning("catalog unavailable", extra={"error": type(exc).__name__})
+        return error_response(503, "catalog_unavailable", "catálogo operacional inacessível")
+
     app.add_exception_handler(RequestValidationError, invalid)
+    # Só erros de conexão: erros de SQL continuam como 500 (são defeito, não indisponibilidade).
+    app.add_exception_handler(OperationalError, catalog)
+    app.add_exception_handler(InterfaceError, catalog)
     app.add_exception_handler(PortalConfigError, portal)
