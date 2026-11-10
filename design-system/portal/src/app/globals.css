@@ -1,5 +1,10 @@
 /*
- * Open Data Brasil — Design System v1.0
+ * Open Data Brasil — Design System v2 (design-system/), aplicado ao portal. Por cima
+ * do pacote: zoom, recorte, trilha e legenda do mapa, gráfico no tamanho real,
+ * tabela que localiza o território clicado e página de indisponibilidade
+ * (revisões da beta, ADR-0009).
+ *
+ * Texto original do pacote:
  * Substitui o globals.css provisório (ADR-0009, seção 4). Mantém todas as classes
  * que os componentes já usam e acrescenta estados de ponteiro, foco e tema dark.
  * Tokens em ../styles/tokens.css.
@@ -105,7 +110,8 @@ table, .data-table, .tooltip { font-variant-numeric: tabular-nums; }
 /* Aviso do portal (role="note") */
 .notice {
   margin: 0; background: var(--odbr-warning-bg); color: var(--odbr-warning);
-  font-size: var(--odbr-fs-small); font-weight: 700; padding: 9px var(--odbr-space-6);
+  font-size: var(--odbr-fs-small); font-weight: 700; line-height: 20px; padding: 9px var(--odbr-space-6);
+  height: var(--notice-h); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   border-bottom: 1px solid var(--odbr-warning-border);
 }
 
@@ -146,7 +152,9 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
 /* ---------- Painel de análise ---------- */
 .dashboard {
   display: grid; grid-template-columns: var(--odbr-sidebar-w) 1fr;
-  height: calc(100vh - var(--odbr-header-h) - var(--odbr-stripe-h) - var(--notice-h));
+  height: calc(100dvh - var(--odbr-header-h) - var(--odbr-stripe-h) - var(--notice-h));
+  /* Uma linha da altura do painel: a área central e a barra rolam por dentro, nunca a página. */
+  grid-template-rows: minmax(0, 1fr);
 }
 
 /* Menu lateral */
@@ -190,7 +198,7 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
 }
 .sidebar li button:focus-visible { outline-offset: -3px; }
 /* Barra lateral: bloco "Filtros" no topo, "Temas e indicadores" abaixo */
-.sidebar { display: flex; flex-direction: column; gap: var(--odbr-space-5); }
+.sidebar { position: relative; display: flex; flex-direction: column; gap: var(--odbr-space-5); }
 .sidebar .filters {
   display: flex; flex-direction: column; gap: var(--odbr-space-3);
   border: 1px solid var(--odbr-border); border-radius: 12px; padding: 14px;
@@ -212,7 +220,8 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
 .sidebar .check:has(input:checked) { font-weight: 800; }
 
 /* Área central */
-.main { overflow-y: auto; padding: 28px var(--odbr-space-8) var(--odbr-space-10); display: flex; flex-direction: column; }
+/* position: relative contém os elementos absolutos (ex.: .sr-only) na rolagem interna. */
+.main { position: relative; min-height: 0; overflow-y: auto; padding: 28px var(--odbr-space-8) var(--odbr-space-10); display: flex; flex-direction: column; }
 
 /* Grade do painel. Até 1599 px: empilhado (mapa, depois gráfico e tabela lado a lado).
    A partir de 1600 px: tela cheia (ver media query no fim do arquivo). */
@@ -242,11 +251,13 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
 .crumb { margin: 0; font-size: var(--odbr-fs-small); font-weight: 700; color: var(--odbr-text-muted); }
 .data-title { margin: 0; font-size: var(--odbr-fs-card-title); font-weight: 900; }
 
-/* Mapa (d3-geo). Altura fixa: o SVG acompanha o contêiner, sem ciclo de redimensionamento. */
-.map-panel { position: relative; height: clamp(360px, 58vh, 680px); overflow: hidden; background: var(--odbr-bg-surface); }
-.map-panel svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* Mapa (d3-geo + d3-zoom). Altura definida pelo contêiner e SVG em posição absoluta:
+   um SVG que dita a altura do contêiner entra em ciclo de redimensionamento. */
+.map-panel { position: relative; height: clamp(360px, 58vh, 680px); padding: 0; overflow: hidden; background: var(--odbr-bg-surface); }
+.map-panel svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+.map-panel svg:active { cursor: grabbing; }
 .map-panel path.territory {
-  stroke: var(--odbr-map-stroke); stroke-width: 0.5; cursor: pointer;
+  stroke: var(--odbr-map-stroke); stroke-width: 0.5; vector-effect: non-scaling-stroke; cursor: pointer;
   transition: stroke var(--odbr-dur-hover) var(--odbr-ease), stroke-width var(--odbr-dur-hover) var(--odbr-ease);
 }
 .map-panel.dense path.territory { stroke-width: 0.25; }
@@ -254,16 +265,51 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
 .map-panel path.territory.selected { stroke: var(--odbr-map-selected); stroke-width: 2.5; }
 .map-panel path.territory:focus { outline: none; }
 .map-panel path.territory:focus-visible { stroke: var(--odbr-focus); stroke-width: 3; }
+/* Recorte: fora dele, cinza neutro com divisas nítidas; o recorte ganha contorno forte. */
+.map-panel path.territory.context { fill: var(--odbr-map-context); stroke: var(--odbr-map-context-stroke); stroke-width: 1; }
+.map-panel path.territory.context:hover { stroke: var(--odbr-map-hover); stroke-width: 1.5; }
+.map-panel path.territory.context.selected { stroke: var(--odbr-map-selected); stroke-width: 2.5; }
+.map-panel path.focus-outline {
+  fill: none; stroke: var(--odbr-map-focus); stroke-width: 2; vector-effect: non-scaling-stroke;
+  stroke-linejoin: round; pointer-events: none;
+}
+/* Controles de zoom, trilha do recorte e aviso de carregamento */
+.map-zoom { position: absolute; top: var(--odbr-space-3); right: var(--odbr-space-3); display: flex; flex-direction: column; gap: var(--odbr-space-1); }
+.map-zoom button {
+  width: 36px; height: 36px; min-height: 0; padding: 0; font-size: 18px; line-height: 1;
+  border-radius: var(--odbr-radius-sm); box-shadow: var(--odbr-shadow-1);
+}
+.map-trail {
+  position: absolute; top: var(--odbr-space-3); left: var(--odbr-space-3); max-width: calc(100% - 80px);
+  background: color-mix(in srgb, var(--odbr-bg-surface) 92%, transparent);
+  border: 1px solid var(--odbr-border); border-radius: var(--odbr-radius-md); padding: 4px 10px;
+}
+.map-trail ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; font-size: var(--odbr-fs-small); font-weight: 800; color: var(--odbr-text); }
+.map-trail li + li::before { content: "›"; margin-right: 6px; color: var(--odbr-text-muted); }
+.map-trail button { min-height: 0; padding: 2px 6px; border: none; background: none; font-size: var(--odbr-fs-small); }
+.map-trail button:hover:not(:disabled) { background: var(--odbr-bg-hover); }
+.map-trail .map-trail-level { font-weight: 700; color: var(--odbr-text-muted); }
+.map-trail .map-trail-level::before { content: "·"; }
+.map-loading {
+  position: absolute; top: 56px; left: var(--odbr-space-3); margin: 0; padding: 2px 10px;
+  background: color-mix(in srgb, var(--odbr-bg-surface) 92%, transparent); border: 1px solid var(--odbr-border);
+  border-radius: var(--odbr-radius-pill); font-size: var(--odbr-fs-caption); font-weight: 700; color: var(--odbr-text-muted);
+}
 .legend {
   position: absolute; left: var(--odbr-space-3); bottom: var(--odbr-space-3);
   background: color-mix(in srgb, var(--odbr-bg-surface) 92%, transparent);
   border: 1px solid var(--odbr-border); border-radius: var(--odbr-radius-md);
   padding: 10px 12px; font-size: var(--odbr-fs-micro); font-weight: 700; color: var(--odbr-text-body);
 }
+.legend-title { margin: 0; font-size: var(--odbr-fs-caption); font-weight: 900; color: var(--odbr-text); }
 .legend ol { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
 .legend li { display: flex; align-items: center; gap: 8px; }
 .legend i { width: 16px; height: 10px; display: inline-block; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.25); }
-.map-hint { position: absolute; right: var(--odbr-space-3); bottom: 6px; margin: 0; font-size: var(--odbr-fs-caption); font-weight: 600; color: var(--odbr-text-muted); }
+.map-hint {
+  position: absolute; right: var(--odbr-space-3); bottom: 6px; margin: 0; padding: 0 4px; pointer-events: none;
+  font-size: var(--odbr-fs-caption); font-weight: 600; color: var(--odbr-text-muted);
+  background: color-mix(in srgb, var(--odbr-bg-surface) 80%, transparent);
+}
 
 /* Tooltip do mapa (DetailTooltip) */
 @keyframes odbr-tooltip-in { from { opacity: 0; translate: 0 4px; } to { opacity: 1; translate: 0 0; } }
@@ -335,8 +381,18 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
 .area-chart h2, .area-table h2 { display: flex; flex-wrap: wrap; align-items: center; gap: var(--odbr-space-2); margin: 0 0 var(--odbr-space-3); }
 .area-chart h2 button { min-height: 32px; border: none; background: var(--odbr-bg-selected); color: var(--odbr-text-active); }
 .area-chart h2 button:hover:not(:disabled) { background: var(--odbr-bg-hover); }
+/* Gráfico desenhado no tamanho real do quadro (o texto não encolhe com o cartão) */
+.area-chart { display: flex; flex-direction: column; }
+.series-figure { margin: 0; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.series-plot { flex: 1; min-height: 260px; position: relative; }
+.series-plot svg { position: absolute; inset: 0; display: block; }
+.series-figure figcaption { max-height: 3.4em; overflow-y: auto; }
+.series-figure figcaption p { margin: 2px 0 0; }
+.series-legend { display: flex; flex-wrap: wrap; gap: 2px 14px; list-style: none; padding: 0; margin: 8px 0 0; }
+.series-legend li { display: inline-flex; align-items: center; gap: 6px; color: var(--odbr-text-muted); font-weight: 700; }
 
 /* Tabela */
+.table-box { display: flex; flex-direction: column; }
 .table-wrap { overflow: auto; max-height: 360px; border: 1px solid var(--odbr-divider); border-radius: var(--odbr-radius-md); }
 .data-table { width: 100%; border-collapse: collapse; font-size: var(--odbr-fs-ui); }
 .data-table th, .data-table td { border-bottom: 1px solid var(--odbr-divider); padding: 9px 12px; text-align: right; white-space: nowrap; color: var(--odbr-text-body); }
@@ -391,6 +447,10 @@ div.error button { background: var(--odbr-primary); border-color: var(--odbr-pri
 div.error button:hover:not(:disabled) { background: var(--odbr-primary-hover); border-color: var(--odbr-primary-hover); }
 p.error { margin: var(--odbr-space-2) 0 0; font-size: var(--odbr-fs-small); }
 
+/* Página indisponível (app/error.tsx) */
+.unavailable { max-width: 640px; margin: var(--odbr-space-8) auto 0; border-top: 4px solid var(--odbr-warning-border); }
+.unavailable h1 { font-size: var(--odbr-fs-card-title); margin-top: 0; }
+
 /* Estados de carregamento e vazio */
 [aria-busy="true"].card { color: var(--odbr-text-muted); }
 
@@ -398,7 +458,7 @@ p.error { margin: var(--odbr-space-2) 0 0; font-size: var(--odbr-fs-small); }
 @media (max-width: 900px) {
   .header { gap: var(--odbr-space-3); padding: 0 var(--odbr-space-4); }
   .header .brand-name, .header .brand-divider { display: none; }
-  .dashboard { grid-template-columns: 1fr; height: auto; }
+  .dashboard { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; }
   .sidebar { max-height: 40vh; border-right: none; border-bottom: 1px solid var(--odbr-border); }
   .main { padding: var(--odbr-space-5) var(--odbr-space-4) var(--odbr-space-8); }
   .dash-grid {
@@ -416,7 +476,9 @@ p.error { margin: var(--odbr-space-2) 0 0; font-size: var(--odbr-fs-small); }
   .sidebar .themes { flex: 1; min-height: 0; border: 1px solid var(--odbr-border); border-radius: 14px; padding: 14px 10px; overflow-y: auto; }
   .dash-grid {
     flex: 1; min-height: 0; gap: var(--odbr-space-4) var(--odbr-space-5);
-    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    /* Gráfico e tabela dividem a altura em frações fixas: carregar a série não
+       empurra a tabela (a linha localizada continua à vista). */
+    grid-template-rows: auto minmax(0, 1fr) minmax(0, 1.2fr) auto;
     grid-template-areas:
       "maphead datahead"
       "map chart"
@@ -430,6 +492,9 @@ p.error { margin: var(--odbr-space-2) 0 0; font-size: var(--odbr-fs-small); }
   .area-table { display: flex; flex-direction: column; min-height: 0; }
   .area-table > div:last-child { flex: 1; min-height: 0; display: flex; flex-direction: column; }
   .area-table .table-wrap { flex: 1; max-height: none; min-height: 160px; }
+  .area-table .table-box { flex: 1; min-height: 0; }
+  .area-chart { min-height: 0; overflow: hidden; }
+  .area-chart .series-plot { min-height: 0; }
   .area-meta .meta { padding: 10px var(--odbr-space-4); border-radius: 12px; }
   .area-meta .meta-more { margin-top: 0; }
   .area-meta .meta-more:not([open]) { display: inline; }

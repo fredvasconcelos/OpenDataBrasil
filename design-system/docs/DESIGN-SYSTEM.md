@@ -1,4 +1,4 @@
-# Open Data Brasil — Design System v1.0
+# Open Data Brasil — Design System v2.1
 
 Especificação de referência. Os valores exatos estão em `tokens/tokens.css`;
 este documento explica o uso e as regras.

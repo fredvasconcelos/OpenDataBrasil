@@ -1,8 +1,31 @@
-# Open Data Brasil — Design System v1.0 (pacote de implementação)
+# Open Data Brasil — Design System v2.1 (pacote de implementação)
 
 Este pacote leva o Design System ODBr para o portal (`apps/portal`, Next.js 16 + React 19 + d3).
-Foi escrito sobre o código do commit `3a7fb4f` e mantém todas as classes, rótulos e
-`aria-*` de que os testes dependem.
+**Os arquivos em `portal/` são uma cópia exata do portal no commit `d304ab0`** (v2 aplicada
+mais as revisões da beta) e mantêm todas as classes, rótulos e `aria-*` de que os testes dependem.
+
+## Estado atual (v2.1): o que o portal tem além da v2
+
+Para o Claude Design: ao gerar a próxima versão, **parta destes arquivos** e preserve os
+itens abaixo. A v2 havia perdido os tokens do recorte; eles foram repostos aqui.
+
+| Item | Onde | Regra |
+|---|---|---|
+| Tokens do recorte | `tokens/` (`map-context`, `map-context-stroke`, `map-focus`) | Fora do recorte em cinza neutro com divisas de 1 px; contorno do recorte com 2 px por cima de tudo (`docs/DESIGN-SYSTEM.md`, seção 9) |
+| Recorte seletivo do mapa | `MapView.tsx`, `lib/zoom.ts`, `Dashboard.tsx` | Duplo clique, roda ou `+` abrem o recorte: só ele se subdivide (Região → UF → Município) e recebe o gradiente; trilha "Brasil › Região › UF" sobre o mapa; botões +, − e "Ver o Brasil inteiro" |
+| Legenda | `MapView.tsx`, `lib/scale.ts`, `lib/format.ts` | Título pela unidade ("População"…); 7 grupos por quantis dentro do recorte, com limites redondos e pontas abertas ("Até 4 mil" … "Mais de 15 mil"); entrada "Fora do recorte" |
+| Tabela localiza o clique no mapa | `DataTable.tsx`, `Dashboard.tsx` | A tabela vai à página do território e rola por dentro até a linha (estado `aria-selected` com barra) |
+| Limpar filtros | `Sidebar.tsx` | Botão no fim do bloco "Filtros" |
+| Sem rolagem dupla | `globals.css` | `.main` e `.sidebar` com `position: relative` e `min-height: 0`; em tela cheia, gráfico e tabela dividem a altura em frações fixas |
+| Gráfico no tamanho real | `SeriesChart.tsx`, `globals.css` | O SVG acompanha o quadro (`.series-plot`), o texto não encolhe |
+| Tooltip dentro da janela | `DetailTooltip.tsx` | Mede a própria altura e não passa da borda inferior |
+| Página indisponível | `app/error.tsx` | "Dados temporariamente indisponíveis", com nova tentativa automática |
+| Sem dicas nativas no mapa | `MapView.tsx` | Sem `<title>` no SVG do mapa; território clicado sem anel de foco (só o traço) |
+
+---
+
+*Texto da v2 (referência):* foi escrito sobre o commit `3a7fb4f` e mantém todas as classes,
+rótulos e `aria-*` de que os testes dependem.
 
 > **Para o Claude Code:** leia este arquivo inteiro e depois `docs/DESIGN-SYSTEM.md`.
 > Siga a seção "Passo a passo". Os arquivos em `portal/` espelham `apps/portal/`:

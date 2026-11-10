@@ -40,9 +40,32 @@
     "tableTitle": "Dados",
     "selected": "Território selecionado",
     "resetSelection": "Voltar para o Brasil",
-    "hoverHint": "Passe o ponteiro sobre o mapa para ver o detalhe; clique para selecionar.",
+    "hoverHint": "Duplo clique ou roda do mouse aproxima o recorte (Região → UF → Município); clique seleciona.",
     "derivedNote": "Percentuais calculados pela plataforma a partir dos valores publicados.",
+    "clearFilters": "Limpar filtros",
+    "zoom": {
+      "group": "Zoom do mapa",
+      "in": "Aproximar",
+      "out": "Afastar (subir um nível)",
+      "reset": "Ver o Brasil inteiro"
+    },
     "figureNote": "Cada figura ≈ 10% do total.",
+    "focus": {
+      "trail": "Recorte do mapa",
+      "outside": "Fora do recorte",
+      "all": "Brasil"
+    },
+    "legend": {
+      "label": "Legenda",
+      "upTo": "Até {value}",
+      "over": "Mais de {value}",
+      "title": {
+        "people": "População",
+        "percent": "Percentual (%)",
+        "density": "Densidade (hab/km²)",
+        "area": "Área (km²)"
+      }
+    },
     "filters": "Filtros",
     "chartAndTable": "Gráfico e tabela"
   },
@@ -94,5 +117,11 @@
     "datasets": "Conjuntos de dados",
     "license": "Licença",
     "review": "situação: {status}"
+  },
+  "unavailable": {
+    "title": "Dados temporariamente indisponíveis",
+    "lead": "O serviço de dados não respondeu. Isso costuma durar alguns segundos, por exemplo logo depois de um reinício. A página tenta de novo sozinha a cada 15 segundos.",
+    "retry": "Tentar de novo",
+    "code": "Código do erro: {digest}"
   }
 }

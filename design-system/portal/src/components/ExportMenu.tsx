@@ -57,11 +57,13 @@ function Group({ label, busy, error, running, children }: { label: string; busy:
 interface DataProps {
   kpiId: string;
   level: string;
+  /** Recorte do mapa: exporta só os territórios dentro dele. */
+  within?: string | null;
   period: string | null;
   dimensions: string[];
 }
 
-export function DataExport({ kpiId, level, period, dimensions }: DataProps) {
+export function DataExport({ kpiId, level, within = null, period, dimensions }: DataProps) {
   const { busy, error, run, t } = useExportRun();
   return (
     <Group label={t("download")} busy={busy} error={error} running={t("running")}>
@@ -75,6 +77,7 @@ export function DataExport({ kpiId, level, period, dimensions }: DataProps) {
               const { blob, filename } = await api.exportFile({
                 kpi_id: kpiId,
                 level,
+                within,
                 periods: period ? [period] : [],
                 dimensions,
                 format: f.id,

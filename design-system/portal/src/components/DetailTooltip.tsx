@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useLayoutEffect, useRef } from "react";
 
 import { formatShare, formatValue, unitSuffix } from "@/lib/format";
 import { SERIES } from "@/lib/theme";
@@ -215,12 +216,24 @@ export function DetailTooltip({ name, detail, loading, x, y }: Props) {
   // Na metade de baixo da tela, o tooltip abre para cima do ponteiro.
   const style = y > vh * 0.55 ? { left, top: y - 12, transform: "translateY(-100%)" } : { left, top: y + 12 };
 
+  // Depois de desenhar, mede a altura real e mantém o tooltip inteiro na janela
+  // (com cor ou raça › sexo ele pode passar da metade da tela).
+  const box = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const h = el.offsetHeight;
+    const wanted = y > vh * 0.55 ? y - 12 - h : y + 12;
+    el.style.top = `${Math.max(8, Math.min(wanted, vh - h - 8))}px`;
+    el.style.transform = "none";
+  });
+
   const root = detail?.root ?? null;
   const kids = root ? childrenOf(root) : [];
   const onlySex = sexPair(kids);
 
   return (
-    <div className="tooltip" role="tooltip" style={style}>
+    <div ref={box} className="tooltip" role="tooltip" style={style}>
       <div className="tt-stripe" aria-hidden="true">
         <span />
         <span />

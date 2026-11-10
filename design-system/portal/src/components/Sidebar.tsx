@@ -15,12 +15,27 @@ interface Props {
   period: string;
   onLevel: (level: string) => void;
   onPeriod: (period: string) => void;
+  /** Volta os filtros ao estado inicial do indicador (desativado se já estiverem nele). */
+  onClear: () => void;
+  canClear: boolean;
 }
 
 // Barra lateral (Design System ODBr): no topo, o bloco "Filtros" (nível territorial,
 // período e "Detalhar por"); abaixo, "Temas e indicadores" (temas > subtemas > KPIs).
 // Todos os filtros do portal ficam aqui; a área central só tem conteúdo e exportações.
-export function Sidebar({ nav, kpi, dimensions, onKpi, onDimensions, level, period, onLevel, onPeriod }: Props) {
+export function Sidebar({
+  nav,
+  kpi,
+  dimensions,
+  onKpi,
+  onDimensions,
+  level,
+  period,
+  onLevel,
+  onPeriod,
+  onClear,
+  canClear,
+}: Props) {
   const t = useTranslations();
   return (
     <aside className="sidebar">
@@ -68,6 +83,9 @@ export function Sidebar({ nav, kpi, dimensions, onKpi, onDimensions, level, peri
               ))}
             </fieldset>
           ) : null}
+          <button type="button" className="clear" onClick={onClear} disabled={!canClear}>
+            {t("dashboard.clearFilters")}
+          </button>
         </section>
       ) : null}
       <nav className="themes" aria-label={t("dashboard.menu")}>

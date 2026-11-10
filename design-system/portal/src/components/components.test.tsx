@@ -3,9 +3,11 @@ import { NextIntlClientProvider } from "next-intl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import messages from "../../messages/pt-BR.json";
-import type { Detail, DetailNode, Table } from "../lib/types";
+import type { Detail, DetailNode, GeoCollection, Kpi, Table } from "../lib/types";
 import { DataTable } from "./DataTable";
 import { DetailTooltip } from "./DetailTooltip";
+import { KpiInfo } from "./KpiInfo";
+import { MapView } from "./MapView";
 
 afterEach(cleanup);
 
@@ -118,5 +120,138 @@ describe("DataTable", () => {
     expect((screen.getByRole("button", { name: "Anterior" }) as HTMLButtonElement).disabled).toBe(true);
     fireEvent.click(screen.getByRole("button", { name: "Ordenar por nome" }));
     expect(onSort).toHaveBeenCalledWith("name");
+  });
+});
+
+describe("MapView", () => {
+  // jsdom não tem ResizeObserver: o mapa usa o tamanho inicial.
+  globalThis.ResizeObserver ??= class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as unknown as typeof ResizeObserver;
+  const square = (x: number, y: number) => ({
+    type: "Polygon" as const,
+    coordinates: [[[x, y], [x + 1, y], [x + 1, y + 1], [x, y + 1], [x, y]]],
+  });
+  const collection: GeoCollection = {
+    type: "FeatureCollection",
+    metadata: { release_id: "r", level: "regiao", within: null },
+    features: [
+      { type: "Feature", id: "regiao:1", properties: { name: "Norte", uf: null }, geometry: square(-60, -5) },
+      { type: "Feature", id: "regiao:2", properties: { name: "Nordeste", uf: null }, geometry: square(-40, -8) },
+    ],
+  };
+
+  it("desenha os territórios sem dica nativa do navegador e com controles de zoom", () => {
+    const onSelect = vi.fn();
+    const { container } = wrap(
+      <MapView
+        collection={collection}
+        context={null}
+        values={[
+          { geography_key: "regiao:1", name: "Norte", value: 10, status: "valid" },
+          { geography_key: "regiao:2", name: "Nordeste", value: 20, status: "valid" },
+        ]}
+        selected={null}
+        focus={null}
+        canUp={false}
+        onHover={vi.fn()}
+        onSelect={onSelect}
+        onDrill={() => true}
+        onUp={vi.fn()}
+        onReset={vi.fn()}
+        legendTitle="População"
+        label="População · Grande Região · 2022"
+      />,
+    );
+    expect(container.querySelectorAll("path.territory")).toHaveLength(2);
+    // O <title> do SVG gerava o balão preto ao parar o ponteiro sobre o mapa.
+    expect(container.querySelector("title")).toBeNull();
+    expect(screen.getByRole("img", { name: /População/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Aproximar" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Ver o Brasil inteiro" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /^Nordeste:/ }));
+    expect(onSelect).toHaveBeenCalledWith("regiao:2");
+  });
+});
+
+describe("MapView com recorte", () => {
+  const square = (x: number, y: number) => ({
+    type: "Polygon" as const,
+    coordinates: [[[x, y], [x + 1, y], [x + 1, y + 1], [x, y + 1], [x, y]]],
+  });
+  it("colore só o recorte; o resto do país fica em cinza, com contorno do recorte", () => {
+    const regions: GeoCollection = {
+      type: "FeatureCollection",
+      metadata: { release_id: "r", level: "regiao", within: null },
+      features: [
+        { type: "Feature", id: "regiao:1", properties: { name: "Norte", uf: null }, geometry: square(-60, -5) },
+        { type: "Feature", id: "regiao:2", properties: { name: "Nordeste", uf: null }, geometry: square(-40, -8) },
+      ],
+    };
+    const ufs: GeoCollection = {
+      type: "FeatureCollection",
+      metadata: { release_id: "r", level: "uf", within: "regiao:1" },
+      features: [{ type: "Feature", id: "uf:13", properties: { name: "Amazonas", uf: "AM" }, geometry: square(-60, -5) }],
+    };
+    const onDrill = vi.fn(() => true);
+    const { container } = wrap(
+      <MapView
+        collection={ufs}
+        context={regions}
+        values={[{ geography_key: "uf:13", name: "Amazonas", value: 4, status: "valid" }]}
+        selected={null}
+        focus="regiao:1"
+        canUp
+        onHover={vi.fn()}
+        onSelect={vi.fn()}
+        onDrill={onDrill}
+        onUp={vi.fn()}
+        onReset={vi.fn()}
+        legendTitle="População"
+        label="Mapa"
+      />,
+    );
+    // Dentro do recorte: a UF colorida. Fora: só o Nordeste, em cinza (o Norte é o recorte).
+    expect(screen.getByRole("button", { name: /^Amazonas:/ })).toBeTruthy();
+    const outside = container.querySelectorAll("path.territory.context");
+    expect(Array.from(outside).map((p) => p.getAttribute("data-key"))).toEqual(["regiao:2"]);
+    expect(container.querySelector("path.focus-outline")).toBeTruthy();
+    expect(screen.getByText("Fora do recorte")).toBeTruthy();
+    // Duplo clique num território de fora abre o recorte nele.
+    fireEvent.doubleClick(outside[0] as Element);
+    expect(onDrill).toHaveBeenCalledWith("regiao:2", "click");
+  });
+});
+
+describe("KpiInfo", () => {
+  // jsdom não tem matchMedia: simula a janela estreita (< 1600 px), com o bloco aberto.
+  globalThis.matchMedia ??= ((query: string) => ({
+    matches: false,
+    media: query,
+    addEventListener: () => undefined,
+    removeEventListener: () => undefined,
+  })) as unknown as typeof matchMedia;
+
+  it("mostra a linha da fonte e o bloco recolhível com descrição e limitações", () => {
+    const kpi = {
+      kpi_id: "k",
+      label: "População",
+      description: "Pessoas residentes.",
+      unit: "Pessoas",
+      periods: ["2010", "2022"],
+      caveats: ["Nota A"],
+      source: { dataset_id: "d", source_table_id: "9606", source_variable_id: "93", source_variable_name: null, reference_url: null, license_id: "ibge" },
+    } as unknown as Kpi;
+    const { container } = wrap(<KpiInfo kpi={kpi} releaseId="81f68da1-6c5f-4686-9ea9-6818a24b8db4" />);
+    const source = container.querySelector(".meta-source");
+    expect(source?.textContent).toContain("Tabela SIDRA 9606, variável 93");
+    expect(source?.textContent).toContain("81f68da1");
+    const more = container.querySelector("details.meta-more") as HTMLDetailsElement;
+    expect(more.open).toBe(true);
+    expect(more.textContent).toContain("Pessoas residentes.");
+    expect(more.textContent).toContain("Nota A");
+    expect(more.textContent).toContain("2010–2022");
   });
 });
