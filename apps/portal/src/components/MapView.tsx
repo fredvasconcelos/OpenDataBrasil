@@ -7,7 +7,8 @@ import { zoom, zoomIdentity, zoomTransform, type D3ZoomEvent, type ZoomBehavior,
 import { useTranslations } from "next-intl";
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type ReactNode } from "react";
 
-import { formatCompact, formatValue } from "@/lib/format";
+import { formatBound, formatCompact, formatValue } from "@/lib/format";
+import type { Break } from "@/lib/scale";
 import { rewindForD3 } from "@/lib/geo";
 import { quantileScale } from "@/lib/scale";
 import { CHART } from "@/lib/theme";
@@ -43,6 +44,8 @@ interface Props {
   /** Voltar ao Brasil inteiro no primeiro nível. */
   onReset: () => void;
   label: string;
+  /** Título da legenda (ex.: "População"). */
+  legendTitle: string;
   /** Sobreposições do painel (ex.: trilha do recorte). */
   children?: ReactNode;
 }
@@ -81,6 +84,7 @@ export const MapView = forwardRef<SVGSVGElement | null, Props>(function MapView(
     onUp,
     onReset,
     label,
+    legendTitle,
     children,
   },
   ref,
@@ -378,12 +382,13 @@ export const MapView = forwardRef<SVGSVGElement | null, Props>(function MapView(
         </p>
       ) : null}
       {scale.breaks.length ? (
-        <div className="legend" aria-label="Legenda">
+        <div className="legend" role="group" aria-label={`${t("legend.label")}: ${legendTitle}`}>
+          <p className="legend-title">{legendTitle}</p>
           <ol>
             {scale.breaks.map((b) => (
               <li key={b.color}>
                 <i style={{ background: b.color }} />
-                {b.from === b.to ? formatCompact(b.from) : `${formatCompact(b.from)} – ${formatCompact(b.to)}`}
+                {breakLabel(b, t)}
               </li>
             ))}
             {hasSuppressed ? (
@@ -405,3 +410,12 @@ export const MapView = forwardRef<SVGSVGElement | null, Props>(function MapView(
     </div>
   );
 });
+
+// Rótulo de um grupo: "Até 4 mil", "4 mil – 5 mil", "Mais de 15 mil".
+function breakLabel(b: Break, t: (key: string, values?: Record<string, string>) => string): string {
+  if (b.kind === "zero") return formatBound(0);
+  if (b.kind === "first") return t("legend.upTo", { value: formatBound(b.to) });
+  if (b.kind === "last") return t("legend.over", { value: formatBound(b.from) });
+  if (b.kind === "single" && b.from === b.to) return formatBound(b.from);
+  return `${formatBound(b.from)} – ${formatBound(b.to)}`;
+}

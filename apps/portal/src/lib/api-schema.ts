@@ -2050,6 +2050,8 @@ export interface operations {
                 order?: "asc" | "desc";
                 offset?: number;
                 limit?: number;
+                /** @description Território a localizar: devolve a página que o contém (ignora offset). */
+                locate?: string | null;
                 /** @description Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2. */
                 dimensions?: string[] | null;
             };

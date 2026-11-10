@@ -54,7 +54,20 @@
       "trail": "Recorte do mapa",
       "outside": "Fora do recorte",
       "all": "Brasil"
-    }
+    },
+    "legend": {
+      "label": "Legenda",
+      "upTo": "Até {value}",
+      "over": "Mais de {value}",
+      "title": {
+        "people": "População",
+        "percent": "Percentual (%)",
+        "density": "Densidade (hab/km²)",
+        "area": "Área (km²)"
+      }
+    },
+    "filters": "Filtros",
+    "chartAndTable": "Gráfico e tabela"
   },
   "levels": {
     "brasil": "Brasil",
@@ -82,7 +95,8 @@
     "data": "Dados",
     "image": "Imagem do mapa",
     "running": "Gerando arquivo…",
-    "failed": "A exportação falhou: {message}"
+    "failed": "A exportação falhou: {message}",
+    "download": "Baixar dados"
   },
   "meta": {
     "title": "Sobre este indicador",
@@ -91,11 +105,9 @@
     "unit": "Unidade",
     "periods": "Períodos",
     "license": "Licença",
-    "release": "Release",
+    "release": "Versão dos dados (release)",
     "caveats": "Limitações",
-    "official": "Ver na fonte oficial",
-    "more": "Sobre este indicador",
-    "moreWithCaveats": "Sobre este indicador e limitações ({count})"
+    "official": "Ver na fonte oficial"
   },
   "about": {
     "title": "Sobre os dados",

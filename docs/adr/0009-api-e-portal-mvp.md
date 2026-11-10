@@ -55,23 +55,37 @@ idade, entram nessa ordem.
 ### 4. Layout do dashboard
 
 - Header de navegação.
-- Menu lateral esquerdo de cerca de 250 px, com a altura da área abaixo do
-  header: temas, subtemas e KPIs, e as caixas de dimensão do KPI escolhido.
-- Área central: mapa no alto; abaixo, gráfico de evolução temporal e, ao lado,
-  tabela. Em telas a partir de 900 × 600 px, tudo cabe na janela, sem rolar a
-  página: o mapa ocupa a altura que sobra, e a tabela rola por dentro.
-- Barra do painel com o seletor de nível (Brasil, Grande Região, UF,
-  Município), o período, o botão **Limpar filtros** e a exportação. O botão
-  volta ao estado inicial do KPI: dimensões, período e território padrão,
-  Grande Região e mapa inteiro.
-- Clicar num território atualiza o gráfico e a tabela. O nível inicial é a
-  Grande Região.
-- Metadados do indicador num **rodapé** de uma linha: fonte, tabela, unidade,
-  períodos, licença e release. A descrição e as limitações abrem sob demanda.
+- **Barra lateral** (260 px; 290 px em tela cheia), com dois blocos:
+  - "Filtros": nível territorial, período, "Detalhar por" (dimensões) e
+    **Limpar filtros**, que volta ao estado inicial do KPI (dimensões, período e
+    território padrão, Grande Região e mapa inteiro);
+  - abaixo, "Temas e indicadores" (temas, subtemas e KPIs).
+
+  A área central não tem seletores.
+- **Área central** (grade `.dash-grid`, Design System v2). Cada exportação fica
+  junto do que exporta: "Imagem do mapa" (SVG, PNG) no cabeçalho do mapa e
+  "Baixar dados" (CSV, XLSX, Parquet, JSON) no cabeçalho de "Gráfico e tabela".
+  - até 1599 px: empilhado (mapa; gráfico e tabela lado a lado; "Sobre este
+    indicador"). Rola só a área central, nunca a página;
+  - a partir de 1600 px: tela cheia sem rolagem. O mapa fica à esquerda, na
+    altura toda; à direita, gráfico em cima e tabela embaixo, com a altura
+    dividida em frações fixas, para que carregar a série não empurre a tabela;
+    a fonte vira rodapé;
+  - abaixo de 900 px: uma coluna, com a barra lateral no topo.
+- Clicar num território atualiza o gráfico e **localiza o território na
+  tabela**:
+  - a API devolve a página que o contém (`locate`), na mesma ordenação;
+  - a tabela rola por dentro até a linha, sem mover a página.
+
+  O nível inicial é a Grande Região.
+- **Sobre este indicador:** a linha da fonte fica sempre visível (fonte,
+  tabela, link oficial, licença e release). Descrição, unidade, períodos e
+  limitações ficam num bloco recolhível, aberto até 1599 px e fechado em tela
+  cheia.
 - Header e menu lateral mudam de cor com o ponteiro, além de marcar o item
   selecionado.
-- **Visual:** Design System ODBr v1.0 (`design-system/`, gerado no Claude Design
-  na revisão da beta, 2026-11). Os tokens (`--odbr-*`) ficam em
+- **Visual:** Design System ODBr (`design-system/`, gerado no Claude Design;
+  v1 e v2 na revisão da beta, 2026-11). Os tokens (`--odbr-*`) ficam em
   `src/styles/tokens.css`, com tema claro, escuro e o do sistema operacional. O
   botão de tema guarda a escolha no navegador. A fonte é a Nunito
   (`next/font`, servida pelo próprio portal). Cores de dados em SVG ficam em
@@ -119,8 +133,22 @@ Instalamos apenas os módulos usados:
 O React desenha o SVG. O d3 calcula a geometria e controla o zoom. A geometria vem em GeoJSON (seção 7). Se o mapa municipal
 pesar em SVG, o desenho passa para canvas sem mudar o contrato dos componentes.
 
-- Escala de cor por **quantis, em 7 faixas**, com legenda. Uma escala linear
-  apagaria quase todo o mapa, porque São Paulo e as capitais dominam.
+- Escala de cor por **quantis, em 7 grupos**, calculados com os territórios
+  do recorte exibido. Uma escala linear apagaria quase todo o mapa, porque São
+  Paulo e as capitais dominam.
+- **Legenda:**
+  - título pela unidade: "População", "Percentual (%)", "Densidade (hab/km²)"
+    ou "Área (km²)";
+  - cada corte é aproximado para um número redondo (1; 1,5; 2; 2,5; 3; 4; 5; 6;
+    7; 8; 9 × 10ⁿ). Se repetir o anterior, sobe para o redondo seguinte; grupos
+    vazios são fundidos; contagens só têm limites inteiros;
+  - as pontas são abertas: "Até 4 mil" (≤), "4 mil – 5 mil" (> e ≤) e "Mais
+    de 15 mil" (>).
+
+  Os grupos deixam de ter exatamente o mesmo número de territórios, em troca de
+  uma leitura direta. Os quantis seguem como base: em recortes com municípios
+  muito pequenos e uma capital muito grande, o último grupo concentra a
+  capital, e os demais continuam distinguindo os pequenos (`src/lib/scale.ts`).
 - O mapa é colorido pelo **Total do KPI**. Colorir por uma categoria ou um
   percentual fica para depois.
 - **Ampliação seletiva (recorte).** O mapa abre nas Grandes Regiões. Duplo
@@ -233,8 +261,9 @@ Implementação (`apps/api`, [runbook](../runbooks/api.md)):
   `dim_geometry` 1.1.0) e é invertida no portal para o d3-geo, que trabalha na
   esfera. Antes da normalização, alguns polígonos reparados tinham a orientação
   oposta, e o mapa colapsava.
-- **Escala de cor:** quantis em 7 faixas, com o zero em classe própria quando é
-  comum e limites inteiros para contagens.
+- **Escala de cor:** quantis em 7 grupos, com limites redondos e pontas
+  abertas ("Até…", "Mais de…"), o zero em grupo próprio quando é comum e
+  limites inteiros para contagens.
 - **Exportação:** dados em CSV, XLSX, Parquet e JSON pela API, e imagem do
   mapa em SVG e PNG no navegador, com legenda de fonte e release.
 - **Testes:** biblioteca e componentes (Vitest); ponta a ponta com navegador

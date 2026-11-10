@@ -6,12 +6,13 @@ import { useCallback, useMemo, useRef, useState } from "react";
 
 import { DataTable } from "@/components/DataTable";
 import { DetailTooltip } from "@/components/DetailTooltip";
-import { ExportMenu } from "@/components/ExportMenu";
+import { DataExport, MapImageExport } from "@/components/ExportMenu";
 import { KpiInfo } from "@/components/KpiInfo";
 import { MapView, type FitRequest } from "@/components/MapView";
 import { SeriesChart } from "@/components/SeriesChart";
 import { Sidebar } from "@/components/Sidebar";
 import { api } from "@/lib/api";
+import { legendTitleKey } from "@/lib/format";
 import { allKpis, DEFAULT_GEOGRAPHY, readState, writeState, type DashboardState } from "@/lib/state";
 import type { Detail, GeoCollection, Geography, MapData, Navigation } from "@/lib/types";
 import { useAsync } from "@/lib/useAsync";
@@ -28,8 +29,10 @@ function Failure({ error, onRetry }: { error: Error; onRetry: () => void }) {
   const t = useTranslations("dashboard");
   return (
     <div role="alert" className="error">
-      {t("error")} <span className="small">({error.message})</span>{" "}
-      <button type="button" onClick={onRetry}>
+      <span>
+        {t("error")} <span className="small">({error.message})</span>
+      </span>
+      <button type="button" className="primary" onClick={onRetry}>
         {t("retry")}
       </button>
     </div>
@@ -44,11 +47,14 @@ export function Dashboard({ nav }: { nav: Navigation }) {
   const state = useMemo(() => readState(new URLSearchParams(params.toString()), nav), [params, nav]);
   const kpi = useMemo(() => allKpis(nav).find((k) => k.kpi_id === state.kpi) ?? null, [nav, state.kpi]);
   const [retry, setRetry] = useState(0);
-  const [sort, setSort] = useState<{ sort: "value" | "name"; order: "asc" | "desc"; offset: number }>({
-    sort: "value",
-    order: "desc",
-    offset: 0,
-  });
+  // Página da tabela. `locate`: território clicado no mapa; a API devolve a página
+  // que o contém (na mesma ordenação) e a tabela rola até a linha.
+  const [sort, setSort] = useState<{
+    sort: "value" | "name";
+    order: "asc" | "desc";
+    offset: number;
+    locate: string | null;
+  }>({ sort: "value", order: "desc", offset: 0, locate: null });
   const [hover, setHover] = useState<Hover | null>(null);
   const [details, setDetails] = useState<Record<string, Detail>>({});
   const pending = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -61,7 +67,8 @@ export function Dashboard({ nav }: { nav: Navigation }) {
     (patch: Partial<DashboardState>) => {
       const next = { ...state, ...patch };
       router.replace(`${pathname}?${writeState(next)}`, { scroll: false });
-      setSort((s) => ({ ...s, offset: 0 }));
+      // Trocar só o território selecionado não muda a tabela (nem a página dela).
+      if (Object.keys(patch).some((k) => k !== "geography")) setSort((s) => ({ ...s, offset: 0, locate: null }));
     },
     [state, router, pathname],
   );
@@ -120,10 +127,11 @@ export function Dashboard({ nav }: { nav: Navigation }) {
             sort: sort.sort,
             order: sort.order,
             offset: sort.offset,
+            locate: sort.locate,
             limit: 50,
           })
       : null,
-    [kpiId, state.level, state.period, focus, state.dimensions.join(), sort.sort, sort.order, sort.offset],
+    [kpiId, state.level, state.period, focus, state.dimensions.join(), sort.sort, sort.order, sort.offset, sort.locate],
     retry,
   );
 
@@ -200,9 +208,14 @@ export function Dashboard({ nav }: { nav: Navigation }) {
   };
 
   if (!kpi) return <p className="page">{t("dashboard.selectKpi")}</p>;
-  const levels = kpi.levels;
-  const periods = kpi.periods;
-  const period = state.period ?? periods.at(-1) ?? "";
+  const period = state.period ?? kpi.periods.at(-1) ?? "";
+  const levelLabel = t(`levels.${state.level}`);
+  const crumb =
+    nav.themes
+      .flatMap((th) =>
+        th.subthemes.filter((s) => s.kpis.some((k) => k.kpi_id === kpi.kpi_id)).map((s) => `${th.label} › ${s.label}`),
+      )
+      .at(0) ?? "";
   const selectedName =
     state.geography === DEFAULT_GEOGRAPHY
       ? t("levels.brasil")
@@ -214,13 +227,24 @@ export function Dashboard({ nav }: { nav: Navigation }) {
   const filtered = writeState(state) !== writeState(defaults);
   const clear = () => {
     update(defaults);
-    setSort({ sort: "value", order: "desc", offset: 0 });
+    setSort({ sort: "value", order: "desc", offset: 0, locate: null });
     requestFit(null);
   };
+  // Clique no mapa: seleciona e localiza o território na tabela.
+  const selectOnMap = (key: string) => {
+    update({ geography: key });
+    setSort((cur) => ({ ...cur, locate: key }));
+  };
   const focusName = focus ? (trail.data?.at(-1)?.name ?? null) : null;
-  const scope = `${t(`levels.${state.level}`)}${focusName ? ` · ${focusName}` : ""}`;
+  const scope = `${levelLabel}${focusName ? ` · ${focusName}` : ""}`;
   const caption = `${kpi.label} · ${scope} · ${period} · Fonte: IBGE, tabela ${kpi.source.source_table_id} · release ${nav.release_id}`;
+  const legendKey = legendTitleKey(kpi.unit);
+  const legendTitle = legendKey ? t(`dashboard.legend.title.${legendKey}`) : kpi.unit;
 
+  // Painel (Design System ODBr v2): filtros na barra lateral; exportações junto do
+  // que exportam (imagem → cabeçalho do mapa; dados → "Gráfico e tabela"). Layout
+  // por CSS (.dash-grid): empilhado até 1599 px; tela cheia sem rolagem a partir de
+  // 1600 px (mapa à esquerda, gráfico e tabela à direita, fonte no rodapé).
   return (
     <div className="dashboard">
       <Sidebar
@@ -229,126 +253,106 @@ export function Dashboard({ nav }: { nav: Navigation }) {
         dimensions={state.dimensions}
         onKpi={(id) => update({ kpi: id, dimensions: [], period: null })}
         onDimensions={(dims) => update({ dimensions: dims })}
+        level={state.level}
+        period={period}
+        onLevel={(level) => update({ level, focus: validFocus(ladder, focus, level) ? focus : null })}
+        onPeriod={(p) => update({ period: p })}
+        onClear={clear}
+        canClear={filtered}
       />
       <main className="main">
-        <div className="toolbar">
-          <h1>{kpi.label}</h1>
-          <label>
-            {t("dashboard.level")}
-            <select
-              value={state.level}
-              onChange={(e) =>
-                update({ level: e.target.value, focus: validFocus(ladder, focus, e.target.value) ? focus : null })
-              }
-            >
-              {levels.map((l) => (
-                <option key={l} value={l}>
-                  {t(`levels.${l}`)}
-                  {kpi.map_levels.includes(l) ? "" : " (sem mapa)"}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            {t("dashboard.period")}
-            <select value={period} onChange={(e) => update({ period: e.target.value })}>
-              {periods.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="button" className="clear" onClick={clear} disabled={!filtered}>
-            {t("dashboard.clearFilters")}
-          </button>
-          <ExportMenu
-            kpiId={kpi.kpi_id}
-            level={state.level}
-            period={period}
-            within={focus}
-            dimensions={state.dimensions}
-            svg={() => svg.current}
-            caption={caption}
-            filename={`${kpi.kpi_id}_${state.level}${focus ? `_${focus.replace(":", "-")}` : ""}_${period}`}
-          />
-        </div>
+        <div className="dash-grid">
+          <div className="area-maphead">
+            <div className="page-title">
+              <p className="crumb">{[crumb, scope, period].filter(Boolean).join(" · ")}</p>
+              <h1>{kpi.label}</h1>
+            </div>
+            {hasMap ? (
+              <MapImageExport
+                svg={() => svg.current}
+                caption={caption}
+                filename={`${kpi.kpi_id}_${state.level}${focus ? `_${focus.replace(":", "-")}` : ""}_${period}`}
+              />
+            ) : null}
+          </div>
 
-        <section className="map-area" aria-label={t("dashboard.mapTitle")}>
-          {!hasMap ? (
-            <p className="card muted">{t("dashboard.noMap")}</p>
-          ) : geometry.error || values.error ? (
-            <Failure error={(geometry.error ?? values.error) as Error} onRetry={() => setRetry((r) => r + 1)} />
-          ) : shown ? (
-            <MapView
-              ref={svg}
-              collection={shown.geometry}
-              context={shown.context}
-              values={shown.values.values}
-              selected={state.geography}
-              focus={focus}
-              canUp={canUp}
-              loading={!fresh}
-              fitRequest={fit}
-              onHover={onHover}
-              onSelect={(key) => update({ geography: key })}
-              onDrill={drill}
-              onUp={up}
-              onReset={reset}
-              label={caption}
-            >
-              <nav className="map-trail" aria-label={t("dashboard.focus.trail")}>
-                <ol>
-                  <li>
-                    {focus ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          reset();
-                          requestFit(null);
-                        }}
-                      >
-                        {t("dashboard.focus.all")}
-                      </button>
-                    ) : (
-                      <span aria-current="location">{t("dashboard.focus.all")}</span>
-                    )}
-                  </li>
-                  {focus
-                    ? (trail.data ?? []).map((g, i, chain) => (
-                        <li key={g.geography_key}>
-                          {i < chain.length - 1 ? (
-                            <button type="button" onClick={() => drill(g.geography_key, "click")}>
-                              {g.name}
-                            </button>
-                          ) : (
-                            <span aria-current="location">{g.name}</span>
-                          )}
-                        </li>
-                      ))
-                    : null}
-                  <li className="map-trail-level">{t(`levels.${state.level}`)}</li>
-                </ol>
-              </nav>
-            </MapView>
-          ) : (
-            <p className="card muted" aria-busy="true">
-              {t("dashboard.loading")}
-            </p>
-          )}
-        </section>
-        {hover && drawn.has(hover.key) ? (
-          <DetailTooltip
-            name={hover.name}
-            detail={details[detailKey(hover.key)] ?? null}
-            loading={!details[detailKey(hover.key)]}
-            x={hover.x}
-            y={hover.y}
-          />
-        ) : null}
+          <section className="area-map" aria-label={t("dashboard.mapTitle")}>
+            {!hasMap ? (
+              <p className="card muted">{t("dashboard.noMap")}</p>
+            ) : geometry.error || values.error ? (
+              <Failure error={(geometry.error ?? values.error) as Error} onRetry={() => setRetry((r) => r + 1)} />
+            ) : shown ? (
+              <MapView
+                ref={svg}
+                collection={shown.geometry}
+                context={shown.context}
+                values={shown.values.values}
+                selected={state.geography}
+                focus={focus}
+                canUp={canUp}
+                loading={!fresh}
+                fitRequest={fit}
+                onHover={onHover}
+                onSelect={selectOnMap}
+                onDrill={drill}
+                onUp={up}
+                onReset={reset}
+                label={caption}
+                legendTitle={legendTitle}
+              >
+                <nav className="map-trail" aria-label={t("dashboard.focus.trail")}>
+                  <ol>
+                    <li>
+                      {focus ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            reset();
+                            requestFit(null);
+                          }}
+                        >
+                          {t("dashboard.focus.all")}
+                        </button>
+                      ) : (
+                        <span aria-current="location">{t("dashboard.focus.all")}</span>
+                      )}
+                    </li>
+                    {focus
+                      ? (trail.data ?? []).map((g, i, chain) => (
+                          <li key={g.geography_key}>
+                            {i < chain.length - 1 ? (
+                              <button type="button" onClick={() => drill(g.geography_key, "click")}>
+                                {g.name}
+                              </button>
+                            ) : (
+                              <span aria-current="location">{g.name}</span>
+                            )}
+                          </li>
+                        ))
+                      : null}
+                    <li className="map-trail-level">{levelLabel}</li>
+                  </ol>
+                </nav>
+              </MapView>
+            ) : (
+              <p className="card muted" aria-busy="true">
+                {t("dashboard.loading")}
+              </p>
+            )}
+          </section>
 
-        <div className="bottom">
-          <section className="card panel" aria-labelledby="series-title">
+          <div className="area-datahead">
+            <h2 className="data-title">{t("dashboard.chartAndTable")}</h2>
+            <DataExport
+              kpiId={kpi.kpi_id}
+              level={state.level}
+              within={focus}
+              period={period}
+              dimensions={state.dimensions}
+            />
+          </div>
+
+          <section className="card area-chart" aria-labelledby="series-title">
             <h2 id="series-title">
               {t("dashboard.seriesTitle")} · {selectedName}{" "}
               {state.geography !== DEFAULT_GEOGRAPHY ? (
@@ -365,7 +369,8 @@ export function Dashboard({ nav }: { nav: Navigation }) {
               <p className="muted">{t("dashboard.loading")}</p>
             )}
           </section>
-          <section className="card panel" aria-labelledby="table-title">
+
+          <section className="card area-table" aria-labelledby="table-title">
             <h2 id="table-title">
               {t("dashboard.tableTitle")} · {scope} · {period}
             </h2>
@@ -382,19 +387,31 @@ export function Dashboard({ nav }: { nav: Navigation }) {
                     sort: s,
                     order: cur.sort === s && cur.order === "desc" ? "asc" : s === "name" ? "asc" : "desc",
                     offset: 0,
+                    locate: null,
                   }))
                 }
-                onPage={(offset) => setSort((cur) => ({ ...cur, offset }))}
+                onPage={(offset) => setSort((cur) => ({ ...cur, offset, locate: null }))}
                 onSelect={(key) => update({ geography: key })}
               />
             ) : (
               <p className="muted">{t("dashboard.loading")}</p>
             )}
           </section>
-        </div>
 
-        <KpiInfo kpi={kpi} releaseId={nav.release_id} />
+          <div className="area-meta">
+            <KpiInfo kpi={kpi} releaseId={nav.release_id} />
+          </div>
+        </div>
       </main>
+      {hover && drawn.has(hover.key) ? (
+        <DetailTooltip
+          name={hover.name}
+          detail={details[detailKey(hover.key)] ?? null}
+          loading={!details[detailKey(hover.key)]}
+          x={hover.x}
+          y={hover.y}
+        />
+      ) : null}
     </div>
   );
 }

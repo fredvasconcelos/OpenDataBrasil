@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { flattenDetail } from "./detail";
-import { formatCompact, formatShare, formatValue } from "./format";
+import { formatBound, formatCompact, formatShare, formatValue } from "./format";
 import { rewindForD3 } from "./geo";
-import { MISSING_COLOR, quantileScale, ZERO_COLOR } from "./scale";
+import { MISSING_COLOR, ZERO_COLOR, nextNice, niceCuts, quantileScale, snapNice } from "./scale";
 import { readState, writeState } from "./state";
 import { fitView, levelOf, nextLevel, previousLevel, validFocus, zoomDecision, zoomLadder } from "./zoom";
 import type { GeoCollection, Navigation } from "./types";
@@ -21,22 +21,50 @@ describe("format", () => {
 });
 
 describe("quantileScale", () => {
-  it("usa 7 faixas com a mesma quantidade de territórios", () => {
+  it("usa 7 grupos por quantis, com limites redondos e pontas abertas", () => {
     const values = Array.from({ length: 70 }, (_, i) => i + 1);
     const scale = quantileScale(values);
-    expect(scale.breaks).toHaveLength(7);
+    expect(scale.breaks.map((b) => b.kind)).toEqual(["first", "middle", "middle", "middle", "middle", "middle", "last"]);
+    expect(scale.breaks.map((b) => b.to).slice(0, 6)).toEqual([10, 20, 30, 40, 50, 60]);
     expect(scale.color(1)).toBe(scale.breaks[0]?.color);
+    expect(scale.color(10)).toBe(scale.breaks[0]?.color); // "Até 10" inclui o 10
+    expect(scale.color(11)).toBe(scale.breaks[1]?.color);
     expect(scale.color(70)).toBe(scale.breaks[6]?.color);
     expect(scale.color(null)).toBe(MISSING_COLOR);
   });
 
-  it("separa o zero e não repete limites", () => {
+  it("arredonda cortes como os do PDF da revisão (1.318 – 3.643 → Até 4 mil)", () => {
+    // Quantis brutos 3.643 · 4.440 · 5.380 · 6.475 · 9.835 · 17.500 (municípios de uma UF).
+    expect(snapNice(3643, true)).toBe(4000);
+    expect(snapNice(4440, true)).toBe(4000); // repetiria o corte anterior…
+    expect(nextNice(4000, true)).toBe(5000); // …então sobe para o próximo redondo
+    expect(snapNice(9835, true)).toBe(10000);
+    const ranked = [1318, 2000, 3000, 3643, 4100, 4440, 5000, 5380, 5900, 6475, 8000, 9835, 12000, 17500, 40000, 866300];
+    const nice = niceCuts(ranked, 7, true);
+    expect(nice.every((c, i) => i === 0 || c > (nice[i - 1] as number))).toBe(true);
+    expect(nice.every((c) => [1, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8, 9].some((n) => c / 10 ** Math.floor(Math.log10(c)) === n))).toBe(true);
+    const scale = quantileScale(ranked);
+    expect(scale.breaks[0]).toMatchObject({ kind: "first", to: nice[0] });
+    expect(scale.breaks.at(-1)).toMatchObject({ kind: "last", from: nice.at(-1), to: 866300 });
+    expect([formatBound(4000), formatBound(17500), formatBound(250), formatBound(0.25)]).toEqual(["4\u00a0mil", "17,5\u00a0mil", "250", "0,25"]);
+  });
+
+  it("não cria grupos vazios e respeita inteiros e decimais", () => {
+    expect(niceCuts([1, 1, 1, 2], 7, true)).toEqual([1]);
+    expect(snapNice(0.237)).toBe(0.25);
+    expect(snapNice(3.2, true)).toBe(3);
+    expect(nextNice(0.25)).toBe(0.3);
+    const single = quantileScale([5, 5, 5]);
+    expect(single.breaks).toEqual([expect.objectContaining({ kind: "single", from: 5, to: 5 })]);
+  });
+
+  it("separa o zero quando é comum", () => {
     const values = [...Array(80).fill(0), 1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
     const scale = quantileScale(values);
-    expect(scale.breaks[0]).toEqual({ from: 0, to: 0, color: ZERO_COLOR });
+    expect(scale.breaks[0]).toEqual({ kind: "zero", from: 0, to: 0, color: ZERO_COLOR });
     expect(scale.color(0)).toBe(ZERO_COLOR);
     const ranges = scale.breaks.slice(1);
-    expect(ranges.every((b) => b.from < b.to)).toBe(true);
+    expect(ranges.every((b) => b.from <= b.to)).toBe(true);
     expect(scale.color(89)).toBe(ranges.at(-1)?.color);
     expect(ranges.every((b) => Number.isInteger(b.from) && Number.isInteger(b.to))).toBe(true);
   });

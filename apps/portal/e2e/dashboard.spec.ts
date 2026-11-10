@@ -8,7 +8,8 @@ test("pesquisa, painel, recorte por duplo clique, tooltip, seleção, limpeza e 
   await page.getByRole("link", { name: "População residente (Censo)" }).first().click();
   await expect(page.getByRole("heading", { level: 1, name: "População residente (Censo)" })).toBeVisible();
 
-  // O mapa abre nas Grandes Regiões, sem dica nativa (<title>) e sem rolagem da página.
+  // O mapa abre nas Grandes Regiões, sem dica nativa (<title>). Abaixo de 1600 px o
+  // painel empilha e rola só a área central, nunca a página.
   const map = page.getByRole("img", { name: /População residente \(Censo\)/ });
   const inside = map.locator(".map-focus path.territory");
   const outside = map.locator("path.territory.context");
@@ -41,6 +42,11 @@ test("pesquisa, painel, recorte por duplo clique, tooltip, seleção, limpeza e 
   expect(await fill("regiao:3")).toBe(await fill("regiao:1"));
   expect(await fill("uf:29")).not.toBe(await fill("regiao:3"));
   await expect(page.getByText("Fora do recorte")).toBeVisible();
+  // Legenda com título e grupos redondos: "Até …" na primeira ponta, "Mais de …" na última.
+  const legend = map.locator("xpath=..").getByRole("group", { name: /Legenda: População/ });
+  await expect(legend.getByText("População", { exact: true })).toBeVisible();
+  await expect(legend.locator("li").first()).toHaveText(/^Até /);
+  await expect(legend.locator("li").nth(-2)).toHaveText(/^Mais de /);
   const trail = page.getByRole("navigation", { name: "Recorte do mapa" });
   await expect(trail).toContainText("Nordeste");
   await expect(page.getByRole("heading", { name: /Dados · Estado \(UF\) · Nordeste · 2022/ })).toBeVisible();
@@ -105,6 +111,42 @@ test("pesquisa, painel, recorte por duplo clique, tooltip, seleção, limpeza e 
   await page.getByRole("button", { name: "CSV" }).click();
   expect((await download).suggestedFilename()).toBe("populacao_residente_regiao.zip");
   await page.screenshot({ path: "test-results/painel-regioes.png", fullPage: true });
+});
+
+test("tela cheia (1920 × 1080): mapa à esquerda, gráfico e tabela à direita, sem rolagem", async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.goto("/dashboard?kpi=populacao_residente&nivel=municipio&foco=uf%3A29");
+  const map = page.getByRole("img", { name: /População residente/ });
+  await expect(map.locator(".map-focus path.territory")).toHaveCount(417, { timeout: 30_000 });
+  const scroll = await page.evaluate(() => {
+    const main = document.querySelector(".main") as HTMLElement;
+    return [document.documentElement.scrollHeight - innerHeight, main.scrollHeight - main.clientHeight];
+  });
+  expect(scroll[0]).toBeLessThanOrEqual(1);
+  expect(scroll[1]).toBeLessThanOrEqual(1);
+  const mapBox = await page.locator(".area-map").boundingBox();
+  const chartBox = await page.locator(".area-chart").boundingBox();
+  expect((chartBox?.x ?? 0) > (mapBox?.x ?? 0) + (mapBox?.width ?? 0) - 1).toBe(true);
+  // Filtros na barra lateral; exportações junto do que exportam.
+  await expect(page.locator(".sidebar .filters").getByLabel("Nível territorial")).toHaveValue("municipio");
+  await expect(page.locator(".area-maphead").getByRole("button", { name: "PNG" })).toBeVisible();
+  await expect(page.locator(".area-datahead").getByRole("button", { name: "CSV" })).toBeVisible();
+
+  // Espera o enquadramento do recorte terminar (um clique interrompe a animação do d3-zoom).
+  await page.waitForTimeout(800);
+  // Clique num município do mapa: a tabela vai até a página dele e rola até a linha.
+  await map.getByRole("button", { name: /^Ourolândia:/ }).click({ force: true });
+  const row = page.locator('.area-table tr[aria-selected="true"]');
+  await expect(row).toContainText("Ourolândia");
+  await expect(page.locator(".pager")).not.toContainText(/^1–50 /);
+  await expect
+    .poll(async () => {
+      const r = await row.boundingBox();
+      const w = await page.locator(".area-table .table-wrap").boundingBox();
+      return Boolean(r && w && r.y >= w.y && r.y + r.height <= w.y + w.height);
+    })
+    .toBe(true);
+  await page.screenshot({ path: "test-results/painel-tela-cheia-localizar.png", fullPage: false });
 });
 
 test("roda do mouse abre e fecha recortes e descarta o tooltip do nível anterior", async ({ page }) => {

@@ -22,6 +22,23 @@ export function formatCompact(value: number | null | undefined): string {
   return Math.abs(value) < 10_000 ? formatValue(value) : compact.format(value);
 }
 
+const bound = new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 });
+const small = new Intl.NumberFormat("pt-BR", { maximumSignificantDigits: 3 });
+
+/** Limite de grupo da legenda: "4 mil", "1,5 mil", "250", "0,25". */
+export function formatBound(value: number): string {
+  return Math.abs(value) >= 1000 ? bound.format(value) : small.format(value);
+}
+
+/** Chave da mensagem de título da legenda para a unidade do indicador. */
+export function legendTitleKey(unit: string): "people" | "percent" | "density" | "area" | null {
+  if (unit === "Pessoas") return "people";
+  if (unit === "%") return "percent";
+  if (unit === "Habitante por quilômetro quadrado") return "density";
+  if (unit === "Quilômetros quadrados") return "area";
+  return null;
+}
+
 export function formatShare(share: number | null | undefined): string {
   return share === null || share === undefined ? "" : `${percent.format(share)}%`;
 }

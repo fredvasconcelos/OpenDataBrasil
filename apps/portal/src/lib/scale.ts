@@ -1,9 +1,16 @@
-// Escala de cor por quantis (7 faixas, ADR-0009): cada faixa tem o mesmo número de
-// territórios, o que evita que São Paulo e as capitais apaguem o resto do mapa.
-// Zero vira uma classe própria quando é comum (por exemplo, municípios sem pessoas
-// quilombolas), e limites repetidos são fundidos: nenhuma faixa "0 – 0".
-// Design System ODBr: as cores vêm de src/lib/theme.ts (var(--odbr-seq-1..7)),
-// no lugar de schemeBlues; com menos faixas, usa as últimas (mais escuras).
+// Escala de cor do mapa: 7 grupos por quantis (ADR-0009), com limites "redondos".
+//
+// 1. Quantis: cada grupo tem aproximadamente o mesmo número de territórios, o que
+//    evita que São Paulo e as capitais apaguem o resto do mapa. São calculados com
+//    os territórios do recorte exibido (a escala se adapta à localidade).
+// 2. Limites redondos: cada corte é aproximado para um número de leitura fácil
+//    (1; 1,5; 2; 2,5; 3; 4; 5; 6; 7; 8; 9 × 10ⁿ). Se a aproximação repetir o corte
+//    anterior, sobe para o próximo número redondo; grupos que ficarem vazios são
+//    fundidos. Contagens só têm limites inteiros.
+// 3. Leitura: o primeiro grupo é "Até X" (≤ X), os do meio "X – Y" (> X e ≤ Y) e o
+//    último "Mais de Y". Ex.: Até 4 mil · 4 mil – 5 mil · … · Mais de 15 mil.
+// Zero vira um grupo próprio quando é comum (ex.: municípios sem pessoas quilombolas).
+// Cores do Design System ODBr (src/lib/theme.ts); com menos grupos, as mais escuras.
 import { quantileSorted } from "d3-array";
 
 import { MISSING_COLOR as THEME_MISSING, SEQ, ZERO_COLOR as THEME_ZERO } from "./theme";
@@ -12,7 +19,9 @@ export const CLASSES = 7;
 export const MISSING_COLOR = THEME_MISSING;
 export const ZERO_COLOR = THEME_ZERO;
 
+/** Grupo da legenda. `from`/`to` são os limites redondos (ou o mínimo/máximo nas pontas). */
 export interface Break {
+  kind: "zero" | "first" | "middle" | "last" | "single";
   from: number;
   to: number;
   color: string;
@@ -23,6 +32,51 @@ export interface ColorScale {
   breaks: Break[];
 }
 
+const NICE = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8, 9];
+
+/** Números redondos em torno de `x` (década de x e a seguinte), em ordem crescente. */
+function candidates(x: number, integers: boolean): number[] {
+  const decade = 10 ** Math.floor(Math.log10(x));
+  const out = [...NICE.map((n) => n * decade), ...NICE.map((n) => n * decade * 10)].map((v) => Number(v.toPrecision(6)));
+  return integers ? out.filter((v) => Number.isInteger(v) && v >= 1) : out;
+}
+
+/** Número redondo mais próximo de `x` (no empate, o menor). */
+export function snapNice(x: number, integers = false): number {
+  if (!(x > 0)) return integers ? Math.round(x) : x;
+  const options = candidates(x, integers);
+  if (!options.length) return integers ? Math.max(1, Math.round(x)) : x;
+  return options.reduce((best, v) => (Math.abs(v - x) < Math.abs(best - x) ? v : best));
+}
+
+/** Menor número redondo estritamente maior que `x`. */
+export function nextNice(x: number, integers = false): number {
+  if (!(x > 0)) return integers ? 1 : NICE[0] as number;
+  return candidates(x, integers).find((v) => v > x) ?? x * 10;
+}
+
+/** Cortes redondos a partir dos quantis; cada grupo resultante tem ao menos um valor. */
+export function niceCuts(ranked: number[], classes: number, integers: boolean): number[] {
+  if (ranked.length < 2) return [];
+  const min = ranked[0] as number;
+  const max = ranked[ranked.length - 1] as number;
+  const cuts: number[] = [];
+  for (let i = 1; i < classes; i++) {
+    const raw = quantileSorted(ranked, i / classes) ?? max;
+    const prev = cuts.at(-1);
+    let cut = snapNice(raw, integers);
+    if (prev !== undefined && cut <= prev) cut = nextNice(prev, integers);
+    // "Até X" precisa de valores ≤ X; "Mais de Y" precisa de valores > Y.
+    if (cut < min || cut >= max) continue;
+    cuts.push(cut);
+  }
+  // Funde grupos vazios (um corte sem valores entre ele e o anterior).
+  return cuts.filter((cut, i) => {
+    const lower = i === 0 ? -Infinity : (cuts[i - 1] as number);
+    return ranked.some((v) => v > lower && v <= cut);
+  });
+}
+
 export function quantileScale(values: readonly (number | null | undefined)[]): ColorScale {
   const valid = values.filter((v): v is number => typeof v === "number" && Number.isFinite(v));
   if (valid.length === 0) return { color: () => MISSING_COLOR, breaks: [] };
@@ -30,34 +84,31 @@ export function quantileScale(values: readonly (number | null | undefined)[]): C
   const zeroClass = zeros > 0 && zeros / valid.length >= 1 / CLASSES;
   const ranked = (zeroClass ? valid.filter((v) => v !== 0) : valid).sort((a, b) => a - b);
   const classes = zeroClass ? CLASSES - 1 : CLASSES;
-  const breaks: Break[] = zeroClass ? [{ from: 0, to: 0, color: ZERO_COLOR }] : [];
+  const breaks: Break[] = zeroClass ? [{ kind: "zero", from: 0, to: 0, color: ZERO_COLOR }] : [];
+  // Contagens: limites inteiros (não existe "56,33 pessoas").
+  const integers = ranked.every((v) => Number.isInteger(v));
+  const cuts = niceCuts(ranked, classes, integers);
   if (ranked.length) {
     const min = ranked[0] as number;
     const max = ranked[ranked.length - 1] as number;
-    // Contagens: limites inteiros (não existe "56,33 pessoas").
-    const integers = ranked.every((v) => Number.isInteger(v));
-    const cuts = [min];
-    for (let i = 1; i < classes; i++) {
-      const raw = quantileSorted(ranked, i / classes) ?? max;
-      const q = integers ? Math.round(raw) : raw;
-      if (q > (cuts[cuts.length - 1] as number) && q < max) cuts.push(q);
-    }
-    cuts.push(max);
-    const n = Math.max(1, cuts.length - 1);
-    const colors = SEQ.slice(SEQ.length - n);
-    for (let i = 0; i < n; i++) {
-      breaks.push({ from: cuts[i] as number, to: cuts[i + 1] ?? max, color: colors[i] ?? (SEQ[SEQ.length - 1] as string) });
+    const colors = SEQ.slice(SEQ.length - (cuts.length + 1));
+    const color = (i: number) => colors[i] ?? (SEQ[SEQ.length - 1] as string);
+    if (!cuts.length) {
+      breaks.push({ kind: "single", from: min, to: max, color: color(0) });
+    } else {
+      breaks.push({ kind: "first", from: min, to: cuts[0] as number, color: color(0) });
+      for (let i = 1; i < cuts.length; i++) {
+        breaks.push({ kind: "middle", from: cuts[i - 1] as number, to: cuts[i] as number, color: color(i) });
+      }
+      breaks.push({ kind: "last", from: cuts.at(-1) as number, to: max, color: color(cuts.length) });
     }
   }
-  const color = (value: number | null | undefined): string => {
+  const ranges = breaks.filter((b) => b.kind !== "zero");
+  const colorOf = (value: number | null | undefined): string => {
     if (typeof value !== "number" || !Number.isFinite(value)) return MISSING_COLOR;
     if (zeroClass && value === 0) return ZERO_COLOR;
-    const ranges = breaks.filter((b) => b.color !== ZERO_COLOR);
-    for (let i = 0; i < ranges.length; i++) {
-      const b = ranges[i] as Break;
-      if (value < b.to || i === ranges.length - 1) return b.color;
-    }
-    return MISSING_COLOR;
+    const found = ranges.find((b) => b.kind !== "last" && value <= b.to);
+    return (found ?? ranges.at(-1))?.color ?? MISSING_COLOR;
   };
-  return { color, breaks };
+  return { color: colorOf, breaks };
 }

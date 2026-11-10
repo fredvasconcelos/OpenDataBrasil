@@ -92,6 +92,8 @@ export const api = {
       sort: "value" | "name";
       order: "asc" | "desc";
       offset: number;
+      /** Território a localizar: a API devolve a página que o contém. */
+      locate?: string | null;
       limit: number;
     },
   ) => get<Table>(`/kpis/${encodeURIComponent(kpi)}/table${query(p)}`),

@@ -45,17 +45,34 @@ design-system/
 | `src/components/Logo.tsx` | novo | Logo ODBr em texto, cores por token |
 | `src/components/ThemeToggle.tsx` | novo | Botão claro/dark (salva em `localStorage`) |
 | `src/components/Header.tsx` | substitui | Faixa da marca, logo, abas com estados, botão de tema |
-| `src/components/Sidebar.tsx` | substitui | Checkbox de "Detalhar por" com classe `.check` (sem estilo inline) |
+| `src/components/Sidebar.tsx` | substitui | Bloco **Filtros** no topo (Nível territorial, Período, Detalhar por) + Temas e indicadores. Recebe `level`, `period`, `onLevel`, `onPeriod` |
+| `src/components/Dashboard.tsx` | substitui | Sem barra de filtros na área central; grade `.dash-grid` com áreas: cabeçalho do mapa (título + SVG/PNG), mapa, cabeçalho de dados ("Gráfico e tabela" + CSV/XLSX/Parquet/JSON), gráfico, tabela, "Sobre este indicador" |
+| `src/components/KpiInfo.tsx` | substitui | Linha da fonte sempre visível; descrição, unidade, períodos e limitações em `<details>` (aberto até 1599 px, fechado e como rodapé a partir de 1600 px) |
+| `src/lib/useMediaQuery.ts` | novo | `useMediaQuery()` com `useSyncExternalStore`; `WIDE_QUERY = (min-width: 1600px)` |
 | `src/components/MapView.tsx` | substitui | `style={{ fill }}`, fundo por token, contorno fino com muitos polígonos, selecionado desenhado por último, hachura para sigilo, `aria-pressed` |
 | `src/components/SeriesChart.tsx` | substitui | `schemeTableau10` → `SERIES`; área sob a série principal; até 6 rótulos no eixo X |
 | `src/components/DetailTooltip.tsx` | substitui | Tooltip visual: barras, divisão por sexo com ícones, pictograma para "só sexo" |
-| `src/components/ExportMenu.tsx` | substitui | Classe `.export`, separador, `aria-busy` |
+| `src/components/ExportMenu.tsx` | substitui | Dois componentes: `MapImageExport` (SVG, PNG — vai sobre o mapa) e `DataExport` (CSV, XLSX, Parquet, JSON — vai sobre gráfico e tabela). Cada um com seu "Gerando arquivo…" e erro |
 | `src/components/components.test.tsx` | substitui | Testes do tooltip atualizados para o novo layout (DataTable igual) |
-| `messages/pt-BR.json` | substitui | `site.name` = "Open Data Brasil"; `theme.toDark/toLight`; `dashboard.figureNote` |
+| `messages/pt-BR.json` | substitui | `site.name` = "Open Data Brasil"; `theme.toDark/toLight`; `dashboard.figureNote`, `dashboard.filters`, `dashboard.chartAndTable`; `export.download` |
 
 Nenhum arquivo da API, do contrato OpenAPI ou de `lib/api.ts`, `lib/state.ts`, `lib/format.ts`,
-`DataTable.tsx`, `KpiInfo.tsx`, `IndicatorSearch.tsx` ou `Dashboard.tsx` precisa mudar:
-o visual deles vem do `globals.css`.
+`DataTable.tsx` ou `IndicatorSearch.tsx` precisa mudar: o visual deles vem do `globals.css`.
+
+## Layout do painel (regra para todo o portal)
+
+- **Filtros sempre na barra lateral**, no bloco "Filtros", acima de "Temas e indicadores".
+  A área central não tem selects.
+- **Botões junto do que exportam:** "Imagem do mapa" (SVG, PNG) no cabeçalho do mapa;
+  "Baixar dados" (CSV, XLSX, Parquet, JSON) no cabeçalho de "Gráfico e tabela".
+- **Até 1599 px** (janela em meia tela): empilhado — título e botões do mapa, mapa,
+  "Gráfico e tabela" com os botões de dados, gráfico e tabela lado a lado, "Sobre este indicador".
+  Abaixo de 900 px tudo vira uma coluna e a barra lateral vai para o topo.
+- **A partir de 1600 px** (tela cheia): sem rolagem da página. Mapa à esquerda ocupando a
+  altura toda (legenda no canto inferior esquerdo); à direita, gráfico em cima e tabela
+  embaixo (a tabela rola por dentro); fonte do indicador como rodapé, com
+  "Sobre este indicador" recolhido.
+- Tudo é feito por CSS (`.dash-grid` + `grid-template-areas`); o JSX é o mesmo nas três larguras.
 
 ## Passo a passo
 
@@ -68,8 +85,9 @@ o visual deles vem do `globals.css`.
 4. **Cores dos dados (d3):** substituir `lib/scale.ts`, `lib/download.ts`, `MapView.tsx` e
    `SeriesChart.tsx`. Regra: em SVG, cor por token vai em `style`, nunca em atributo
    (`style={{ fill }}`, não `fill={…}`), porque `var()` não funciona em atributo de apresentação.
-5. **Componentes:** substituir `Sidebar.tsx`, `ExportMenu.tsx`, `DetailTooltip.tsx` e
-   `components.test.tsx`.
+5. **Componentes e layout:** criar `lib/useMediaQuery.ts`; substituir `Sidebar.tsx`,
+   `Dashboard.tsx`, `ExportMenu.tsx`, `KpiInfo.tsx`, `DetailTooltip.tsx` e `components.test.tsx`.
+   Se `ExportMenu` for importado em outro lugar, trocar por `DataExport` e/ou `MapImageExport`.
 6. **Dependência:** `d3-scale-chromatic` deixa de ser usado. Pode sair de `package.json`
    (e `@types/d3-scale-chromatic`) se nenhum outro arquivo importar.
 7. **Verificar:** `npm run typecheck`, `npm run lint`, `npm test`, `npm run e2e`.
@@ -80,6 +98,10 @@ o visual deles vem do `globals.css`.
 - [ ] Tema claro igual às pranchas; ao clicar no botão de tema, tudo vira dark,
       incluindo mapa, legenda, gráfico, tabela e tooltip; a escolha persiste ao recarregar.
 - [ ] Sem escolha salva, o portal segue o tema do sistema operacional.
+- [ ] Nível territorial, Período e "Detalhar por" ficam no bloco "Filtros" da barra lateral.
+- [ ] SVG/PNG ficam no cabeçalho do mapa; CSV/XLSX/Parquet/JSON no cabeçalho de "Gráfico e tabela".
+- [ ] Janela até 1599 px: layout empilhado. Janela ≥ 1600 px: mapa à esquerda, gráfico e
+      tabela à direita, rodapé com a fonte, sem rolagem da página (testar em 1920 × 1080).
 - [ ] Menu lateral: hover muda fundo e cor; KPI ativo tem fundo selecionado e barra de 3 px
       à esquerda (azul no claro, amarela no dark); `summary` com seta que gira.
 - [ ] Abas do cabeçalho: hover com sublinhado claro; página atual com sublinhado de 3 px.

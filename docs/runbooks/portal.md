@@ -25,7 +25,7 @@ docker compose --profile web build portal && docker compose --profile web up -d 
 | Página | Conteúdo |
 |---|---|
 | `/` | pesquisa de indicadores (ignora acentos) e temas |
-| `/dashboard` | painel: menu lateral (temas > subtemas > KPIs e dimensões), mapa, evolução temporal, tabela, exportação e metadados |
+| `/dashboard` | painel: barra lateral (filtros e temas > subtemas > KPIs), mapa, evolução temporal, tabela, exportações e metadados (layout do Design System v2: empilhado até 1599 px, tela cheia a partir de 1600 px) |
 | `/sobre` | release ativo, conjuntos de dados e licenças |
 
 O estado do painel fica na URL e pode ser compartilhado:
@@ -81,6 +81,11 @@ Os testes cobrem:
   - trilha do recorte e tabela restrita ao recorte;
 - recorte pela roda do mouse (abrir e fechar), descartando o tooltip do nível anterior;
 - recorte vindo da URL e tema escuro, com a escolha mantida ao recarregar;
+- legenda com título ("População") e grupos "Até…" / "Mais de…";
+- tela cheia (1920 × 1080): sem rolagem, mapa à esquerda e gráfico e tabela à
+  direita; filtros na barra lateral e exportações junto do que exportam;
+- clique num município do mapa (Ourolândia, no recorte da Bahia): a tabela vai
+  à página dele e rola até a linha;
 - tooltip aninhado (Bahia: Parda 57,3% > Homens 48,3%), seleção sem contorno de
   foco e período;
 - "Limpar filtros", fonte visível e exportação CSV;

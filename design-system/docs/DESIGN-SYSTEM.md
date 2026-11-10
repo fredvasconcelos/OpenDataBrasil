@@ -90,7 +90,17 @@ Nunito, pesos 600–900. Números tabulares em tabelas, tooltip e eixos (`font-v
 - Espaço (base 4): 4 · 8 · 12 · 16 · 20 · 24 · 32 · 40.
 - Raios: 4 (legenda) · 8 (item de menu) · 10 (campos, legenda do mapa) · 14–16 (cartões, tooltip) · pílula (botões).
 - Elevação: cartões só com borda; `shadow-1` em menus suspensos; `shadow-2` no tooltip.
-- Layout: cabeçalho 64 px + faixa 4 px; menu lateral 260 px; área com 32 px de respiro; 20 px entre cartões; abaixo de 900 px o menu vai para cima e os cartões empilham.
+- Layout: cabeçalho 64 px + faixa 4 px; barra lateral 260 px (290 px em tela cheia); área com 32 px de respiro; 20 px entre cartões.
+
+### Layout do painel
+
+| Largura da janela | Arranjo |
+|---|---|
+| < 900 px | Uma coluna; barra lateral no topo (máx. 40% da altura) |
+| 900–1599 px | Título + SVG/PNG · mapa · "Gráfico e tabela" + CSV/XLSX/Parquet/JSON · gráfico e tabela lado a lado · "Sobre este indicador" aberto |
+| ≥ 1600 px | Tela cheia sem rolagem: [título + SVG/PNG \| "Gráfico e tabela" + exportação] · [mapa \| gráfico] · [mapa \| tabela] · rodapé com a fonte |
+
+Regras fixas: **filtros só na barra lateral** (bloco "Filtros": Nível territorial, Período, Detalhar por — acima de "Temas e indicadores"); **cada botão de exportação fica junto do que exporta** (imagem → mapa; dados → gráfico e tabela).
 
 ## 6. Movimento e cursor
 
@@ -125,15 +135,16 @@ Ativo leva barra indicadora. Foco por teclado (`:focus-visible`) aparece por cim
 ## 8. Componentes
 
 - **Cabeçalho:** faixa da marca, logo + nome, abas, botão de tema à direita. Aviso do portal logo abaixo (`role="note"`, fundo `warning-bg`).
-- **Menu lateral:** sobrelinha "Temas e indicadores"; temas e subtemas em `details/summary`; KPIs como botões `aria-pressed`; bloco "Detalhar por" em `fieldset` com checkboxes na ordem de `dimension_order`.
-- **Barra de filtros:** H1 + selects "Nível territorial" e "Período" (44 px de altura, rótulo acima).
+- **Barra lateral:** bloco "Filtros" com borda (selects "Nível territorial" e "Período", 40 px, rótulo acima; "Detalhar por" em `fieldset` com checkboxes na ordem de `dimension_order`); abaixo, "Temas e indicadores" com temas e subtemas em `details/summary` e KPIs como botões `aria-pressed`.
+- **Cabeçalho do mapa:** caminho (tema › subtema · nível · período) + H1 do indicador; à direita, "Imagem do mapa" (SVG, PNG).
+- **Cabeçalho de dados:** "Gráfico e tabela" (H2); à direita, "Baixar dados" (CSV, XLSX, Parquet, JSON).
 - **Cartão:** `bg-surface`, borda, raio 16, padding 24.
-- **Exportar:** "Dados" (CSV, XLSX, Parquet, JSON) · separador · "Imagem do mapa" (SVG, PNG). Durante a exportação, botões desabilitados e "Gerando arquivo…". Falha em texto `danger` (`role="alert"`).
+- **Exportar:** dois grupos separados, cada um junto do que exporta. Durante a exportação, os botões do grupo ficam desabilitados com "Gerando arquivo…". Falha em texto `danger` (`role="alert"`) logo abaixo do grupo.
 - **Erro ao carregar:** caixa `danger-bg` com ícone, mensagem e botão principal "Tentar de novo".
 - **Carregando:** `aria-busy="true"` + "Carregando…"; no tooltip, barras de esqueleto.
 - **Vazio:** "Escolha um indicador no menu." / "Este nível não tem mapa…".
 - **Tabela:** cabeçalho fixo `bg-subtle`, ordenação por botão no título ("↓/↑"), números à direita, paginação "1–20 de 5.570" + Anterior/Próxima.
-- **Sobre este indicador:** lista de definição com Fonte, Unidade, Períodos, Licença, Versão (mono) e Limitações.
+- **Sobre este indicador:** linha da fonte sempre visível (Fonte · tabela · link oficial · licença · release); "Sobre este indicador" recolhível com descrição, Unidade, Períodos, Versão (mono) e Limitações. Aberto até 1599 px; em tela cheia vira rodapé, fechado.
 - **Pular para o conteúdo:** aparece só com Tab.
 
 ## 9. Visualização de dados (d3)
@@ -145,12 +156,16 @@ Ativo leva barra indicadora. Foco por teclado (`:focus-visible`) aparece por cim
 - Zero (classe própria): #F3F0E6 / #1C2B45. Sem dado: #D9DDE3 / #3A4A63. Sigilo: sem dado + hachura 45°.
 - Contorno, hover, seleção e foco: ver seção 7. Legenda no canto inferior esquerdo, fundo 92%.
 - **Recorte (ampliação seletiva):** ao aproximar uma região ou UF, só o recorte se
-  subdivide e leva a escala sequencial (quantis calculados dentro do recorte). O resto do
+  subdivide e leva a escala sequencial (grupos calculados dentro do recorte). O resto do
   país fica no nível do recorte, com `map-context` (#E3E6EA / #253041) e divisas
   `map-context-stroke` (#FFFFFF / #0B2852) de 1 px. O contorno do recorte usa
   `map-focus` (#071D41 / #FFFFFF), com 2 px, por cima de tudo. A legenda ganha a
   entrada "Fora do recorte". O cinza do contexto é neutro (sem matiz) para não ser
   confundido com a primeira classe da escala, que é azulada.
+- **Legenda:** título pela unidade do indicador ("População", "Percentual (%)",
+  "Densidade (hab/km²)", "Área (km²)"). Os 7 grupos são quantis com limites
+  arredondados para números redondos (1; 1,5; 2; 2,5; 3; 4; 5; 6; 7; 8; 9 × 10ⁿ), sem
+  grupos vazios; pontas abertas: "Até 4 mil" · "4 mil – 5 mil" · … · "Mais de 15 mil".
 
 ### Séries (`SeriesChart`)
 - Até 10 cores, nesta ordem — claro: #1351B4 · #168821 · #6E9FE3 · #A87400 · #071D41 · #D9480F · #0E7C86 · #8E44AD · #5C6B82 · #C2185B.

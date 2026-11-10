@@ -161,6 +161,7 @@ describe("MapView", () => {
         onDrill={() => true}
         onUp={vi.fn()}
         onReset={vi.fn()}
+        legendTitle="População"
         label="População · Grande Região · 2022"
       />,
     );
@@ -208,6 +209,7 @@ describe("MapView com recorte", () => {
         onDrill={onDrill}
         onUp={vi.fn()}
         onReset={vi.fn()}
+        legendTitle="População"
         label="Mapa"
       />,
     );
@@ -224,7 +226,15 @@ describe("MapView com recorte", () => {
 });
 
 describe("KpiInfo", () => {
-  it("resume fonte, unidade, períodos, licença e release numa linha de rodapé", () => {
+  // jsdom não tem matchMedia: simula a janela estreita (< 1600 px), com o bloco aberto.
+  globalThis.matchMedia ??= ((query: string) => ({
+    matches: false,
+    media: query,
+    addEventListener: () => undefined,
+    removeEventListener: () => undefined,
+  })) as unknown as typeof matchMedia;
+
+  it("mostra a linha da fonte e o bloco recolhível com descrição e limitações", () => {
     const kpi = {
       kpi_id: "k",
       label: "População",
@@ -234,11 +244,14 @@ describe("KpiInfo", () => {
       caveats: ["Nota A"],
       source: { dataset_id: "d", source_table_id: "9606", source_variable_id: "93", source_variable_name: null, reference_url: null, license_id: "ibge" },
     } as unknown as Kpi;
-    wrap(<KpiInfo kpi={kpi} releaseId="81f68da1-6c5f-4686-9ea9-6818a24b8db4" />);
-    const footer = screen.getByRole("contentinfo", { name: "Sobre este indicador" });
-    expect(footer.textContent).toContain("Tabela SIDRA 9606, variável 93");
-    expect(footer.textContent).toContain("2010–2022");
-    expect(within(footer).getByText("81f68da1").getAttribute("title")).toBe("81f68da1-6c5f-4686-9ea9-6818a24b8db4");
-    expect(within(footer).getByText("Sobre este indicador e limitações (1)")).toBeTruthy();
+    const { container } = wrap(<KpiInfo kpi={kpi} releaseId="81f68da1-6c5f-4686-9ea9-6818a24b8db4" />);
+    const source = container.querySelector(".meta-source");
+    expect(source?.textContent).toContain("Tabela SIDRA 9606, variável 93");
+    expect(source?.textContent).toContain("81f68da1");
+    const more = container.querySelector("details.meta-more") as HTMLDetailsElement;
+    expect(more.open).toBe(true);
+    expect(more.textContent).toContain("Pessoas residentes.");
+    expect(more.textContent).toContain("Nota A");
+    expect(more.textContent).toContain("2010–2022");
   });
 });

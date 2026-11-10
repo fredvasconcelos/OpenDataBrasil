@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useEffect, useRef } from "react";
 
 import { formatValue } from "@/lib/format";
 import type { Table } from "@/lib/types";
@@ -20,9 +21,31 @@ export function DataTable({ data, selected, sort, order, onSort, onPage, onSelec
   const from = data.total_rows ? data.offset + 1 : 0;
   const to = Math.min(data.offset + data.limit, data.total_rows);
   const arrow = order === "desc" ? " ↓" : " ↑";
+
+  // A linha selecionada (ex.: território clicado no mapa) fica à vista: se estiver
+  // fora do quadro da tabela, a tabela rola por dentro até ela (a página não se move).
+  const wrap = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const box = wrap.current;
+    if (!box || !selected) return;
+    const row = Array.from(box.querySelectorAll<HTMLTableRowElement>("tbody tr")).find(
+      (tr) => tr.dataset.key === selected,
+    );
+    if (!row) return;
+    const header = box.querySelector("thead")?.getBoundingClientRect().height ?? 0;
+    const b = box.getBoundingClientRect();
+    const r = row.getBoundingClientRect();
+    if (r.top >= b.top + header && r.bottom <= b.top + box.clientHeight) return;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    // Destino absoluto (e não um deslocamento): chamadas repetidas no meio da animação
+    // continuam chegando ao mesmo lugar, com a linha centralizada abaixo do cabeçalho.
+    const top = box.scrollTop + (r.top - b.top) - header - (box.clientHeight - header - r.height) / 2;
+    box.scrollTo?.({ top: Math.max(0, top), behavior: reduce ? "auto" : "smooth" });
+  }, [selected, data]);
+
   return (
     <div className="table-box">
-      <div className="table-wrap">
+      <div className="table-wrap" ref={wrap}>
         <table className="data-table">
           <thead>
             <tr>
@@ -50,6 +73,7 @@ export function DataTable({ data, selected, sort, order, onSort, onPage, onSelec
             {data.rows.map((r) => (
               <tr
                 key={r.geography_key}
+                data-key={r.geography_key}
                 aria-selected={selected === r.geography_key}
                 onClick={() => onSelect(r.geography_key)}
               >
