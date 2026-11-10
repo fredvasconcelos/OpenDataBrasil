@@ -21,7 +21,7 @@ export function DataTable({ data, selected, sort, order, onSort, onPage, onSelec
   const to = Math.min(data.offset + data.limit, data.total_rows);
   const arrow = order === "desc" ? " ↓" : " ↑";
   return (
-    <div>
+    <div className="table-box">
       <div className="table-wrap">
         <table className="data-table">
           <thead>

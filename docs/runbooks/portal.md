@@ -71,10 +71,30 @@ docker run --rm --network opendatabrasil_default --ipc=host --user 1000:1000 -e 
   npx playwright test
 ```
 
-Os testes cobrem pesquisa, tooltip aninhado (Bahia: Parda 57,3% > Homens
-48,3%), seleção, período, nível, fonte visível, exportação CSV, mapa municipal e
-a página "Sobre". As capturas ficam em `apps/portal/test-results/`. Esses testes
-dependem dos dados reais e não rodam no CI.
+Os testes cobrem:
+
+- pesquisa;
+- página sem rolagem, sem `<title>` no mapa e hover no menu e no header;
+- recorte por duplo clique:
+  - no Nordeste, 9 UFs coloridas e 4 regiões em cinza;
+  - na Bahia, 417 municípios e 26 UFs em cinza;
+  - trilha do recorte e tabela restrita ao recorte;
+- recorte pela roda do mouse (abrir e fechar), descartando o tooltip do nível anterior;
+- recorte vindo da URL e tema escuro, com a escolha mantida ao recarregar;
+- tooltip aninhado (Bahia: Parda 57,3% > Homens 48,3%), seleção sem contorno de
+  foco e período;
+- "Limpar filtros", fonte visível e exportação CSV;
+- mapa municipal e a página "Sobre".
+
+As capturas ficam em `apps/portal/test-results/`. Esses testes dependem dos
+dados reais e não rodam no CI.
+
+## API indisponível
+
+Se a API responder com erro, por exemplo 503 enquanto o PostgreSQL volta depois
+de um reinício do Docker, as páginas mostram "Dados temporariamente
+indisponíveis" (`src/app/error.tsx`). Elas tentam de novo a cada 15 s e têm um
+botão para tentar na hora. Não é preciso recriar o contêiner do portal.
 
 ## Detalhes de mapa
 
@@ -85,5 +105,19 @@ dependem dos dados reais e não rodam no CI.
 - **Escala:** 7 faixas por quantis. Quando o zero é comum (por exemplo,
   municípios sem pessoas quilombolas), ele vira uma classe à parte. Com
   contagens, os limites são inteiros.
-- **Tamanho:** o painel do mapa tem altura definida. Um SVG que acompanha a
-  altura do contêiner entra em ciclo de redimensionamento.
+- **Tamanho:** o painel do mapa ocupa a linha flexível da grade do painel, e o
+  SVG fica em posição absoluta. Um SVG que dita a altura do contêiner entra em
+  ciclo de redimensionamento.
+- **Zoom e recorte:** d3-zoom aplica a transformação direto no `<g>`, sem
+  re-render do React, e os traços usam `vector-effect: non-scaling-stroke`.
+  - **Recorte:** o duplo clique, a roda ou o `+` abrem o recorte no território
+    (ADR-0009, seção 6). O painel carrega então três coisas: a geometria do
+    nível exibido com `within=<recorte>`, a do nível do recorte no país inteiro
+    (contexto em cinza) e os valores com `within`.
+  - **Transições:** as de enquadramento não têm evento de origem e só fixam a
+    escala-base. As dos botões `+`/`−` contam como gesto. O enquadramento espera
+    o painel ser medido e é refeito quando ele muda de tamanho.
+  - **Teclado:** `+` abre o recorte no território focado e `-` sobe um recorte.
+- **Cores:** tokens do design system (`src/lib/theme.ts`, `--odbr-seq-1..7`). O
+  cinza do contexto é neutro, para não se confundir com a primeira classe da
+  escala, que é azulada.

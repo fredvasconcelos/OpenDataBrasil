@@ -5,6 +5,7 @@ import type {
   Detail,
   ExportFormat,
   GeoCollection,
+  Geography,
   Indicator,
   Kpi,
   MapData,
@@ -94,6 +95,7 @@ export const api = {
       limit: number;
     },
   ) => get<Table>(`/kpis/${encodeURIComponent(kpi)}/table${query(p)}`),
+  geography: (key: string) => get<Geography>(`/geographies/${encodeURIComponent(key)}`),
   geometry: (level: string, within?: string | null) =>
     get<GeoCollection>(`/geometries/${encodeURIComponent(level)}${query({ within })}`),
   async exportFile(body: {

@@ -5,6 +5,7 @@ import { formatCompact, formatShare, formatValue } from "./format";
 import { rewindForD3 } from "./geo";
 import { MISSING_COLOR, quantileScale, ZERO_COLOR } from "./scale";
 import { readState, writeState } from "./state";
+import { fitView, levelOf, nextLevel, previousLevel, validFocus, zoomDecision, zoomLadder } from "./zoom";
 import type { GeoCollection, Navigation } from "./types";
 
 describe("format", () => {
@@ -137,12 +138,82 @@ describe("state", () => {
 
   it("lê a URL validando KPI, nível, período, dimensões e território", () => {
     const s = readState(new URLSearchParams("kpi=pop&nivel=municipio&periodo=2010&dim=c2,c86,c99&territorio=uf:29"), nav);
-    expect(s).toEqual({ kpi: "pop", level: "municipio", period: "2010", dimensions: ["c86", "c2"], geography: "uf:29" });
+    expect(s).toEqual({ kpi: "pop", level: "municipio", period: "2010", dimensions: ["c86", "c2"], geography: "uf:29", focus: null });
     const bad = readState(new URLSearchParams("kpi=x&nivel=zzz&periodo=1999&territorio=uf;drop"), nav);
-    expect(bad).toEqual({ kpi: "pop", level: "uf", period: null, dimensions: [], geography: "brasil:1" });
+    expect(bad).toEqual({ kpi: "pop", level: "uf", period: null, dimensions: [], geography: "brasil:1", focus: null });
+  });
+
+  it("abre na Grande Região quando o KPI tem esse mapa", () => {
+    const withRegion: Navigation = {
+      ...nav,
+      themes: [{ theme_id: "t", label: "T", subthemes: [{ subtheme_id: "s", label: "S", kpis: [kpi("r", [], ["brasil", "regiao", "uf"], ["2022"])] }] }],
+    };
+    expect(readState(new URLSearchParams(""), withRegion).level).toBe("regiao");
+  });
+
+  it("aceita o recorte só se ele for mais agregado que o nível exibido", () => {
+    expect(readState(new URLSearchParams("kpi=pop&nivel=municipio&foco=uf:29"), nav).focus).toBe("uf:29");
+    // Recorte no mesmo nível ou abaixo do exibido, ou fora da escada do mapa: descartado.
+    expect(readState(new URLSearchParams("kpi=pop&nivel=uf&foco=uf:29"), nav).focus).toBeNull();
+    expect(readState(new URLSearchParams("kpi=pop&nivel=municipio&foco=brasil:1"), nav).focus).toBeNull();
+    expect(readState(new URLSearchParams("kpi=pop&nivel=municipio&foco=uf;29"), nav).focus).toBeNull();
   });
 
   it("escreve só o que difere do padrão", () => {
-    expect(writeState({ kpi: "ti", level: "uf", period: null, dimensions: ["c2"], geography: "brasil:1" })).toBe("kpi=ti&nivel=uf&dim=c2");
+    expect(writeState({ kpi: "ti", level: "uf", period: null, dimensions: ["c2"], geography: "brasil:1", focus: null })).toBe(
+      "kpi=ti&nivel=uf&dim=c2",
+    );
+    expect(writeState({ kpi: "pop", level: "municipio", period: null, dimensions: [], geography: "brasil:1", focus: "uf:13" })).toBe(
+      "kpi=pop&nivel=municipio&foco=uf%3A13",
+    );
+  });
+});
+
+describe("zoom", () => {
+  const ladder = zoomLadder(["brasil", "municipio", "uf", "regiao", "terra_indigena"]);
+
+  it("monta a escada na ordem de aprofundamento, só com níveis que têm mapa", () => {
+    expect(ladder).toEqual(["regiao", "uf", "municipio"]);
+    expect(zoomLadder(["uf", "municipio"])).toEqual(["uf", "municipio"]);
+  });
+
+  it("decide o gesto pela escala relativa à do recorte atual", () => {
+    // Aproximar 2× além do recorte abre o seguinte; afastar abaixo de 0,6× volta.
+    expect(zoomDecision(2, 1, false)).toBe("drill");
+    expect(zoomDecision(1.9, 1, false)).toBeNull();
+    expect(zoomDecision(5, 2.5, true)).toBe("drill");
+    expect(zoomDecision(1.4, 2.5, true)).toBe("up");
+    expect(zoomDecision(1.6, 2.5, true)).toBeNull();
+    // De volta à escala 1 com recorte aberto: Brasil inteiro.
+    expect(zoomDecision(1, 1.5, true)).toBe("reset");
+    // Sem nada acima, afastar não faz nada.
+    expect(zoomDecision(1, 3, false)).toBeNull();
+  });
+
+  it("aprofunda e sobe um nível por vez", () => {
+    expect(nextLevel(ladder, "regiao")).toBe("uf");
+    expect(nextLevel(ladder, "uf")).toBe("municipio");
+    expect(nextLevel(ladder, "municipio")).toBeNull();
+    expect(nextLevel(ladder, "brasil")).toBe("regiao");
+    expect(previousLevel(ladder, "uf")).toBe("regiao");
+    expect(previousLevel(ladder, "regiao")).toBeNull();
+    expect(levelOf("municipio:2927408")).toBe("municipio");
+  });
+
+  it("valida o recorte contra a escada e o nível exibido", () => {
+    expect(validFocus(ladder, "regiao:1", "uf")).toBe(true);
+    expect(validFocus(ladder, "regiao:1", "municipio")).toBe(true);
+    expect(validFocus(ladder, "uf:13", "uf")).toBe(false);
+    expect(validFocus(ladder, "brasil:1", "uf")).toBe(false);
+    expect(validFocus(ladder, null, "uf")).toBe(false);
+  });
+
+  it("enquadra o território no centro da tela, com margem", () => {
+    const view = fitView([[100, 100], [300, 200]], 800, 400);
+    expect(view.k).toBeCloseTo(0.9 / Math.max(200 / 800, 100 / 400));
+    expect(view.x + view.k * 200).toBeCloseTo(400);
+    expect(view.y + view.k * 150).toBeCloseTo(200);
+    // A escala respeita os limites pedidos.
+    expect(fitView([[0, 0], [800, 400]], 800, 400, [1.5, 80]).k).toBe(1.5);
   });
 });

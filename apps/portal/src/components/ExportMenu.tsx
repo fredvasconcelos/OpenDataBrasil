@@ -10,6 +10,8 @@ import type { ExportFormat } from "@/lib/types";
 interface Props {
   kpiId: string;
   level: string;
+  /** Recorte do mapa: exporta só os territórios dentro dele. */
+  within?: string | null;
   period: string | null;
   dimensions: string[];
   svg: () => SVGSVGElement | null;
@@ -24,7 +26,9 @@ const FORMATS: { id: ExportFormat; label: string }[] = [
   { id: "json", label: "JSON" },
 ];
 
-export function ExportMenu({ kpiId, level, period, dimensions, svg, caption, filename }: Props) {
+// Design System ODBr: botões secundários (pílula); "Gerando arquivo…" com aria-busy;
+// separador entre dados e imagem. Estilos em .export no globals.css.
+export function ExportMenu({ kpiId, level, within = null, period, dimensions, svg, caption, filename }: Props) {
   const t = useTranslations("export");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,55 +46,59 @@ export function ExportMenu({ kpiId, level, period, dimensions, svg, caption, fil
   }
 
   return (
-    <div className="small" role="group" aria-label={t("title")}>
-      <strong>{t("data")}:</strong>{" "}
-      {FORMATS.map((f) => (
+    <div>
+      <div className="export" role="group" aria-label={t("title")} aria-busy={busy}>
+        <strong>{t("data")}</strong>
+        {FORMATS.map((f) => (
+          <button
+            key={f.id}
+            type="button"
+            disabled={busy}
+            onClick={() =>
+              run(async () => {
+                const { blob, filename: name } = await api.exportFile({
+                  kpi_id: kpiId,
+                  level,
+                  within,
+                  periods: period ? [period] : [],
+                  dimensions,
+                  format: f.id,
+                });
+                saveBlob(blob, name);
+              })
+            }
+          >
+            {f.label}
+          </button>
+        ))}
+        <span className="export-sep" aria-hidden="true" />
+        <strong>{t("image")}</strong>
         <button
-          key={f.id}
           type="button"
           disabled={busy}
           onClick={() =>
             run(async () => {
-              const { blob, filename: name } = await api.exportFile({
-                kpi_id: kpiId,
-                level,
-                periods: period ? [period] : [],
-                dimensions,
-                format: f.id,
-              });
-              saveBlob(blob, name);
+              const el = svg();
+              if (el) saveBlob(svgBlob(el, caption), `${filename}.svg`);
             })
           }
         >
-          {f.label}
+          SVG
         </button>
-      ))}{" "}
-      <strong>{t("image")}:</strong>{" "}
-      <button
-        type="button"
-        disabled={busy}
-        onClick={() =>
-          run(async () => {
-            const el = svg();
-            if (el) saveBlob(svgBlob(el, caption), `${filename}.svg`);
-          })
-        }
-      >
-        SVG
-      </button>
-      <button
-        type="button"
-        disabled={busy}
-        onClick={() =>
-          run(async () => {
-            const el = svg();
-            if (el) saveBlob(await pngBlob(el, caption), `${filename}.png`);
-          })
-        }
-      >
-        PNG
-      </button>
-      {busy ? <span className="muted"> {t("running")}</span> : null}
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() =>
+            run(async () => {
+              const el = svg();
+              if (el) saveBlob(await pngBlob(el, caption), `${filename}.png`);
+            })
+          }
+        >
+          PNG
+        </button>
+        {busy ? <span className="muted"> {t("running")}</span> : null}
+      </div>
       {error ? (
         <p className="error" role="alert">
           {error}

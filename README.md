@@ -51,6 +51,7 @@ Guia completo: [`docs/development/setup-windows-wsl2.md`](docs/development/setup
 
 ## Documentação
 
+- Design System ODBr (marca, tokens, componentes do portal): [`design-system/`](design-system/README.md)
 - Decisões: [`docs/adr/`](docs/adr/)
   - 0001: fundação técnica
   - 0002: versões

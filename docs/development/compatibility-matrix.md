@@ -114,7 +114,8 @@ Seleção pela mesma regra dos 14 dias, inclusive nas transitivas
 | next | 16.4.3 | 2026-10-23 | `output: "standalone"` |
 | react / react-dom | 19.3.1 | 2026-10-14 | |
 | typescript | 5.9.3 | 2025-09-30 | o 6.x é recusado pelo `openapi-typescript` 7 (peer `^5`); o 7.x (compilador nativo) muda a API JS |
-| d3-geo / d3-scale / d3-scale-chromatic / d3-shape / d3-array / d3-format | 3.1.1 / 4.0.2 / 3.1.0 / 3.2.0 / 3.2.4 / 3.1.2 | 2021–2026 | os pacotes d3 ganharam versões novas em 2026-11-03, menos de 14 dias antes da seleção |
+| d3-geo / d3-scale / d3-shape / d3-array / d3-format | 3.1.1 / 4.0.2 / 3.2.0 / 3.2.4 / 3.1.2 | 2021–2026 | os pacotes d3 ganharam versões novas em 2026-11-03, menos de 14 dias antes da seleção. O `d3-scale-chromatic` saiu com o design system, que define as cores por tokens |
+| d3-zoom / d3-selection / d3-transition | 3.0.0 / 3.0.0 / 3.0.1 | 2021–2022 | zoom do mapa (revisão da beta). As versões 3.0.1 / 3.0.1 / 3.0.2 saíram em 2026-11-03 e ficaram de fora pela regra dos 14 dias. Seleção em 2026-11-06 com `--before=2026-10-23T23:59:59Z` |
 | next-intl | 4.14.9 | 2026-10-02 | só pt-BR no MVP |
 | openapi-typescript | 7.13.0 | 2026-02-11 | tipos gerados do contrato |
 | vitest / jsdom / @vitejs/plugin-react | 4.1.12 / 30.1.3 / 6.1.2 | 2026-10 | |
@@ -122,6 +123,10 @@ Seleção pela mesma regra dos 14 dias, inclusive nas transitivas
 | eslint / eslint-config-next | 10.13.0 / 16.4.3 | 2026-10 | |
 | @playwright/test | 1.64.1 | 2026-10-14 | imagem `mcr.microsoft.com/playwright@sha256:2f05f8a7…` (v1.64.1-noble) |
 
+- Fonte Nunito (design system) por `next/font/google`, que faz parte do `next`
+  e não acrescenta dependência. Os arquivos são baixados no `next build` e
+  servidos pelo próprio portal, sem chamada ao Google no navegador. O build
+  precisa de rede; sem ela, troque por `next/font/local`.
 - O npm 11 não executa scripts de instalação sem aprovação (`@swc/core`,
   `@parcel/watcher`, `unrs-resolver`). O build, o lint e os testes funcionam sem
   eles. Nenhum script foi aprovado.

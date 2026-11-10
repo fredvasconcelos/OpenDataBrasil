@@ -12,7 +12,9 @@ interface Props {
   onDimensions: (dims: string[]) => void;
 }
 
-// Menu lateral (cerca de 250 px): temas > subtemas > KPIs e as dimensões do KPI escolhido.
+// Menu lateral (260 px): temas > subtemas > KPIs e as dimensões do KPI escolhido.
+// Design System ODBr: estados de hover/pressionado/ativo/foco no globals.css
+// (.sidebar summary, .sidebar li button[aria-pressed], .sidebar .check).
 export function Sidebar({ nav, kpi, dimensions, onKpi, onDimensions }: Props) {
   const t = useTranslations("dashboard");
   return (
@@ -23,7 +25,7 @@ export function Sidebar({ nav, kpi, dimensions, onKpi, onDimensions }: Props) {
           <summary>{theme.label}</summary>
           {theme.subthemes.map((sub) => (
             <details key={sub.subtheme_id} open={sub.kpis.some((k) => k.kpi_id === kpi?.kpi_id)}>
-              <summary style={{ fontWeight: 500 }}>{sub.label}</summary>
+              <summary style={{ fontWeight: 700 }}>{sub.label}</summary>
               <ul>
                 {sub.kpis.map((k) => (
                   <li key={k.kpi_id}>
@@ -41,7 +43,7 @@ export function Sidebar({ nav, kpi, dimensions, onKpi, onDimensions }: Props) {
         <fieldset>
           <legend>{t("dimensions")}</legend>
           {kpi.dimensions.map((d) => (
-            <label key={d.classification_id} style={{ display: "block", padding: "2px 0" }}>
+            <label key={d.classification_id} className="check">
               <input
                 type="checkbox"
                 checked={dimensions.includes(d.classification_id)}
@@ -51,7 +53,7 @@ export function Sidebar({ nav, kpi, dimensions, onKpi, onDimensions }: Props) {
                   else next.delete(d.classification_id);
                   onDimensions(nav.dimension_order.filter((x) => next.has(x)));
                 }}
-              />{" "}
+              />
               {d.label}
             </label>
           ))}

@@ -2,12 +2,15 @@
 // territórios, o que evita que São Paulo e as capitais apaguem o resto do mapa.
 // Zero vira uma classe própria quando é comum (por exemplo, municípios sem pessoas
 // quilombolas), e limites repetidos são fundidos: nenhuma faixa "0 – 0".
+// Design System ODBr: as cores vêm de src/lib/theme.ts (var(--odbr-seq-1..7)),
+// no lugar de schemeBlues; com menos faixas, usa as últimas (mais escuras).
 import { quantileSorted } from "d3-array";
-import { schemeBlues } from "d3-scale-chromatic";
+
+import { MISSING_COLOR as THEME_MISSING, SEQ, ZERO_COLOR as THEME_ZERO } from "./theme";
 
 export const CLASSES = 7;
-export const MISSING_COLOR = "#d9d9d9";
-export const ZERO_COLOR = "#f4f4f2";
+export const MISSING_COLOR = THEME_MISSING;
+export const ZERO_COLOR = THEME_ZERO;
 
 export interface Break {
   from: number;
@@ -41,10 +44,9 @@ export function quantileScale(values: readonly (number | null | undefined)[]): C
     }
     cuts.push(max);
     const n = Math.max(1, cuts.length - 1);
-    const palette = schemeBlues[Math.max(3, Math.min(9, n + (zeroClass ? 0 : 0)))] ?? [];
-    const colors = palette.slice(palette.length - n);
+    const colors = SEQ.slice(SEQ.length - n);
     for (let i = 0; i < n; i++) {
-      breaks.push({ from: cuts[i] as number, to: cuts[i + 1] ?? max, color: colors[i] ?? "#08519c" });
+      breaks.push({ from: cuts[i] as number, to: cuts[i + 1] ?? max, color: colors[i] ?? (SEQ[SEQ.length - 1] as string) });
     }
   }
   const color = (value: number | null | undefined): string => {

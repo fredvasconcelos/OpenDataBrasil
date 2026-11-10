@@ -58,11 +58,24 @@ idade, entram nessa ordem.
 - Menu lateral esquerdo de cerca de 250 px, com a altura da área abaixo do
   header: temas, subtemas e KPIs, e as caixas de dimensão do KPI escolhido.
 - Área central: mapa no alto; abaixo, gráfico de evolução temporal e, ao lado,
-  tabela.
-- Seletor de nível geográfico (Brasil, Grande Região, UF, Município). Clicar
-  num território atualiza o gráfico e a tabela. O padrão é o Brasil.
-- O design será refinado depois. Os componentes não fixam estilo além do
-  necessário.
+  tabela. Em telas a partir de 900 × 600 px, tudo cabe na janela, sem rolar a
+  página: o mapa ocupa a altura que sobra, e a tabela rola por dentro.
+- Barra do painel com o seletor de nível (Brasil, Grande Região, UF,
+  Município), o período, o botão **Limpar filtros** e a exportação. O botão
+  volta ao estado inicial do KPI: dimensões, período e território padrão,
+  Grande Região e mapa inteiro.
+- Clicar num território atualiza o gráfico e a tabela. O nível inicial é a
+  Grande Região.
+- Metadados do indicador num **rodapé** de uma linha: fonte, tabela, unidade,
+  períodos, licença e release. A descrição e as limitações abrem sob demanda.
+- Header e menu lateral mudam de cor com o ponteiro, além de marcar o item
+  selecionado.
+- **Visual:** Design System ODBr v1.0 (`design-system/`, gerado no Claude Design
+  na revisão da beta, 2026-11). Os tokens (`--odbr-*`) ficam em
+  `src/styles/tokens.css`, com tema claro, escuro e o do sistema operacional. O
+  botão de tema guarda a escolha no navegador. A fonte é a Nunito
+  (`next/font`, servida pelo próprio portal). Cores de dados em SVG ficam em
+  `style`, porque `var()` não vale em atributo.
 
 ### 5. Tooltip do mapa
 
@@ -91,14 +104,59 @@ Preta …
 ### 6. Mapa e gráficos com d3, dentro do Next.js
 
 O portal é uma aplicação Next.js (React, TypeScript), como pede o §4.2. Mapa e
-gráficos usam **d3** (d3-geo, d3-scale, d3-scale-chromatic, d3-shape), com o
-React renderizando o SVG. A geometria vem em GeoJSON (seção 7). Se o mapa municipal
+gráficos usam **d3** pelos seus módulos oficiais (<https://d3js.org>), que é como
+a própria biblioteca se distribui. O pacote `d3` é só o agregado deles.
+Instalamos apenas os módulos usados:
+
+| Módulo | Uso |
+|---|---|
+| d3-geo | projeção (Mercator) e caminhos dos territórios |
+| d3-zoom (+ d3-selection, d3-transition) | zoom, arraste e troca de nível |
+| d3-scale | escala de cor por quantis e eixos (cores do design system) |
+| d3-shape, d3-array | linhas e extremos da série temporal |
+| d3-format | números |
+
+O React desenha o SVG. O d3 calcula a geometria e controla o zoom. A geometria vem em GeoJSON (seção 7). Se o mapa municipal
 pesar em SVG, o desenho passa para canvas sem mudar o contrato dos componentes.
 
 - Escala de cor por **quantis, em 7 faixas**, com legenda. Uma escala linear
   apagaria quase todo o mapa, porque São Paulo e as capitais dominam.
 - O mapa é colorido pelo **Total do KPI**. Colorir por uma categoria ou um
   percentual fica para depois.
+- **Ampliação seletiva (recorte).** O mapa abre nas Grandes Regiões. Duplo
+  clique, roda do mouse ou `+` num território abre o **recorte** nele:
+  - só o recorte se subdivide no nível seguinte e recebe o gradiente;
+  - os quantis são calculados só com os territórios do recorte;
+  - o resto do país fica no nível do recorte, em cinza neutro
+    (`--odbr-map-context`), com as divisas visíveis. O recorte ganha contorno
+    forte, e a legenda ganha a entrada "Fora do recorte".
+
+  Exemplo: no Norte, só as 7 UFs do Norte ficam coloridas, e as outras 4 regiões
+  ficam em cinza. No Amazonas, só os 62 municípios do estado ficam coloridos, e
+  as outras 26 UFs ficam em cinza.
+
+  Tabela, exportação e título acompanham o recorte, que é enviado como `within`
+  nos endpoints que já o aceitavam. O recorte fica na URL (`?foco=uf:13`).
+
+  Uma trilha sobre o mapa ("Brasil › Norte › Amazonas") volta a qualquer
+  recorte de cima. Os pais vêm de `GET /geographies/{chave}` (`parent_key`).
+  Afastar volta ao recorte de cima, e "Ver o Brasil inteiro" ou "Limpar
+  filtros" fecham o recorte.
+
+  O gesto é medido em relação à escala em que o recorte atual foi aberto:
+  - aproximar 2× abre o recorte no território sob o ponteiro;
+  - afastar abaixo de 0,6× sobe um recorte;
+  - voltar à escala 1 retorna ao Brasil.
+
+  A projeção é fixada no país inteiro, e o mapa continua montado enquanto o
+  recorte seguinte carrega. A regra fica em `src/lib/zoom.ts`.
+
+  Essa abordagem substituiu a primeira versão do zoom, que trocava o nível do
+  país inteiro e foi rejeitada na revisão.
+- **Sem dicas nativas.** O SVG não tem `<title>`, que gerava um balão do
+  navegador por cima do tooltip. O nome acessível fica no `aria-label`. O
+  território clicado não ganha contorno de foco: o realce é o traço. O foco
+  por teclado continua visível, com o traço em destaque.
 
 ### 7. Geometria
 

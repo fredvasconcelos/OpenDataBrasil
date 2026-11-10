@@ -19,6 +19,7 @@ export type Dataset = S["DatasetOut"];
 export type Indicator = S["IndicatorOut"];
 export type ExportFormat = S["ExportIn"]["format"];
 export type ApiError = S["ErrorOut"];
+export type Geography = S["GeographyOut"];
 
 export interface GeoFeature {
   type: "Feature";
