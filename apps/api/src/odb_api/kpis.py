@@ -457,8 +457,14 @@ class KpiService:
         descending: bool,
         offset: int,
         limit: int,
+        locate: str | None = None,
     ) -> TableOut:
-        """Territórios do nível, com o Total e as combinações de categorias."""
+        """Territórios do nível, com o Total e as combinações de categorias.
+
+        ``locate``: a página devolvida é a que contém esse território, na mesma
+        ordenação (o portal localiza na tabela o território clicado no mapa). Se
+        ele não estiver na tabela, vale ``offset``.
+        """
         kpi = self.kpi(ctx, kpi_id)
         dims = self._dims(kpi, dimensions)
         chosen = self._period(ctx, kpi, period)
@@ -492,6 +498,10 @@ class KpiService:
             return (missing if descending else not missing, value or 0.0)
 
         ordered = sorted(grid.items(), key=sort_key, reverse=descending)
+        if locate is not None:
+            position = next((i for i, (key, _) in enumerate(ordered) if key == locate), None)
+            if position is not None:
+                offset = position // limit * limit
         page = ordered[offset : offset + limit]
         ufs = {
             g["geography_key"]: g["uf_abbreviation"]

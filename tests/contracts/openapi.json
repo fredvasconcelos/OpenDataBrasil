@@ -1561,6 +1561,25 @@
             }
           },
           {
+            "name": "locate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Território a localizar: devolve a página que o contém (ignora offset).",
+              "title": "Locate"
+            },
+            "description": "Território a localizar: devolve a página que o contém (ignora offset)."
+          },
+          {
             "name": "dimensions",
             "in": "query",
             "required": false,

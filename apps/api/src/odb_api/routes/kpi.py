@@ -81,6 +81,13 @@ def kpi_table(
     order: Annotated[Literal["asc", "desc"], Query()] = "desc",
     offset: Annotated[int, Query(ge=0)] = 0,
     limit: Annotated[int, Query(ge=1, le=10_000)] = 100,
+    locate: Annotated[
+        str | None,
+        Query(
+            pattern=GEOGRAPHY_KEY,
+            description="Território a localizar: devolve a página que o contém (ignora offset).",
+        ),
+    ] = None,
 ) -> TableOut:
     """Territórios do nível com o Total e as combinações de categorias, paginados."""
     return d.kpis.table(
@@ -94,6 +101,7 @@ def kpi_table(
         descending=order == "desc",
         offset=offset,
         limit=limit,
+        locate=locate,
     )
 
 

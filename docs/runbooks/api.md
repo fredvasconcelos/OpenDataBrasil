@@ -35,7 +35,7 @@ Quando o banco volta, tudo se normaliza sem reiniciar a API.
 | `GET /api/v1/kpis/{kpi}/map?level=&period=&within=` | Total por território (cor do mapa) |
 | `GET /api/v1/kpis/{kpi}/detail?geography=&dimensions=c86,c2` | tooltip: sub-KPIs aninhados |
 | `GET /api/v1/kpis/{kpi}/series?geography=&dimensions=` | evolução temporal |
-| `GET /api/v1/kpis/{kpi}/table?level=&dimensions=&sort=&order=&offset=&limit=` | tabela paginada |
+| `GET /api/v1/kpis/{kpi}/table?level=&within=&dimensions=&sort=&order=&offset=&limit=&locate=` | tabela paginada. Com `locate=<território>`, devolve a página que o contém, na mesma ordenação, e ignora o `offset` (usado pelo portal ao clicar no mapa) |
 | `POST /api/v1/exports` | CSV (ZIP), XLSX, Parquet ou JSON, com metadados |
 | `POST /api/v1/query` | consulta estruturada sobre qualquer indicador |
 

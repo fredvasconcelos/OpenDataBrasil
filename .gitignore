@@ -41,3 +41,6 @@ logs/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Pacotes do Design System trocados com o Claude Design (o conteúdo fica em design-system/)
+odbr-design-system_*.zip

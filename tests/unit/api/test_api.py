@@ -222,6 +222,15 @@ def test_map_detail_series_and_table(stack: dict[str, Any]) -> None:
     )
     assert [r["name"] for r in page["rows"]] == ["Alagoas", "Amapá"]
     assert "uf_abbreviation" in page["rows"][0]  # siglas vêm dos municípios (sem N6 aqui)
+    # locate: a página que contém o território, na mesma ordenação (clique no mapa).
+    base = "/api/v1/kpis/pessoas_quilombolas/table?level=uf&sort=name&order=asc&limit=5"
+    everything = _get(stack, base.replace("limit=5", "limit=27"))
+    position = [r["geography_key"] for r in everything["rows"]].index("uf:52")
+    located = _get(stack, base + "&offset=0&locate=uf:52")
+    assert located["offset"] == position // 5 * 5
+    assert "uf:52" in [r["geography_key"] for r in located["rows"]]
+    # Fora da tabela (outro nível): vale o offset pedido.
+    assert _get(stack, base + "&offset=10&locate=regiao:1")["offset"] == 10
 
 
 def test_non_additive_kpi_has_no_shares(stack: dict[str, Any]) -> None:
