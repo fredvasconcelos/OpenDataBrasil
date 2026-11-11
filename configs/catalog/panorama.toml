@@ -178,7 +178,7 @@ id = "domicilios_moradores"
 label = "Domicílios e moradores"
 kpis = [
   { id = "domicilios_ocupados", label = "Domicílios ocupados e média de moradores", tabela = "4712", pesquisa = "Censo Demográfico" },
-  { id = "arranjos_domiciliares", label = "Domicílios por tipo de arranjo (unidade doméstica)", tabela = "6788", pesquisa = "PNAD Contínua anual", filtros = ["sexo"], requer_categoria = true },
+  { id = "arranjos_domiciliares", label = "Domicílios por tipo de arranjo (unidade doméstica)", tabela = "6788", pesquisa = "PNAD Contínua anual", filtros = ["sexo"], requer_categoria = true, dimensao = "c460" },
 ]
 
 [[temas.subtemas]]
@@ -626,7 +626,7 @@ filtros = ["grupo_produto", "atividade"]
 id = "precos_consumidor"
 label = "Inflação ao consumidor"
 kpis = [
-  { id = "ipca", label = "IPCA", tabela = "1737", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo", variavel = "2265" },
+  { id = "ipca", label = "IPCA", tabela = "1737", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo", variavel = "2265", periodo_inicial = "1998" },
   { id = "inpc", label = "INPC", tabela = "1736", pesquisa = "Índice Nacional de Preços ao Consumidor", variavel = "2292" },
   { id = "ipca15", label = "IPCA-15", tabela = "3065", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo 15", variavel = "1120" },
 ]

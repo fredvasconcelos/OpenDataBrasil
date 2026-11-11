@@ -1,0 +1,558 @@
+# Fontes do Ministério da Saúde: transferência de arquivos do DATASUS (FTP oficial).
+#
+# Espelho completo do SIM e do SINASC na Bronze (decisão do mantenedor em 2026-11-11:
+# guardar toda a informação, porque a fonte pode sair do ar). Um dataset por pasta
+# do FTP, com todos os arquivos: microdados .dbc, definições do TabWin, tabelas
+# auxiliares e documentação. Tamanhos medidos em 2026-11-11: SIM ~6,6 GB e
+# SINASC ~11 GB (docs/data_catalog/datasus-avaliacao.md).
+#
+# Os .dbc trazem registros individuais: ficam só na Bronze. A Silver guarda
+# agregados por município (unidade mínima do projeto); nada individual é publicado (§23).
+
+config_version = "1.0.0"
+
+[institution]
+id = "ms"
+name = "Ministério da Saúde"
+acronym = "MS"
+url = "https://www.gov.br/saude"
+
+[[licenses]]
+id = "ms-dados-abertos-cc-by"
+name = "Creative Commons Atribuição (dados abertos do Ministério da Saúde)"
+url = "http://www.opendefinition.org/licenses/cc-by"
+conditions = "Reuso permitido com atribuição ao Ministério da Saúde / DATASUS."
+review_status = "requires_review"
+notes = "Metadado oficial do conjunto SIM em dadosabertos.saude.gov.br/dataset/sim: license_id 'cc-by' (Creative Commons Atribuição), verificado em 2026-11-11. A página de acesso à informação do DATASUS não traz termo de reúso; o rodapé do portal (CC BY-ND 3.0) vale para o conteúdo do site. Confirmar a extensão da licença aos arquivos do FTP antes da publicação pública (§23)."
+
+[[sources]]
+id = "datasus-ftp"
+name = "DATASUS: transferência de arquivos (FTP)"
+connector = "ftp_file"
+base_url = "ftp://ftp.datasus.gov.br/dissemin/publicos/"
+documentation_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[sources.http]
+min_interval_s = 1.0
+timeout_s = 300.0
+connect_timeout_s = 30.0
+max_attempts = 5
+backoff_initial_s = 5.0
+
+[[datasets]]
+id = "datasus-sim-cid10-dores"
+source = "datasus-ftp"
+official_id = "SIM/CID10/DORES"
+title = "SIM: declarações de óbito por UF de residência (CID-10, 1996 em diante)"
+description = "Espelho da pasta SIM/CID10/DORES do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SIM/CID10/DORES"
+pattern = "DO[A-Z]{2}(?P<period>\\d{4})\\.(?:dbc|DBC)"
+min_files = 800
+
+[datasets.silver]
+# Agregados por município de residência x ano: Total e cada dimensão (ADR-0011).
+transformer = "datasus_sim_do"
+territorial_reference = "ibge-dtb"
+table_id = "SIM-DORES"
+
+[[datasets]]
+id = "datasus-sim-cid10-dofet"
+source = "datasus-ftp"
+official_id = "SIM/CID10/DOFET"
+title = "SIM: óbitos fetais, infantis e por causas externas (CID-10)"
+description = "Espelho da pasta SIM/CID10/DOFET do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SIM/CID10/DOFET"
+pattern = ".+"
+min_files = 100
+
+[[datasets]]
+id = "datasus-sim-cid10-docs"
+source = "datasus-ftp"
+official_id = "SIM/CID10/DOCS"
+title = "SIM: documentação e estrutura dos arquivos (CID-10)"
+description = "Espelho da pasta SIM/CID10/DOCS do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SIM/CID10/DOCS"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sim-cid10-tab"
+source = "datasus-ftp"
+official_id = "SIM/CID10/TAB"
+title = "SIM: definições e conversões do TabWin (CID-10)"
+description = "Espelho da pasta SIM/CID10/TAB do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SIM/CID10/TAB"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sim-cid10-tabelas"
+source = "datasus-ftp"
+official_id = "SIM/CID10/TABELAS"
+title = "SIM: tabelas auxiliares (municípios, CID-10)"
+description = "Espelho da pasta SIM/CID10/TABELAS do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SIM/CID10/TABELAS"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sim-cid9-dores"
+source = "datasus-ftp"
+official_id = "SIM/CID9/DORES"
+title = "SIM: declarações de óbito por UF de residência (CID-9, 1979 a 1995)"
+description = "Espelho da pasta SIM/CID9/DORES do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SIM/CID9/DORES"
+pattern = ".+"
+min_files = 400
+
+[[datasets]]
+id = "datasus-sim-cid9-dofet"
+source = "datasus-ftp"
+official_id = "SIM/CID9/DOFET"
+title = "SIM: óbitos fetais, infantis e por causas externas (CID-9)"
+description = "Espelho da pasta SIM/CID9/DOFET do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SIM/CID9/DOFET"
+pattern = ".+"
+min_files = 40
+
+[[datasets]]
+id = "datasus-sim-cid9-doign"
+source = "datasus-ftp"
+official_id = "SIM/CID9/DOIGN"
+title = "SIM: óbitos com UF de residência ignorada (CID-9)"
+description = "Espelho da pasta SIM/CID9/DOIGN do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SIM/CID9/DOIGN"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sim-cid9-docs"
+source = "datasus-ftp"
+official_id = "SIM/CID9/DOCS"
+title = "SIM: documentação (CID-9)"
+description = "Espelho da pasta SIM/CID9/DOCS do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SIM/CID9/DOCS"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sim-cid9-tab"
+source = "datasus-ftp"
+official_id = "SIM/CID9/TAB"
+title = "SIM: definições e conversões do TabWin (CID-9)"
+description = "Espelho da pasta SIM/CID9/TAB do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SIM/CID9/TAB"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sim-cid9-tabelas"
+source = "datasus-ftp"
+official_id = "SIM/CID9/TABELAS"
+title = "SIM: tabelas auxiliares (CID-9)"
+description = "Espelho da pasta SIM/CID9/TABELAS do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SIM/CID9/TABELAS"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sim-prelim-dores"
+source = "datasus-ftp"
+official_id = "SIM/PRELIM/DORES"
+title = "SIM: dados preliminares por UF de residência"
+description = "Espelho da pasta SIM/PRELIM/DORES do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SIM/PRELIM/DORES"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sim-prelim-dofet"
+source = "datasus-ftp"
+official_id = "SIM/PRELIM/DOFET"
+title = "SIM: dados preliminares fetais, infantis e externos"
+description = "Espelho da pasta SIM/PRELIM/DOFET do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SIM/PRELIM/DOFET"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-1996-dnres"
+source = "datasus-ftp"
+official_id = "SINASC/1996_/Dados/DNRES"
+title = "SINASC: declarações de nascido vivo por UF de residência (1996 em diante)"
+description = "Espelho da pasta SINASC/1996_/Dados/DNRES do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/1996_/Dados/DNRES"
+pattern = ".+"
+min_files = 800
+
+[[datasets]]
+id = "datasus-sinasc-1996-auxiliar"
+source = "datasus-ftp"
+official_id = "SINASC/1996_/Auxiliar"
+title = "SINASC: arquivos para tabulação (1996 em diante)"
+description = "Espelho da pasta SINASC/1996_/Auxiliar do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/1996_/Auxiliar"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-1996-doc"
+source = "datasus-ftp"
+official_id = "SINASC/1996_/Doc"
+title = "SINASC: documentação (1996 em diante)"
+description = "Espelho da pasta SINASC/1996_/Doc do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/1996_/Doc"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-1996-tabelas"
+source = "datasus-ftp"
+official_id = "SINASC/1996_/TABELAS"
+title = "SINASC: tabelas auxiliares (1996 em diante)"
+description = "Espelho da pasta SINASC/1996_/TABELAS do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/1996_/TABELAS"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-nov-dnres"
+source = "datasus-ftp"
+official_id = "SINASC/NOV/DNRES"
+title = "SINASC: declarações de nascido vivo, leiaute novo"
+description = "Espelho da pasta SINASC/NOV/DNRES do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/NOV/DNRES"
+pattern = ".+"
+min_files = 700
+
+[[datasets]]
+id = "datasus-sinasc-nov-docs"
+source = "datasus-ftp"
+official_id = "SINASC/NOV/DOCS"
+title = "SINASC: documentação (leiaute novo)"
+description = "Espelho da pasta SINASC/NOV/DOCS do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/NOV/DOCS"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-nov-tab"
+source = "datasus-ftp"
+official_id = "SINASC/NOV/TAB"
+title = "SINASC: definições do TabWin (leiaute novo)"
+description = "Espelho da pasta SINASC/NOV/TAB do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/NOV/TAB"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-nov-tabelas"
+source = "datasus-ftp"
+official_id = "SINASC/NOV/TABELAS"
+title = "SINASC: tabelas auxiliares (leiaute novo)"
+description = "Espelho da pasta SINASC/NOV/TABELAS do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/NOV/TABELAS"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-ant-dnres"
+source = "datasus-ftp"
+official_id = "SINASC/ANT/DNRES"
+title = "SINASC: declarações de nascido vivo, leiaute anterior"
+description = "Espelho da pasta SINASC/ANT/DNRES do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/ANT/DNRES"
+pattern = ".+"
+min_files = 100
+
+[[datasets]]
+id = "datasus-sinasc-ant-dnign"
+source = "datasus-ftp"
+official_id = "SINASC/ANT/DNIGN"
+title = "SINASC: nascidos vivos com UF ignorada (leiaute anterior)"
+description = "Espelho da pasta SINASC/ANT/DNIGN do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/ANT/DNIGN"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-ant-docs"
+source = "datasus-ftp"
+official_id = "SINASC/ANT/DOCS"
+title = "SINASC: documentação (leiaute anterior)"
+description = "Espelho da pasta SINASC/ANT/DOCS do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/ANT/DOCS"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-ant-tab"
+source = "datasus-ftp"
+official_id = "SINASC/ANT/TAB"
+title = "SINASC: definições do TabWin (leiaute anterior)"
+description = "Espelho da pasta SINASC/ANT/TAB do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/ANT/TAB"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-ant-tabelas"
+source = "datasus-ftp"
+official_id = "SINASC/ANT/TABELAS"
+title = "SINASC: tabelas auxiliares (leiaute anterior)"
+description = "Espelho da pasta SINASC/ANT/TABELAS do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/ANT/TABELAS"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-1994-dnres"
+source = "datasus-ftp"
+official_id = "SINASC/1994_1995/Dados/DNRES"
+title = "SINASC: nascidos vivos 1994 e 1995"
+description = "Espelho da pasta SINASC/1994_1995/Dados/DNRES do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/1994_1995/Dados/DNRES"
+pattern = ".+"
+min_files = 50
+
+[[datasets]]
+id = "datasus-sinasc-1994-dnign"
+source = "datasus-ftp"
+official_id = "SINASC/1994_1995/Dados/DNIGN"
+title = "SINASC: nascidos vivos com UF ignorada, 1994 e 1995"
+description = "Espelho da pasta SINASC/1994_1995/Dados/DNIGN do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/1994_1995/Dados/DNIGN"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-1994-auxiliar"
+source = "datasus-ftp"
+official_id = "SINASC/1994_1995/Auxiliar"
+title = "SINASC: arquivos para tabulação até 1995"
+description = "Espelho da pasta SINASC/1994_1995/Auxiliar do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/1994_1995/Auxiliar"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-1994-doc"
+source = "datasus-ftp"
+official_id = "SINASC/1994_1995/Doc"
+title = "SINASC: documentação até 1995"
+description = "Espelho da pasta SINASC/1994_1995/Doc do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/1994_1995/Doc"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-1994-tabelas"
+source = "datasus-ftp"
+official_id = "SINASC/1994_1995/TABELAS"
+title = "SINASC: tabelas auxiliares até 1995"
+description = "Espelho da pasta SINASC/1994_1995/TABELAS do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/1994_1995/TABELAS"
+pattern = ".+"
+min_files = 1
+
+[[datasets]]
+id = "datasus-sinasc-prelim-dnres"
+source = "datasus-ftp"
+official_id = "SINASC/PRELIM/DNRES"
+title = "SINASC: dados preliminares por UF de residência"
+description = "Espelho da pasta SINASC/PRELIM/DNRES do FTP do DATASUS: todos os arquivos, sem alteração."
+license = "ms-dados-abertos-cc-by"
+access_classification = "restricted"
+periodicity = "anual, com revisões"
+reference_url = "https://datasus.saude.gov.br/transferencia-de-arquivos/"
+
+[datasets.params]
+directory = "SINASC/PRELIM/DNRES"
+pattern = ".+"
+min_files = 1

@@ -1,0 +1,134 @@
+# ADR-0011: DATASUS, com espelho do FTP na Bronze e agregados por município na Silver
+
+- **Estado:** aceito pelo mantenedor (2026-11-11). Primeira fonte da Fase 6.
+- **Contexto normativo:** CLAUDE.md §6, §7.3, §9, §15.4, §23, §25.2 e §28
+- **Avaliação de acesso:** [`datasus-avaliacao.md`](../data_catalog/datasus-avaliacao.md)
+
+## Contexto
+
+O mantenedor quer usar os dados do SUS para complementar o que já vem do IBGE.
+O primeiro caso são os óbitos: o Registro Civil do IBGE (tabela 2654) e o SIM
+do Ministério da Saúde.
+
+Ele também pediu para guardar toda a informação na Bronze e na Silver, porque
+um endpoint ou um FTP pode sair do ar. O portal consulta só o que está no
+servidor do projeto.
+
+A unidade amostral mínima é o município: os registros individuais de óbito
+não são necessários.
+
+## Decisões
+
+### 1. Conector `ftp_file` (FTP oficial, §7.3)
+
+Os três caminhos oficiais respondem sem navegador: FTP, TabNet e API de dados
+abertos. O FTP de transferência de arquivos é o mais completo para séries
+históricas. O conector:
+
+- **Datasets:** cada dataset é uma pasta do FTP com um padrão de nomes, e cada
+  arquivo é uma partição.
+- **Listagem:** `LIST` no formato DOS. O servidor do DATASUS (Microsoft FTP
+  Service) não aceita `MLSD` com fatos, e os nomes vêm em Latin-1.
+- **Mudanças:** detectadas pela assinatura `tamanho|data` da listagem, porque
+  o FTP não tem ETag. Arquivo revisado pela fonte entra como versão nova.
+- **Robustez:** tempo de espera, novas tentativas e intervalo mínimo da
+  política da fonte. Falhas transitórias são adiadas e repescadas pelo
+  runner (ADR-0010, decisão 11).
+- **Validação:**
+  - o tamanho baixado é conferido com a listagem;
+  - os arquivos `.dbc` são descomprimidos e o cabeçalho DBF é lido, o que
+    detecta arquivo truncado.
+- **Nome na Bronze:** minúsculo, sem acentos e com sufixo do hash do nome
+  original (§6.4: não depender do nome de terceiros). O nome original fica na
+  chave da partição e na URL de origem.
+
+### 2. Espelho completo do SIM e do SINASC na Bronze
+
+A configuração está em `configs/sources/datasus.toml`, com 32 datasets, um por
+pasta:
+
+- microdados `.dbc`: CID-10 e CID-9, óbitos fetais, preliminares e nascidos
+  vivos nos leiautes antigo e novo;
+- definições do TabWin;
+- tabelas auxiliares;
+- documentação em PDF.
+
+O total medido em 2026-11-11 foi de cerca de 18 GB, com 923 GB livres (§25.2).
+Os sistemas maiores (SIH, SIA) ficam para outra decisão, por causa do volume.
+
+Os datasets ficam com `access_classification = "restricted"`, porque os
+microdados contêm registros individuais. Eles não saem da Bronze e da Silver
+interna.
+
+### 3. Leitura do `.dbc`: `datasus-dbc` (MIT) e `dbfread` (MIT)
+
+O `.dbc` é um DBF comprimido com *blast* (PKWare). A escolha, delegada pelo
+mantenedor, foi `datasus-dbc==0.1.3`: MIT, sem dependências, com pacote pronto
+para Python 3.12 no Linux. A leitura do DBF fica com `dbfread==2.0.7` (MIT).
+
+Alternativas descartadas:
+
+- `pyreaddbc`: AGPL-3.0, uma licença copyleft que imporia obrigações ao serviço
+  público;
+- `pysus`: GPL e muitas dependências.
+
+### 4. Silver: Total e cada dimensão por município (sem cruzamento)
+
+O transformador `datasus_sim_do` lê `DO<UF><ano>.dbc` e gera, no contrato de
+observação da Silver (o mesmo do SIDRA, `table_id = "SIM-DORES"`):
+
+- **Nível 6 (município de residência):** o código de 6 dígitos do DATASUS é
+  convertido no código IBGE de 7 dígitos pela DTB.
+- **Nível 3 (UF):** todos os óbitos do arquivo, inclusive os de município
+  ignorado ou sem correspondência na DTB.
+- **Dimensões:**
+  - sexo;
+  - faixa etária (decodificada do código de 3 dígitos do SIM);
+  - cor ou raça;
+  - capítulo da CID-10 da causa básica;
+  - local de ocorrência.
+- **Desenho das tabelas do SIDRA:** em cada território vêm o Total (categoria
+  `T`) e a distribuição de cada dimensão, com as demais no Total.
+- **Sem cruzamento:** cruzar as cinco dimensões manteria quase um registro por
+  óbito (3.668 linhas para 4.189 óbitos no Acre em 2023). Isso traria risco de
+  reidentificação em municípios pequenos (§23) e não serve ao panorama. Com o
+  desenho escolhido, são 925 linhas para a mesma UF e o mesmo ano.
+- **Conferência:** a soma de cada dimensão é comparada ao número de registros
+  lidos, então nenhum óbito se perde.
+
+### 5. Complementar ou novo KPI (decisão do mantenedor)
+
+Os dados do SUS são comparados com os do IBGE antes de qualquer uso conjunto
+(§15.4):
+
+- se forem complementares (mesmo conceito, cobertura compatível), completam a
+  série, com fonte, notas e referências;
+- se não forem, entram como KPI novo, separado do KPI do IBGE.
+
+Para os óbitos, a comparação é SIM × Registro Civil por UF e ano, e o
+resultado vai para `docs/data_catalog/` antes de entrar na Gold.
+
+### 6. Licença
+
+O metadado oficial do conjunto SIM em `dadosabertos.saude.gov.br/dataset/sim`
+traz `license_id: cc-by` (Creative Commons Atribuição), verificado em
+2026-11-11. Outras licenças encontradas não se aplicam aos dados:
+
+- a página de acesso à informação do DATASUS não traz termo de reúso;
+- o rodapé do portal (CC BY-ND 3.0) vale para o conteúdo do site;
+- o MIT da API vale para o software.
+
+A licença `ms-dados-abertos-cc-by` fica em `requires_review` até a confirmação
+de que cobre os arquivos do FTP.
+
+## Consequências
+
+- **Preservação:** a Bronze guarda uma cópia de tudo do SIM e do SINASC,
+  independente da disponibilidade da fonte.
+- **Gold:** ainda não lê a Silver do DATASUS. A entrada na Gold depende da
+  comparação (decisão 5) e de generalizar a Gold para transformadores além do
+  `sidra_observation`.
+- **Próximos passos:**
+  - Silver do SINASC (nascidos vivos), no mesmo desenho;
+  - SIM da CID-9 (1979 a 1995), com o próprio mapa de capítulos;
+  - comparação com o Registro Civil (tabelas 2654 e 2609).

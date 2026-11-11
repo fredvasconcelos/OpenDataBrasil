@@ -41,37 +41,66 @@ def _inputs() -> tuple[Any, dict[str, Any], dict[str, str], dict[str, Any]]:
 
 
 def _generate() -> Any:
-    config, verification, titles, descriptors = _inputs()
-    return generate(
-        config,
-        verification,
-        titles,
-        configured_tables={"9605": "ibge-sidra-9605", "6715": "ibge-sidra-6715"},
-        existing_indicators=[],
-        existing_portal_kpis=[],
-        descriptors=descriptors,
-    )
+    """A mesma geração do comando (catálogo curado, fontes e descritores do repositório)."""
+    from odb_cli.panorama import _generation  # noqa: PLC0415
+
+    return _generation(load_panorama(PANORAMA), PANORAMA, CONFIGS, "demografia")
 
 
-def test_generates_only_kpis_whose_value_is_the_total() -> None:
+def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR0915
     gen = _generate()
     ids = {i["id"]: i for i in gen.indicators}
     skipped = {k: why for k, _, why in gen.skipped}
-    assert len(ids) == 92
+    assert len(ids) == 116
     # Variável fixada no panorama e regra automática (sem coeficientes de variação).
     assert ids["homicidios"]["variable"] == "13532"
     assert ids["taxa_escolarizacao"]["variable"] == "10276"
-    # Fora: Total = universo, sem Total, períodos não anuais, tabelas curadas, RM.
-    assert "entra com as categorias" in skipped["plano_diretor"]
+    # Total = universo: entra com as categorias; sem elas, fica de fora com o motivo.
+    assert "plano_diretor" in ids
+    assert "o Total é só o universo" in skipped["nivel_instrucao_censo"]
+    # Fora: sem Total, tabelas curadas, RM, unidade variável.
     assert "sem categoria Total" in skipped["efetivo_rebanhos"]
-    assert "sem categoria Total" in skipped["vendas_varejo"]  # mensal, mas sem Total
     assert "já configurada" in skipped["despesa_familiar"]
     assert "n7" in skipped["aquisicao_alimentar"]
     assert "unidade não é única" in skipped["producao_origem_animal"]
     assert "casamentos" in ids
-    # Classificações do Total viram categorias fixas, com o código observado na fonte.
+    # Total + %: a dimensão principal vira classificação do fato; as demais ficam fixas.
     fact = next(f for f in gen.facts if f["dataset"] == "ibge-sidra-9514")
-    assert fact["fixed_categories"]["Sexo"] == "6794"
+    assert fact["classifications"] == {"c2": "c2_category_key"}  # sexo, curada
+    assert "Sexo" not in fact["fixed_categories"]
+    assert fact["fixed_categories"]["Idade"] == "100362"
+    plano = next(f for f in gen.facts if f["dataset"] == "ibge-sidra-5882")
+    assert plano["classifications"] == {"c1480": "c1480_category_key"}
+    assert gen.dimensions["plano_diretor"]["classification"] == "c1480"
+    assert gen.classifications["c1480"]["total"] == "58278"  # "Total", do descritor
+    # Lavouras: categorias até UF, Total também no município (volume).
+    pam = next(d for d in gen.datasets if d["official_id"] == "5457")
+    assert pam["params"]["detail_levels"] == ["n1", "n2", "n3"]
+    assert any("nos municípios, só o Total" in c for c in ids["producao_lavouras"]["caveats"])
+    # Série longa com município: categorias só até UF; Censo (1 período): até município.
+    obitos = next(d for d in gen.datasets if d["official_id"] == "2654")
+    assert obitos["params"]["detail_levels"] == ["n1", "n2", "n3"]
+    censo = next(d for d in gen.datasets if d["official_id"] == "9514")
+    assert "detail_levels" not in censo["params"]
+    assert "n6" in censo["params"]["territorial_levels"]
+    # Sexo da PNS (110095/110096) entra como partição nova na c2 curada.
+    assert "c2" in gen.extensions
+    # Arranjos domiciliares: dimensão fixada no panorama (c460, não sexo do responsável).
+    assert gen.dimensions["arranjos_domiciliares"]["classification"] == "c460"
+    # Total no mesmo nível das categorias (lista plana): agrotóxicos por classe de uso.
+    assert gen.dimensions["agrotoxicos"]["classification"] == "c716"
+    # Total que a API não devolve por padrão: pedido explicitamente.
+    agua = next(d for d in gen.datasets if d["official_id"] == "6731")
+    assert agua["params"]["classifications"]["c825"] == "all"
+    # Agregado único como Total ("15 anos ou mais") e níveis vindos do descritor.
+    analf = next(d for d in gen.datasets if d["official_id"] == "7113")
+    assert gen.dimensions["taxa_analfabetismo"]["classification"] == "c2"
+    assert analf["params"]["classifications"]["c58"] == "2795"
+    assert analf["params"]["territorial_levels"]
+    # Sem Total nem agregado: categoria de referência (parte B).
+    assert "requer categoria de referência" in skipped["vendas_varejo"]
+    # IPCA a partir de 1998 na Gold (a série inteira fica na Silver).
+    assert ids["ipca"]["first_period"] == "1998"
     # Aditividade do descritor oficial (PermiteSomaUnidadesTerritoriais).
     assert ids["nascidos_vivos"]["additivity"] == "additive"
     assert ids["taxa_escolarizacao"]["additivity"] == "non_additive"
@@ -114,7 +143,7 @@ def test_rendered_fragments_load_with_the_curated_configs(tmp_path: Path) -> Non
     portal = load_portal(tmp_path / "portal", "demografia")
     assert all(d in sources.datasets for d in catalog.datasets())
     assert {k.indicator for k in portal.kpis()} <= {i.id for i in catalog.indicators}
-    assert len(portal.kpis()) == 13 + 92
+    assert len(portal.kpis()) == 13 + 116
 
 
 def test_repository_fragments_are_up_to_date() -> None:
@@ -162,9 +191,9 @@ def test_gerar_command_writes_three_fragments(tmp_path: Path) -> None:
         path.unlink()
     result = CliRunner().invoke(app, ["panorama", "gerar", "--raiz", str(tmp_path)])
     assert result.exit_code == 0, result.output
-    assert "92 KPIs de Total gerados" in result.output
+    assert "116 KPIs gerados (116 tabelas), 72 com categorias" in result.output
     data = tomllib.loads((tmp_path / "sources" / "ibge-panorama.toml").read_text("utf-8"))
-    assert len(data["datasets"]) == 92
+    assert len(data["datasets"]) == 116
     assert "institution" not in data
 
 

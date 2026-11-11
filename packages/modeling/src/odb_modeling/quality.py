@@ -335,6 +335,8 @@ def category_reconciliation(
             )
             keys = ["geography_key", "period", "context"]
             for part in cls.partitions:
+                if not part.summable:
+                    continue  # categorias que se sobrepõem (a fonte não permite somar)
                 parent_key = f"{cid}:{cls.parent_of(part)}"
                 totals = tagged.filter(
                     (pl.col("category") == parent_key) & pl.col("value_status").is_in(_QUANT)

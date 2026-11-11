@@ -4,6 +4,7 @@
 
 config_version = "1.0.0"
 scope = "demografia"
+dimension_order = ["c2", "c2083", "c232", "c1836", "c664", "c345", "c460", "c63", "c338", "c845", "c1821", "c825", "c921", "c11558", "c67", "c1568", "c58", "c12258", "c1", "c556", "c339", "c12404", "c688", "c422", "c427", "c937", "c782", "c48", "c18", "c12716", "c1835", "c734", "c829", "c716", "c12899", "c12762", "c11065", "c85", "c892", "c956", "c696", "c543", "c1480", "c1346", "c1329", "c1328"]
 
 [[themes]]
 id = "populacao"
@@ -36,6 +37,7 @@ indicator = "envelhecimento"
 id = "populacao_sexo_idade"
 label = "População por sexo e idade"
 indicator = "populacao_sexo_idade"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
 
 [[themes.subthemes]]
 id = "natalidade_mortalidade"
@@ -54,6 +56,7 @@ label = "Migração"
 id = "migrantes_uf"
 label = "Pessoas que não residiam na UF cinco anos antes"
 indicator = "migrantes_uf"
+dimensions = [{ "classification" = "c2083", "partition" = "p77808", "label" = "Lugar de residência 5 anos antes da data de referência" }]
 
 [[themes]]
 id = "registro_civil"
@@ -67,11 +70,13 @@ label = "Nascimentos e óbitos"
 id = "nascidos_vivos"
 label = "Nascidos vivos"
 indicator = "nascidos_vivos"
+dimensions = [{ "classification" = "c232", "partition" = "p0", "label" = "Ano de nascimento" }]
 
 [[themes.subthemes.kpis]]
 id = "obitos"
 label = "Óbitos"
 indicator = "obitos"
+dimensions = [{ "classification" = "c1836", "partition" = "p0", "label" = "Natureza do óbito" }]
 
 [[themes.subthemes]]
 id = "casamentos_divorcios"
@@ -81,11 +86,13 @@ label = "Casamentos e divórcios"
 id = "casamentos"
 label = "Casamentos"
 indicator = "casamentos"
+dimensions = [{ "classification" = "c664", "partition" = "p0", "label" = "Estado civil do primeiro cônjuge" }]
 
 [[themes.subthemes.kpis]]
 id = "divorcios"
 label = "Divórcios"
 indicator = "divorcios"
+dimensions = [{ "classification" = "c345", "partition" = "p0", "label" = "Tempo transcorrido entre a data do casamento e a data da sentença ou da escritura" }]
 
 [[themes]]
 id = "domicilios"
@@ -99,6 +106,34 @@ label = "Domicílios e moradores"
 id = "domicilios_ocupados"
 label = "Domicílios ocupados e média de moradores"
 indicator = "domicilios_ocupados"
+
+[[themes.subthemes.kpis]]
+id = "arranjos_domiciliares"
+label = "Domicílios por tipo de arranjo (unidade doméstica)"
+indicator = "arranjos_domiciliares"
+dimensions = [{ "classification" = "c460", "partition" = "p45902", "label" = "Espécie de unidade doméstica" }]
+
+[[themes.subthemes]]
+id = "condicoes_moradia"
+label = "Condições de moradia"
+
+[[themes.subthemes.kpis]]
+id = "condicao_ocupacao"
+label = "Domicílios próprios, alugados e cedidos"
+indicator = "condicao_ocupacao"
+dimensions = [{ "classification" = "c63", "partition" = "p95826", "label" = "Condição de ocupação do domicílio" }]
+
+[[themes.subthemes.kpis]]
+id = "material_paredes"
+label = "Domicílios por material das paredes"
+indicator = "material_paredes"
+dimensions = [{ "classification" = "c338", "partition" = "p7982", "label" = "Material predominante nas paredes" }]
+
+[[themes.subthemes.kpis]]
+id = "posse_bens"
+label = "Domicílios por posse de bens"
+indicator = "posse_bens"
+dimensions = [{ "classification" = "c845", "partition" = "p47557", "label" = "Posse de bens" }]
 
 [[themes.subthemes]]
 id = "favelas"
@@ -123,18 +158,58 @@ id = "agua"
 label = "Abastecimento de água"
 
 [[themes.subthemes.kpis]]
+id = "rede_geral_agua"
+label = "Domicílios ligados à rede geral de água (Censo)"
+indicator = "rede_geral_agua"
+dimensions = [{ "classification" = "c1821", "partition" = "p72129", "label" = "Existência de ligação à rede geral de distribuição de água e principal forma de abastecimento de água" }]
+
+[[themes.subthemes.kpis]]
+id = "fonte_abastecimento"
+label = "Principal fonte de abastecimento de água"
+indicator = "fonte_abastecimento"
+dimensions = [{ "classification" = "c825", "partition" = "p47937", "label" = "Principal fonte de abastecimento de água" }]
+
+[[themes.subthemes.kpis]]
 id = "servico_agua_municipios"
 label = "Municípios com serviço de abastecimento por rede geral"
 indicator = "servico_agua_municipios"
+dimensions = [{ "classification" = "c921", "partition" = "p48278", "label" = "Condição de funcionamento do serviço" }]
 
 [[themes.subthemes]]
 id = "esgoto"
 label = "Esgotamento sanitário"
 
 [[themes.subthemes.kpis]]
+id = "esgotamento_censo"
+label = "Domicílios por tipo de esgotamento sanitário (Censo)"
+indicator = "esgotamento_censo"
+dimensions = [{ "classification" = "c11558", "partition" = "p46292", "label" = "Tipo de esgotamento sanitário" }]
+
+[[themes.subthemes.kpis]]
+id = "esgotamento_pnad"
+label = "Domicílios por tipo de esgotamento sanitário"
+indicator = "esgotamento_pnad"
+dimensions = [{ "classification" = "c11558", "partition" = "p46292_t7192", "label" = "Tipo de esgotamento sanitário" }]
+
+[[themes.subthemes.kpis]]
 id = "servico_esgoto_municipios"
 label = "Municípios com rede coletora de esgoto"
 indicator = "servico_esgoto_municipios"
+
+[[themes.subthemes]]
+id = "lixo"
+label = "Coleta de lixo"
+
+[[themes.subthemes.kpis]]
+id = "destino_lixo_censo"
+label = "Domicílios por destino do lixo (Censo)"
+indicator = "destino_lixo_censo"
+dimensions = [{ "classification" = "c67", "partition" = "p10972", "label" = "Destino do lixo" }]
+
+[[themes.subthemes.kpis]]
+id = "destino_lixo_pnad"
+label = "Domicílios por destino do lixo"
+indicator = "destino_lixo_pnad"
 
 [[themes]]
 id = "educacao"
@@ -148,6 +223,13 @@ label = "Alfabetização"
 id = "taxa_alfabetizacao_censo"
 label = "Taxa de alfabetização (15 anos ou mais, Censo)"
 indicator = "taxa_alfabetizacao_censo"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+
+[[themes.subthemes.kpis]]
+id = "taxa_analfabetismo"
+label = "Taxa de analfabetismo (15 anos ou mais)"
+indicator = "taxa_analfabetismo"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
 
 [[themes.subthemes]]
 id = "escolarizacao"
@@ -157,6 +239,23 @@ label = "Frequência escolar"
 id = "taxa_escolarizacao"
 label = "Taxa de escolarização"
 indicator = "taxa_escolarizacao"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+
+[[themes.subthemes]]
+id = "instrucao"
+label = "Nível de instrução"
+
+[[themes.subthemes.kpis]]
+id = "nivel_instrucao"
+label = "Pessoas de 25 anos ou mais por nível de instrução"
+indicator = "nivel_instrucao"
+dimensions = [{ "classification" = "c1568", "partition" = "p120704", "label" = "Nível de instrução" }]
+
+[[themes.subthemes.kpis]]
+id = "anos_estudo"
+label = "Média de anos de estudo (15 anos ou mais)"
+indicator = "anos_estudo"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
 
 [[themes]]
 id = "trabalho_rendimento"
@@ -170,6 +269,7 @@ label = "Ocupação e desocupação"
 id = "forca_trabalho"
 label = "Força de trabalho, ocupação e desocupação"
 indicator = "forca_trabalho"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
 
 [[themes.subthemes.kpis]]
 id = "taxas_desocupacao"
@@ -193,6 +293,7 @@ label = "Rendimento do trabalho"
 id = "rendimento_medio_trabalho"
 label = "Rendimento médio real do trabalho"
 indicator = "rendimento_medio_trabalho"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
 
 [[themes.subthemes.kpis]]
 id = "massa_rendimento"
@@ -212,6 +313,7 @@ indicator = "gini_domiciliar"
 id = "rendimento_domiciliar_censo"
 label = "Rendimento domiciliar per capita (Censo)"
 indicator = "rendimento_domiciliar_censo"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
 
 [[themes.subthemes.kpis]]
 id = "pobreza_linha_nacional"
@@ -226,11 +328,13 @@ label = "Trabalho infantil e cuidados"
 id = "trabalho_infantil"
 label = "Pessoas de 5 a 17 anos em trabalho infantil"
 indicator = "trabalho_infantil"
+dimensions = [{ "classification" = "c58", "partition" = "p95253_t9836", "label" = "Grupo de idade" }]
 
 [[themes.subthemes.kpis]]
 id = "afazeres_domesticos"
 label = "Horas dedicadas a afazeres domésticos e cuidados"
 indicator = "afazeres_domesticos"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
 
 [[themes]]
 id = "saude"
@@ -241,19 +345,28 @@ id = "condicoes_saude"
 label = "Condições de saúde"
 
 [[themes.subthemes.kpis]]
+id = "autoavaliacao_saude"
+label = "Avaliação do próprio estado de saúde"
+indicator = "autoavaliacao_saude"
+dimensions = [{ "classification" = "c12258", "partition" = "p10011", "label" = "Avaliação do estado de saúde" }]
+
+[[themes.subthemes.kpis]]
 id = "doenca_cronica"
 label = "Pessoas com pelo menos uma doença crônica"
 indicator = "doenca_cronica"
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
 
 [[themes.subthemes.kpis]]
 id = "hipertensao"
 label = "Diagnóstico de hipertensão arterial"
 indicator = "hipertensao"
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
 
 [[themes.subthemes.kpis]]
 id = "diabetes"
 label = "Diagnóstico de diabetes"
 indicator = "diabetes"
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
 
 [[themes.subthemes]]
 id = "fatores_risco"
@@ -263,21 +376,25 @@ label = "Hábitos e fatores de risco"
 id = "fumantes"
 label = "Fumantes atuais de tabaco"
 indicator = "fumantes"
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
 
 [[themes.subthemes.kpis]]
 id = "consumo_abusivo_alcool"
 label = "Consumo abusivo de álcool"
 indicator = "consumo_abusivo_alcool"
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
 
 [[themes.subthemes.kpis]]
 id = "insuficientemente_ativos"
 label = "Pessoas insuficientemente ativas"
 indicator = "insuficientemente_ativos"
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
 
 [[themes.subthemes.kpis]]
 id = "excesso_peso"
 label = "Excesso de peso ou obesidade"
 indicator = "excesso_peso"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
 
 [[themes.subthemes]]
 id = "acesso_servicos"
@@ -287,11 +404,13 @@ label = "Acesso a serviços de saúde"
 id = "plano_saude"
 label = "Pessoas com plano de saúde"
 indicator = "plano_saude"
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
 
 [[themes.subthemes.kpis]]
 id = "consulta_medica"
 label = "Consultaram médico nos últimos 12 meses"
 indicator = "consulta_medica"
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
 
 [[themes.subthemes.kpis]]
 id = "estabelecimentos_saude"
@@ -311,6 +430,7 @@ indicator = "pre_natal"
 id = "aleitamento_exclusivo"
 label = "Aleitamento materno exclusivo (menos de 6 meses)"
 indicator = "aleitamento_exclusivo"
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }]
 
 [[themes.subthemes]]
 id = "mortalidade"
@@ -326,6 +446,12 @@ id = "mortalidade_menores_5"
 label = "Taxa de mortalidade em menores de 5 anos"
 indicator = "mortalidade_menores_5"
 
+[[themes.subthemes.kpis]]
+id = "mortalidade_doencas_cronicas"
+label = "Mortalidade por doenças crônicas não transmissíveis"
+indicator = "mortalidade_doencas_cronicas"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+
 [[themes.subthemes]]
 id = "saude_escolar"
 label = "Saúde do escolar"
@@ -334,16 +460,19 @@ label = "Saúde do escolar"
 id = "escolares_fumaram"
 label = "Escolares de 13 a 17 anos que fumaram nos últimos 30 dias"
 indicator = "escolares_fumaram"
+dimensions = [{ "classification" = "c556", "partition" = "p31050", "label" = "Dependência administrativa da escola" }]
 
 [[themes.subthemes.kpis]]
 id = "escolares_alcool"
 label = "Escolares de 13 a 17 anos que consumiram bebida alcoólica"
 indicator = "escolares_alcool"
+dimensions = [{ "classification" = "c556", "partition" = "p31050", "label" = "Dependência administrativa da escola" }]
 
 [[themes.subthemes.kpis]]
 id = "escolares_excesso_peso"
 label = "Escolares de 13 a 17 anos com excesso de peso"
 indicator = "escolares_excesso_peso"
+dimensions = [{ "classification" = "c556", "partition" = "p31050", "label" = "Dependência administrativa da escola" }]
 
 [[themes.subthemes]]
 id = "covid"
@@ -353,11 +482,13 @@ label = "COVID-19"
 id = "vacinacao_covid"
 label = "Vacinados contra a COVID-19"
 indicator = "vacinacao_covid"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
 
 [[themes.subthemes.kpis]]
 id = "tiveram_covid"
 label = "Pessoas que tiveram ou consideram que tiveram COVID-19"
 indicator = "tiveram_covid"
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }]
 
 [[themes]]
 id = "consumo_familias"
@@ -371,6 +502,53 @@ label = "Despesas e rendimentos das famílias"
 id = "rendimento_familiar"
 label = "Rendimento médio mensal familiar"
 indicator = "rendimento_familiar"
+dimensions = [{ "classification" = "c339", "partition" = "classes_rendimento", "label" = "Classes de rendimento total e variação patrimonial mensal familiar" }]
+
+[[themes.subthemes]]
+id = "alimentacao"
+label = "Alimentação e segurança alimentar"
+
+[[themes.subthemes.kpis]]
+id = "seguranca_alimentar"
+label = "Domicílios por situação de segurança alimentar"
+indicator = "seguranca_alimentar"
+dimensions = [{ "classification" = "c12404", "partition" = "p109106", "label" = "Situação de segurança alimentar existente no domicílio" }]
+
+[[themes]]
+id = "tecnologia"
+label = "Tecnologia e comunicação"
+
+[[themes.subthemes]]
+id = "internet"
+label = "Internet"
+
+[[themes.subthemes.kpis]]
+id = "domicilios_internet"
+label = "Domicílios com utilização da internet"
+indicator = "domicilios_internet"
+dimensions = [{ "classification" = "c688", "partition" = "p33298", "label" = "Existência de utilização da Internet no domicílio" }]
+
+[[themes.subthemes.kpis]]
+id = "pessoas_internet"
+label = "Pessoas que utilizaram a internet"
+indicator = "pessoas_internet"
+dimensions = [{ "classification" = "c422", "partition" = "p10979", "label" = "Utilização da internet no período de referência dos últimos três meses" }]
+
+[[themes.subthemes]]
+id = "telefonia_tv"
+label = "Telefonia e televisão"
+
+[[themes.subthemes.kpis]]
+id = "celular_uso_pessoal"
+label = "Pessoas com celular para uso pessoal"
+indicator = "celular_uso_pessoal"
+dimensions = [{ "classification" = "c427", "partition" = "p11326", "label" = "Posse de telefone móvel celular para uso pessoal" }]
+
+[[themes.subthemes.kpis]]
+id = "domicilios_televisao"
+label = "Domicílios com televisão"
+indicator = "domicilios_televisao"
+dimensions = [{ "classification" = "c937", "partition" = "p48455", "label" = "Existência de televisão no domicílio" }]
 
 [[themes]]
 id = "seguranca"
@@ -384,6 +562,7 @@ label = "Percepção de segurança"
 id = "sensacao_seguranca"
 label = "Pessoas que se sentem seguras ao andar sozinhas perto de casa"
 indicator = "sensacao_seguranca"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
 
 [[themes.subthemes]]
 id = "vitimizacao"
@@ -393,11 +572,13 @@ label = "Vitimização e violência"
 id = "vitimas_roubo"
 label = "Vítimas de roubo nos últimos 12 meses"
 indicator = "vitimas_roubo"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
 
 [[themes.subthemes.kpis]]
 id = "violencia"
 label = "Pessoas que sofreram violência nos últimos 12 meses"
 indicator = "violencia"
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
 
 [[themes.subthemes.kpis]]
 id = "homicidios"
@@ -416,11 +597,13 @@ label = "Lavouras"
 id = "producao_lavouras"
 label = "Área, produção e valor das lavouras"
 indicator = "producao_lavouras"
+dimensions = [{ "classification" = "c782", "partition" = "p0", "label" = "Produto das lavouras temporárias e permanentes" }]
 
 [[themes.subthemes.kpis]]
 id = "safra_estimada"
 label = "Estimativa da safra (área, produção e rendimento)"
 indicator = "safra_estimada"
+dimensions = [{ "classification" = "c48", "partition" = "p0", "label" = "Produto das lavouras" }]
 
 [[themes.subthemes]]
 id = "pecuaria"
@@ -430,16 +613,19 @@ label = "Pecuária e produção animal"
 id = "abate_bovinos"
 label = "Abate de bovinos"
 indicator = "abate_bovinos"
+dimensions = [{ "classification" = "c18", "partition" = "p992", "label" = "Tipo de rebanho bovino" }]
 
 [[themes.subthemes.kpis]]
 id = "leite_adquirido"
 label = "Leite adquirido e industrializado"
 indicator = "leite_adquirido"
+dimensions = [{ "classification" = "c12716", "partition" = "p115236", "label" = "Referência temporal" }]
 
 [[themes.subthemes.kpis]]
 id = "ovos_produzidos"
 label = "Produção de ovos de galinha"
 indicator = "ovos_produzidos"
+dimensions = [{ "classification" = "c1835", "partition" = "p72208", "label" = "Finalidade da produção" }]
 
 [[themes.subthemes]]
 id = "silvicultura_extracao"
@@ -449,6 +635,7 @@ label = "Silvicultura e extração vegetal"
 id = "area_silvicultura"
 label = "Área de silvicultura por espécie florestal"
 indicator = "area_silvicultura"
+dimensions = [{ "classification" = "c734", "partition" = "p0", "label" = "Espécie florestal" }]
 
 [[themes.subthemes]]
 id = "estrutura_agraria"
@@ -458,6 +645,7 @@ label = "Estabelecimentos agropecuários"
 id = "estabelecimentos_area"
 label = "Número e área dos estabelecimentos agropecuários"
 indicator = "estabelecimentos_area"
+dimensions = [{ "classification" = "c829", "partition" = "p46302", "label" = "Tipologia" }]
 
 [[themes.subthemes.kpis]]
 id = "estabelecimentos_serie"
@@ -472,11 +660,13 @@ label = "Insumos agrícolas"
 id = "agrotoxicos"
 label = "Comercialização de agrotóxicos"
 indicator = "agrotoxicos"
+dimensions = [{ "classification" = "c716", "partition" = "p33616", "label" = "Classe de uso de agrotóxicos e afins" }]
 
 [[themes.subthemes.kpis]]
 id = "fertilizantes"
 label = "Fertilizantes entregues ao consumidor final"
 indicator = "fertilizantes"
+dimensions = [{ "classification" = "c12899", "partition" = "p119127", "label" = "Tipo de nutriente" }]
 
 [[themes]]
 id = "industria"
@@ -490,6 +680,7 @@ label = "Estrutura e peso da indústria"
 id = "industria_uf"
 label = "Unidades locais industriais, pessoal ocupado e salários"
 indicator = "industria_uf"
+dimensions = [{ "classification" = "c12762", "partition" = "p117897", "label" = "Classificação Nacional de Atividades Econômicas (CNAE 2.0)" }]
 
 [[themes.subthemes.kpis]]
 id = "va_industria_pib"
@@ -540,6 +731,7 @@ label = "Empresas comerciais"
 id = "empresas_comerciais"
 label = "Resultados das empresas comerciais"
 indicator = "empresas_comerciais"
+dimensions = [{ "classification" = "c11065", "partition" = "p90067", "label" = "Divisão de comércio" }]
 
 [[themes.subthemes]]
 id = "comercio_exterior"
@@ -562,6 +754,7 @@ label = "Serviços"
 id = "servicos_nao_financeiros"
 label = "Resultados dos serviços empresariais não financeiros"
 indicator = "servicos_nao_financeiros"
+dimensions = [{ "classification" = "c85", "partition" = "p103847", "label" = "Atividades" }]
 
 [[themes.subthemes]]
 id = "turismo_transportes"
@@ -571,6 +764,7 @@ label = "Turismo e transportes"
 id = "viagens"
 label = "Viagens realizadas pelos moradores"
 indicator = "viagens"
+dimensions = [{ "classification" = "c892", "partition" = "p47975", "label" = "Finalidade da viagem" }]
 
 [[themes]]
 id = "empresas"
@@ -593,6 +787,7 @@ label = "Empreendedorismo"
 id = "microempreendedores"
 label = "Microempreendedores individuais (MEI)"
 indicator = "microempreendedores"
+dimensions = [{ "classification" = "c956", "partition" = "p59983", "label" = "Grande grupamento e seções da classificação de atividade econômica (CNAE 2.0)" }]
 
 [[themes.subthemes.kpis]]
 id = "nascimentos_empresas"
@@ -607,6 +802,7 @@ label = "Inovação e P&D"
 id = "empresas_inovadoras"
 label = "Empresas que implementaram inovações"
 indicator = "empresas_inovadoras"
+dimensions = [{ "classification" = "c696", "partition" = "p33413", "label" = "Atividades da indústria, do setor de eletricidade e gás e dos serviços selecionados" }]
 
 [[themes.subthemes.kpis]]
 id = "pd_pib"
@@ -644,6 +840,7 @@ label = "Preços ao produtor"
 id = "ipp"
 label = "Índice de Preços ao Produtor"
 indicator = "ipp"
+dimensions = [{ "classification" = "c543", "partition" = "p33586", "label" = "Grandes categorias econômicas" }]
 
 [[themes]]
 id = "contas_nacionais"
@@ -745,6 +942,38 @@ id = "planejamento_municipal"
 label = "Planejamento e meio ambiente"
 
 [[themes.subthemes.kpis]]
+id = "plano_diretor"
+label = "Municípios com Plano Diretor"
+indicator = "plano_diretor"
+dimensions = [{ "classification" = "c1480", "partition" = "p58278", "label" = "Existência de Plano Diretor" }]
+
+[[themes.subthemes.kpis]]
 id = "legislacao_ambiental"
 label = "Municípios com legislação ambiental"
 indicator = "legislacao_ambiental"
+
+[[themes.subthemes]]
+id = "riscos_desastres"
+label = "Riscos e desastres"
+
+[[themes.subthemes.kpis]]
+id = "plano_seca"
+label = "Municípios atingidos pela seca e com plano de contingência"
+indicator = "plano_seca"
+dimensions = [{ "classification" = "c1346", "partition" = "p57247", "label" = "Ocorrência de seca nos últimos 4 anos" }]
+
+[[themes.subthemes]]
+id = "politicas_sociais"
+label = "Políticas sociais"
+
+[[themes.subthemes.kpis]]
+id = "planos_municipais_sociais"
+label = "Municípios com planos municipais nas áreas sociais"
+indicator = "planos_municipais_sociais"
+dimensions = [{ "classification" = "c1329", "partition" = "p57146", "label" = "Existência de Plano Municipal" }]
+
+[[themes.subthemes.kpis]]
+id = "conselhos_municipais_sociais"
+label = "Municípios com conselhos municipais nas áreas sociais"
+indicator = "conselhos_municipais_sociais"
+dimensions = [{ "classification" = "c1328", "partition" = "p57131", "label" = "Existência de Conselho Municipal" }]

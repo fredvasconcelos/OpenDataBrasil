@@ -98,3 +98,27 @@ docker compose --profile data run --rm -T -v "$PWD/sums.txt:/tmp/sums.txt:ro" wo
 - Novos datasets entram por configuração (`configs/sources/*.toml`), com
   identificadores verificados na fonte e documentados em `docs/data_catalog/`.
 - Não contorne autenticação, CAPTCHA ou limites de taxa (§7.3).
+
+## DATASUS (FTP)
+
+O conector `ftp_file` (ADR-0011) espelha pastas do FTP oficial do DATASUS na
+Bronze. Os 32 datasets estão em `configs/sources/datasus.toml`, um por pasta do
+SIM e do SINASC (~18 GB).
+
+```bash
+docker compose --profile data run --rm worker odb ingest run $(grep -o 'id = "datasus-[a-z0-9-]*"' configs/sources/datasus.toml | cut -d'"' -f2 | grep -v datasus-ftp)
+docker compose --profile data run --rm worker odb silver build datasus-sim-cid10-dores
+docker compose --profile data run --rm worker odb fontes comparar-obitos
+```
+
+- **Ritmo:** a transferência medida foi de ~0,56 MB/s, com uma conexão só e
+  reaproveitada entre arquivos. Não abra conexões paralelas: é um servidor
+  público.
+- **Mudança:** detectada pela listagem (tamanho e data). Uma nova execução só
+  baixa arquivos novos ou revisados.
+- **Nomes:** na Bronze, minúsculos e com sufixo de hash. O nome original fica
+  em `partition_key` e em `source_url`.
+- **Privacidade:** os microdados (`.dbc`) ficam só na Bronze, com
+  `access_classification = "restricted"`. A Silver do SIM guarda óbitos por
+  município de residência e por UF: o Total e cada dimensão separadamente
+  (sexo, faixa etária, cor ou raça, capítulo da CID-10, local de ocorrência).

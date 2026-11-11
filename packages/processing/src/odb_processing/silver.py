@@ -21,6 +21,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 import uuid
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
@@ -45,6 +46,7 @@ from odb_processing.contracts import (
     SchemaChange,
     compare_schema,
 )
+from odb_processing.datasus import SIM_FIELDS, read_dbc, sim_deaths
 from odb_processing.parsers import (
     Lineage,
     MeshSpec,
@@ -64,9 +66,12 @@ from odb_processing.quality import (
 logger = logging.getLogger(__name__)
 
 RunStatus = Literal["succeeded", "skipped", "failed"]
+_SIM_FILE = re.compile(r"DO(?P<uf>[A-Za-z]{2})(?P<year>\d{4})\.dbc", re.IGNORECASE)
 
 CONTRACT_BY_TRANSFORMER = {
     "sidra_observation": SIDRA_OBSERVATION,
+    # Agregados do SIM por município, no mesmo contrato de observação do SIDRA.
+    "datasus_sim_do": SIDRA_OBSERVATION,
     "dtb_municipality": DTB_MUNICIPALITY,
     "territorial_mesh": TERRITORIAL_MESH,
 }
@@ -294,6 +299,11 @@ class SilverBuilder:
                 dataset.silver.get("additive_variables", {}),
                 *self._reference(dataset),
             )
+        elif transformer == "datasus_sim_do":
+            reference_ids, reference_label = self._reference(dataset)
+            frame, partition = self._sim_frame(dataset, inputs, run, processed_at, reference_ids)
+            # Sem reconciliação entre níveis: a UF inclui óbitos de município ignorado.
+            run.checks = sidra_checks(frame, contract, {}, reference_ids, reference_label)
         elif transformer == "territorial_mesh":
             frame, partition = self._mesh_frame(dataset, inputs, run, processed_at)
             reference_ids, reference_label = self._reference(dataset)
@@ -366,6 +376,39 @@ class SilverBuilder:
             for item in inputs
         ]
         return pl.concat(frames), {"table_id": params.table}
+
+    def _sim_frame(
+        self,
+        dataset: DatasetConfig,
+        inputs: Sequence[SilverInput],
+        run: SilverRun,
+        processed_at: datetime,
+        reference_ids: set[str] | None,
+    ) -> tuple[pl.DataFrame, dict[str, str]]:
+        """Arquivos ``DO<UF><ano>.dbc`` do SIM → óbitos por município e UF (marginais)."""
+        if not reference_ids:
+            msg = f"{dataset.id}: o SIM exige a DTB na Silver (códigos de 6 para 7 dígitos)"
+            raise SilverBuildError(msg)
+        municipalities = {code[:6]: code for code in reference_ids}
+        table_id = str(dataset.silver.get("table_id", "SIM-DORES"))
+        frames = []
+        for item in inputs:
+            m = _SIM_FILE.fullmatch(item.partition_key)
+            if m is None:
+                msg = f"arquivo fora do padrão DO<UF><ano>.dbc: {item.partition_key}"
+                raise SilverBuildError(msg)
+            records = read_dbc(Path(uri_to_local_path(item.storage_uri)), SIM_FIELDS)
+            frames.append(
+                sim_deaths(
+                    records,
+                    uf=m["uf"].upper(),
+                    year=m["year"],
+                    municipalities=municipalities,
+                    table_id=table_id,
+                    lineage=self._lineage(item, run, processed_at),
+                )
+            )
+        return pl.concat(frames), {"table_id": table_id}
 
     def _dtb_frame(
         self,

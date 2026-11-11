@@ -289,3 +289,48 @@ A proposta da dimensão principal de cada KPI (onda Total + %) está em
 [`panorama-proposta-categorias.md`](../data_catalog/panorama-proposta-categorias.md),
 gerada por `odb panorama propor` a partir dos descritores. Ela aguarda a
 aprovação do mantenedor.
+
+### 13. Onda Total + % (aprovada pelo mantenedor em 2026-11-11)
+
+O gerador aplica a dimensão principal da proposta (`odb panorama propor`) a
+partir dos descritores:
+
+- a classificação principal vem inteira, com a árvore de categorias tirada
+  da indentação oficial. As demais classificações ficam fixas no Total;
+- o Total é, nesta ordem:
+  - a categoria "Total";
+  - o "Total" no mesmo nível das categorias (lista plana);
+  - o agregado único do topo (por exemplo, "15 anos ou mais");
+  - um Total que a API não devolve por padrão, pedido explicitamente;
+- partições não exaustivas. `summable = false` quando a fonte não permite
+  somar as categorias (podem se sobrepor): nesse caso, a reconciliação com o
+  Total não se aplica e o rodapé avisa que a soma pode passar de 100%;
+- classificações compartilhadas entre tabelas são declaradas uma vez. Se a
+  mesma categoria-pai tiver filhos diferentes em duas tabelas, a segunda fica
+  só com o Total (conflitos listados por `odb panorama gerar`). Classificações
+  curadas (sexo, cor ou raça, idade...) recebem partições novas por fragmento
+  (`classification_partitions`), sem editar o arquivo curado;
+- volume: cada consulta municipal com categorias leva de 60 a 120 s na fonte
+  (medido em 2026-11-11). Por isso:
+  - as categorias por município só entram em tabelas com até 3 períodos (os
+    Censos);
+  - nas séries longas, ou quando categorias × municípios passa do limite por
+    consulta, as categorias vêm até UF (`detail_levels`);
+  - o município fica com o Total no mapa, e o rodapé informa;
+- KPIs curados (os 12 originais, 6715 e 9605) mantêm as suas dimensões;
+- correção da proposta automática: em "Domicílios por tipo de arranjo"
+  (6788), a dimensão é c460 "Espécie de unidade doméstica" (`dimensao` no
+  panorama), e não o sexo do responsável.
+
+Ficam para a parte B, à espera de uma categoria de referência escolhida pelo
+mantenedor, os KPIs sem Total nem agregado: PMC e PMS (tipos de índice), PIB
+trimestral (setores), produção física industrial, rebanhos, emissões,
+esperança de vida (ano da projeção), frequência escolar líquida e desastres.
+
+### 14. IPCA a partir de 1998
+
+Decisão do mantenedor (2026-11-11): `periodo_inicial = "1998"` no panorama
+vira `first_period` no indicador. A Silver guarda a série desde 1979, e a
+Gold publica a partir de 1998. O corte usa o código do SIDRA
+("199712" < "1998" <= "199801"), então vale para séries anuais, mensais e
+trimestrais.

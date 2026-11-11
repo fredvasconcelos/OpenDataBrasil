@@ -211,14 +211,13 @@ test("panorama: 20 temas recolhidos, KPIs em preparação e tooltip da série", 
   await expect(themes).toHaveCount(20);
   // Só o tema do indicador atual fica aberto.
   await expect(menu.locator(":scope > details[open]")).toHaveCount(1);
-  // Tecnologia: KPIs cujo Total é só o universo, à espera da onda Total + %.
-  const tech = themes.filter({ has: page.locator("summary", { hasText: "Tecnologia" }) });
-  await expect(tech.locator(":scope > summary")).toContainText("em preparação");
-  await tech.locator(":scope > summary").click();
-  await tech.locator("details summary").first().click();
-  const planned = tech.locator("li.planned").first();
+  // Comércio: PMC ainda em preparação (tipos de índice sem Total, parte B).
+  const trade = themes.filter({ has: page.locator("summary", { hasText: "Comércio" }) });
+  await trade.locator(":scope > summary").click();
+  await trade.locator("summary", { hasText: "Comércio varejista" }).click();
+  const planned = trade.locator("li.planned").first();
   await expect(planned).toBeVisible();
-  await expect(planned).toHaveAttribute("title", /tabela SIDRA 7307/);
+  await expect(planned).toHaveAttribute("title", /tabela SIDRA 8880/);
   await expect(planned.locator("button")).toHaveCount(0);
   // Tooltip da evolução temporal: valor do ponto ao passar o mouse.
   const point = page.getByTestId("series-point").last();
@@ -252,7 +251,9 @@ test("série mensal: IPCA com períodos formatados", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1, name: "IPCA" })).toBeVisible();
   // Período mais recente formatado como mês/ano (2026M09 → set/2026), não o código.
   await expect(page.locator(".crumb")).toContainText(/[a-z]{3}\/\d{4}/);
-  await expect(page.getByLabel("Período")).toContainText("dez/1979");
+  // A série do IPCA no portal começa em 1998 (decisão do mantenedor; a Silver guarda 1979+).
+  await expect(page.getByLabel("Período")).toContainText("jan/1998");
+  await expect(page.getByLabel("Período")).not.toContainText("dez/1979");
   const point = page.getByTestId("series-point").last();
   await point.hover();
   await expect(page.locator(".chart-tip-period")).toHaveText(/^[a-z]{3}\/\d{4}$/);

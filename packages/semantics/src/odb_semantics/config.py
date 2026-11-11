@@ -56,6 +56,9 @@ class Partition(_Strict):
     exhaustive: bool
     parent: str | None = Field(default=None, pattern=CATEGORY_ID)
     note: str | None = None
+    # False quando a fonte não permite somar as categorias (podem se sobrepor,
+    # como "posse de bens"): a reconciliação com o Total não se aplica.
+    summable: bool = True
 
 
 class Classification(_Strict):
@@ -176,6 +179,9 @@ class IndicatorConfig(_Strict):
     path: tuple[str, ...] = Field(min_length=1)
     caveats: tuple[str, ...] = ()
     incompatible_with: tuple[Incompatibility, ...] = ()
+    # Primeiro período publicado na Gold (código do SIDRA ou prefixo, como "1998"):
+    # a Silver guarda a série inteira; a Gold mostra a partir daqui.
+    first_period: str | None = Field(default=None, pattern=r"^\d{4,6}$")
 
 
 class PendingInstallation(_Strict):
@@ -370,6 +376,7 @@ def load_catalog(path: Path, fragments: Sequence[Path] = ()) -> SemanticCatalog:
     de ``_FRAGMENT_LISTS``. O hash cobre o arquivo principal e os fragmentos.
     """
     digest = hashlib.sha256()
+    extensions: list[dict[str, object]] = []
     try:
         content = path.read_bytes()
         digest.update(content)
@@ -381,12 +388,24 @@ def load_catalog(path: Path, fragments: Sequence[Path] = ()) -> SemanticCatalog:
             if extra.get("scope") != data.get("scope"):
                 msg = f"{fragment}: escopo {extra.get('scope')!r} difere de {data.get('scope')!r}"
                 raise SemanticConfigError(msg)
-            unknown = sorted(set(extra) - {"config_version", "scope", *_FRAGMENT_LISTS})
+            allowed = {"config_version", "scope", "classification_partitions", *_FRAGMENT_LISTS}
+            unknown = sorted(set(extra) - allowed)
             if unknown:
                 msg = f"{fragment}: chaves não aceitas num fragmento: {unknown}"
                 raise SemanticConfigError(msg)
             for key in _FRAGMENT_LISTS:
                 data[key] = [*data.get(key, []), *extra.get(key, [])]
+            extensions += extra.get("classification_partitions", [])
+        # Partições acrescentadas por fragmentos a classificações declaradas em
+        # outro arquivo (por exemplo, categorias de sexo da PNS na c2 curada).
+        by_id = {c["id"]: c for c in data.get("classifications", [])}
+        for ext in extensions:
+            target = by_id.get(ext.get("classification"))
+            if target is None:
+                msg = f"partição para classificação não declarada: {ext.get('classification')}"
+                raise SemanticConfigError(msg)
+            part = {k: v for k, v in ext.items() if k != "classification"}
+            target["partitions"] = [*target.get("partitions", []), part]
         return SemanticCatalog.model_validate({**data, "content_sha256": digest.hexdigest()})
     except (tomllib.TOMLDecodeError, ValidationError) as exc:
         msg = f"{path}: catálogo semântico inválido: {exc}"

@@ -352,7 +352,7 @@ class GoldBuilder:
             .collect()
         )
         selected, fixed_problems = model.strip_fixed_categories(
-            model.select_silver(silver, mapping), self._catalog
+            model.select_silver(silver, mapping, self._catalog), self._catalog
         )
         pending, pending_report = model.resolve_pending_installation(
             self._catalog, silver, datasets

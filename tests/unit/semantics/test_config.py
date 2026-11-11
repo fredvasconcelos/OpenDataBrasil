@@ -215,3 +215,29 @@ def test_repository_scope_with_fragments_matches_sources() -> None:
     missing = [d for d in catalog.datasets() if d not in sources.datasets]
     assert not missing
     assert "despesa_familiar" in {i.id for i in catalog.indicators}
+
+
+def test_fragment_extends_curated_classification(tmp_path: Path) -> None:
+    _write(tmp_path, BASE)
+    (tmp_path / "demografia").mkdir()
+    ext = """
+config_version = "1.0.0"
+scope = "demografia"
+
+[[classification_partitions]]
+classification = "c2"
+id = "p6794_t4418"
+label = "Sexo (PNS)"
+parent = "6794"
+categories = ["110095", "110096"]
+exhaustive = false
+summable = false
+"""
+    _write(tmp_path / "demografia", ext, "ext.toml")
+    sex = load_scope(tmp_path, "demografia").classification("c2")
+    part = next(p for p in sex.partitions if p.id == "p6794_t4418")
+    assert part.categories == ("110095", "110096")
+    assert part.summable is False
+    _write(tmp_path / "demografia", ext.replace('"c2"', '"c999"', 1), "ext.toml")
+    with pytest.raises(SemanticConfigError, match="não declarada"):
+        load_scope(tmp_path, "demografia")

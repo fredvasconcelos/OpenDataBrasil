@@ -101,9 +101,22 @@ def dimension_map(catalog: SemanticCatalog) -> dict[str, str]:
     return {c.silver_dimension: c.id for c in catalog.classifications}
 
 
-def select_silver(silver: pl.DataFrame, mapping: pl.DataFrame) -> pl.DataFrame:
-    """Observações Silver das variáveis do catálogo, com o indicador correspondente."""
-    return silver.join(mapping, on=["table_id", "variable_id"], how="inner")
+def select_silver(
+    silver: pl.DataFrame, mapping: pl.DataFrame, catalog: SemanticCatalog | None = None
+) -> pl.DataFrame:
+    """Observações Silver das variáveis do catálogo, com o indicador correspondente.
+
+    Com o catálogo, aplica ``first_period`` dos indicadores. A comparação é pelo
+    código do SIDRA: "199712" < "1998" <= "199801", então um ano serve de corte
+    para séries anuais, mensais e trimestrais.
+    """
+    selected = silver.join(mapping, on=["table_id", "variable_id"], how="inner")
+    cuts = {i.id: i.first_period for i in (catalog.indicators if catalog else ()) if i.first_period}
+    for indicator, first in cuts.items():
+        selected = selected.filter(
+            (pl.col("indicator_id") != indicator) | (pl.col("period") >= first)
+        )
+    return selected
 
 
 def strip_fixed_categories(

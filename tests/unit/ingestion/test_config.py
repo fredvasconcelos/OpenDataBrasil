@@ -30,12 +30,16 @@ def test_repository_sources_are_valid() -> None:
         "ibge-sidra-6715",
     }
     # O fragmento gerado do panorama só acrescenta datasets SIDRA.
-    generated = set(catalog.datasets) - curated
+    datasus = {d for d in catalog.datasets if d.startswith("datasus-")}
+    assert len(datasus) == 32  # espelho do SIM e do SINASC, uma pasta do FTP por dataset
+    assert catalog.source_institution["datasus-ftp"] == "ms"
+    assert {catalog.datasets[d].access_classification for d in datasus} == {"restricted"}
+    generated = set(catalog.datasets) - curated - datasus
     assert generated
     assert all(d.startswith("ibge-sidra-") for d in generated)
     assert catalog.source_institution["ibge-sidra"] == "ibge"
     assert catalog.licenses["ibge-reuso-com-citacao"].review_status == "requires_review"
-    assert set(build_connectors(catalog)) == {"ibge-sidra", "ibge-geoftp"}
+    assert set(build_connectors(catalog)) == {"ibge-sidra", "ibge-geoftp", "datasus-ftp"}
     assert [d.id for d in catalog.datasets_of("ibge-geoftp")] == [
         "ibge-dtb",
         "ibge-malha-uf-2022",

@@ -40,6 +40,9 @@ ignore = [
 # Mesma regra: fragmentos fixos e $parâmetros. Rotas FastAPI recebem parâmetros nomeados.
 "apps/api/src/odb_api/gold.py" = ["S608"]
 "apps/api/src/odb_api/routes/*.py" = ["PLR0917"]
+# FTP anônimo, só leitura, é o protocolo oficial de transferência de arquivos do DATASUS (§7.3).
+"packages/ingestion/src/odb_ingestion/connectors/ftp_file.py" = ["S321"]
+"tests/unit/ingestion/test_ftp_file.py" = ["S321"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
@@ -55,7 +58,10 @@ files = ["packages", "apps/api/src", "tests"]
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
-module = ["deltalake.*", "duckdb.*", "pyarrow.*", "shapely", "shapely.*", "shapefile", "xlsxwriter"]
+module = [
+    "deltalake.*", "duckdb.*", "pyarrow.*", "shapely", "shapely.*", "shapefile", "xlsxwriter",
+    "dbfread", "dbfread.*", "datasus_dbc",
+]
 ignore_missing_imports = true
 
 # ---------------------------------------------------------------- pytest

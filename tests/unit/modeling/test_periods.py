@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import date
+from pathlib import Path
 
 import polars as pl
 import pytest
@@ -43,3 +44,42 @@ def test_calendar_of_each_period_type() -> None:
     assert rows["2026T4"]["end_date"] == date(2026, 12, 31)
     with pytest.raises(ValueError, match="fora dos formatos"):
         model.period_row("202609")  # código SIDRA cru não é chave da Gold
+
+
+def test_first_period_cuts_gold_not_silver(tmp_path: Path) -> None:
+    from odb_semantics import load_catalog  # noqa: PLC0415
+    from tests.gold_support import REPO_INDICATORS  # noqa: PLC0415
+
+    base = (REPO_INDICATORS / "demografia.toml").read_text(encoding="utf-8")
+    path = tmp_path / "demografia.toml"
+    path.write_text(
+        base.replace(
+            'id = "populacao_estimada"\n', 'id = "populacao_estimada"\nfirst_period = "2010"\n', 1
+        ),
+        encoding="utf-8",
+    )
+    catalog = load_catalog(path)
+    silver = pl.DataFrame(
+        {"table_id": ["6579"] * 3, "variable_id": ["9324"] * 3, "period": ["2009", "2010", "2024"]}
+    )
+    mapping = pl.DataFrame(
+        {"table_id": ["6579"], "variable_id": ["9324"], "indicator_id": ["populacao_estimada"]}
+    )
+    kept = model.select_silver(silver, mapping, catalog)
+    assert kept["period"].to_list() == ["2010", "2024"]
+    # Mensal: o corte por ano vale para os códigos AAAAMM.
+    monthly = silver.with_columns(pl.Series("period", ["199712", "199801", "202609"]))
+    assert model.select_silver(
+        monthly,
+        mapping,
+        catalog.model_copy(
+            update={
+                "indicators": tuple(
+                    i.model_copy(update={"first_period": "1998"})
+                    if i.id == "populacao_estimada"
+                    else i
+                    for i in catalog.indicators
+                )
+            }
+        ),
+    )["period"].to_list() == ["199801", "202609"]

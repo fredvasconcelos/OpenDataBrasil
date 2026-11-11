@@ -95,10 +95,11 @@ table = "9514"
 variables = ["93"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 16899
 min_rows = 1
-max_rows = 5633
+max_rows = 16899
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -149,6 +150,10 @@ estimated_values_per_period = 5633
 min_rows = 1
 max_rows = 5633
 refresh_recent_periods = 1
+classifications = { "c2083" = "77808,77809,77810,77814,77815,77816,77817,77818,77819,77820,77821,77822,77823,77824,77825,77826,77827,77828,77829,77830,77831,77832,77833,77834,77835,77836,77837,77838,77839,77840,77841" }
+detail_classification = "c2083"
+detail_total = "77808"
+detail_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -174,6 +179,10 @@ estimated_values_per_period = 5633
 min_rows = 1
 max_rows = 5633
 refresh_recent_periods = 1
+classifications = { "c232" = "0,82135,77792,71500,58297,56680,48972,47550,46256,40523,40289,39331,33044,31660,15773,12029,7996,119202,118095,111751,109555,107161,104320,102883,98825,98824,98823,94126,90891,90797,90796,5198,5197,5196,5195,5194,5193,5192,5191,5190,90781,90780,90779,90778,90777,90776,90775,90774,90773,90772,90794,90793,90792,90791,90790,90789,90788,90787,90786,90785,90798,105276" }
+detail_classification = "c232"
+detail_total = "0"
+detail_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -199,6 +208,10 @@ estimated_values_per_period = 5633
 min_rows = 1
 max_rows = 5633
 refresh_recent_periods = 1
+classifications = { "c1836" = "0,26877,99818,26881,26882" }
+detail_classification = "c1836"
+detail_total = "0"
+detail_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -224,6 +237,10 @@ estimated_values_per_period = 5633
 min_rows = 1
 max_rows = 5633
 refresh_recent_periods = 1
+classifications = { "c664" = "0,32960,32961,32962,32963" }
+detail_classification = "c664"
+detail_total = "0"
+detail_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -249,6 +266,10 @@ estimated_values_per_period = 5633
 min_rows = 1
 max_rows = 5633
 refresh_recent_periods = 1
+classifications = { "c345" = "0,8074,8075,8076,8077,8078,8079,8080,8081,8082,8083,8084,8085,8086,8087,8088,8089,8090,8091,8092,8093,8094,8095,8097,8098,8099,8100,8101,8102,8103,8104,8105" }
+detail_classification = "c345"
+detail_total = "0"
+detail_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -274,6 +295,122 @@ estimated_values_per_period = 5633
 min_rows = 1
 max_rows = 5633
 refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-6788"
+source = "ibge-sidra"
+official_id = "6788"
+title = "Domicílios, por sexo do responsável e espécie da unidade doméstica"
+description = "Tabela SIDRA 6788, variável 162 (Domicílios), no Total das classificações (Sexo do responsável pelo domicílio: Total; Espécie de unidade doméstica: Total). KPI de panorama 'Domicílios por tipo de arranjo (unidade doméstica)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/6788"
+
+[datasets.params]
+table = "6788"
+variables = ["162"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 132
+min_rows = 1
+max_rows = 132
+refresh_recent_periods = 1
+classifications = { "c460" = "45902,12076,12077,12078,12079" }
+detail_classification = "c460"
+detail_total = "45902"
+detail_levels = ["n1", "n2", "n3"]
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-6821"
+source = "ibge-sidra"
+official_id = "6821"
+title = "Domicílios e Moradores, por condição de ocupação do domicílio"
+description = "Tabela SIDRA 6821, variável 162 (Domicílios), no Total das classificações (Condição de ocupação do domicílio: Total). KPI de panorama 'Domicílios próprios, alugados e cedidos' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/6821"
+
+[datasets.params]
+table = "6821"
+variables = ["162"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 165
+min_rows = 1
+max_rows = 165
+refresh_recent_periods = 1
+classifications = { "c63" = "95826,4342,4343,1055,2519,1058" }
+detail_classification = "c63"
+detail_total = "95826"
+detail_levels = ["n1", "n2", "n3"]
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-6822"
+source = "ibge-sidra"
+official_id = "6822"
+title = "Domicílios e Moradores, por material predominante nas paredes"
+description = "Tabela SIDRA 6822, variável 162 (Domicílios), no Total das classificações (Material predominante nas paredes: Total). KPI de panorama 'Domicílios por material das paredes' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/6822"
+
+[datasets.params]
+table = "6822"
+variables = ["162"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 132
+min_rows = 1
+max_rows = 132
+refresh_recent_periods = 1
+classifications = { "c338" = "7982,7983,45903,45904,45905" }
+detail_classification = "c338"
+detail_total = "7982"
+detail_levels = ["n1", "n2", "n3"]
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-6677"
+source = "ibge-sidra"
+official_id = "6677"
+title = "Domicílios e Moradores, por posse de bens"
+description = "Tabela SIDRA 6677, variável 162 (Domicílios), no Total das classificações (Posse de bens: Total). KPI de panorama 'Domicílios por posse de bens' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/6677"
+
+[datasets.params]
+table = "6677"
+variables = ["162"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 165
+min_rows = 1
+max_rows = 165
+refresh_recent_periods = 1
+classifications = { "c845" = "47557,47552,47553,47554,47555,47556" }
+detail_classification = "c845"
+detail_total = "47557"
+detail_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -330,6 +467,61 @@ transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
 
 [[datasets]]
+id = "ibge-sidra-6803"
+source = "ibge-sidra"
+official_id = "6803"
+title = "Domicílios particulares permanentes ocupados, por existência de ligação à rede geral de distribuição de água e principal forma de abastecimento de água"
+description = "Tabela SIDRA 6803, variável 381 (Domicílios particulares permanentes ocupados), no Total das classificações (Existência de ligação à rede geral de distribuição de água e principal forma de abastecimento de água: Total). KPI de panorama 'Domicílios ligados à rede geral de água (Censo)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/6803"
+
+[datasets.params]
+table = "6803"
+variables = ["381"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c1821" = "72129,72144,72145,72146,72147,72148,72149,72150,72151,72152,72153,72154,72155,72156,72157,72158,72159,72160" }
+detail_classification = "c1821"
+detail_total = "72129"
+detail_levels = ["n1", "n2", "n3"]
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-6731"
+source = "ibge-sidra"
+official_id = "6731"
+title = "Domicílios e Moradores, por situação do domicílio e principal fonte de abastecimento de água"
+description = "Tabela SIDRA 6731, variável 162 (Domicílios), no Total das classificações (Situação do domicílio: Total; Principal fonte de abastecimento de água: ). KPI de panorama 'Principal fonte de abastecimento de água' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/6731"
+
+[datasets.params]
+table = "6731"
+variables = ["162"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 198
+min_rows = 1
+max_rows = 198
+refresh_recent_periods = 1
+classifications = { "c825" = "all" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
 id = "ibge-sidra-7460"
 source = "ibge-sidra"
 official_id = "7460"
@@ -345,10 +537,69 @@ table = "7460"
 variables = ["2598"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
+estimated_values_per_period = 22532
+min_rows = 1
+max_rows = 22532
+refresh_recent_periods = 1
+classifications = { "c921" = "all" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-6805"
+source = "ibge-sidra"
+official_id = "6805"
+title = "Domicílios particulares permanentes ocupados, por tipo de esgotamento sanitário"
+description = "Tabela SIDRA 6805, variável 381 (Domicílios particulares permanentes ocupados), no Total das classificações (Tipo de esgotamento sanitário: Total). KPI de panorama 'Domicílios por tipo de esgotamento sanitário (Censo)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/6805"
+
+[datasets.params]
+table = "6805"
+variables = ["381"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
 estimated_values_per_period = 5633
 min_rows = 1
 max_rows = 5633
 refresh_recent_periods = 1
+classifications = { "c11558" = "46292,46290,72110,72111,72112,72113,92858,72114,72115,92861" }
+detail_classification = "c11558"
+detail_total = "46292"
+detail_levels = ["n1", "n2", "n3"]
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-7192"
+source = "ibge-sidra"
+official_id = "7192"
+title = "Domicílios e Moradores com banheiro, sanitário ou buraco para dejeções, por situação do domicílio e tipo de esgotamento sanitário (a partir de 2019)"
+description = "Tabela SIDRA 7192, variável 9986 (Domicílios com banheiro, sanitário ou buraco para dejeções), no Total das classificações (Situação do domicílio: Total; Tipo de esgotamento sanitário: ). KPI de panorama 'Domicílios por tipo de esgotamento sanitário' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/7192"
+
+[datasets.params]
+table = "7192"
+variables = ["9986"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 132
+min_rows = 1
+max_rows = 132
+refresh_recent_periods = 1
+classifications = { "c11558" = "46292,47930,47931,47936,119522" }
+detail_classification = "c11558"
+detail_total = "46292"
+detail_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -380,6 +631,61 @@ transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
 
 [[datasets]]
+id = "ibge-sidra-6892"
+source = "ibge-sidra"
+official_id = "6892"
+title = "Domicílios particulares permanentes ocupados, por destino do lixo"
+description = "Tabela SIDRA 6892, variável 381 (Domicílios particulares permanentes ocupados), no Total das classificações (Destino do lixo: Total). KPI de panorama 'Domicílios por destino do lixo (Censo)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/6892"
+
+[datasets.params]
+table = "6892"
+variables = ["381"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c67" = "10972,2520,72120,72121,72122,72123,72124,1091" }
+detail_classification = "c67"
+detail_total = "10972"
+detail_levels = ["n1", "n2", "n3"]
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-6736"
+source = "ibge-sidra"
+official_id = "6736"
+title = "Domicílios e Moradores, por situação do domicílio e destino do lixo"
+description = "Tabela SIDRA 6736, variável 162 (Domicílios), no Total das classificações (Situação do domicílio: Total; Destino do lixo: ). KPI de panorama 'Domicílios por destino do lixo' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/6736"
+
+[datasets.params]
+table = "6736"
+variables = ["162"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 65
+min_rows = 1
+max_rows = 65
+refresh_recent_periods = 1
+classifications = { "c67" = "10972" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
 id = "ibge-sidra-9543"
 source = "ibge-sidra"
 official_id = "9543"
@@ -395,10 +701,37 @@ table = "9543"
 variables = ["2513"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 16899
 min_rows = 1
-max_rows = 5633
+max_rows = 16899
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-7113"
+source = "ibge-sidra"
+official_id = "7113"
+title = "Taxa de analfabetismo das pessoas de 15 anos ou mais de idade, por sexo e grupo de idade"
+description = "Tabela SIDRA 7113, variável 10267 (Taxa de analfabetismo das pessoas de 15 anos ou mais de idade), no Total das classificações (Sexo: Total; Grupo de idade: ). KPI de panorama 'Taxa de analfabetismo (15 anos ou mais)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/7113"
+
+[datasets.params]
+table = "7113"
+variables = ["10267"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 99
+min_rows = 1
+max_rows = 99
+refresh_recent_periods = 1
+classifications = { "c58" = "2795", "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -420,10 +753,69 @@ table = "7138"
 variables = ["10276"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 65
+estimated_values_per_period = 66
 min_rows = 1
-max_rows = 65
+max_rows = 66
 refresh_recent_periods = 1
+classifications = { "c2" = "6794,4,5" }
+detail_classification = "c2"
+detail_total = "6794"
+detail_levels = ["n1", "n2", "n3"]
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-7189"
+source = "ibge-sidra"
+official_id = "7189"
+title = "Pessoas de 25 anos ou mais de idade, por sexo e nível de instrução"
+description = "Tabela SIDRA 7189, variável 1643 (Pessoas de 25 anos ou mais de idade), no Total das classificações (Sexo: Total; Nível de instrução: Total). KPI de panorama 'Pessoas de 25 anos ou mais por nível de instrução' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/7189"
+
+[datasets.params]
+table = "7189"
+variables = ["1643"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 264
+min_rows = 1
+max_rows = 264
+refresh_recent_periods = 1
+classifications = { "c1568" = "all" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-7126"
+source = "ibge-sidra"
+official_id = "7126"
+title = "Número médio de anos de estudo das pessoas de 15 anos ou mais, por sexo e grupo de idade"
+description = "Tabela SIDRA 7126, variável 3593 (Número médio de anos de estudo das pessoas de 15 anos ou mais de idade), no Total das classificações (Sexo: Total; Grupo de idade: ). KPI de panorama 'Média de anos de estudo (15 anos ou mais)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/7126"
+
+[datasets.params]
+table = "7126"
+variables = ["3593"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 66
+min_rows = 1
+max_rows = 66
+refresh_recent_periods = 1
+classifications = { "c58" = "2795", "c2" = "6794,4,5" }
+detail_classification = "c2"
+detail_total = "6794"
+detail_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -445,12 +837,16 @@ table = "4093"
 variables = ["4090"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 260
+estimated_values_per_period = 264
 min_rows = 1
-max_rows = 260
+max_rows = 264
 refresh_recent_periods = 1
 period_type = "trimestre"
 group_periods_by_year = true
+classifications = { "c2" = "6794,4,5" }
+detail_classification = "c2"
+detail_total = "6794"
+detail_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -524,12 +920,16 @@ table = "5436"
 variables = ["5932"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 260
+estimated_values_per_period = 264
 min_rows = 1
-max_rows = 260
+max_rows = 264
 refresh_recent_periods = 1
 period_type = "trimestre"
 group_periods_by_year = true
+classifications = { "c2" = "6794,4,5" }
+detail_classification = "c2"
+detail_total = "6794"
+detail_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -603,10 +1003,11 @@ table = "10295"
 variables = ["13431"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 16899
 min_rows = 1
-max_rows = 5633
+max_rows = 16899
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -653,10 +1054,11 @@ table = "9836"
 variables = ["9489"]
 territorial_levels = ["n1", "n2"]
 period_discovery_level = "n1"
-estimated_values_per_period = 6
+estimated_values_per_period = 24
 min_rows = 1
-max_rows = 6
+max_rows = 24
 refresh_recent_periods = 1
+classifications = { "c58" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -678,10 +1080,40 @@ table = "7015"
 variables = ["10192"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 65
+estimated_values_per_period = 66
 min_rows = 1
-max_rows = 65
+max_rows = 66
 refresh_recent_periods = 1
+classifications = { "c2" = "6794,4,5" }
+detail_classification = "c2"
+detail_total = "6794"
+detail_levels = ["n1", "n2", "n3"]
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-7666"
+source = "ibge-sidra"
+official_id = "7666"
+title = "Pessoas de 18 anos ou mais de idade, por sexo e avaliação do estado de saúde"
+description = "Tabela SIDRA 7666, variável 2667 (Pessoas de 18 anos ou mais de idade), no Total das classificações (Sexo: Total; Avaliação do estado de saúde: Total). KPI de panorama 'Avaliação do próprio estado de saúde' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/7666"
+
+[datasets.params]
+table = "7666"
+variables = ["2667"]
+territorial_levels = ["n1"]
+period_discovery_level = "n1"
+estimated_values_per_period = 4
+min_rows = 1
+max_rows = 4
+refresh_recent_periods = 1
+classifications = { "c12258" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -703,10 +1135,11 @@ table = "7972"
 variables = ["11216"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 65
+estimated_values_per_period = 195
 min_rows = 1
-max_rows = 65
+max_rows = 195
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -728,10 +1161,11 @@ table = "4418"
 variables = ["4396"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 65
+estimated_values_per_period = 195
 min_rows = 1
-max_rows = 65
+max_rows = 195
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -753,10 +1187,11 @@ table = "4487"
 variables = ["4462"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 65
+estimated_values_per_period = 195
 min_rows = 1
-max_rows = 65
+max_rows = 195
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -778,10 +1213,11 @@ table = "4173"
 variables = ["4160"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 65
+estimated_values_per_period = 195
 min_rows = 1
-max_rows = 65
+max_rows = 195
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -803,10 +1239,11 @@ table = "7726"
 variables = ["4298"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 65
+estimated_values_per_period = 195
 min_rows = 1
-max_rows = 65
+max_rows = 195
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -828,10 +1265,11 @@ table = "7740"
 variables = ["4262"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 65
+estimated_values_per_period = 195
 min_rows = 1
-max_rows = 65
+max_rows = 195
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -853,10 +1291,11 @@ table = "8476"
 variables = ["11671"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 33
+estimated_values_per_period = 99
 min_rows = 1
-max_rows = 33
+max_rows = 99
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -878,10 +1317,11 @@ table = "4938"
 variables = ["5260"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 65
+estimated_values_per_period = 195
 min_rows = 1
-max_rows = 65
+max_rows = 195
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -903,10 +1343,11 @@ table = "5055"
 variables = ["5358"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 65
+estimated_values_per_period = 195
 min_rows = 1
-max_rows = 65
+max_rows = 195
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -978,10 +1419,11 @@ table = "5905"
 variables = ["7175"]
 territorial_levels = ["n1", "n2"]
 period_discovery_level = "n1"
-estimated_values_per_period = 6
+estimated_values_per_period = 18
 min_rows = 1
-max_rows = 6
+max_rows = 18
 refresh_recent_periods = 1
+classifications = { "c1" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1038,6 +1480,32 @@ transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
 
 [[datasets]]
+id = "ibge-sidra-4277"
+source = "ibge-sidra"
+official_id = "4277"
+title = "Indicador 3.4.1 - Taxa de mortalidade atribuída a doenças cardiovasculares, câncer, diabetes ou doenças respiratórias crônicas"
+description = "Tabela SIDRA 4277, variável 11754 (Probabilidade de morrer atribuída a doenças cardiovasculares, câncer, diabetes ou doenças respiratórias crônicas entre os 30 a 69 anos), no Total das classificações (Sexo: ; Grupo de idade: ). KPI de panorama 'Mortalidade por doenças crônicas não transmissíveis' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/4277"
+
+[datasets.params]
+table = "4277"
+variables = ["11754"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 99
+min_rows = 1
+max_rows = 99
+refresh_recent_periods = 1
+classifications = { "c58" = "56742", "c2" = "all" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
 id = "ibge-sidra-6356"
 source = "ibge-sidra"
 official_id = "6356"
@@ -1053,10 +1521,11 @@ table = "6356"
 variables = ["8586"]
 territorial_levels = ["n1", "n2"]
 period_discovery_level = "n1"
-estimated_values_per_period = 6
+estimated_values_per_period = 18
 min_rows = 1
-max_rows = 6
+max_rows = 18
 refresh_recent_periods = 1
+classifications = { "c556" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1078,10 +1547,11 @@ table = "6358"
 variables = ["8592"]
 territorial_levels = ["n1", "n2"]
 period_discovery_level = "n1"
-estimated_values_per_period = 6
+estimated_values_per_period = 18
 min_rows = 1
-max_rows = 6
+max_rows = 18
 refresh_recent_periods = 1
+classifications = { "c556" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1103,10 +1573,11 @@ table = "6378"
 variables = ["8196"]
 territorial_levels = ["n1", "n2"]
 period_discovery_level = "n1"
-estimated_values_per_period = 6
+estimated_values_per_period = 18
 min_rows = 1
-max_rows = 6
+max_rows = 18
 refresh_recent_periods = 1
+classifications = { "c556" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1128,10 +1599,11 @@ table = "9730"
 variables = ["8992"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 33
+estimated_values_per_period = 99
 min_rows = 1
-max_rows = 33
+max_rows = 99
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1153,10 +1625,11 @@ table = "9373"
 variables = ["9446"]
 territorial_levels = ["n1", "n2"]
 period_discovery_level = "n1"
-estimated_values_per_period = 6
+estimated_values_per_period = 18
 min_rows = 1
-max_rows = 6
+max_rows = 18
 refresh_recent_periods = 1
+classifications = { "c1" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1178,10 +1651,141 @@ table = "6974"
 variables = ["388"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 33
+estimated_values_per_period = 264
 min_rows = 1
-max_rows = 33
+max_rows = 264
 refresh_recent_periods = 1
+classifications = { "c339" = "all" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-9552"
+source = "ibge-sidra"
+official_id = "9552"
+title = "Domicílios e moradores, por situação do domicílio e situação de segurança alimentar existente no domicílio"
+description = "Tabela SIDRA 9552, variável 162 (Domicílios), no Total das classificações (Situação do domicílio: Total; Situação de segurança alimentar existente no domicílio: Total). KPI de panorama 'Domicílios por situação de segurança alimentar' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/9552"
+
+[datasets.params]
+table = "9552"
+variables = ["162"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 198
+min_rows = 1
+max_rows = 198
+refresh_recent_periods = 1
+classifications = { "c12404" = "all" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-7307"
+source = "ibge-sidra"
+official_id = "7307"
+title = "Domicílios e Moradores, por situação do domicílio e existência de utilização da internet no domicílio"
+description = "Tabela SIDRA 7307, variável 162 (Domicílios), no Total das classificações (Situação do domicílio: Total; Existência de utilização da Internet no domicílio: Total). KPI de panorama 'Domicílios com utilização da internet' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/7307"
+
+[datasets.params]
+table = "7307"
+variables = ["162"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 99
+min_rows = 1
+max_rows = 99
+refresh_recent_periods = 1
+classifications = { "c688" = "all" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-7325"
+source = "ibge-sidra"
+official_id = "7325"
+title = "Pessoas de 10 anos ou mais de idade, por sexo e utilização da Internet no período de referência dos últimos três meses"
+description = "Tabela SIDRA 7325, variável 140 (Pessoas de 10 anos ou mais de idade), no Total das classificações (Sexo: Total; Utilização da internet no período de referência dos últimos três meses: Total). KPI de panorama 'Pessoas que utilizaram a internet' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/7325"
+
+[datasets.params]
+table = "7325"
+variables = ["140"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 99
+min_rows = 1
+max_rows = 99
+refresh_recent_periods = 1
+classifications = { "c422" = "all" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-7373"
+source = "ibge-sidra"
+official_id = "7373"
+title = "Pessoas de 10 anos ou mais de idade, por sexo e posse de telefone móvel celular para uso pessoal"
+description = "Tabela SIDRA 7373, variável 140 (Pessoas de 10 anos ou mais de idade), no Total das classificações (Sexo: Total; Posse de telefone móvel celular para uso pessoal: Total). KPI de panorama 'Pessoas com celular para uso pessoal' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/7373"
+
+[datasets.params]
+table = "7373"
+variables = ["140"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 99
+min_rows = 1
+max_rows = 99
+refresh_recent_periods = 1
+classifications = { "c427" = "all" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-7167"
+source = "ibge-sidra"
+official_id = "7167"
+title = "Domicílios e Moradores, por situação do domicílio e existência de televisão no domicílio"
+description = "Tabela SIDRA 7167, variável 162 (Domicílios), no Total das classificações (Situação do domicílio: Total; Existência de televisão no domicílio: Total). KPI de panorama 'Domicílios com televisão' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/7167"
+
+[datasets.params]
+table = "7167"
+variables = ["162"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 99
+min_rows = 1
+max_rows = 99
+refresh_recent_periods = 1
+classifications = { "c937" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1203,10 +1807,11 @@ table = "8713"
 variables = ["12567"]
 territorial_levels = ["n1", "n2"]
 period_discovery_level = "n1"
-estimated_values_per_period = 6
+estimated_values_per_period = 18
 min_rows = 1
-max_rows = 6
+max_rows = 18
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1228,10 +1833,11 @@ table = "8503"
 variables = ["12452"]
 territorial_levels = ["n1", "n2"]
 period_discovery_level = "n1"
-estimated_values_per_period = 6
+estimated_values_per_period = 18
 min_rows = 1
-max_rows = 6
+max_rows = 18
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1253,10 +1859,11 @@ table = "8022"
 variables = ["11392"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 65
+estimated_values_per_period = 195
 min_rows = 1
-max_rows = 65
+max_rows = 195
 refresh_recent_periods = 1
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1307,6 +1914,10 @@ estimated_values_per_period = 5633
 min_rows = 1
 max_rows = 5633
 refresh_recent_periods = 1
+classifications = { "c782" = "0,40129,40092,83388,45982,83399,40329,83389,40130,40099,40100,40101,40102,40103,40131,40136,40104,40105,40137,40468,40138,40139,40140,40141,40330,40106,40331,83390,40142,40143,40107,83391,40108,40109,40144,83392,40145,83400,40146,40147,40110,40111,40112,40148,40113,83395,40114,40149,83401,40150,83393,40115,40151,40152,40116,40260,40117,40261,40118,40119,40262,40263,40264,40120,40121,40122,83394,83396,40265,40266,40267,40268,40269,83397,40123,83398,40270,40124,40125,40271,40126,40127,40128,40272,40273,40274" }
+detail_classification = "c782"
+detail_total = "0"
+detail_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1328,12 +1939,13 @@ table = "6588"
 variables = ["109"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 396
+estimated_values_per_period = 18612
 min_rows = 1
-max_rows = 396
+max_rows = 18612
 refresh_recent_periods = 1
 period_type = "mes"
 group_periods_by_year = true
+classifications = { "c48" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1355,12 +1967,13 @@ table = "1092"
 variables = ["284"]
 territorial_levels = ["n1", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 112
+estimated_values_per_period = 672
 min_rows = 1
-max_rows = 112
+max_rows = 672
 refresh_recent_periods = 1
 period_type = "trimestre"
 group_periods_by_year = true
+classifications = { "c18" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1382,12 +1995,13 @@ table = "1086"
 variables = ["282"]
 territorial_levels = ["n1", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 112
+estimated_values_per_period = 448
 min_rows = 1
-max_rows = 112
+max_rows = 448
 refresh_recent_periods = 1
 period_type = "trimestre"
 group_periods_by_year = true
+classifications = { "c12716" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1409,12 +2023,13 @@ table = "7524"
 variables = ["29"]
 territorial_levels = ["n1", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 112
+estimated_values_per_period = 336
 min_rows = 1
-max_rows = 112
+max_rows = 336
 refresh_recent_periods = 1
 period_type = "trimestre"
 group_periods_by_year = true
+classifications = { "c1835" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1440,6 +2055,10 @@ estimated_values_per_period = 5633
 min_rows = 1
 max_rows = 5633
 refresh_recent_periods = 1
+classifications = { "c734" = "0,83436,83437,39326,83438,39327,83439,39328" }
+detail_classification = "c734"
+detail_total = "0"
+detail_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1465,6 +2084,10 @@ estimated_values_per_period = 5633
 min_rows = 1
 max_rows = 5633
 refresh_recent_periods = 1
+classifications = { "c829" = "46302,46303,46304,46305,46306,46307,46422,46423" }
+detail_classification = "c829"
+detail_total = "46302"
+detail_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1511,10 +2134,11 @@ table = "5802"
 variables = ["6535"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 33
+estimated_values_per_period = 792
 min_rows = 1
-max_rows = 33
+max_rows = 792
 refresh_recent_periods = 1
+classifications = { "c716" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1536,10 +2160,11 @@ table = "770"
 variables = ["2397"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 33
+estimated_values_per_period = 132
 min_rows = 1
-max_rows = 33
+max_rows = 132
 refresh_recent_periods = 1
+classifications = { "c12899" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1561,10 +2186,11 @@ table = "10457"
 variables = ["13816"]
 territorial_levels = ["n3"]
 period_discovery_level = "n3"
-estimated_values_per_period = 27
+estimated_values_per_period = 864
 min_rows = 1
-max_rows = 27
+max_rows = 864
 refresh_recent_periods = 1
+classifications = { "c12762" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1715,10 +2341,11 @@ table = "10646"
 variables = ["643"]
 territorial_levels = ["n1"]
 period_discovery_level = "n1"
-estimated_values_per_period = 1
+estimated_values_per_period = 4
 min_rows = 1
-max_rows = 1
+max_rows = 4
 refresh_recent_periods = 1
+classifications = { "c11065" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1765,10 +2392,11 @@ table = "2581"
 variables = ["643"]
 territorial_levels = ["n1"]
 period_discovery_level = "n1"
-estimated_values_per_period = 1
+estimated_values_per_period = 8
 min_rows = 1
-max_rows = 1
+max_rows = 8
 refresh_recent_periods = 1
+classifications = { "c85" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1790,10 +2418,11 @@ table = "7204"
 variables = ["10390"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 33
+estimated_values_per_period = 99
 min_rows = 1
-max_rows = 33
+max_rows = 99
 refresh_recent_periods = 1
+classifications = { "c892" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1840,10 +2469,11 @@ table = "9597"
 variables = ["8862"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 65
+estimated_values_per_period = 1755
 min_rows = 1
-max_rows = 65
+max_rows = 1755
 refresh_recent_periods = 1
+classifications = { "c956" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1890,10 +2520,11 @@ table = "5453"
 variables = ["5977"]
 territorial_levels = ["n1"]
 period_discovery_level = "n1"
-estimated_values_per_period = 1
+estimated_values_per_period = 70
 min_rows = 1
-max_rows = 1
+max_rows = 70
 refresh_recent_periods = 1
+classifications = { "c696" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2021,12 +2652,13 @@ table = "6904"
 variables = ["1394"]
 territorial_levels = ["n1"]
 period_discovery_level = "n1"
-estimated_values_per_period = 12
+estimated_values_per_period = 72
 min_rows = 1
-max_rows = 12
+max_rows = 72
 refresh_recent_periods = 1
 period_type = "mes"
 group_periods_by_year = true
+classifications = { "c543" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2312,6 +2944,32 @@ transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
 
 [[datasets]]
+id = "ibge-sidra-5882"
+source = "ibge-sidra"
+official_id = "5882"
+title = "Municípios, total e com Plano Diretor, por classe de tamanho da população, Grandes Regiões e Unidades da Federação"
+description = "Tabela SIDRA 5882, variável 603 (Número de municípios), no Total das classificações (Existência de Plano Diretor: Total; Classe de tamanho da população do município: Total). KPI de panorama 'Municípios com Plano Diretor' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/5882"
+
+[datasets.params]
+table = "5882"
+variables = ["603"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 39431
+min_rows = 1
+max_rows = 39431
+refresh_recent_periods = 1
+classifications = { "c1480" = "all" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
 id = "ibge-sidra-5608"
 source = "ibge-sidra"
 official_id = "5608"
@@ -2331,6 +2989,90 @@ estimated_values_per_period = 33
 min_rows = 1
 max_rows = 33
 refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-8530"
+source = "ibge-sidra"
+official_id = "8530"
+title = "Municípios total e atingidos pela seca nos últimos 4 anos, existência de Plano de Contingência e/ou Prevenção para a seca, por classe de tamanho da população do município"
+description = "Tabela SIDRA 8530, variável 603 (Número de municípios), no Total das classificações (Ocorrência de seca nos últimos 4 anos: Total; Plano de Contingência e/ou Prevenção para a seca: Total; Classe de tamanho da população do município: Total). KPI de panorama 'Municípios atingidos pela seca e com plano de contingência' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/8530"
+
+[datasets.params]
+table = "8530"
+variables = ["603"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 28165
+min_rows = 1
+max_rows = 28165
+refresh_recent_periods = 1
+classifications = { "c1346" = "all" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-9985"
+source = "ibge-sidra"
+official_id = "9985"
+title = "Municípios, totais e com Plano Municipal nas áreas de assistência social, segurança alimentar, política para mulheres, segurança pública, direitos humanos e primeira infância, por classe de tamanho da população do município"
+description = "Tabela SIDRA 9985, variável 603 (Número de municípios), no Total das classificações (Existência de Plano Municipal: Total; Classe de tamanho da população do município: Total). KPI de panorama 'Municípios com planos municipais nas áreas sociais' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/9985"
+
+[datasets.params]
+table = "9985"
+variables = ["603"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c1329" = "57146,15608,15609,15675,15676,15677,15678,15679,15680,15681,15682,15683,15684,15685,15686,15687" }
+detail_classification = "c1329"
+detail_total = "57146"
+detail_levels = ["n1", "n2", "n3"]
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-9987"
+source = "ibge-sidra"
+official_id = "9987"
+title = "Municípios, total, e com conselho municipal nas áreas de assistência social, segurança alimentar, política para mulheres, segurança pública e direitos humanos, por classe de tamanho da população do município"
+description = "Tabela SIDRA 9987, variável 603 (Número de municípios), no Total das classificações (Existência de Conselho Municipal: Total; Classe de tamanho da população do município: Total). KPI de panorama 'Municípios com conselhos municipais nas áreas sociais' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/9987"
+
+[datasets.params]
+table = "9987"
+variables = ["603"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c1328" = "57131,77667,77668,77669,77670,77671,77672,77673,77674,77675,77676,77677,77678,77679,77680,77681,77682,77683,77684,77685,77686,77687,77688,77689,77690,77691,77692,77693,77694,77695,77696,77697,77698,77699,77700,77701,77702" }
+detail_classification = "c1328"
+detail_total = "57131"
+detail_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"

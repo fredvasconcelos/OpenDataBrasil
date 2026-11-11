@@ -520,3 +520,22 @@ def test_busy_engine_and_timeout_map_to_http(
         assert response.status_code == status
         assert response.json()["error"]["code"] == code
     assert response.headers.get("retry-after") is None
+
+
+def test_portal_fragment_extends_dimension_order(tmp_path: Path) -> None:
+    import shutil as _sh  # noqa: PLC0415
+
+    _sh.copy(PORTAL_DIR / "demografia.toml", tmp_path)
+    (tmp_path / "demografia").mkdir()
+    (tmp_path / "demografia" / "x.toml").write_text(
+        'config_version = "1"\nscope = "demografia"\ndimension_order = ["c2", "c1480"]\n'
+        '[[themes]]\nid = "gestao"\nlabel = "Gestão"\n[[themes.subthemes]]\nid = "plan"\n'
+        'label = "Plan"\n[[themes.subthemes.kpis]]\nid = "plano_diretor"\nlabel = "P"\n'
+        'indicator = "plano_diretor"\n'
+        'dimensions = [{ classification = "c1480", partition = "p58278", label = "PD" }]\n',
+        encoding="utf-8",
+    )
+    config = load_portal(tmp_path, "demografia")
+    assert config.dimension_order[-1] == "c1480"
+    assert config.dimension_order.count("c2") == 1
+    assert config.kpi("plano_diretor") is not None

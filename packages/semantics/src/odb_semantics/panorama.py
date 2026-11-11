@@ -66,6 +66,10 @@ class PanoramaKpi(_Strict):
     requer_categoria: bool = False
     # Em espera (por exemplo, timeout persistente na fonte): fora da geração, com o motivo.
     pausado: str | None = Field(default=None, min_length=1)
+    # Dimensão principal (onda Total + %), quando a proposta automática não serve.
+    dimensao: str | None = Field(default=None, pattern=r"^c\d{1,6}$")
+    # Primeiro período mostrado no portal (a série completa fica na Silver).
+    periodo_inicial: str | None = Field(default=None, pattern=r"^\d{4,6}$")
 
 
 class PanoramaSubtheme(_Strict):

@@ -128,11 +128,15 @@ def load_portal(config_dir: str | Path, scope: str) -> PortalConfig:
         data = tomllib.loads(path.read_text(encoding="utf-8"))
         for fragment in sorted((Path(config_dir) / scope).glob("*.toml")):
             extra = tomllib.loads(fragment.read_text(encoding="utf-8"))
-            unknown = sorted(set(extra) - {"config_version", "scope", "themes"})
+            unknown = sorted(set(extra) - {"config_version", "scope", "themes", "dimension_order"})
             if extra.get("scope") != scope or unknown:
                 msg = f"{fragment}: fragmento do portal inválido (escopo ou chaves {unknown})"
                 raise PortalConfigError(msg)
             data["themes"] = merge_themes(data.get("themes", []), extra.get("themes", []))
+            # Classificações novas entram no fim da ordem de aninhamento do tooltip.
+            order = list(data.get("dimension_order", []))
+            order += [c for c in extra.get("dimension_order", []) if c not in order]
+            data["dimension_order"] = order
         config = PortalConfig.model_validate(data)
     except (OSError, tomllib.TOMLDecodeError, ValidationError) as exc:
         msg = f"{path}: configuração do portal inválida: {exc}"

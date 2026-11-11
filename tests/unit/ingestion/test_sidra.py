@@ -446,3 +446,43 @@ def _ds(params: dict[str, object]) -> DatasetConfig:
         periodicity="p",
         params=params,
     )
+
+
+def test_detail_levels_split_total_and_categories() -> None:
+    base = {
+        "table": "5457",
+        "variables": ["8331"],
+        "territorial_levels": ["n1", "n3", "n6"],
+        "estimated_values_per_period": 5633,
+    }
+    params = SidraConnector.params(
+        _ds(
+            {
+                **base,
+                "classifications": {"c782": "40471,2688,2689"},
+                "detail_classification": "c782",
+                "detail_total": "40471",
+                "detail_levels": ["n1", "n3"],
+            }
+        )
+    )
+    total, detail = params.request_groups()
+    assert (total.suffix, total.classifications, total.levels) == ("-t", {"c782": "40471"}, ())
+    assert (detail.suffix, detail.classifications, detail.levels) == (
+        "-d",
+        {"c782": "2688,2689"},
+        ("n1", "n3"),
+    )
+    assert params.request_group("n1n3n6-p2024-d").levels == ("n1", "n3")
+    with pytest.raises(ValueError, match="detail_total"):
+        SidraConnector.params(
+            _ds(
+                {
+                    **base,
+                    "classifications": {"c782": "2688"},
+                    "detail_classification": "c782",
+                    "detail_total": "40471",
+                    "detail_levels": ["n1"],
+                }
+            )
+        )

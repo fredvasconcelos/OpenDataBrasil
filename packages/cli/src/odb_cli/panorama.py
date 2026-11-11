@@ -12,6 +12,7 @@ import httpx
 import typer
 
 from odb_cli.panorama_gen import (
+    CuratedClassification,
     Generated,
     generate,
     propose_dimensions,
@@ -124,6 +125,16 @@ def _generation(config: Panorama, panorama: Path, raiz: Path, escopo: str) -> Ge
         f for f in sorted((indicators_dir / escopo).glob("*.toml")) if f.name != GENERATED_NAME
     ]
     curated = load_catalog(indicators_dir / f"{escopo}.toml", fragments)
+    curated_classes = {
+        c.id: CuratedClassification(
+            total=c.total,
+            declared=c.declared(),
+            partitions={
+                part.id: (c.parent_of(part), frozenset(part.categories)) for part in c.partitions
+            },
+        )
+        for c in curated.classifications
+    }
     portal = _portal_kpis(raiz / "portal", escopo, exclude=GENERATED_NAME)
     descriptors = {
         path.stem[1:]: json.loads(path.read_text(encoding="utf-8"))
@@ -137,6 +148,7 @@ def _generation(config: Panorama, panorama: Path, raiz: Path, escopo: str) -> Ge
         existing_indicators=[i.id for i in curated.indicators],
         existing_portal_kpis=list(portal),
         descriptors=descriptors,
+        curated_classifications=curated_classes,
     )
 
 

@@ -8,6 +8,9 @@ dependencies = [
     "odb-common",
     "httpx==0.28.1",
     "pydantic==2.14.1",
+    # Arquivos .dbc do DATASUS (DBF comprimido com blast): MIT, sem dependências.
+    "datasus-dbc==0.1.3",
+    "dbfread==2.0.7",
 ]
 
 [tool.uv.sources]

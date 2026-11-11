@@ -75,6 +75,8 @@ class RequestGroup:
     variables: tuple[str, ...]
     classifications: dict[str, str]
     suffix: str
+    # Níveis territoriais da requisição (vazio: os do dataset).
+    levels: tuple[str, ...] = ()
 
 
 class SidraParams(BaseModel):
@@ -103,6 +105,13 @@ class SidraParams(BaseModel):
     max_bytes: int = Field(default=50 * 1024**2, ge=1)
     # Tipo dos períodos da tabela (descritor: TipoPeriodo). Códigos SIDRA: ano
     # "AAAA", mês "AAAAMM", trimestre "AAAATT" (01 a 04).
+    # Detalhe só em alguns níveis: a classificação ``detail_classification`` vem
+    # inteira (categorias listadas em ``classifications``) só em ``detail_levels``;
+    # nos demais níveis, só o Total (``detail_total``). Evita multiplicar as
+    # requisições municipais pelo número de categorias.
+    detail_classification: str | None = Field(default=None, pattern=r"^c\d{1,6}$")
+    detail_total: str | None = Field(default=None, pattern=r"^\d+$")
+    detail_levels: tuple[str, ...] = ()
     period_type: Literal["ano", "mes", "trimestre"] = "ano"
     # Meses ou trimestres do mesmo ano numa única requisição (partição "p<ano>").
     # Com isso, ``estimated_values_per_period``, ``min_rows`` e ``max_rows`` valem
@@ -159,6 +168,24 @@ class SidraParams(BaseModel):
                 msg = f"classificação SIDRA inválida: {key}={cats}"
                 raise ValueError(msg)
         return value
+
+    @model_validator(mode="after")
+    def _detail(self) -> SidraParams:
+        if not self.detail_levels:
+            return self
+        cid, total = self.detail_classification, self.detail_total
+        listed = self.classifications.get(cid or "", "")
+        if cid is None or total is None or listed in ("", "all"):
+            msg = "detail_levels exige detail_classification, detail_total e as categorias listadas"
+            raise ValueError(msg)
+        if total not in listed.split(","):
+            msg = f"detail_total {total} fora das categorias listadas de {cid}"
+            raise ValueError(msg)
+        extra = sorted(set(self.detail_levels) - set(self.territorial_levels))
+        if extra or self.split_by_classification:
+            msg = "detail_levels precisa ser subconjunto dos níveis e não combina com divisão"
+            raise ValueError(msg)
+        return self
 
     @model_validator(mode="after")
     def _grouping(self) -> SidraParams:
@@ -231,7 +258,22 @@ class SidraParams(BaseModel):
                 for cid, cat in combo:
                     suffix += f"-{cid}-{cat}"
                     classes[cid] = cat
-                groups.append(RequestGroup(variables, classes, suffix))
+                if self.detail_levels and self.detail_classification and self.detail_total:
+                    cid = self.detail_classification
+                    rest = [c for c in classes[cid].split(",") if c != self.detail_total]
+                    groups.append(
+                        RequestGroup(variables, {**classes, cid: self.detail_total}, suffix + "-t")
+                    )
+                    groups.append(
+                        RequestGroup(
+                            variables,
+                            {**classes, cid: ",".join(rest)},
+                            suffix + "-d",
+                            self.detail_levels,
+                        )
+                    )
+                else:
+                    groups.append(RequestGroup(variables, classes, suffix))
         return groups
 
     def partition_key(self, period: str, group: RequestGroup | None = None) -> str:
@@ -366,7 +408,7 @@ class SidraConnector(BaseConnector):
                             partition_key=key,
                             url=self._values_url(
                                 params,
-                                params.territorial_levels,
+                                group.levels or params.territorial_levels,
                                 ",".join(group.variables),
                                 ",".join(codes),
                                 group.classifications,
@@ -388,7 +430,7 @@ class SidraConnector(BaseConnector):
             metadata={"available_periods": periods, "refresh_recent_periods": sorted(recent)},
         )
 
-    def validate_raw(  # noqa: PLR0911, PLR0912 - verificações sequenciais e independentes
+    def validate_raw(  # noqa: PLR0911, PLR0912, PLR0915 - verificações sequenciais e independentes
         self, dataset_id: str, request: ExtractionRequest, result: DownloadResult
     ) -> ValidationResult:
         """Estrutura, nível, período, variáveis, contagem e unicidade das observações."""
@@ -426,10 +468,14 @@ class SidraConnector(BaseConnector):
         if params.max_rows is not None and len(rows) > params.max_rows:
             errors.append(f"{len(rows)} observações, máximo esperado {params.max_rows}")
         levels = Counter(r["NC"] for r in rows)
-        if set(levels) != params.level_codes:
+        group = params.request_group(request.partition_key)
+        expected_levels = (
+            frozenset(lv[1:] for lv in group.levels) if group.levels else params.level_codes
+        )
+        if set(levels) != expected_levels:
             errors.append(
                 f"níveis territoriais {dict(levels)} diferem dos esperados "
-                f"{sorted(params.level_codes)}"
+                f"{sorted(expected_levels)}"
             )
         period_key = f"{params.period_dimension}C"
         periods = Counter(r[period_key] for r in rows)
@@ -446,7 +492,7 @@ class SidraConnector(BaseConnector):
             errors.append(f"períodos inesperados: {dict(periods)}")
         var_key = f"{params.variable_dimension}C"
         variables = set(Counter(r[var_key] for r in rows))
-        expected_vars = params.request_variables(request.partition_key)
+        expected_vars = group.variables
         if variables != set(expected_vars):
             errors.append(
                 f"variáveis {sorted(variables)} diferem das esperadas {list(expected_vars)}"
