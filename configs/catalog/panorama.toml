@@ -271,7 +271,7 @@ filtros = ["sexo", "idade", "cor_raca", "instrucao", "situacao", "atividade"]
 id = "ocupacao"
 label = "Ocupação e desocupação"
 kpis = [
-  { id = "forca_trabalho", label = "Força de trabalho, ocupação e desocupação", tabela = "4093", pesquisa = "PNAD Contínua trimestral", filtros = ["sexo"] },
+  { id = "forca_trabalho", label = "Força de trabalho, ocupação e desocupação", tabela = "4093", pesquisa = "PNAD Contínua trimestral", filtros = ["sexo"], variavel = "4090" },
   { id = "taxas_desocupacao", label = "Taxas de desocupação e de subutilização", tabela = "4099", pesquisa = "PNAD Contínua trimestral" },
 ]
 
@@ -462,9 +462,9 @@ label = "Pecuária e produção animal"
 kpis = [
   { id = "efetivo_rebanhos", label = "Efetivo dos rebanhos", tabela = "3939", pesquisa = "Pesquisa da Pecuária Municipal", filtros = ["especie"] },
   { id = "producao_origem_animal", label = "Produção de origem animal", tabela = "74", pesquisa = "Pesquisa da Pecuária Municipal", filtros = ["produto"] },
-  { id = "abate_bovinos", label = "Abate de bovinos", tabela = "1092", pesquisa = "Pesquisa Trimestral do Abate de Animais" },
-  { id = "leite_adquirido", label = "Leite adquirido e industrializado", tabela = "1086", pesquisa = "Pesquisa Trimestral do Leite" },
-  { id = "ovos_produzidos", label = "Produção de ovos de galinha", tabela = "7524", pesquisa = "Produção de Ovos de Galinha" },
+  { id = "abate_bovinos", label = "Abate de bovinos", tabela = "1092", pesquisa = "Pesquisa Trimestral do Abate de Animais", variavel = "284" },
+  { id = "leite_adquirido", label = "Leite adquirido e industrializado", tabela = "1086", pesquisa = "Pesquisa Trimestral do Leite", variavel = "282" },
+  { id = "ovos_produzidos", label = "Produção de ovos de galinha", tabela = "7524", pesquisa = "Produção de Ovos de Galinha", variavel = "29" },
 ]
 
 [[temas.subtemas]]
@@ -626,16 +626,16 @@ filtros = ["grupo_produto", "atividade"]
 id = "precos_consumidor"
 label = "Inflação ao consumidor"
 kpis = [
-  { id = "ipca", label = "IPCA", tabela = "1737", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo" },
-  { id = "inpc", label = "INPC", tabela = "1736", pesquisa = "Índice Nacional de Preços ao Consumidor" },
-  { id = "ipca15", label = "IPCA-15", tabela = "3065", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo 15" },
+  { id = "ipca", label = "IPCA", tabela = "1737", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo", variavel = "2265" },
+  { id = "inpc", label = "INPC", tabela = "1736", pesquisa = "Índice Nacional de Preços ao Consumidor", variavel = "2292" },
+  { id = "ipca15", label = "IPCA-15", tabela = "3065", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo 15", variavel = "1120" },
 ]
 
 [[temas.subtemas]]
 id = "precos_produtor"
 label = "Preços ao produtor"
 kpis = [
-  { id = "ipp", label = "Índice de Preços ao Produtor", tabela = "6904", pesquisa = "Índice de Preços ao Produtor", filtros = ["atividade"] },
+  { id = "ipp", label = "Índice de Preços ao Produtor", tabela = "6904", pesquisa = "Índice de Preços ao Produtor", filtros = ["atividade"], variavel = "1394" },
 ]
 
 # ======================================================================= 18

@@ -295,9 +295,9 @@ table = "9888"
 variables = ["9612"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 820
 min_rows = 1
-max_rows = 5633
+max_rows = 820
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -320,9 +320,9 @@ table = "9883"
 variables = ["9910"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 820
 min_rows = 1
-max_rows = 5633
+max_rows = 820
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -420,10 +420,64 @@ table = "7138"
 variables = ["10276"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 65
 min_rows = 1
-max_rows = 5633
+max_rows = 65
 refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-4093"
+source = "ibge-sidra"
+official_id = "4093"
+title = "Pessoas de 14 anos ou mais de idade, total, na força de trabalho, ocupadas, desocupadas, fora da força de trabalho, em situação de informalidade e respectivas taxas e níveis, por sexo"
+description = "Tabela SIDRA 4093, variável 4090 (Pessoas de 14 anos ou mais de idade ocupadas na semana de referência), no Total das classificações (Sexo: Total). KPI de panorama 'Força de trabalho, ocupação e desocupação' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "trimestral"
+reference_url = "https://sidra.ibge.gov.br/tabela/4093"
+
+[datasets.params]
+table = "4093"
+variables = ["4090"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+period_type = "trimestre"
+group_periods_by_year = true
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-4099"
+source = "ibge-sidra"
+official_id = "4099"
+title = "Taxas de desocupação e de subutilização da força de trabalho, na semana de referência, das pessoas de 14 anos ou mais de idade"
+description = "Tabela SIDRA 4099, variável 4099 (Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade), no Total das classificações. KPI de panorama 'Taxas de desocupação e de subutilização' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "trimestral"
+reference_url = "https://sidra.ibge.gov.br/tabela/4099"
+
+[datasets.params]
+table = "4099"
+variables = ["4099"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+period_type = "trimestre"
+group_periods_by_year = true
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -449,6 +503,60 @@ estimated_values_per_period = 33
 min_rows = 1
 max_rows = 33
 refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-5436"
+source = "ibge-sidra"
+official_id = "5436"
+title = "Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente e efetivamente recebidos no trabalho principal e em todos os trabalhos, por sexo"
+description = "Tabela SIDRA 5436, variável 5932 (Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente recebido no trabalho principal), no Total das classificações (Sexo: Total). KPI de panorama 'Rendimento médio real do trabalho' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "trimestral"
+reference_url = "https://sidra.ibge.gov.br/tabela/5436"
+
+[datasets.params]
+table = "5436"
+variables = ["5932"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+period_type = "trimestre"
+group_periods_by_year = true
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-5606"
+source = "ibge-sidra"
+official_id = "5606"
+title = "Massa de rendimento mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente e efetivamente recebidos em todos os trabalhos"
+description = "Tabela SIDRA 5606, variável 6293 (Massa de rendimento mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente recebido em todos os trabalhos), no Total das classificações. KPI de panorama 'Massa de rendimento real do trabalho' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "trimestral"
+reference_url = "https://sidra.ibge.gov.br/tabela/5606"
+
+[datasets.params]
+table = "5606"
+variables = ["6293"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+period_type = "trimestre"
+group_periods_by_year = true
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -570,9 +678,9 @@ table = "7015"
 variables = ["10192"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 65
 min_rows = 1
-max_rows = 5633
+max_rows = 65
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -595,9 +703,9 @@ table = "7972"
 variables = ["11216"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 65
 min_rows = 1
-max_rows = 5633
+max_rows = 65
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -620,9 +728,9 @@ table = "4418"
 variables = ["4396"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 65
 min_rows = 1
-max_rows = 5633
+max_rows = 65
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -645,9 +753,9 @@ table = "4487"
 variables = ["4462"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 65
 min_rows = 1
-max_rows = 5633
+max_rows = 65
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -670,9 +778,9 @@ table = "4173"
 variables = ["4160"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 65
 min_rows = 1
-max_rows = 5633
+max_rows = 65
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -695,9 +803,9 @@ table = "7726"
 variables = ["4298"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 65
 min_rows = 1
-max_rows = 5633
+max_rows = 65
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -720,9 +828,9 @@ table = "7740"
 variables = ["4262"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 65
 min_rows = 1
-max_rows = 5633
+max_rows = 65
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -770,9 +878,9 @@ table = "4938"
 variables = ["5260"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 65
 min_rows = 1
-max_rows = 5633
+max_rows = 65
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -795,9 +903,9 @@ table = "5055"
 variables = ["5358"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 65
 min_rows = 1
-max_rows = 5633
+max_rows = 65
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -1145,9 +1253,9 @@ table = "8022"
 variables = ["11392"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 65
 min_rows = 1
-max_rows = 5633
+max_rows = 65
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -1199,6 +1307,114 @@ estimated_values_per_period = 5633
 min_rows = 1
 max_rows = 5633
 refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-6588"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Série histórica da estimativa anual da área plantada, área colhida, produção e rendimento médio dos produtos das lavouras"
+description = "Tabela SIDRA 6588, variável 109 (Área plantada), no Total das classificações (Produto das lavouras: Total). KPI de panorama 'Estimativa da safra (área, produção e rendimento)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["109"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 396
+min_rows = 1
+max_rows = 396
+refresh_recent_periods = 1
+period_type = "mes"
+group_periods_by_year = true
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-1092"
+source = "ibge-sidra"
+official_id = "1092"
+title = "Número de informantes, Quantidade e Peso total das carcaças dos bovinos abatidos, no mês e no trimestre, por tipo de rebanho e tipo de inspeção"
+description = "Tabela SIDRA 1092, variável 284 (Animais abatidos), no Total das classificações (Tipo de rebanho bovino: Total; Tipo de inspeção: Total; Referência temporal: Total do trimestre). KPI de panorama 'Abate de bovinos' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "trimestral"
+reference_url = "https://sidra.ibge.gov.br/tabela/1092"
+
+[datasets.params]
+table = "1092"
+variables = ["284"]
+territorial_levels = ["n1", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 112
+min_rows = 1
+max_rows = 112
+refresh_recent_periods = 1
+period_type = "trimestre"
+group_periods_by_year = true
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-1086"
+source = "ibge-sidra"
+official_id = "1086"
+title = "Número de informantes e Quantidade de leite cru, resfriado ou não, adquirido e industrializado, e preço médio, no mês e no trimestre, por tipo de inspeção"
+description = "Tabela SIDRA 1086, variável 282 (Quantidade de leite cru, resfriado ou não, adquirido), no Total das classificações (Tipo de inspeção: Total; Referência temporal: Total do trimestre). KPI de panorama 'Leite adquirido e industrializado' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "trimestral"
+reference_url = "https://sidra.ibge.gov.br/tabela/1086"
+
+[datasets.params]
+table = "1086"
+variables = ["282"]
+territorial_levels = ["n1", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 112
+min_rows = 1
+max_rows = 112
+refresh_recent_periods = 1
+period_type = "trimestre"
+group_periods_by_year = true
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-7524"
+source = "ibge-sidra"
+official_id = "7524"
+title = "Número de informantes, Número de galinhas poedeiras e Quantidade de ovos produzidos, no mês e no trimestre"
+description = "Tabela SIDRA 7524, variável 29 (Quantidade de ovos produzidos), no Total das classificações (Finalidade da produção: Total; Referência temporal: Total do trimestre). KPI de panorama 'Produção de ovos de galinha' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "trimestral"
+reference_url = "https://sidra.ibge.gov.br/tabela/7524"
+
+[datasets.params]
+table = "7524"
+variables = ["29"]
+territorial_levels = ["n1", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 112
+min_rows = 1
+max_rows = 112
+refresh_recent_periods = 1
+period_type = "trimestre"
+group_periods_by_year = true
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1430,6 +1646,60 @@ transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
 
 [[datasets]]
+id = "ibge-sidra-2296"
+source = "ibge-sidra"
+official_id = "2296"
+title = "Custo médio m² em moeda corrente e variações percentuais no mês, no ano e em doze meses"
+description = "Tabela SIDRA 2296, variável 48 (Custo médio m² - moeda corrente), no Total das classificações. KPI de panorama 'Custo médio do metro quadrado da construção' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/2296"
+
+[datasets.params]
+table = "2296"
+variables = ["48"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 396
+min_rows = 1
+max_rows = 396
+refresh_recent_periods = 1
+period_type = "mes"
+group_periods_by_year = true
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-8886"
+source = "ibge-sidra"
+official_id = "8886"
+title = "Produção Física Industrial dos insumos típicos da construção civil"
+description = "Tabela SIDRA 8886, variável 12606 (PIMPF - Número-índice (2022=100)), no Total das classificações. KPI de panorama 'Produção de insumos típicos da construção civil' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/8886"
+
+[datasets.params]
+table = "8886"
+variables = ["12606"]
+territorial_levels = ["n1"]
+period_discovery_level = "n1"
+estimated_values_per_period = 12
+min_rows = 1
+max_rows = 12
+refresh_recent_periods = 1
+period_type = "mes"
+group_periods_by_year = true
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
 id = "ibge-sidra-10646"
 source = "ibge-sidra"
 official_id = "10646"
@@ -1570,9 +1840,9 @@ table = "9597"
 variables = ["8862"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 65
 min_rows = 1
-max_rows = 5633
+max_rows = 65
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -1655,6 +1925,114 @@ transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
 
 [[datasets]]
+id = "ibge-sidra-1737"
+source = "ibge-sidra"
+official_id = "1737"
+title = "IPCA - Série histórica com número-índice, variação mensal e variações acumuladas em 3 meses, em 6 meses, no ano e em 12 meses (a partir de dezembro/1979)"
+description = "Tabela SIDRA 1737, variável 2265 (IPCA - Variação acumulada em 12 meses), no Total das classificações. KPI de panorama 'IPCA' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/1737"
+
+[datasets.params]
+table = "1737"
+variables = ["2265"]
+territorial_levels = ["n1"]
+period_discovery_level = "n1"
+estimated_values_per_period = 12
+min_rows = 1
+max_rows = 12
+refresh_recent_periods = 1
+period_type = "mes"
+group_periods_by_year = true
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-1736"
+source = "ibge-sidra"
+official_id = "1736"
+title = "INPC - Série histórica com número-índice, variação mensal e variações acumuladas em 3 meses, em 6 meses, no ano e em 12 meses (a partir de abril/1979)"
+description = "Tabela SIDRA 1736, variável 2292 (INPC - Variação acumulada em 12 meses), no Total das classificações. KPI de panorama 'INPC' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/1736"
+
+[datasets.params]
+table = "1736"
+variables = ["2292"]
+territorial_levels = ["n1"]
+period_discovery_level = "n1"
+estimated_values_per_period = 12
+min_rows = 1
+max_rows = 12
+refresh_recent_periods = 1
+period_type = "mes"
+group_periods_by_year = true
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-3065"
+source = "ibge-sidra"
+official_id = "3065"
+title = "IPCA15 - Série histórica com número-índice, variação mensal e variações acumuladas em 3 meses, em 6 meses, no ano e em 12 meses (a partir de maio/2000)"
+description = "Tabela SIDRA 3065, variável 1120 (IPCA15 - Variação acumulada em 12 meses), no Total das classificações. KPI de panorama 'IPCA-15' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/3065"
+
+[datasets.params]
+table = "3065"
+variables = ["1120"]
+territorial_levels = ["n1"]
+period_discovery_level = "n1"
+estimated_values_per_period = 12
+min_rows = 1
+max_rows = 12
+refresh_recent_periods = 1
+period_type = "mes"
+group_periods_by_year = true
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-6904"
+source = "ibge-sidra"
+official_id = "6904"
+title = "Índice de Preços ao Produtor, por tipo de índice e grandes categorias econômicas (dezembro de 2018 = 100)"
+description = "Tabela SIDRA 6904, variável 1394 (IPP - Variação mês/mesmo mês do ano anterior (M/M-12)), no Total das classificações (Grandes categorias econômicas: Indústria geral). KPI de panorama 'Índice de Preços ao Produtor' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6904"
+
+[datasets.params]
+table = "6904"
+variables = ["1394"]
+territorial_levels = ["n1"]
+period_discovery_level = "n1"
+estimated_values_per_period = 12
+min_rows = 1
+max_rows = 12
+refresh_recent_periods = 1
+period_type = "mes"
+group_periods_by_year = true
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
 id = "ibge-sidra-6784"
 source = "ibge-sidra"
 official_id = "6784"
@@ -1699,6 +2077,60 @@ estimated_values_per_period = 5633
 min_rows = 1
 max_rows = 5633
 refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-6727"
+source = "ibge-sidra"
+official_id = "6727"
+title = "Taxa de investimento"
+description = "Tabela SIDRA 6727, variável 2517 (Taxa de investimento), no Total das classificações. KPI de panorama 'Taxa de investimento' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "trimestral"
+reference_url = "https://sidra.ibge.gov.br/tabela/6727"
+
+[datasets.params]
+table = "6727"
+variables = ["2517"]
+territorial_levels = ["n1"]
+period_discovery_level = "n1"
+estimated_values_per_period = 4
+min_rows = 1
+max_rows = 4
+refresh_recent_periods = 1
+period_type = "trimestre"
+group_periods_by_year = true
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-6726"
+source = "ibge-sidra"
+official_id = "6726"
+title = "Taxa de poupança"
+description = "Tabela SIDRA 6726, variável 9774 (Taxa de poupança), no Total das classificações. KPI de panorama 'Taxa de poupança' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "trimestral"
+reference_url = "https://sidra.ibge.gov.br/tabela/6726"
+
+[datasets.params]
+table = "6726"
+variables = ["9774"]
+territorial_levels = ["n1"]
+period_discovery_level = "n1"
+estimated_values_per_period = 4
+min_rows = 1
+max_rows = 4
+refresh_recent_periods = 1
+period_type = "trimestre"
+group_periods_by_year = true
 
 [datasets.silver]
 transformer = "sidra_observation"

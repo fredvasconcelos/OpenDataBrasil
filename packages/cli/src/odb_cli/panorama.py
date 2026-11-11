@@ -14,8 +14,10 @@ import typer
 from odb_cli.panorama_gen import (
     Generated,
     generate,
+    propose_dimensions,
     render_indicators,
     render_portal,
+    render_proposal,
     render_report,
     render_sources,
 )
@@ -157,6 +159,26 @@ def gerar(
         path.write_text(content, encoding="utf-8")
     typer.echo(render_report(gen))
     typer.echo("gravados: " + ", ".join(str(p) for p in targets))
+
+
+@panorama_app.command("propor")
+def propor(
+    panorama: Annotated[Path, typer.Option(help="Arquivo do panorama.")] = DEFAULT_PANORAMA,
+    escopo: Annotated[str, typer.Option(help="Escopo de publicação.")] = DEFAULT_SCOPE,
+    raiz: Annotated[Path, typer.Option(help="Raiz dos diretórios configs/.")] = Path("configs"),
+    saida: Annotated[Path, typer.Option(help="Markdown de saída.")] = Path(
+        "docs/data_catalog/panorama-proposta-categorias.md"
+    ),
+) -> None:
+    """Propõe a dimensão principal de cada KPI (onda Total + %), a partir dos descritores."""
+    config = load_panorama(panorama)
+    descriptors = {
+        path.stem[1:]: json.loads(path.read_text(encoding="utf-8"))
+        for path in sorted((panorama.parent / DESCRIPTORS_DIR).glob("t*.json"))
+    }
+    live = _published(config, _portal_kpis(raiz / "portal", escopo))
+    saida.write_text(render_proposal(propose_dimensions(config, descriptors), live), "utf-8")
+    typer.echo(f"proposta gravada em {saida}")
 
 
 @panorama_app.command("descrever")

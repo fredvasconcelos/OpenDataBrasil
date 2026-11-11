@@ -12,7 +12,7 @@ import { MapView, type FitRequest } from "@/components/MapView";
 import { SeriesChart } from "@/components/SeriesChart";
 import { Sidebar } from "@/components/Sidebar";
 import { api } from "@/lib/api";
-import { legendTitleKey } from "@/lib/format";
+import { formatPeriod, legendTitleKey } from "@/lib/format";
 import { allKpis, DEFAULT_GEOGRAPHY, readState, writeState, type DashboardState } from "@/lib/state";
 import type { Detail, GeoCollection, Geography, MapData, Navigation } from "@/lib/types";
 import { useAsync } from "@/lib/useAsync";
@@ -209,6 +209,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
 
   if (!kpi) return <p className="page">{t("dashboard.selectKpi")}</p>;
   const period = state.period ?? kpi.periods.at(-1) ?? "";
+  const periodLabel = formatPeriod(period);
   const levelLabel = t(`levels.${state.level}`);
   const crumb =
     nav.themes
@@ -237,7 +238,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
   };
   const focusName = focus ? (trail.data?.at(-1)?.name ?? null) : null;
   const scope = `${levelLabel}${focusName ? ` · ${focusName}` : ""}`;
-  const caption = `${kpi.label} · ${scope} · ${period} · Fonte: IBGE, tabela ${kpi.source.source_table_id} · release ${nav.release_id}`;
+  const caption = `${kpi.label} · ${scope} · ${periodLabel} · Fonte: IBGE, tabela ${kpi.source.source_table_id} · release ${nav.release_id}`;
   const legendKey = legendTitleKey(kpi.unit);
   const legendTitle = legendKey ? t(`dashboard.legend.title.${legendKey}`) : kpi.unit;
 
@@ -264,7 +265,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
         <div className="dash-grid">
           <div className="area-maphead">
             <div className="page-title">
-              <p className="crumb">{[crumb, scope, period].filter(Boolean).join(" · ")}</p>
+              <p className="crumb">{[crumb, scope, periodLabel].filter(Boolean).join(" · ")}</p>
               <h1>{kpi.label}</h1>
             </div>
             {hasMap ? (
@@ -372,7 +373,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
 
           <section className="card area-table" aria-labelledby="table-title">
             <h2 id="table-title">
-              {t("dashboard.tableTitle")} · {scope} · {period}
+              {t("dashboard.tableTitle")} · {scope} · {periodLabel}
             </h2>
             {table.error ? (
               <Failure error={table.error} onRetry={() => setRetry((r) => r + 1)} />

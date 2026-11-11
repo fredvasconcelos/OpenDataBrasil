@@ -192,11 +192,13 @@ class GoldBuilder:
             if dataset.silver.get("transformer") != "sidra_observation":
                 msg = f"{dataset_id}: a Gold desta versão aceita apenas datasets SIDRA"
                 raise GoldBuildError(msg)
+            params = SidraConnector.params(dataset)
             out[dataset_id] = model.DatasetInfo(
                 dataset_id=dataset_id,
-                table_id=SidraConnector.params(dataset).table,
+                table_id=params.table,
                 reference_url=dataset.reference_url,
                 license_id=dataset.license,
+                period_type=params.period_type,
             )
         return out
 
@@ -372,6 +374,7 @@ class GoldBuilder:
             silver_version=int(inputs["silver_version"]),
             build_id=build.build_id,
             pending=pending,
+            period_types={d.dataset_id: d.period_type for d in datasets.values()},
         )
         # Territórios observados, com o nome do período mais recente.
         observed = (

@@ -261,3 +261,31 @@ Resultado da carga de 2026-11-11: 76 de 77 tabelas na primeira execução. A
 4412 ficou em espera, foi repescada com 300 s e volta ao panorama quando
 estiver completa. O release `0128e3fa` foi ativado no ambiente local com 89
 KPIs no portal (392 verificações aprovadas e 5,1 milhões de observações).
+
+### 12. Períodos mensais e trimestrais
+
+- **Conector.** `period_type` (`ano`, `mes`, `trimestre`) confere o formato dos
+  códigos do SIDRA (`AAAA`, `AAAAMM`, `AAAATT`). `group_periods_by_year` pede
+  os meses ou trimestres de um ano numa só requisição (partição `p<ano>`): o
+  IPCA desde 1979 vira 48 requisições, e não 562. O ano corrente fica na
+  janela de revisão e recebe os meses novos.
+- **Silver.** Guarda o código do SIDRA como veio.
+- **Gold.** Converte o código na chave do período: ano `2022`, mês
+  `2026M09`, trimestre `2026T2`. As chaves não colidem entre tipos (`202602`
+  seria fevereiro ou o 2º trimestre), seguem a ordem cronológica dentro de
+  cada tipo e passam no validador de períodos da consulta. `dim_period` traz
+  o tipo e as datas de início e fim.
+- **Portal.** Exibe `set/2026` e `2º tri/2026` (`formatPeriod`).
+- **Variáveis escolhidas:**
+  - índices de preço: variação acumulada em 12 meses (2265, 2292, 1120 e
+    1394 no IPP);
+  - abate, leite e ovos: a quantidade, e não o "número de informantes";
+  - PNAD trimestral: pessoas ocupadas (4090) e taxa de desocupação (4099).
+- **Fora desta etapa.** Ficam para a onda Total + % as mensais e trimestrais
+  sem categoria Total: PMC e PMS (tipos de índice), PIB trimestral (setores)
+  e produção física industrial.
+
+A proposta da dimensão principal de cada KPI (onda Total + %) está em
+[`panorama-proposta-categorias.md`](../data_catalog/panorama-proposta-categorias.md),
+gerada por `odb panorama propor` a partir dos descritores. Ela aguarda a
+aprovação do mantenedor.

@@ -211,14 +211,14 @@ test("panorama: 20 temas recolhidos, KPIs em preparação e tooltip da série", 
   await expect(themes).toHaveCount(20);
   // Só o tema do indicador atual fica aberto.
   await expect(menu.locator(":scope > details[open]")).toHaveCount(1);
-  // Preços: só séries mensais, ainda em preparação (a Gold aceita só anos).
-  const prices = themes.filter({ has: page.locator("summary", { hasText: "Preços" }) });
-  await expect(prices.locator(":scope > summary")).toContainText("em preparação");
-  await prices.locator(":scope > summary").click();
-  await prices.locator("summary", { hasText: "Inflação ao consumidor" }).click();
-  const planned = prices.locator("li.planned").first();
+  // Tecnologia: KPIs cujo Total é só o universo, à espera da onda Total + %.
+  const tech = themes.filter({ has: page.locator("summary", { hasText: "Tecnologia" }) });
+  await expect(tech.locator(":scope > summary")).toContainText("em preparação");
+  await tech.locator(":scope > summary").click();
+  await tech.locator("details summary").first().click();
+  const planned = tech.locator("li.planned").first();
   await expect(planned).toBeVisible();
-  await expect(planned).toHaveAttribute("title", /tabela SIDRA 1737/);
+  await expect(planned).toHaveAttribute("title", /tabela SIDRA 7307/);
   await expect(planned.locator("button")).toHaveCount(0);
   // Tooltip da evolução temporal: valor do ponto ao passar o mouse.
   const point = page.getByTestId("series-point").last();
@@ -245,4 +245,15 @@ test("POF 6715 completa: classes de rendimento e despesas de consumo", async ({ 
   await expect(page.getByText("Classes de rendimento").first()).toBeVisible();
   await expect(page.getByText("Despesas de consumo").first()).toBeVisible();
   await expect(page.getByText("2.1.1 Alimentação").first()).toBeAttached();
+});
+
+test("série mensal: IPCA com períodos formatados", async ({ page }) => {
+  await page.goto("/dashboard?kpi=ipca");
+  await expect(page.getByRole("heading", { level: 1, name: "IPCA" })).toBeVisible();
+  // Período mais recente formatado como mês/ano (2026M09 → set/2026), não o código.
+  await expect(page.locator(".crumb")).toContainText(/[a-z]{3}\/\d{4}/);
+  await expect(page.getByLabel("Período")).toContainText("dez/1979");
+  const point = page.getByTestId("series-point").last();
+  await point.hover();
+  await expect(page.locator(".chart-tip-period")).toHaveText(/^[a-z]{3}\/\d{4}$/);
 });

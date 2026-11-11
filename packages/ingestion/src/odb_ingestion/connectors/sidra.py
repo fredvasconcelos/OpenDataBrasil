@@ -31,8 +31,9 @@ import json
 import re
 import time
 from collections import Counter
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Literal
 
 from pydantic import (
     BaseModel,
@@ -100,6 +101,13 @@ class SidraParams(BaseModel):
     max_rows: int | None = Field(default=None, ge=1)
     refresh_recent_periods: int = Field(default=2, ge=0)
     max_bytes: int = Field(default=50 * 1024**2, ge=1)
+    # Tipo dos períodos da tabela (descritor: TipoPeriodo). Códigos SIDRA: ano
+    # "AAAA", mês "AAAAMM", trimestre "AAAATT" (01 a 04).
+    period_type: Literal["ano", "mes", "trimestre"] = "ano"
+    # Meses ou trimestres do mesmo ano numa única requisição (partição "p<ano>").
+    # Com isso, ``estimated_values_per_period``, ``min_rows`` e ``max_rows`` valem
+    # por requisição (todos os períodos do ano).
+    group_periods_by_year: bool = False
 
     @field_validator("variables")
     @classmethod
@@ -151,6 +159,30 @@ class SidraParams(BaseModel):
                 msg = f"classificação SIDRA inválida: {key}={cats}"
                 raise ValueError(msg)
         return value
+
+    @model_validator(mode="after")
+    def _grouping(self) -> SidraParams:
+        if self.group_periods_by_year and self.period_type == "ano":
+            msg = "group_periods_by_year exige period_type mes ou trimestre"
+            raise ValueError(msg)
+        return self
+
+    def period_valid(self, period: str) -> bool:
+        """O código do período tem o formato do tipo declarado."""
+        if self.period_type == "ano":
+            return bool(re.fullmatch(r"\d{4}", period))
+        if self.period_type == "mes":
+            return bool(re.fullmatch(r"\d{4}(0[1-9]|1[0-2])", period))
+        return bool(re.fullmatch(r"\d{4}0[1-4]", period))
+
+    def period_units(self, periods: Sequence[str]) -> list[tuple[str, list[str]]]:
+        """Unidades de requisição: (chave do período na partição, códigos SIDRA)."""
+        if not self.group_periods_by_year:
+            return [(p, [p]) for p in periods]
+        by_year: dict[str, list[str]] = {}
+        for p in periods:
+            by_year.setdefault(p[:4], []).append(p)
+        return sorted(by_year.items())
 
     @model_validator(mode="after")
     def _split(self) -> SidraParams:
@@ -313,17 +345,22 @@ class SidraConnector(BaseConnector):
         dataset = self.describe(dataset_id)
         params = self.params(dataset)
         periods = self.discover_periods(dataset, http)
+        invalid = [p for p in periods if not params.period_valid(p)]
+        if invalid:
+            msg = f"{dataset_id}: períodos fora do formato '{params.period_type}': {invalid[:5]}"
+            raise ConfigError(msg)
+        units = params.period_units(periods)
         recent = (
-            set(periods[-params.refresh_recent_periods :])
+            {key for key, _ in units[-params.refresh_recent_periods :]}
             if params.refresh_recent_periods
             else set()
         )
         requests: list[ExtractionRequest] = []
         skipped: list[str] = []
-        for period in periods:
+        for unit, codes in units:
             for group in params.request_groups():
-                key = params.partition_key(period, group)
-                if full or key not in watermark.partitions or period in recent:
+                key = params.partition_key(unit, group)
+                if full or key not in watermark.partitions or unit in recent:
                     requests.append(
                         ExtractionRequest(
                             partition_key=key,
@@ -331,11 +368,11 @@ class SidraConnector(BaseConnector):
                                 params,
                                 params.territorial_levels,
                                 ",".join(group.variables),
-                                period,
+                                ",".join(codes),
                                 group.classifications,
                             ),
                             artifact_name=f"t{params.table}-{key}.json",
-                            reference_period=period,
+                            reference_period=unit,
                             max_bytes=params.max_bytes,
                         )
                     )
@@ -396,7 +433,16 @@ class SidraConnector(BaseConnector):
             )
         period_key = f"{params.period_dimension}C"
         periods = Counter(r[period_key] for r in rows)
-        if set(periods) != {request.reference_period}:
+        if params.group_periods_by_year:
+            # Meses ou trimestres do ano da partição, no formato do tipo declarado.
+            unexpected = {
+                p: n
+                for p, n in periods.items()
+                if not params.period_valid(p) or p[:4] != request.reference_period
+            }
+            if unexpected:
+                errors.append(f"períodos inesperados: {unexpected}")
+        elif set(periods) != {request.reference_period}:
             errors.append(f"períodos inesperados: {dict(periods)}")
         var_key = f"{params.variable_dimension}C"
         variables = set(Counter(r[var_key] for r in rows))

@@ -125,10 +125,38 @@ description = "Taxa de escolarização: Total da tabela SIDRA 7138 (Taxa de esco
 fixed_categories = { "Sexo" = "6794", "Grupo de idade" = "95253" }
 
 [[facts]]
+id = "fact_sidra_4093"
+dataset = "ibge-sidra-4093"
+grain = "território (Brasil, Grande Região, UF, Município) x trimestre"
+description = "Força de trabalho, ocupação e desocupação: Total da tabela SIDRA 4093 (Pessoas de 14 anos ou mais de idade, total, na força de trabalho, ocupadas, desocupadas, fora da força de trabalho, em situação de informalidade e respectivas taxas e níveis, por sexo)."
+fixed_categories = { "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_4099"
+dataset = "ibge-sidra-4099"
+grain = "território (Brasil, Grande Região, UF, Município) x trimestre"
+description = "Taxas de desocupação e de subutilização: Total da tabela SIDRA 4099 (Taxas de desocupação e de subutilização da força de trabalho, na semana de referência, das pessoas de 14 anos ou mais de idade)."
+fixed_categories = {}
+
+[[facts]]
 id = "fact_sidra_4708"
 dataset = "ibge-sidra-4708"
 grain = "território (Brasil, Grande Região, UF) x ano"
 description = "Taxa de informalidade: Total da tabela SIDRA 4708 (Taxa de informalidade das pessoas de 14 anos ou mais de idade ocupadas na semana de referência)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_5436"
+dataset = "ibge-sidra-5436"
+grain = "território (Brasil, Grande Região, UF, Município) x trimestre"
+description = "Rendimento médio real do trabalho: Total da tabela SIDRA 5436 (Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente e efetivamente recebidos no trabalho principal e em todos os trabalhos, por sexo)."
+fixed_categories = { "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_5606"
+dataset = "ibge-sidra-5606"
+grain = "território (Brasil, Grande Região, UF, Município) x trimestre"
+description = "Massa de rendimento real do trabalho: Total da tabela SIDRA 5606 (Massa de rendimento mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente e efetivamente recebidos em todos os trabalhos)."
 fixed_categories = {}
 
 [[facts]]
@@ -342,6 +370,34 @@ description = "Área, produção e valor das lavouras: Total da tabela SIDRA 545
 fixed_categories = { "Produto das lavouras temporárias e permanentes" = "0" }
 
 [[facts]]
+id = "fact_sidra_6588"
+dataset = "ibge-sidra-6588"
+grain = "território (Brasil, Grande Região, UF) x mes"
+description = "Estimativa da safra (área, produção e rendimento): Total da tabela SIDRA 6588 (Série histórica da estimativa anual da área plantada, área colhida, produção e rendimento médio dos produtos das lavouras)."
+fixed_categories = { "Produto das lavouras" = "0" }
+
+[[facts]]
+id = "fact_sidra_1092"
+dataset = "ibge-sidra-1092"
+grain = "território (Brasil, UF) x trimestre"
+description = "Abate de bovinos: Total da tabela SIDRA 1092 (Número de informantes, Quantidade e Peso total das carcaças dos bovinos abatidos, no mês e no trimestre, por tipo de rebanho e tipo de inspeção)."
+fixed_categories = { "Tipo de rebanho bovino" = "992", "Tipo de inspeção" = "118225", "Referência temporal" = "115236" }
+
+[[facts]]
+id = "fact_sidra_1086"
+dataset = "ibge-sidra-1086"
+grain = "território (Brasil, UF) x trimestre"
+description = "Leite adquirido e industrializado: Total da tabela SIDRA 1086 (Número de informantes e Quantidade de leite cru, resfriado ou não, adquirido e industrializado, e preço médio, no mês e no trimestre, por tipo de inspeção)."
+fixed_categories = { "Tipo de inspeção" = "118225", "Referência temporal" = "115236" }
+
+[[facts]]
+id = "fact_sidra_7524"
+dataset = "ibge-sidra-7524"
+grain = "território (Brasil, UF) x trimestre"
+description = "Produção de ovos de galinha: Total da tabela SIDRA 7524 (Número de informantes, Número de galinhas poedeiras e Quantidade de ovos produzidos, no mês e no trimestre)."
+fixed_categories = { "Finalidade da produção" = "72208", "Referência temporal" = "115236" }
+
+[[facts]]
 id = "fact_sidra_5930"
 dataset = "ibge-sidra-5930"
 grain = "território (Brasil, Grande Região, UF, Município) x ano"
@@ -402,6 +458,20 @@ id = "fact_sidra_10442"
 dataset = "ibge-sidra-10442"
 grain = "território (Brasil, Grande Região, UF) x ano"
 description = "Empresas de construção: pessoal, salários e valor das obras: Total da tabela SIDRA 10442 (Pessoal Ocupado, salários, retiradas e outras remunerações, custos e valor das incorporações, obras e/ou serviços da construção, das empresas de construção com 5 ou mais pessoas ocupadas (série nova))."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_2296"
+dataset = "ibge-sidra-2296"
+grain = "território (Brasil, Grande Região, UF) x mes"
+description = "Custo médio do metro quadrado da construção: Total da tabela SIDRA 2296 (Custo médio m² em moeda corrente e variações percentuais no mês, no ano e em doze meses)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_8886"
+dataset = "ibge-sidra-8886"
+grain = "território (Brasil) x mes"
+description = "Produção de insumos típicos da construção civil: Total da tabela SIDRA 8886 (Produção Física Industrial dos insumos típicos da construção civil)."
 fixed_categories = {}
 
 [[facts]]
@@ -468,6 +538,34 @@ description = "Dispêndio em P&D em proporção do PIB: Total da tabela SIDRA 66
 fixed_categories = {}
 
 [[facts]]
+id = "fact_sidra_1737"
+dataset = "ibge-sidra-1737"
+grain = "território (Brasil) x mes"
+description = "IPCA: Total da tabela SIDRA 1737 (IPCA - Série histórica com número-índice, variação mensal e variações acumuladas em 3 meses, em 6 meses, no ano e em 12 meses (a partir de dezembro/1979))."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_1736"
+dataset = "ibge-sidra-1736"
+grain = "território (Brasil) x mes"
+description = "INPC: Total da tabela SIDRA 1736 (INPC - Série histórica com número-índice, variação mensal e variações acumuladas em 3 meses, em 6 meses, no ano e em 12 meses (a partir de abril/1979))."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_3065"
+dataset = "ibge-sidra-3065"
+grain = "território (Brasil) x mes"
+description = "IPCA-15: Total da tabela SIDRA 3065 (IPCA15 - Série histórica com número-índice, variação mensal e variações acumuladas em 3 meses, em 6 meses, no ano e em 12 meses (a partir de maio/2000))."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_6904"
+dataset = "ibge-sidra-6904"
+grain = "território (Brasil) x mes"
+description = "Índice de Preços ao Produtor: Total da tabela SIDRA 6904 (Índice de Preços ao Produtor, por tipo de índice e grandes categorias econômicas (dezembro de 2018 = 100))."
+fixed_categories = { "Grandes categorias econômicas" = "33586" }
+
+[[facts]]
 id = "fact_sidra_6784"
 dataset = "ibge-sidra-6784"
 grain = "território (Brasil) x ano"
@@ -479,6 +577,20 @@ id = "fact_sidra_5938"
 dataset = "ibge-sidra-5938"
 grain = "território (Brasil, Grande Região, UF, Município) x ano"
 description = "PIB dos municípios e valor adicionado por atividade: Total da tabela SIDRA 5938 (Produto interno bruto a preços correntes, impostos, líquidos de subsídios, sobre produtos a preços correntes e valor adicionado bruto a preços correntes total e por atividade econômica, e respectivas participações - Referência 2010)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_6727"
+dataset = "ibge-sidra-6727"
+grain = "território (Brasil) x trimestre"
+description = "Taxa de investimento: Total da tabela SIDRA 6727 (Taxa de investimento)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_6726"
+dataset = "ibge-sidra-6726"
+grain = "território (Brasil) x trimestre"
+description = "Taxa de poupança: Total da tabela SIDRA 6726 (Taxa de poupança)."
 fixed_categories = {}
 
 [[facts]]
@@ -776,6 +888,34 @@ path = ["Educação", "Frequência escolar"]
 caveats = ["Nota da tabela 7138: Taxa de escolarização é a razão entre o número de estudantes de determinada faixa etária e o total de pessoas dessa mesma faixa etária.", "Nota da tabela 7138: A partir de 01 de agosto de 2022, as estimativas deste tema passaram a ser divulgadas com base no novo método de ponderação da pesquisa, conforme a Nota Técnica 03/2021. Consequentemente, a série histórica dos indicadores foi atualizada.", "Nota da tabela 7138: A partir de 2025, as estimativas deste tema passaram a ser divulgadas com base na nova ponderação da pesquisa, conforme a Nota Técnica 02/2025. Consequentemente, a série histórica dos indicadores foi atualizada."]
 
 [[indicators]]
+id = "forca_trabalho"
+name = "Pessoas de 14 anos ou mais de idade ocupadas na semana de referência"
+description = "Pessoas de 14 anos ou mais de idade ocupadas na semana de referência (PNAD Contínua trimestral, tabela SIDRA 4093). Valores no Total: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua trimestral."
+dataset = "ibge-sidra-4093"
+variable = "4090"
+fact = "fact_sidra_4093"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "additive"
+concept = "forca_trabalho"
+path = ["Trabalho e rendimento", "Ocupação e desocupação"]
+caveats = ["Nota da tabela 4093: A partir do 4º trimestre de 2015, em acordo com as recomendações da 19ª Conferência Internacional de Estatísticos do Trabalho - CIET, da OIT, pessoas em licença remunerada, independentemente do tempo de afastamento, passaram a ser classificadas como \"ocupadas\" e seus rendimentos do trabalho foram coletados normalmente. Anteriormente, as pessoas em licença remunerada na semana de referência da pesquisa e que estavam afastadas por período inferior a 4 meses eram classificadas como \"ocupadas\". Caso esse afastamento fosse igual ou superior a 4 meses, essas pessoas eram definidas como \"fora da força de trabalho\" e, portanto, não se investigava o rendimento do trabalho.", "Nota da tabela 4093: Além disso, a partir do 4º trimestre de 2015, também passaram a ser classificadas como \"ocupadas\" as pessoas que ajudaram, sem receber remuneração, no trabalho remunerado de parente, adicionalmente àquelas que ajudaram no trabalho remunerado de outro morador do mesmo domicílio. Anteriormente, eram consideradas \"ocupadas\" apenas as pessoas que ajudaram, sem receber remuneração, no trabalho remunerado de outro morador do mesmo domicílio.", "Nota da tabela 4093: A partir de abril de 2016, um aspecto do conceito de desocupação foi alterado de forma a se adequar inteiramente à 19ª Conferência Internacional de Estatísticos do Trabalho - CIET, realizada em outubro de 2013, sendo o questionário ajustado. Com a alteração desse aspecto, passam a ser considerados desocupados aqueles que conseguiram proposta de trabalho para começar após a semana de referência e que iriam começar a trabalhar em até 3 meses; os demais, isto é, aqueles que conseguiram proposta para começar a trabalhar após 3 meses da semana de referência, passam a ser contabilizados na população fora da força de trabalho. Anteriormente, eram considerados desocupados todos aqueles que conseguiram proposta de trabalho para começar após a semana de referência, independentemente do tempo em que iniciariam o trabalho que conseguiram.", "Nota da tabela 4093: A partir de 15 de agosto de 2025, as estimativas deste tema passaram a ser divulgadas com base na nova ponderação da pesquisa, conforme a Nota Técnica 02/2025. Consequentemente, a série histórica dos indicadores foi atualizada."]
+
+[[indicators]]
+id = "taxas_desocupacao"
+name = "Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade"
+description = "Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade (PNAD Contínua trimestral, tabela SIDRA 4099). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua trimestral."
+dataset = "ibge-sidra-4099"
+variable = "4099"
+fact = "fact_sidra_4099"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "taxas_desocupacao"
+path = ["Trabalho e rendimento", "Ocupação e desocupação"]
+caveats = ["Nota da tabela 4099: A partir do 4º trimestre de 2015, em acordo com as recomendações da 19ª Conferência Internacional de Estatísticos do Trabalho - CIET, da OIT, pessoas em licença remunerada, independentemente do tempo de afastamento, passaram a ser classificadas como \"ocupadas\" e seus rendimentos do trabalho foram coletados normalmente. Anteriormente, as pessoas em licença remunerada na semana de referência da pesquisa e que estavam afastadas por período inferior a 4 meses eram classificadas como \"ocupadas\". Caso esse afastamento fosse igual ou superior a 4 meses, essas pessoas eram definidas como \"fora da força de trabalho\" e, portanto, não se investigava o rendimento do trabalho.", "Nota da tabela 4099: Além disso, a partir do 4º trimestre de 2015, também passaram a ser classificadas como \"ocupadas\" as pessoas que ajudaram, sem receber remuneração, no trabalho remunerado de parente, adicionalmente àquelas que ajudaram no trabalho remunerado de outro morador do mesmo domicílio. Anteriormente, eram consideradas \"ocupadas\" apenas as pessoas que ajudaram, sem receber remuneração, no trabalho remunerado de outro morador do mesmo domicílio.", "Nota da tabela 4099: A partir do 4º trimestre de 2015 houve mudança da forma de captação do quesito de horas efetivamente trabalhadas. Anteriormente, investigavam-se as horas trabalhadas diariamente, que eram somadas para obter o total semanal. A partir do referido trimestre, passou-se a perguntar diretamente a quantidade de horas semanais efetivamente trabalhadas.", "Nota da tabela 4099: A partir do 4º trimestre de 2015 houve mudança de conceito na subutilização da força de trabalho por insuficiência de horas trabalhadas. Anteriormente, considerava-se no cálculo do indicador as horas efetivamente trabalhadas e, a partir do referido trimestre, as habitualmente trabalhadas.", "Nota da tabela 4099: A partir de abril de 2016, um aspecto do conceito de desocupação foi alterado de forma a se adequar inteiramente à 19ª Conferência Internacional de Estatísticos do Trabalho - CIET, realizada em outubro de 2013, sendo o questionário ajustado. Com a alteração desse aspecto, passam a ser considerados desocupados aqueles que conseguiram proposta de trabalho para começar após a semana de referência e que iriam começar a trabalhar em até 3 meses; os demais, isto é, aqueles que conseguiram proposta para começar a trabalhar após 3 meses da semana de referência, passam a ser contabilizados na população fora da força de trabalho. Anteriormente, eram considerados desocupados todos aqueles que conseguiram proposta de trabalho para começar após a semana de referência, independentemente do tempo em que iniciariam o trabalho que conseguiram.", "Nota da tabela 4099: A partir de 15 de agosto de 2025, as estimativas deste tema passaram a ser divulgadas com base na nova ponderação da pesquisa, conforme a Nota Técnica 02/2025. Consequentemente, a série histórica dos indicadores foi atualizada."]
+
+[[indicators]]
 id = "taxa_informalidade"
 name = "Taxa de informalidade das pessoas de 14 anos ou mais de idade ocupadas na semana de referência"
 description = "Taxa de informalidade das pessoas de 14 anos ou mais de idade ocupadas na semana de referência (PNAD Contínua trimestral, tabela SIDRA 4708). Tabela sem classificações. Fonte: IBGE. Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua, acumulado de primeiras visitas, exceto 2020-2022, acumulado de quintas visitas, devido &agrave; pandemia de Covid-19.."
@@ -788,6 +928,34 @@ additivity = "non_additive"
 concept = "taxa_informalidade"
 path = ["Trabalho e rendimento", "Informalidade"]
 caveats = ["Nota da tabela 4708: A situação de informalidade se refere às pessoas ocupadas como “Empregado no setor privado, exclusive trabalhador doméstico - sem carteira de trabalho assinada”, “Trabalhador doméstico - sem carteira de trabalho assinada”, “Empregador sem CNPJ”, “Conta própria sem CNPJ” e “Trabalhador familiar auxiliar” no trabalho principal.", "Nota da tabela 4708: A partir de 2025, as estimativas deste tema passaram a ser divulgadas com base na nova ponderação da pesquisa, conforme a Nota Técnica 02/2025. Consequentemente, a série histórica dos indicadores foi atualizada."]
+
+[[indicators]]
+id = "rendimento_medio_trabalho"
+name = "Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente recebido no trabalho principal"
+description = "Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente recebido no trabalho principal (PNAD Contínua anual, tabela SIDRA 5436). Valores no Total: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua trimestral."
+dataset = "ibge-sidra-5436"
+variable = "5932"
+fact = "fact_sidra_5436"
+column = "valor"
+unit = "Reais"
+additivity = "non_additive"
+concept = "rendimento_medio_trabalho"
+path = ["Trabalho e rendimento", "Rendimento do trabalho"]
+caveats = ["Nota da tabela 5436: A partir do 4º trimestre de 2015, em acordo com as recomendações da 19ª Conferência Internacional de Estatísticos do Trabalho - CIET, da OIT, pessoas em licença remunerada, independentemente do tempo de afastamento, passaram a ser classificadas como \"ocupadas\" e seus rendimentos do trabalho foram coletados normalmente. Anteriormente, as pessoas em licença remunerada na semana de referência da pesquisa e que estavam afastadas por período inferior a 4 meses eram classificadas como \"ocupadas\". Caso esse afastamento fosse igual ou superior a 4 meses, essas pessoas eram definidas como \"fora da força de trabalho\" e, portanto, não se investigava o rendimento do trabalho.", "Nota da tabela 5436: Além disso, a partir do 4º trimestre de 2015, também passaram a ser classificadas como \"ocupadas\" as pessoas que ajudaram, sem receber remuneração, no trabalho remunerado de parente, adicionalmente àquelas que ajudaram no trabalho remunerado de outro morador do mesmo domicílio. Anteriormente, eram consideradas \"ocupadas\" apenas as pessoas que ajudaram, sem receber remuneração, no trabalho remunerado de outro morador do mesmo domicílio.", "Nota da tabela 5436: O valor efetivo se refere ao valor recebido no mês anterior ao da coleta.", "Nota da tabela 5436: Para cálculo do valor real é utilizado o deflator da média do último trimestre de coleta divulgado, conforme a Nota Técnica (maio/2015 - atualizada em 16/10/2018).", "Nota da tabela 5436: A partir de 15 de agosto de 2025, as estimativas deste tema passaram a ser divulgadas com base na nova ponderação da pesquisa, conforme a Nota Técnica 02/2025. Consequentemente, a série histórica dos indicadores foi atualizada."]
+
+[[indicators]]
+id = "massa_rendimento"
+name = "Massa de rendimento mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente recebido em todos os trabalhos"
+description = "Massa de rendimento mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente recebido em todos os trabalhos (PNAD Contínua trimestral, tabela SIDRA 5606). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua trimestral."
+dataset = "ibge-sidra-5606"
+variable = "6293"
+fact = "fact_sidra_5606"
+column = "valor"
+unit = "Milhões de Reais"
+additivity = "additive"
+concept = "massa_rendimento"
+path = ["Trabalho e rendimento", "Rendimento do trabalho"]
+caveats = ["Nota da tabela 5606: A partir do 4º trimestre de 2015, em acordo com as recomendações da 19ª Conferência Internacional de Estatísticos do Trabalho - CIET, da OIT, pessoas em licença remunerada, independentemente do tempo de afastamento, passaram a ser classificadas como \"ocupadas\" e seus rendimentos do trabalho foram coletados normalmente. Anteriormente, as pessoas em licença remunerada na semana de referência da pesquisa e que estavam afastadas por período inferior a 4 meses eram classificadas como \"ocupadas\". Caso esse afastamento fosse igual ou superior a 4 meses, essas pessoas eram definidas como \"fora da força de trabalho\" e, portanto, não se investigava o rendimento do trabalho.", "Nota da tabela 5606: Além disso, a partir do 4º trimestre de 2015, também passaram a ser classificadas como \"ocupadas\" as pessoas que ajudaram, sem receber remuneração, no trabalho remunerado de parente, adicionalmente àquelas que ajudaram no trabalho remunerado de outro morador do mesmo domicílio. Anteriormente, eram consideradas \"ocupadas\" apenas as pessoas que ajudaram, sem receber remuneração, no trabalho remunerado de outro morador do mesmo domicílio.", "Nota da tabela 5606: O valor efetivo se refere ao valor recebido no mês anterior ao da coleta.", "Nota da tabela 5606: Para cálculo do valor real é utilizado o deflator da média do último trimestre de coleta divulgado, conforme a Nota Técnica (maio/2015 - atualizada em 16/10/2018).", "Nota da tabela 5606: A partir de 15 de agosto de 2025, as estimativas deste tema passaram a ser divulgadas com base na nova ponderação da pesquisa, conforme a Nota Técnica 02/2025. Consequentemente, a série histórica dos indicadores foi atualizada."]
 
 [[indicators]]
 id = "gini_domiciliar"
@@ -1210,6 +1378,62 @@ path = ["Agropecuária", "Lavouras"]
 caveats = ["Nota da tabela 5457: 1 - Os municípios sem informação para pelo menos um produto da lavoura não aparecem nas listas;", "Nota da tabela 5457: 2 - A partir do ano de 2001 as quantidades produzidas dos produtos abacate, banana, caqui, figo, goiaba, laranja, limão, maçã, mamão, manga, maracujá, marmelo, melancia, melão, pera, pêssego e tangerina passam a ser expressas em toneladas. Nos anos anteriores eram expressas em mil frutos, com exceção da banana, que era expressa em mil cachos. O rendimento médio passa a ser expresso em Kg/ha. Nos anos anteriores era expresso em frutos/ha, com exceção da banana, que era expressa em cachos/ha.", "Nota da tabela 5457: 3 - Veja em https://sidra.ibge.gov.br/content/documentos/pam/AlteracoesUnidadesMedidaFrutas.pdf um documento com as alterações de unidades de medida das frutíferas ocorridas em 2001 e a tabela de conversão fruto x quilograma.", "Nota da tabela 5457: 4 - Até 2001, café (em coco), a partir de 2002, café (beneficiado ou em grão).", "Nota da tabela 5457: 5 - Os produtos girassol e triticale só apresentam informação a partir de 2005.", "Nota da tabela 5457: 6 - As quantidades produzidas de abacaxi e de coco-da-baía são expressas em mil frutos e o rendimento médio em frutos/ha.", "Nota da tabela 5457: 7 - Valores para a categoria Total indisponíveis para as variáveis Quantidade produzida e Rendimento médio, pois as unidades de medida diferem para determinados produtos.", "Nota da tabela 5457: 8 - Subentende a possibilidade de cultivos sucessivos ou simultâneos (simples, associados e/ou intercalados) no mesmo ano e no mesmo local, podendo, por isto, a área informada da cultura exceder a área geográfica do município.", "Mais 6 notas na tabela oficial (SIDRA 5457)."]
 
 [[indicators]]
+id = "safra_estimada"
+name = "Área plantada"
+description = "Área plantada (Levantamento Sistemático da Produção Agrícola, tabela SIDRA 6588). Valores no Total: Produto das lavouras: Total. Fonte: IBGE - Levantamento Sistemático da Produção Agrícola."
+dataset = "ibge-sidra-6588"
+variable = "109"
+fact = "fact_sidra_6588"
+column = "valor"
+unit = "Hectares"
+additivity = "additive"
+concept = "safra_estimada"
+path = ["Agropecuária", "Lavouras"]
+caveats = ["Nota da tabela 6588: 1 - Para as Unidades da Federação que, por força do calendário agrícola, ainda não dispõem das estimativas iniciais, os dados correspondem a uma projeção obtida a partir das informações de anos anteriores;", "Nota da tabela 6588: 2 - As produções de abacaxi e de coco-da-baía são expressas em mil frutos e os seus rendimentos médios em frutos/ha.", "Nota da tabela 6588: 3 - Utilizou-se a padronização de 61% para a conversão da produção do algodão em caroço para caroço de algodão, apenas para a totalização da produção dos cereais, leguminosas e oleaginosas.", "Nota da tabela 6588: 4 - Possíveis diferenças entre somas de parcelas e respectivos totais são provenientes do critério de arredondamento.", "Nota da tabela 6588: 5 - As informações mensais que compõem a série histórica estão disponível a partir de setembro de 2006.", "Nota da tabela 6588: 6 - A partir de janeiro de 2018 foram retirados da divulgação os seguintes produtos: abacaxi, alho, cebola, coco-da-baía, guaraná, maçã, malva, pimenta-do-reino, sisal/agave. Os mesmos continuam sendo acompanhados na pesquisa anual da Produção Agrícola Municipal."]
+
+[[indicators]]
+id = "abate_bovinos"
+name = "Animais abatidos"
+description = "Animais abatidos (Pesquisa Trimestral do Abate de Animais, tabela SIDRA 1092). Valores no Total: Tipo de rebanho bovino: Total; Tipo de inspeção: Total; Referência temporal: Total do trimestre. Fonte: IBGE - Pesquisa Trimestral do Abate de Animais."
+dataset = "ibge-sidra-1092"
+variable = "284"
+fact = "fact_sidra_1092"
+column = "valor"
+unit = "Cabeças"
+additivity = "additive"
+concept = "abate_bovinos"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Nota da tabela 1092: 1 - Os dados divulgados são oriundos de estabelecimentos que estão sob inspeção sanitária federal, estadual ou municipal.", "Nota da tabela 1092: 2 - Os dados das Unidades da Federação com menos de 3 informantes estão desidentificados com o caracter X.", "Nota da tabela 1092: 3 - O número de informantes se repete nos meses de cada trimestre devido à periodicidade de coleta da pesquisa ser trimestral.", "Nota da tabela 1092: 4 - A pesquisa do abate sofreu alterações conceituais a partir de 2012. As categorias de novilhos precoces, vitelos e novilhos foram fundidos em uma só: novilhos. O mesmo vale para novilhas.", "Nota da tabela 1092: 5 - Bovinos - gado doméstico, dividido em categorias conforme sexo e idade:", "Nota da tabela 1092: Boi - bovino macho adulto, com 2 anos de idade ou mais. Inclui o macho não castrado (touro).", "Nota da tabela 1092: Vaca - bovino fêmea adulta, com 2 anos de idade ou mais, independente de já ter parido ou não.", "Nota da tabela 1092: Novilho - bovino macho jovem, com menos de 2 anos de idade. Inclui vitelo, bezerro e novilho (precoce ou não).", "Mais 3 notas na tabela oficial (SIDRA 1092)."]
+
+[[indicators]]
+id = "leite_adquirido"
+name = "Quantidade de leite cru, resfriado ou não, adquirido"
+description = "Quantidade de leite cru, resfriado ou não, adquirido (Pesquisa Trimestral do Leite, tabela SIDRA 1086). Valores no Total: Tipo de inspeção: Total; Referência temporal: Total do trimestre. Fonte: IBGE - Pesquisa Trimestral do Leite."
+dataset = "ibge-sidra-1086"
+variable = "282"
+fact = "fact_sidra_1086"
+column = "valor"
+unit = "Mil litros"
+additivity = "additive"
+concept = "leite_adquirido"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Nota da tabela 1086: 1 - Até o 4º trimestre de 2005 os dados das Unidades da Federação com menos de 4 (quatro) informantes estão desidentificados com o caractere X. A partir do 1º trimestre de 2006 a desidentificação passou a ser feita para menos de 3 (três) informantes.", "Nota da tabela 1086: 2 - Os dados dos 4 trimestres do ano são preliminares até a divulgação dos dados do 1° trimestre do ano seguinte.", "Nota da tabela 1086: 3 - Os resultados do indicador \"preço do leite cru pago ao produtor\" até março de 2024 são considerados Estatísticas Experimentais."]
+
+[[indicators]]
+id = "ovos_produzidos"
+name = "Quantidade de ovos produzidos"
+description = "Quantidade de ovos produzidos (Produção de Ovos de Galinha, tabela SIDRA 7524). Valores no Total: Finalidade da produção: Total; Referência temporal: Total do trimestre. Fonte: IBGE - Produção de Ovos de Galinha."
+dataset = "ibge-sidra-7524"
+variable = "29"
+fact = "fact_sidra_7524"
+column = "valor"
+unit = "Mil dúzias"
+additivity = "additive"
+concept = "ovos_produzidos"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Nota da tabela 7524: 1 - Até o 4º trimestre de 2011: As informações não correspondem às produções totais das Unidades da Federação, uma vez que são pesquisados apenas os estabelecimentos com 10.000 ou mais galinhas poedeiras.", "Nota da tabela 7524: 2 - A partir do 1º trimestre de 2012: As informações não correspondem às produções totais das Unidades da Federação, uma vez que são pesquisados apenas os estabelecimentos com capacidade de alojamento de pelo menos 10.000 galinhas poedeiras.", "Nota da tabela 7524: 3 - O número de galinhas poedeiras refere-se à média do plantel existente no último dia de cada mês do trimestre.", "Nota da tabela 7524: 4 - O número de informantes se repete nos meses de cada trimestre devido à periodicidade de coleta da pesquisa ser trimestral.", "Nota da tabela 7524: 5 - Até o 4º trimestre de 2005 os dados das Unidades da Federação com menos de 4 (quatro) informantes estão desidentificados com o caracter X. A partir do 1º trimestre de 2006 a desidentificação passou a ser feita para menos de 3 (três) informantes.", "Nota da tabela 7524: 6 - Os dados dos 4 trimestres do ano são preliminares até a divulgação dos dados do 1° trimestre do ano seguinte."]
+
+[[indicators]]
 id = "area_silvicultura"
 name = "Área total existente em 31/12 dos efetivos da silvicultura"
 description = "Área total existente em 31/12 dos efetivos da silvicultura (Produção da Extração Vegetal e da Silvicultura, tabela SIDRA 5930). Valores no Total: Espécie florestal: Total. Fonte: IBGE - Produção da Extração Vegetal e da Silvicultura."
@@ -1334,6 +1558,34 @@ additivity = "non_additive"
 concept = "empresas_construcao"
 path = ["Construção", "Atividade da construção"]
 caveats = ["Nota da tabela 10442: A variável Empresas atuantes nas Unidades da Federação refere-se ao número de empresas com atuação na Unidade da Federação e na região. Assim sendo, cada empresa é contada apenas uma vez na Unidade da Federação e na região onde atua. Logo, o número total de empresas numa região é igual ou menor do que a soma dos totais de cada UF dessa região. Pela mesma razão, o número total de empresas no Brasil é igual ou menor do que a soma dos totais de cada região."]
+
+[[indicators]]
+id = "custo_m2"
+name = "Custo médio m² - moeda corrente"
+description = "Custo médio m² - moeda corrente (SINAPI, tabela SIDRA 2296). Tabela sem classificações. Fonte: IBGE - Sistema Nacional de Pesquisa de Custos e Índices da Construção Civil."
+dataset = "ibge-sidra-2296"
+variable = "48"
+fact = "fact_sidra_2296"
+column = "valor"
+unit = "Reais"
+additivity = "non_additive"
+concept = "custo_m2"
+path = ["Construção", "Custos e insumos da construção"]
+caveats = ["Nota da tabela 2296: 1 - A variável Custo médio m² - número índice utiliza como base junho/94 = 100;", "Nota da tabela 2296: 2 - Série de custos (moedas):", "Nota da tabela 2296: Devido aos vários planos econômicos que resultaram em mudança da moeda, as séries de custos do SINAPI estão expressas da seguinte forma:", "Nota da tabela 2296: março de 1986 à dezembro de 1988: Cz$ (cruzado);", "Nota da tabela 2296: janeiro de 1989 à março de 1990: NCz$ (cruzado novo);", "Nota da tabela 2296: abril de 1990 à julho de 1993: CR$ (cruzeiro);", "Nota da tabela 2296: agosto de 1993 à junho de 1994: CR$ (cruzeiro real);", "Nota da tabela 2296: julho de 1994 em diante: R$ (real).", "Mais 6 notas na tabela oficial (SIDRA 2296)."]
+
+[[indicators]]
+id = "insumos_construcao"
+name = "PIMPF - Número-índice (2022=100)"
+description = "PIMPF - Número-índice (2022=100) (Pesquisa Industrial Mensal - Produção Física, tabela SIDRA 8886). Tabela sem classificações. Fonte: IBGE - Pesquisa Industrial Mensal - Produção Física."
+dataset = "ibge-sidra-8886"
+variable = "12606"
+fact = "fact_sidra_8886"
+column = "valor"
+unit = "Número-índice"
+additivity = "non_additive"
+concept = "insumos_construcao"
+path = ["Construção", "Custos e insumos da construção"]
+caveats = []
 
 [[indicators]]
 id = "empresas_comerciais"
@@ -1462,6 +1714,62 @@ path = ["Empresas e organizações", "Inovação e P&D"]
 caveats = []
 
 [[indicators]]
+id = "ipca"
+name = "IPCA - Variação acumulada em 12 meses"
+description = "IPCA - Variação acumulada em 12 meses (Índice Nacional de Preços ao Consumidor Amplo, tabela SIDRA 1737). Tabela sem classificações. Fonte: IBGE - Índice Nacional de Preços ao Consumidor Amplo."
+dataset = "ibge-sidra-1737"
+variable = "2265"
+fact = "fact_sidra_1737"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "ipca"
+path = ["Preços", "Inflação ao consumidor"]
+caveats = ["Nota da tabela 1737: 1 - Período de coleta ajustado ao mês civil (do primeiro ao trigésimo dia de cada mês), para os meses anteriores a março de 1986."]
+
+[[indicators]]
+id = "inpc"
+name = "INPC - Variação acumulada em 12 meses"
+description = "INPC - Variação acumulada em 12 meses (Índice Nacional de Preços ao Consumidor, tabela SIDRA 1736). Tabela sem classificações. Fonte: IBGE - Índice Nacional de Preços ao Consumidor."
+dataset = "ibge-sidra-1736"
+variable = "2292"
+fact = "fact_sidra_1736"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "inpc"
+path = ["Preços", "Inflação ao consumidor"]
+caveats = ["Nota da tabela 1736: 1 - Período de coleta ajustado ao mês civil (do primeiro ao trigésimo dia de cada mês), para os meses anteriores a março de 1986."]
+
+[[indicators]]
+id = "ipca15"
+name = "IPCA15 - Variação acumulada em 12 meses"
+description = "IPCA15 - Variação acumulada em 12 meses (Índice Nacional de Preços ao Consumidor Amplo 15, tabela SIDRA 3065). Tabela sem classificações. Fonte: IBGE - Índice Nacional de Preços ao Consumidor Amplo 15."
+dataset = "ibge-sidra-3065"
+variable = "1120"
+fact = "fact_sidra_3065"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "ipca15"
+path = ["Preços", "Inflação ao consumidor"]
+caveats = []
+
+[[indicators]]
+id = "ipp"
+name = "IPP - Variação mês/mesmo mês do ano anterior (M/M-12)"
+description = "IPP - Variação mês/mesmo mês do ano anterior (M/M-12) (Índice de Preços ao Produtor, tabela SIDRA 6904). Valores no Total: Grandes categorias econômicas: Indústria geral. Fonte: IBGE - Índice de Preços ao Produtor."
+dataset = "ibge-sidra-6904"
+variable = "1394"
+fact = "fact_sidra_6904"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "ipp"
+path = ["Preços", "Preços ao produtor"]
+caveats = []
+
+[[indicators]]
 id = "pib_per_capita"
 name = "PIB - valores correntes"
 description = "PIB - valores correntes (Contas Nacionais Anuais, tabela SIDRA 6784). Tabela sem classificações. Fonte: IBGE - Contas Nacionais Anuais."
@@ -1488,6 +1796,34 @@ additivity = "additive"
 concept = "pib_municipios"
 path = ["Contas nacionais e regionais", "PIB dos municípios"]
 caveats = ["Nota da tabela 5938: 1 - Os dados de 2022 e 2023 estarão sujeitos a revisão na próxima publicação.", "Nota da tabela 5938: 2 - Para os anos de 2022 e 2023 foram divulgados apenas o Produto Interno Bruto e o Produto Interno Bruto per capita, conforme a nota técnica 02/2024 do Sistema de Contas Nacionais, que pode ser acessada em https://biblioteca.ibge.gov.br/visualizacao/livros/liv102094.pdf.", "Nota da tabela 5938: 3 - Os dados da série retropolada (de 2002 a 2009) também têm como referência o ano de 2010, seguindo a nova referência das Contas Nacionais."]
+
+[[indicators]]
+id = "taxa_investimento"
+name = "Taxa de investimento"
+description = "Taxa de investimento (Contas Nacionais Anuais, tabela SIDRA 6727). Tabela sem classificações. Fonte: IBGE - Contas Nacionais Trimestrais."
+dataset = "ibge-sidra-6727"
+variable = "2517"
+fact = "fact_sidra_6727"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "taxa_investimento"
+path = ["Contas nacionais e regionais", "Investimento e poupança"]
+caveats = []
+
+[[indicators]]
+id = "taxa_poupanca"
+name = "Taxa de poupança"
+description = "Taxa de poupança (Contas Nacionais Anuais, tabela SIDRA 6726). Tabela sem classificações. Fonte: IBGE - Contas Nacionais Trimestrais."
+dataset = "ibge-sidra-6726"
+variable = "9774"
+fact = "fact_sidra_6726"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "taxa_poupanca"
+path = ["Contas nacionais e regionais", "Investimento e poupança"]
+caveats = []
 
 [[indicators]]
 id = "unidades_conservacao"

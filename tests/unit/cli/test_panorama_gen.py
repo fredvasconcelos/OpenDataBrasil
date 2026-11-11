@@ -57,14 +57,14 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:
     gen = _generate()
     ids = {i["id"]: i for i in gen.indicators}
     skipped = {k: why for k, _, why in gen.skipped}
-    assert len(ids) == 76
+    assert len(ids) == 92
     # Variável fixada no panorama e regra automática (sem coeficientes de variação).
     assert ids["homicidios"]["variable"] == "13532"
     assert ids["taxa_escolarizacao"]["variable"] == "10276"
     # Fora: Total = universo, sem Total, períodos não anuais, tabelas curadas, RM.
     assert "entra com as categorias" in skipped["plano_diretor"]
     assert "sem categoria Total" in skipped["efetivo_rebanhos"]
-    assert "Mês" in skipped["ipca"]
+    assert "sem categoria Total" in skipped["vendas_varejo"]  # mensal, mas sem Total
     assert "já configurada" in skipped["despesa_familiar"]
     assert "n7" in skipped["aquisicao_alimentar"]
     assert "unidade não é única" in skipped["producao_origem_animal"]
@@ -75,6 +75,16 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:
     # Aditividade do descritor oficial (PermiteSomaUnidadesTerritoriais).
     assert ids["nascidos_vivos"]["additivity"] == "additive"
     assert ids["taxa_escolarizacao"]["additivity"] == "non_additive"
+    # Mensal e trimestral: um ano por requisição, com o tipo do período.
+    ipca = next(d for d in gen.datasets if d["official_id"] == "1737")
+    assert ids["ipca"]["variable"] == "2265"  # variação acumulada em 12 meses
+    assert ipca["params"]["period_type"] == "mes"
+    assert ipca["params"]["group_periods_by_year"] is True
+    assert ipca["params"]["max_rows"] == 12
+    pnad = next(d for d in gen.datasets if d["official_id"] == "4093")
+    assert pnad["params"]["period_type"] == "trimestre"
+    # Município da PNAD trimestral = 27 capitais (recorte), não o país inteiro.
+    assert pnad["params"]["max_rows"] < 4 * 1000
     # Tabela sem nível Brasil: apresentada como publicada, com nota.
     ds = next(d for d in gen.datasets if d["official_id"] == "10457")
     assert ds["params"]["territorial_levels"] == ["n3"]
@@ -104,7 +114,7 @@ def test_rendered_fragments_load_with_the_curated_configs(tmp_path: Path) -> Non
     portal = load_portal(tmp_path / "portal", "demografia")
     assert all(d in sources.datasets for d in catalog.datasets())
     assert {k.indicator for k in portal.kpis()} <= {i.id for i in catalog.indicators}
-    assert len(portal.kpis()) == 13 + 76
+    assert len(portal.kpis()) == 13 + 92
 
 
 def test_repository_fragments_are_up_to_date() -> None:
@@ -152,9 +162,9 @@ def test_gerar_command_writes_three_fragments(tmp_path: Path) -> None:
         path.unlink()
     result = CliRunner().invoke(app, ["panorama", "gerar", "--raiz", str(tmp_path)])
     assert result.exit_code == 0, result.output
-    assert "76 KPIs de Total gerados" in result.output
+    assert "92 KPIs de Total gerados" in result.output
     data = tomllib.loads((tmp_path / "sources" / "ibge-panorama.toml").read_text("utf-8"))
-    assert len(data["datasets"]) == 76
+    assert len(data["datasets"]) == 92
     assert "institution" not in data
 
 
@@ -208,3 +218,25 @@ def test_paused_kpi_keeps_dataset_for_retry() -> None:
     assert skipped["casamentos"] == "em espera: timeout na fonte"
     assert "ibge-sidra-4412" in {d["id"] for d in gen.datasets}
     assert "ibge-sidra-4412" not in {f["dataset"] for f in gen.facts}
+
+
+def test_proposal_of_main_dimension_from_descriptors() -> None:
+    from odb_cli.panorama_gen import propose_dimensions, render_proposal  # noqa: PLC0415
+
+    config, _, _, descriptors = _inputs()
+    rows = {r["kpi"]: r for r in propose_dimensions(config, descriptors)}
+    # Assunto da tabela: a existência do Plano Diretor, não o tamanho do município.
+    assert rows["plano_diretor"]["classification"] == "c1480 Existência de Plano Diretor"
+    assert rows["plano_diretor"]["categories"] == ["Com Plano Diretor", "Sem Plano Diretor"]
+    assert rows["plano_diretor"]["sums"] is True
+    # Só recortes comuns: o primeiro deles, marcado como tal.
+    assert rows["populacao_sexo_idade"]["classification"] == "c2 Sexo"
+    assert rows["populacao_sexo_idade"]["is_subject"] is False
+    # Sem classificações: só o Total.
+    assert rows["ipca"]["classification"] is None
+    # Sem Total: o primeiro nível é o mais alto da hierarquia.
+    assert rows["efetivo_rebanhos"]["has_total"] is False
+    assert "Bovino" in rows["efetivo_rebanhos"]["categories"]
+    doc = render_proposal(list(rows.values()), {"ipca"})
+    assert doc.count("\n| ") == 150 + 1  # cabeçalho + 150 KPIs
+    assert "c1480 Existência de Plano Diretor" in doc

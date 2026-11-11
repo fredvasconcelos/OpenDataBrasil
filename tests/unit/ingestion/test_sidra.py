@@ -327,3 +327,122 @@ def test_classifications_in_url_and_real_fixtures(
     )
     assert quilombola.valid, quilombola.errors
     assert quilombola.stats["variables"] == ["4709"]
+
+
+def _monthly(tmp_path: Path) -> tuple[SidraConnector, HttpClient, list[str]]:
+    """Série mensal sintética (formato real do SIDRA: período AAAAMM)."""
+    catalog = load_sources(TEST_SOURCES)
+    dataset = DatasetConfig(
+        id="ibge-sidra-1737",
+        source="ibge-sidra",
+        official_id="1737",
+        title="IPCA",
+        description="teste",
+        license="ibge-reuso-com-citacao",
+        access_classification="public_conditional",
+        periodicity="mensal",
+        params={
+            "table": "1737",
+            "variables": ["2265"],
+            "territorial_levels": ["n1"],
+            "estimated_values_per_period": 12,
+            "max_rows": 12,
+            "refresh_recent_periods": 1,
+            "period_type": "mes",
+            "group_periods_by_year": True,
+        },
+    )
+    months = [f"2025{m:02d}" for m in range(1, 13)] + ["202601", "202602"]
+    header = {
+        "NC": "",
+        "NN": "",
+        "MC": "",
+        "MN": "",
+        "V": "",
+        "D1C": "",
+        "D1N": "",
+        "D2C": "",
+        "D2N": "",
+        "D3C": "Mês (Código)",
+        "D3N": "Mês",
+    }
+    seen: list[str] = []
+
+    def row(period: str) -> dict[str, str]:
+        return {
+            **header,
+            "NC": "1",
+            "NN": "Brasil",
+            "MC": "2",
+            "MN": "%",
+            "V": "4.5",
+            "D1C": "1",
+            "D1N": "Brasil",
+            "D2C": "2265",
+            "D2N": "IPCA 12 meses",
+            "D3C": period,
+            "D3N": period,
+        }
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        path = request.url.path
+        seen.append(path)
+        asked = path.split("/p/")[1].split("/")[0]
+        periods = months if asked == "all" else asked.split(",")
+        return httpx.Response(200, json=[header, *(row(p) for p in periods)])
+
+    http = HttpClient(
+        HttpPolicy(min_interval_s=0, max_attempts=1), transport=httpx.MockTransport(handler)
+    )
+    return SidraConnector(catalog.sources["ibge-sidra"], [dataset]), http, seen
+
+
+def test_monthly_periods_grouped_by_year(tmp_path: Path) -> None:
+    connector, http, seen = _monthly(tmp_path)
+    plan = connector.plan("ibge-sidra-1737", http, Watermark())
+    assert [r.partition_key for r in plan.requests] == ["n1-p2025", "n1-p2026"]
+    assert plan.requests[1].url.endswith("/p/202601,202602")
+    assert [r.reference_period for r in plan.requests] == ["2025", "2026"]
+    # Incremental: só o ano mais recente volta (meses novos entram na mesma partição).
+    done = Watermark(partitions={r.partition_key: PartitionState() for r in plan.requests})
+    again = connector.plan("ibge-sidra-1737", http, done)
+    assert [r.partition_key for r in again.requests] == ["n1-p2026"]
+    # Validação: meses do ano da partição, no formato AAAAMM.
+    path = tmp_path / "r.json"
+    path.write_bytes(http.get_bytes(plan.requests[0].url))
+    ok = connector.validate_raw("ibge-sidra-1737", plan.requests[0], _result(path))
+    assert ok.valid, ok.errors
+    wrong = ExtractionRequest("n1-p2024", "u", "a.json", reference_period="2024")
+    assert not connector.validate_raw("ibge-sidra-1737", wrong, _result(path)).valid
+    assert seen
+
+
+def test_period_format_and_grouping_rules() -> None:
+    base = {
+        "table": "1",
+        "variables": ["1"],
+        "territorial_levels": ["n1"],
+        "estimated_values_per_period": 1,
+    }
+    with pytest.raises(ValueError, match="exige period_type"):
+        SidraConnector.params(_ds({**base, "group_periods_by_year": True}))
+    quarterly = SidraConnector.params(_ds({**base, "period_type": "trimestre"}))
+    assert quarterly.period_valid("202604")
+    assert not quarterly.period_valid("202605")
+    monthly = SidraConnector.params(_ds({**base, "period_type": "mes"}))
+    assert monthly.period_valid("202612")
+    assert not monthly.period_valid("2026")
+
+
+def _ds(params: dict[str, object]) -> DatasetConfig:
+    return DatasetConfig(
+        id="x",
+        source="ibge-sidra",
+        official_id="1",
+        title="t",
+        description="d",
+        license="l",
+        access_classification="public_authorized",
+        periodicity="p",
+        params=params,
+    )

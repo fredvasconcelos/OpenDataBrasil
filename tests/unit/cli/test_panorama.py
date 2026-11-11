@@ -24,8 +24,8 @@ def test_validar_reports_counts() -> None:
         app, ["panorama", "validar", "--panorama", str(PANORAMA), "--portal-dir", str(PORTAL)]
     )
     assert result.exit_code == 0, result.output
-    # 12 curados com `kpi`, a 9605 e a 6715 pelo id do item, 76 KPIs de Total gerados.
-    assert "20 temas, 64 subtemas, 150 KPIs (90 publicados, 60 planejados)" in result.output
+    # 12 curados com `kpi`, a 9605 e a 6715 pelo id do item, 92 KPIs de Total gerados.
+    assert "20 temas, 64 subtemas, 150 KPIs (106 publicados, 44 planejados)" in result.output
 
 
 def test_render_catalog_flags_coverage() -> None:

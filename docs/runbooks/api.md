@@ -108,6 +108,7 @@ tabela. Com `--retomar`, ela mantém as tabelas já verificadas com sucesso.
 uv run odb panorama descrever          # descritor oficial de cada tabela (147 req., ~5 min)
 uv run odb panorama gerar              # fragmentos de fontes, catálogo e portal (KPIs de Total)
 uv run odb panorama documentar         # docs/data_catalog/panorama-tier1.md, com os pendentes
+uv run odb panorama propor             # proposta da dimensão principal (onda Total + %)
 ```
 
 `descrever` grava `/DescritoresTabela/t/<tabela>` em `configs/catalog/descritores/`

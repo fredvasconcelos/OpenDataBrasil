@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 
 import type { Kpi, Navigation } from "@/lib/types";
+import { formatPeriod } from "@/lib/format";
 
 interface Props {
   nav: Navigation;
@@ -60,7 +61,7 @@ export function Sidebar({
             <select value={period} onChange={(e) => onPeriod(e.target.value)}>
               {kpi.periods.map((p) => (
                 <option key={p} value={p}>
-                  {p}
+                  {formatPeriod(p)}
                 </option>
               ))}
             </select>

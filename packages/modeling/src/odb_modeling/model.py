@@ -14,7 +14,7 @@ import re
 import unicodedata
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 
 import polars as pl
 
@@ -63,6 +63,7 @@ class DatasetInfo:
     table_id: str
     reference_url: str | None
     license_id: str
+    period_type: str = "ano"
 
 
 def slug(text: str) -> str:
@@ -232,8 +233,13 @@ def build_observations(
     silver_version: int,
     build_id: str,
     pending: Mapping[tuple[str, str], set[str]],
+    period_types: Mapping[str, str] | None = None,
 ) -> pl.DataFrame:
-    """Estrutura universal ``indicator_observation`` (§10.6)."""
+    """Estrutura universal ``indicator_observation`` (§10.6).
+
+    ``period_types`` (dataset → ``mes``/``trimestre``) converte o código SIDRA
+    do período na chave da Gold (``gold_period``); sem tipo, o período é anual.
+    """
     dims = dimension_map(catalog)
     category_keys = (
         pl.col("classifications")
@@ -274,9 +280,32 @@ def build_observations(
         .join(pending_keys, on=["dataset_id", "period", "geography_key"], how="left")
         .with_columns(pl.col("flags").fill_null(pl.lit([], dtype=pl.List(pl.String))))
     )
+    period = pl.col("period")
+    for kind in ("mes", "trimestre"):
+        ids = [d for d, t in (period_types or {}).items() if t == kind]
+        if ids:
+            period = (
+                pl.when(pl.col("dataset_id").is_in(ids)).then(gold_period(kind)).otherwise(period)
+            )
+    frame = frame.with_columns(period.alias("period"))
     return _conform(frame, INDICATOR_OBSERVATION).sort(
         "indicator_id", "period", "geography_key", "breakdown_key"
     )
+
+
+def gold_period(period_type: str) -> pl.Expr:
+    """Código SIDRA do período → chave da Gold.
+
+    Ano "2022" fica igual; mês "202609" vira "2026M09"; trimestre "202602"
+    vira "2026T2". Assim períodos de tipos diferentes nunca colidem em
+    ``dim_period`` e a ordem alfabética é a cronológica dentro de cada tipo.
+    """
+    code = pl.col("period")
+    if period_type == "mes":
+        return code.str.slice(0, 4) + pl.lit("M") + code.str.slice(4, 2)
+    if period_type == "trimestre":
+        return code.str.slice(0, 4) + pl.lit("T") + code.str.slice(5, 1)
+    return code
 
 
 def category_column(classification_id: str) -> pl.Expr:
@@ -325,20 +354,45 @@ def build_fact(
 # ------------------------------------------------------------------ dimensões
 
 
+_YEAR = re.compile(r"^(\d{4})$")
+_MONTH = re.compile(r"^(\d{4})M(0[1-9]|1[0-2])$")
+_QUARTER = re.compile(r"^(\d{4})T([1-4])$")
+
+
+def period_row(period: str) -> dict[str, object]:
+    """Tipo, ano e intervalo de datas de uma chave de período da Gold."""
+    if m := _YEAR.match(period):
+        year = int(m[1])
+        return {
+            "period_type": "ano",
+            "year": year,
+            "start": date(year, 1, 1),
+            "end": date(year, 12, 31),
+        }
+    if m := _MONTH.match(period):
+        year, month = int(m[1]), int(m[2])
+        end = date(year + month // 12, month % 12 + 1, 1) - timedelta(days=1)
+        return {"period_type": "mes", "year": year, "start": date(year, month, 1), "end": end}
+    if m := _QUARTER.match(period):
+        year, quarter = int(m[1]), int(m[2])
+        first = 3 * quarter - 2
+        end = date(year + (first + 2) // 12, (first + 2) % 12 + 1, 1) - timedelta(days=1)
+        return {"period_type": "trimestre", "year": year, "start": date(year, first, 1), "end": end}
+    msg = f"período fora dos formatos AAAA, AAAAMmm e AAAATt: {period!r}"
+    raise ValueError(msg)
+
+
 def build_dim_period(observations: pl.DataFrame) -> pl.DataFrame:
-    """Períodos observados. Nesta versão, só anos (outros tipos exigem decisão)."""
+    """Períodos observados: ano (AAAA), mês (AAAAMmm) e trimestre (AAAATt)."""
     periods = sorted(observations["period"].unique().to_list())
-    not_annual = [p for p in periods if not re.fullmatch(r"\d{4}", p)]
-    if not_annual:
-        msg = f"períodos não anuais não suportados nesta versão do modelo: {not_annual[:10]}"
-        raise ValueError(msg)
+    rows = [period_row(p) for p in periods]
     frame = pl.DataFrame(
         {
             "period": periods,
-            "period_type": ["ano"] * len(periods),
-            "year": [int(p) for p in periods],
-            "start_date": [date(int(p), 1, 1) for p in periods],
-            "end_date": [date(int(p), 12, 31) for p in periods],
+            "period_type": [r["period_type"] for r in rows],
+            "year": [r["year"] for r in rows],
+            "start_date": [r["start"] for r in rows],
+            "end_date": [r["end"] for r in rows],
         }
     )
     return _conform(frame, DIM_PERIOD)

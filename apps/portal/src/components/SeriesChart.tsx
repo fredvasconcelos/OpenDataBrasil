@@ -6,7 +6,12 @@ import { area, line } from "d3-shape";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
-import { formatCompact, formatValue, unitSuffix } from "@/lib/format";
+import {
+  formatCompact,
+  formatPeriod,
+  formatValue,
+  unitSuffix,
+} from "@/lib/format";
 import { CHART, SERIES } from "@/lib/theme";
 import type { Series } from "@/lib/types";
 
@@ -40,10 +45,17 @@ export function SeriesChart({ data }: { data: Series }) {
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
-  const periods = [...new Set(data.series.flatMap((s) => s.points.map((p) => p.period)))].sort();
-  const values = data.series.flatMap((s) => s.points.map((p) => p.value)).filter((v): v is number => v !== null);
+  const periods = [
+    ...new Set(data.series.flatMap((s) => s.points.map((p) => p.period))),
+  ].sort();
+  const values = data.series
+    .flatMap((s) => s.points.map((p) => p.value))
+    .filter((v): v is number => v !== null);
   const [lo, hi] = extent(values);
-  const x = scalePoint<string>().domain(periods).range([M.left, W - M.right]).padding(0.4);
+  const x = scalePoint<string>()
+    .domain(periods)
+    .range([M.left, W - M.right])
+    .padding(0.4);
   const y = scaleLinear()
     .domain([Math.min(0, lo ?? 0), hi ?? 1])
     .nice()
@@ -58,7 +70,11 @@ export function SeriesChart({ data }: { data: Series }) {
     .y0(y(Math.max(0, y.domain()[0] ?? 0)))
     .y1((p) => y(p.value ?? 0));
   const step = Math.max(1, Math.ceil(periods.length / MAX_X_LABELS));
-  const showLabel = (i: number) => i % step === 0 || i === periods.length - 1;
+  const last = periods.length - 1;
+  // Rótulos a cada `step` períodos e sempre o último; o vizinho próximo demais do
+  // último é omitido para não sobrepor.
+  const showLabel = (i: number) =>
+    i === last || (i % step === 0 && last - i >= step);
   const color = (i: number) => SERIES[i % SERIES.length] as string;
   const unit = unitSuffix(data.unit);
   const tip = (() => {
@@ -75,7 +91,13 @@ export function SeriesChart({ data }: { data: Series }) {
   return (
     <figure className="series-figure">
       <div ref={box} className="series-plot">
-        <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={`${t("seriesTitle")}: ${data.geography.name}`}>
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          width={W}
+          height={H}
+          role="img"
+          aria-label={`${t("seriesTitle")}: ${data.geography.name}`}
+        >
           {y.ticks(5).map((tick) => (
             <g key={tick}>
               <line
@@ -100,15 +122,31 @@ export function SeriesChart({ data }: { data: Series }) {
           ))}
           {periods.map((p, i) =>
             showLabel(i) ? (
-              <text key={p} x={x(p)} y={H - 8} textAnchor="middle" fontSize="12" fontWeight="700" style={{ fill: CHART.label }}>
-                {p}
+              <text
+                key={p}
+                x={x(p)}
+                y={H - 8}
+                // O último rótulo alinha pela direita para não ser cortado na borda.
+                textAnchor={
+                  i === periods.length - 1 && periods.length > 1
+                    ? "end"
+                    : "middle"
+                }
+                fontSize="12"
+                fontWeight="700"
+                style={{ fill: CHART.label }}
+              >
+                {formatPeriod(p)}
               </text>
             ) : null,
           )}
           {data.series[0] ? (
             <path
               d={fill(data.series[0].points) ?? ""}
-              style={{ fill: color(0), fillOpacity: "var(--odbr-chart-area-opacity)" }}
+              style={{
+                fill: color(0),
+                fillOpacity: "var(--odbr-chart-area-opacity)",
+              }}
             />
           ) : null}
           {tip ? (
@@ -133,14 +171,20 @@ export function SeriesChart({ data }: { data: Series }) {
               {s.points
                 .filter((p) => p.value !== null)
                 .map((p) => {
-                  const active = hover?.serie === i && hover.period === p.period;
+                  const active =
+                    hover?.serie === i && hover.period === p.period;
                   return (
                     <circle
                       key={p.period}
                       cx={x(p.period)}
                       cy={y(p.value ?? 0)}
                       r={(i === 0 ? 3.5 : 2.5) + (active ? 2 : 0)}
-                      style={{ fill: active ? color(i) : CHART.surface, stroke: color(i), strokeWidth: 2, pointerEvents: "none" }}
+                      style={{
+                        fill: active ? color(i) : CHART.surface,
+                        stroke: color(i),
+                        strokeWidth: 2,
+                        pointerEvents: "none",
+                      }}
                     />
                   );
                 })}
@@ -155,7 +199,9 @@ export function SeriesChart({ data }: { data: Series }) {
                     cy={y(p.value ?? 0)}
                     r={10}
                     tabIndex={i === 0 ? 0 : -1}
-                    onPointerEnter={() => setHover({ serie: i, period: p.period })}
+                    onPointerEnter={() =>
+                      setHover({ serie: i, period: p.period })
+                    }
                     onPointerLeave={() => setHover(null)}
                     onFocus={() => setHover({ serie: i, period: p.period })}
                     onBlur={() => setHover(null)}
@@ -170,14 +216,19 @@ export function SeriesChart({ data }: { data: Series }) {
             role="status"
             style={{ left: tip.x, top: tip.y }}
           >
-            <span className="chart-tip-period">{tip.point.period}</span>
+            <span className="chart-tip-period">
+              {formatPeriod(tip.point.period)}
+            </span>
             <span className="chart-tip-value">
               {formatValue(tip.point.value, tip.point.status)}
               {unit ? <small> {unit}</small> : null}
             </span>
             {data.series.length > 1 ? (
               <span className="chart-tip-label">
-                <i aria-hidden="true" style={{ background: color(tip.index) }} />
+                <i
+                  aria-hidden="true"
+                  style={{ background: color(tip.index) }}
+                />
                 {tip.serie.label}
               </span>
             ) : null}
@@ -188,12 +239,22 @@ export function SeriesChart({ data }: { data: Series }) {
         <ul className="series-legend">
           {data.series.map((s, i) => (
             <li key={s.key}>
-              <span aria-hidden="true" style={{ width: 16, height: 3, borderRadius: 2, background: color(i) }} />
+              <span
+                aria-hidden="true"
+                style={{
+                  width: 16,
+                  height: 3,
+                  borderRadius: 2,
+                  background: color(i),
+                }}
+              />
               {s.label}
             </li>
           ))}
         </ul>
-        {periods.length === 1 ? <p className="muted">{t("singlePeriod")}</p> : null}
+        {periods.length === 1 ? (
+          <p className="muted">{t("singlePeriod")}</p>
+        ) : null}
       </figcaption>
     </figure>
   );

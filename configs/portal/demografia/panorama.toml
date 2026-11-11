@@ -163,6 +163,20 @@ id = "trabalho_rendimento"
 label = "Trabalho e rendimento"
 
 [[themes.subthemes]]
+id = "ocupacao"
+label = "Ocupação e desocupação"
+
+[[themes.subthemes.kpis]]
+id = "forca_trabalho"
+label = "Força de trabalho, ocupação e desocupação"
+indicator = "forca_trabalho"
+
+[[themes.subthemes.kpis]]
+id = "taxas_desocupacao"
+label = "Taxas de desocupação e de subutilização"
+indicator = "taxas_desocupacao"
+
+[[themes.subthemes]]
 id = "informalidade"
 label = "Informalidade"
 
@@ -170,6 +184,20 @@ label = "Informalidade"
 id = "taxa_informalidade"
 label = "Taxa de informalidade"
 indicator = "taxa_informalidade"
+
+[[themes.subthemes]]
+id = "rendimento_trabalho"
+label = "Rendimento do trabalho"
+
+[[themes.subthemes.kpis]]
+id = "rendimento_medio_trabalho"
+label = "Rendimento médio real do trabalho"
+indicator = "rendimento_medio_trabalho"
+
+[[themes.subthemes.kpis]]
+id = "massa_rendimento"
+label = "Massa de rendimento real do trabalho"
+indicator = "massa_rendimento"
 
 [[themes.subthemes]]
 id = "rendimento_domiciliar"
@@ -389,6 +417,30 @@ id = "producao_lavouras"
 label = "Área, produção e valor das lavouras"
 indicator = "producao_lavouras"
 
+[[themes.subthemes.kpis]]
+id = "safra_estimada"
+label = "Estimativa da safra (área, produção e rendimento)"
+indicator = "safra_estimada"
+
+[[themes.subthemes]]
+id = "pecuaria"
+label = "Pecuária e produção animal"
+
+[[themes.subthemes.kpis]]
+id = "abate_bovinos"
+label = "Abate de bovinos"
+indicator = "abate_bovinos"
+
+[[themes.subthemes.kpis]]
+id = "leite_adquirido"
+label = "Leite adquirido e industrializado"
+indicator = "leite_adquirido"
+
+[[themes.subthemes.kpis]]
+id = "ovos_produzidos"
+label = "Produção de ovos de galinha"
+indicator = "ovos_produzidos"
+
 [[themes.subthemes]]
 id = "silvicultura_extracao"
 label = "Silvicultura e extração vegetal"
@@ -461,6 +513,20 @@ label = "Atividade da construção"
 id = "empresas_construcao"
 label = "Empresas de construção: pessoal, salários e valor das obras"
 indicator = "empresas_construcao"
+
+[[themes.subthemes]]
+id = "custos_construcao"
+label = "Custos e insumos da construção"
+
+[[themes.subthemes.kpis]]
+id = "custo_m2"
+label = "Custo médio do metro quadrado da construção"
+indicator = "custo_m2"
+
+[[themes.subthemes.kpis]]
+id = "insumos_construcao"
+label = "Produção de insumos típicos da construção civil"
+indicator = "insumos_construcao"
 
 [[themes]]
 id = "comercio"
@@ -548,6 +614,38 @@ label = "Dispêndio em P&D em proporção do PIB"
 indicator = "pd_pib"
 
 [[themes]]
+id = "precos"
+label = "Preços"
+
+[[themes.subthemes]]
+id = "precos_consumidor"
+label = "Inflação ao consumidor"
+
+[[themes.subthemes.kpis]]
+id = "ipca"
+label = "IPCA"
+indicator = "ipca"
+
+[[themes.subthemes.kpis]]
+id = "inpc"
+label = "INPC"
+indicator = "inpc"
+
+[[themes.subthemes.kpis]]
+id = "ipca15"
+label = "IPCA-15"
+indicator = "ipca15"
+
+[[themes.subthemes]]
+id = "precos_produtor"
+label = "Preços ao produtor"
+
+[[themes.subthemes.kpis]]
+id = "ipp"
+label = "Índice de Preços ao Produtor"
+indicator = "ipp"
+
+[[themes]]
 id = "contas_nacionais"
 label = "Contas nacionais e regionais"
 
@@ -568,6 +666,20 @@ label = "PIB dos municípios"
 id = "pib_municipios"
 label = "PIB dos municípios e valor adicionado por atividade"
 indicator = "pib_municipios"
+
+[[themes.subthemes]]
+id = "investimento_poupanca"
+label = "Investimento e poupança"
+
+[[themes.subthemes.kpis]]
+id = "taxa_investimento"
+label = "Taxa de investimento"
+indicator = "taxa_investimento"
+
+[[themes.subthemes.kpis]]
+id = "taxa_poupanca"
+label = "Taxa de poupança"
+indicator = "taxa_poupanca"
 
 [[themes]]
 id = "meio_ambiente"

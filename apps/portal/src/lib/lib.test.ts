@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { flattenDetail } from "./detail";
-import { formatBound, formatCompact, formatShare, formatValue } from "./format";
+import { formatBound, formatCompact, formatPeriod, formatShare, formatValue } from "./format";
 import { rewindForD3 } from "./geo";
 import { MISSING_COLOR, ZERO_COLOR, nextNice, niceCuts, quantileScale, snapNice } from "./scale";
 import { readState, writeState } from "./state";
@@ -245,5 +245,15 @@ describe("zoom", () => {
     expect(view.y + view.k * 150).toBeCloseTo(200);
     // A escala respeita os limites pedidos.
     expect(fitView([[0, 0], [800, 400]], 800, 400, [1.5, 80]).k).toBe(1.5);
+  });
+});
+
+describe("formatPeriod", () => {
+  it("formata ano, mês e trimestre da Gold", () => {
+    expect(formatPeriod("2022")).toBe("2022");
+    expect(formatPeriod("2026M09")).toBe("set/2026");
+    expect(formatPeriod("2026M01")).toBe("jan/2026");
+    expect(formatPeriod("2026T2")).toBe("2º tri/2026");
+    expect(formatPeriod("2026M13")).toBe("2026M13");
   });
 });

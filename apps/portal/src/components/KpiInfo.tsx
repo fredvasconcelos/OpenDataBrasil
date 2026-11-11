@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 
 import type { Kpi } from "@/lib/types";
 import { useMediaQuery, WIDE_QUERY } from "@/lib/useMediaQuery";
+import { formatPeriod } from "@/lib/format";
 
 // Metadados visíveis do indicador (§19.4). Design System ODBr:
 // - a linha da fonte (fonte, tabela, link oficial, licença, release) fica sempre visível;
@@ -13,7 +14,10 @@ import { useMediaQuery, WIDE_QUERY } from "@/lib/useMediaQuery";
 export function KpiInfo({ kpi, releaseId }: { kpi: Kpi; releaseId: string }) {
   const t = useTranslations("meta");
   const wide = useMediaQuery(WIDE_QUERY);
-  const periods = kpi.periods.length > 1 ? `${kpi.periods[0]}–${kpi.periods.at(-1)} (${kpi.periods.length})` : kpi.periods[0];
+  const periods =
+    kpi.periods.length > 1
+      ? `${formatPeriod(kpi.periods[0] ?? "")}–${formatPeriod(kpi.periods.at(-1) ?? "")} (${kpi.periods.length})`
+      : formatPeriod(kpi.periods[0] ?? "");
   return (
     <section className="card meta" aria-labelledby="meta-title">
       <h2 id="meta-title" className="sr-only">

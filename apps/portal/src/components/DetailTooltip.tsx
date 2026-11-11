@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useLayoutEffect, useRef } from "react";
 
-import { formatShare, formatValue, unitSuffix } from "@/lib/format";
+import { formatPeriod, formatShare, formatValue, unitSuffix } from "@/lib/format";
 import { SERIES } from "@/lib/theme";
 import type { Detail, DetailNode } from "@/lib/types";
 
@@ -242,7 +242,7 @@ export function DetailTooltip({ name, detail, loading, x, y }: Props) {
       <div className="tt-body">
         <div className="tt-head">
           <span className="tt-name">{name}</span>
-          {detail ? <span className="tt-period">{detail.period}</span> : null}
+          {detail ? <span className="tt-period">{formatPeriod(detail.period)}</span> : null}
         </div>
         {loading && !detail ? (
           <div className="tt-loading" aria-busy="true">

@@ -49,3 +49,14 @@ export function unitSuffix(unit: string): string {
   if (unit === "Habitante por quilômetro quadrado") return "hab/km²";
   return unit.toLowerCase();
 }
+
+const MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+
+/** Período da Gold para exibição: "2022", "2026M09" → "set/2026", "2026T2" → "2º tri/2026". */
+export function formatPeriod(period: string): string {
+  const month = /^(\d{4})M(0[1-9]|1[0-2])$/.exec(period);
+  if (month) return `${MONTHS[Number(month[2]) - 1]}/${month[1]}`;
+  const quarter = /^(\d{4})T([1-4])$/.exec(period);
+  if (quarter) return `${quarter[2]}º tri/${quarter[1]}`;
+  return period;
+}

@@ -45,6 +45,12 @@ NOT_KPI = re.compile(
     re.IGNORECASE,
 )
 OLD_SERIES_YEAR = 2015
+# Tipo de período (rótulo da dimensão na API) → tipo do conector e períodos por ano.
+PERIOD_TYPES = {"Ano": ("ano", 1), "Mês": ("mes", 12), "Trimestre": ("trimestre", 4)}
+# Acima disso, o nível municipal da tabela é o país inteiro (a API devolve todos os
+# municípios); abaixo, é um recorte (por exemplo, só as capitais) e vale a contagem.
+FULL_MUNICIPAL = 1000
+SIDRA_VALUE_LIMIT = 50_000
 # Notas oficiais copiadas para o indicador; o restante fica na tabela oficial.
 MAX_NOTES = 8
 _TAG = re.compile(r"<[^>]+>")
@@ -88,8 +94,8 @@ def _reason(kpi: PanoramaKpi, info: Mapping[str, Any] | None) -> str:
         return "o Total é só o universo da tabela: entra com as categorias (onda Total + %)"
     if info is None or info.get("status") != "ok":
         return f"tabela não verificada na fonte ({(info or {}).get('error', 'sem verificação')})"
-    if info.get("period_label") != "Ano":
-        return f"períodos por {info.get('period_label')}: a Gold só aceita anos nesta versão"
+    if info.get("period_label") not in PERIOD_TYPES:
+        return f"períodos por {info.get('period_label')}: tipo ainda não suportado na Gold"
     no_total = [
         c["label"]
         for c in info.get("classifications") or []
@@ -105,6 +111,18 @@ def _reason(kpi: PanoramaKpi, info: Mapping[str, Any] | None) -> str:
 def _levels(info: Mapping[str, Any]) -> list[str]:
     levels = info.get("levels") or {}
     return [lv for lv in SUPPORTED_LEVELS if levels.get(lv)]
+
+
+def _rows_per_period(info: Mapping[str, Any], levels: list[str]) -> int:
+    counts = info.get("levels") or {}
+    rows = 0
+    for lv in levels:
+        found = int(counts.get(lv) or 0)
+        if lv == "n6" and found < FULL_MUNICIPAL:
+            rows += found + max(5, found // 5)  # recorte municipal, com folga
+        else:
+            rows += MAX_ROWS_PER_LEVEL[lv]
+    return rows
 
 
 def _periodicity(periods: list[str]) -> str:
@@ -204,7 +222,13 @@ def generate(
         dataset_id = f"ibge-sidra-{kpi.tabela}"
         fact_id = f"fact_sidra_{kpi.tabela}"
         fixed = {c["label"]: c["categories"][0]["id"] for c in info.get("classifications") or []}
-        rows = sum(MAX_ROWS_PER_LEVEL[lv] for lv in levels)
+        period_type, per_year = PERIOD_TYPES[info["period_label"]]
+        rows = _rows_per_period(info, levels) * per_year
+        if rows > SIDRA_VALUE_LIMIT:
+            out.skipped.append(
+                (kpi.id, kpi.tabela, f"{rows} valores por requisição: exige divisão manual")
+            )
+            continue
         title = titles[kpi.tabela]
         descriptor = descriptors.get(kpi.tabela)
         fonte = (descriptor or {}).get("Fonte")
@@ -225,7 +249,9 @@ def generate(
                 ),
                 "license": LICENSE_ID,
                 "access_classification": "public_conditional",
-                "periodicity": _periodicity(info.get("periods") or []),
+                "periodicity": {"mes": "mensal", "trimestre": "trimestral"}.get(
+                    period_type, _periodicity(info.get("periods") or [])
+                ),
                 "reference_url": f"https://sidra.ibge.gov.br/tabela/{kpi.tabela}",
                 "params": {
                     "table": kpi.tabela,
@@ -236,11 +262,17 @@ def generate(
                     "min_rows": 1,
                     "max_rows": rows,
                     "refresh_recent_periods": 1,
+                    **(
+                        {"period_type": period_type, "group_periods_by_year": True}
+                        if period_type != "ano"
+                        else {}
+                    ),
                 },
                 "silver": {"transformer": "sidra_observation", "territorial_reference": "ibge-dtb"},
             }
         )
-        grain = " x ".join([f"território ({', '.join(LEVEL_LABELS[lv] for lv in levels)})", "ano"])
+        territories = ", ".join(LEVEL_LABELS[lv] for lv in levels)
+        grain = f"território ({territories}) x {period_type}"
         if kpi.pausado:
             # Em espera: o dataset fica nas fontes (para repescar), fora do catálogo e do portal.
             out.skipped.append((kpi.id, kpi.tabela, f"em espera: {kpi.pausado}"))
@@ -361,3 +393,126 @@ def render_report(gen: Generated) -> str:
         lines.append(f"{len(gen.skipped)} KPIs planejados ficaram de fora:")
         lines += [f"  {kpi} ({table}): {why}" for kpi, table, why in gen.skipped]
     return "\n".join(lines)
+
+
+# ------------------------------------------------------------------ proposta Total + %
+
+# Classificações que são recortes comuns (filtros), e não o assunto do KPI.
+COMMON_FILTERS = {
+    "Sexo",
+    "Situação do domicílio",
+    "Grupo de idade",
+    "Grupos de idade",
+    "Idade",
+    "Cor ou raça",
+    "Classe de tamanho da população do município",
+    "Localização do domicílio",
+    "Referência temporal",
+    # Recortes técnicos ou de calendário, que não são o assunto do KPI.
+    "Forma de declaração da idade",
+    "Mês de ocorrência",
+    "Tipo de inspeção",
+}
+MAX_LISTED = 8
+
+
+def _top_categories(classification: Mapping[str, Any]) -> list[Mapping[str, Any]]:
+    """Categorias do primeiro nível abaixo do Total (ou do nível mais alto, sem Total)."""
+    cats: list[Mapping[str, Any]] = classification.get("Categorias") or []
+    if not cats:
+        return []
+    top = min(int(c.get("NivelIdentacao") or 0) for c in cats)
+    has_total = bool(classification.get("CategoriasPermitemObterTotal")) and any(
+        int(c.get("NivelIdentacao") or 0) == top and c.get("Nome") == "Total" for c in cats
+    )
+    level = top + 1 if has_total else top
+    return [c for c in cats if int(c.get("NivelIdentacao") or 0) == level]
+
+
+def propose_dimensions(
+    panorama: Panorama, descriptors: Mapping[str, Mapping[str, Any]]
+) -> list[dict[str, Any]]:
+    """Dimensão principal proposta para cada KPI (onda Total + %), a partir dos descritores.
+
+    A dimensão principal é a primeira classificação que não é um recorte comum
+    (sexo, idade, cor ou raça, situação do domicílio...). Sem ela, o primeiro
+    recorte comum. As categorias listadas são as do primeiro nível da hierarquia.
+    """
+    out = []
+    for theme, _sub, kpi in panorama.items():
+        desc = descriptors.get(kpi.tabela) or {}
+        classes: list[Mapping[str, Any]] = desc.get("Classificacoes") or []
+        subject = [c for c in classes if c.get("Nome") not in COMMON_FILTERS]
+        candidates = subject or classes
+        main: Mapping[str, Any] | None = candidates[0] if candidates else None
+        others = [c for c in classes if c is not main]
+        row: dict[str, Any] = {
+            "theme": theme.label,
+            "kpi": kpi.id,
+            "label": kpi.label,
+            "table": kpi.tabela,
+            "classification": None,
+            "categories": [],
+            "sums": None,
+            "has_total": None,
+            "others": [f"c{c['Id']} {c['Nome']}" for c in others],
+        }
+        if main is not None:
+            top = _top_categories(main)
+            row |= {
+                "classification": f"c{main['Id']} {main['Nome']}",
+                "categories": [str(c.get("Nome")) for c in top],
+                "sums": bool(main.get("CategoriasPodemSerSomadas")),
+                "has_total": bool(main.get("CategoriasPermitemObterTotal")),
+                "is_subject": bool(subject),
+            }
+        out.append(row)
+    return out
+
+
+def render_proposal(rows: list[dict[str, Any]], published: set[str]) -> str:
+    """Proposta em Markdown, para aprovação do mantenedor."""
+    lines = [
+        "# Proposta: dimensão principal de cada KPI (onda Total + %)",
+        "",
+        "<!-- Gerado por `odb panorama propor`; não editar à mão. -->",
+        "",
+        "Regra do mantenedor (ADR-0010): o KPI é o Total; as categorias da dimensão "
+        "principal aparecem como % do Total; as demais dimensões ficam no Total.",
+        "",
+        "A proposta vem dos descritores oficiais (`configs/catalog/descritores/`). A "
+        "dimensão principal é a primeira classificação que não é um recorte comum "
+        "(sexo, idade, cor ou raça, situação do domicílio, tamanho do município, "
+        "localização, referência temporal). Os recortes comuns seguem como filtros. "
+        "**Soma** diz se o IBGE permite somar as categorias (`CategoriasPodemSerSomadas`); "
+        "sem soma, o % não é uma partição do Total e o portal mostra o valor de cada "
+        "categoria. Para aprovar ou trocar uma linha, basta indicar a tabela e a "
+        "classificação desejada.",
+        "",
+        "| Tema | KPI | Tabela | Estado | Dimensão principal | Categorias (1º nível) | Soma | "
+        "Outras classificações |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    for r in rows:
+        cats = r["categories"]
+        listed = "; ".join(cats[:MAX_LISTED]) + (
+            f"; … (+{len(cats) - MAX_LISTED})" if len(cats) > MAX_LISTED else ""
+        )
+        dim = r["classification"] or "— (só o Total)"
+        if r["classification"] and not r.get("is_subject"):
+            dim += " *(recorte comum)*"
+        sums = "—" if r["sums"] is None else ("sim" if r["sums"] else "não")
+        if r["has_total"] is False:
+            sums += " (sem Total)"
+        cells = [
+            r["theme"],
+            r["label"],
+            f"[{r['table']}](https://sidra.ibge.gov.br/tabela/{r['table']})",
+            "publicado (Total)" if r["kpi"] in published else "pendente",
+            dim,
+            listed or "—",
+            sums,
+            "; ".join(r["others"]) or "—",
+        ]
+        lines.append("| " + " | ".join(c.replace("|", "/") for c in cells) + " |")
+    return "\n".join(lines) + "\n"
