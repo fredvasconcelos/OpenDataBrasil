@@ -24,8 +24,8 @@ docker compose --profile web build portal && docker compose --profile web up -d 
 
 | Página | Conteúdo |
 |---|---|
-| `/` | pesquisa de indicadores (ignora acentos) e temas |
-| `/dashboard` | painel: barra lateral (filtros e temas > subtemas > KPIs), mapa, evolução temporal, tabela, exportações e metadados (layout do Design System v2: empilhado até 1599 px, tela cheia a partir de 1600 px) |
+| `/` | pesquisa de indicadores (ignora acentos) e os 20 temas do panorama, com a contagem de indicadores em preparação |
+| `/dashboard` | painel: barra lateral (filtros e temas > subtemas > KPIs; temas recolhidos, KPIs planejados desativados "em preparação"), mapa, evolução temporal, tabela, exportações e metadados (layout do Design System v2: empilhado até 1599 px, tela cheia a partir de 1600 px) |
 | `/sobre` | release ativo, conjuntos de dados e licenças |
 
 O estado do painel fica na URL e pode ser compartilhado:
@@ -81,7 +81,7 @@ Os testes cobrem:
   - trilha do recorte e tabela restrita ao recorte;
 - recorte pela roda do mouse (abrir e fechar), descartando o tooltip do nível anterior;
 - recorte vindo da URL e tema escuro, com a escolha mantida ao recarregar;
-- legenda com título ("População") e grupos "Até…" / "Mais de…";
+- legenda com título ("Pessoas", pela unidade) e grupos "Até…" / "Mais de…";
 - tela cheia (1920 × 1080): sem rolagem, mapa à esquerda e gráfico e tabela à
   direita; filtros na barra lateral e exportações junto do que exportam;
 - clique num município do mapa (Ourolândia, no recorte da Bahia): a tabela vai
@@ -89,7 +89,13 @@ Os testes cobrem:
 - tooltip aninhado (Bahia: Parda 57,3% > Homens 48,3%), seleção sem contorno de
   foco e período;
 - "Limpar filtros", fonte visível e exportação CSV;
-- mapa municipal e a página "Sobre".
+- mapa municipal e a página "Sobre";
+- panorama: 20 temas recolhidos (só o tema atual aberto), KPIs "em preparação"
+  sem ação, com a tabela SIDRA no `title` (tema Preços, ainda só mensal);
+- tooltip da evolução temporal ao passar o mouse sobre um ponto;
+- KPI de Total gerado do panorama (Nascidos vivos, tabela 2609): mapa por UF,
+  fonte e notas oficiais no rodapé;
+- POF 6715 completa: classes de rendimento e despesas de consumo.
 
 As capturas ficam em `apps/portal/test-results/`. Esses testes dependem dos
 dados reais e não rodam no CI.

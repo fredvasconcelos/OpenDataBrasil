@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping
+from datetime import datetime
 from typing import Any, Literal
 
 from sqlalchemy import Engine, text
@@ -11,7 +12,7 @@ from sqlalchemy.exc import IntegrityError
 
 from odb_ingestion.config import SourceCatalog
 from odb_ingestion.contract import PartitionState, Watermark
-from odb_ingestion.runner import ArtifactRecord, DuplicateContentError, StoredArtifact
+from odb_ingestion.runner import ArtifactRecord, Checkpoint, DuplicateContentError, StoredArtifact
 
 _STORED_UQ = "bronze_artifact_stored_checksum_uq"
 
@@ -149,6 +150,41 @@ class PostgresIngestionRegistry:
                 {"sha": checksum_sha256},
             ).first()
         return StoredArtifact(row[0], row[1]) if row else None
+
+    def find_checkpoint(
+        self, dataset_id: str, partition_key: str, source_url: str, since: datetime
+    ) -> Checkpoint | None:
+        """Última partição válida com esta URL obtida desde ``since`` (retomada)."""
+        sql = text(
+            """
+            SELECT src.artifact_id::text, src.storage_uri, src.checksum_sha256,
+                   a.retrieved_at, a.http_status, a.content_type, a.file_size_bytes,
+                   a.response_headers
+            FROM operations.bronze_artifact a
+            JOIN operations.bronze_artifact src
+              ON src.artifact_id = COALESCE(a.reused_from, a.artifact_id)
+            WHERE a.dataset_id = :ds AND a.partition_key = :pk AND a.source_url = :url
+              AND a.ingestion_status IN ('stored', 'reused') AND a.retrieved_at >= :since
+              AND src.ingestion_status = 'stored'
+            ORDER BY a.retrieved_at DESC
+            LIMIT 1
+            """
+        )
+        params = {"ds": dataset_id, "pk": partition_key, "url": source_url, "since": since}
+        with self._engine.connect() as conn:
+            row = conn.execute(sql, params).first()
+        if row is None:
+            return None
+        return Checkpoint(
+            artifact_id=row[0],
+            storage_uri=row[1],
+            checksum_sha256=row[2],
+            retrieved_at=row[3],
+            http_status=row[4],
+            content_type=row[5],
+            file_size_bytes=row[6],
+            response_headers=dict(row[7] or {}),
+        )
 
     def record_artifact(self, record: ArtifactRecord) -> None:
         """Insere o artefato. Conflito de deduplicação vira ``DuplicateContentError``."""

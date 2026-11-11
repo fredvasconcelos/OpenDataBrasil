@@ -26,6 +26,7 @@ Não edite: os testes dependem dos bytes exatos.
 | `sidra/t9606_n1_periods.json`, `sidra/t9606_n1n2n3_p<ano>.json` | `/t/9606/n1/all/v/93/p/all/c2/all/c287/100362/c86/all` e `/t/9606/n1/all/n2/all/n3/all/v/93/p/<2010\|2022>/c2/all/c287/100362/c86/all` | 200 | 2010 e 2022; 6 cores ou raças × 3 sexos × 33 territórios (capturado em 2026-11-05) |
 | `sidra/t8176_n1_periods.json`, `sidra/t8176_n1n2n3_p2022.json` | `/t/8176/n1/all/v/4709/p/all/c2/all/c2661/all/c287/100362` e `/t/8176/n1/all/n2/all/n3/all/v/4709/p/2022/c2/all/c2661/all/c287/100362` | 200 | 3 sexos × 3 localizações × 33 territórios (capturado em 2026-11-05) |
 | `sidra/t9765_n1_periods.json`, `sidra/t9765_n1n2n3n131n134n145n1145_p2022.json` | `/t/9765/n1/all/v/6559/p/all/c2/all/c287/100362` e `/t/9765/n1/all/n2/all/n3/all/n131/all/n134/all/n145/all/n1145/all/v/6559,7079/p/2022/c2/all/c287/100362` | 200 | 2 variáveis × 3 sexos × 1.041 territórios (6.246 valores; capturado em 2026-11-05) |
+| `sidra/t6715_n1_periods.json`, `sidra/t6715_n1_p2018_v<var>.json` | `/t/6715/n1/all/v/1201/p/all/c339/all/c12190/all` e `/t/6715/n1/all/v/<1201\|1204>/p/2018/c339/all/c12190/all` | 200 | POF 2017-2018 só no nível Brasil: 8 classes de rendimento × 93 tipos de despesa (744 valores por variável; capturado em 2026-11-11). O arquivo de períodos foi reduzido ao cabeçalho e à primeira linha, que bastam para a descoberta |
 
 Dados **sintéticos** usados nos testes, gerados em código e identificados como tal:
 

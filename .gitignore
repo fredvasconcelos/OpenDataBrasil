@@ -44,3 +44,7 @@ desktop.ini
 
 # Pacotes do Design System trocados com o Claude Design (o conteúdo fica em design-system/)
 odbr-design-system_*.zip
+
+# Material do acervo SIDRA salvo manualmente no navegador (inclui scripts de terceiros).
+# O inventário curado vai para configs/ com procedência.
+pagina_web/

@@ -548,6 +548,16 @@ export interface components {
             format: "csv" | "xlsx" | "parquet" | "json";
         };
         /**
+         * FilterOut
+         * @description Filtro previsto para um tema do panorama (ex.: sexo, produto).
+         */
+        FilterOut: {
+            /** Filter Id */
+            filter_id: string;
+            /** Label */
+            label: string;
+        };
+        /**
          * GeographyOut
          * @description Território.
          */
@@ -738,6 +748,33 @@ export interface components {
             themes: components["schemas"]["ThemeOut"][];
         };
         /**
+         * PlannedKpiOut
+         * @description KPI do panorama ainda sem dados publicados ("em preparação").
+         */
+        PlannedKpiOut: {
+            /** Kpi Id */
+            kpi_id: string;
+            /** Label */
+            label: string;
+            /**
+             * Source Table Id
+             * @description Código da tabela no SIDRA.
+             */
+            source_table_id: string;
+            /**
+             * Survey
+             * @description Pesquisa de origem (inferida do acervo).
+             */
+            survey: string;
+            /**
+             * Filters
+             * @description Filtros previstos (filter_id).
+             */
+            filters: string[];
+            /** Note */
+            note: string | null;
+        };
+        /**
          * PointOut
          * @description Ponto de uma série.
          */
@@ -919,6 +956,11 @@ export interface components {
             label: string;
             /** Kpis */
             kpis: components["schemas"]["KpiOut"][];
+            /**
+             * Planned
+             * @description KPIs do panorama em preparação.
+             */
+            planned: components["schemas"]["PlannedKpiOut"][];
         };
         /**
          * TableOut
@@ -982,6 +1024,11 @@ export interface components {
             theme_id: string;
             /** Label */
             label: string;
+            /**
+             * Filters
+             * @description Filtros previstos para o tema.
+             */
+            filters: components["schemas"]["FilterOut"][];
             /** Subthemes */
             subthemes: components["schemas"]["SubthemeOut"][];
         };

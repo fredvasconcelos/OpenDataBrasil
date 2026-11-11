@@ -15,11 +15,20 @@ Para cada dataset:
    continua sendo a referência.
 
 A falha de um dataset nunca interrompe os demais (``run_many``).
+
+Adiamento (``run_many(defer_rounds=N)``): nas primeiras passadas, cada
+requisição tem poucas tentativas e uma falha transitória (timeout, conexão,
+429 ou 5xx) encerra o dataset na hora, que vai para o fim da fila. As rodadas
+seguintes tentam os adiados; a última usa as tentativas normais da fonte. Na
+repescagem, as partições já baixadas e validadas na mesma execução são
+reaproveitadas da Bronze (registro ``reused``), sem novo download. O watermark
+continua só com a carga completa.
 """
 
 from __future__ import annotations
 
 import logging
+import time
 import uuid
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
@@ -45,6 +54,24 @@ ArtifactStatus = Literal["stored", "reused", "not_modified", "quarantined", "fai
 
 class DuplicateContentError(RuntimeError):
     """Outro registro ``stored`` com o mesmo checksum foi gravado concorrentemente."""
+
+
+class DeferredIngestionError(RuntimeError):
+    """Dataset adiado por falha transitória numa passada com adiamento."""
+
+
+@dataclass(frozen=True, slots=True)
+class Checkpoint:
+    """Partição já baixada e validada na execução atual (bytes na Bronze)."""
+
+    artifact_id: str  # artefato ``stored`` que contém os bytes
+    storage_uri: str
+    checksum_sha256: str
+    retrieved_at: datetime
+    http_status: int | None
+    content_type: str | None
+    file_size_bytes: int | None
+    response_headers: Mapping[str, str]
 
 
 @dataclass(frozen=True, slots=True)
@@ -106,6 +133,12 @@ class IngestionRegistry(Protocol):
         """Insere o artefato. Lança ``DuplicateContentError`` em conflito de deduplicação."""
         ...
 
+    def find_checkpoint(
+        self, dataset_id: str, partition_key: str, source_url: str, since: datetime
+    ) -> Checkpoint | None:
+        """Última partição ``stored``/``reused`` com esta URL obtida desde ``since``."""
+        ...
+
     def get_watermark(self, dataset_id: str) -> Watermark:
         """Último estado válido das partições do dataset."""
         ...
@@ -140,6 +173,8 @@ class IngestionReport:
     bytes_stored: int = 0
     error: str | None = None
     notes: list[str] = field(default_factory=list)
+    deferred: bool = False
+    rounds: int = 1
 
     def bump(self, status: ArtifactStatus) -> None:
         """Conta um artefato por estado."""
@@ -196,14 +231,61 @@ class IngestionRunner:
             return connector.plan(dataset_id, http, watermark, full=full)
 
     def run_many(
-        self, dataset_ids: Sequence[str], *, run_id: str | None = None, full: bool = False
+        self,
+        dataset_ids: Sequence[str],
+        *,
+        run_id: str | None = None,
+        full: bool = False,
+        defer_rounds: int = 0,
+        first_pass_attempts: int = 2,
+        pause_s: float = 0.0,
+        sleep: Callable[[float], None] = time.sleep,
     ) -> list[IngestionReport]:
-        """Ingere cada dataset de forma isolada."""
+        """Ingere cada dataset de forma isolada.
+
+        Com ``defer_rounds`` > 0, falhas transitórias adiam o dataset para a
+        rodada seguinte (no máximo ``defer_rounds`` rodadas extras, com
+        ``pause_s`` entre elas). Devolve o último relatório de cada dataset.
+        """
         self.sync_catalog()
-        return [self.run(d, run_id=run_id, full=full, sync=False) for d in dataset_ids]
+        started = datetime.now(UTC)
+        final: dict[str, IngestionReport] = {}
+        queue = list(dict.fromkeys(dataset_ids))
+        for round_no in range(defer_rounds + 1):
+            last = round_no == defer_rounds
+            deferred: list[str] = []
+            for dataset_id in queue:
+                report = self.run(
+                    dataset_id,
+                    run_id=run_id,
+                    full=full,
+                    sync=False,
+                    defer_transient=not last,
+                    attempts=None if last else first_pass_attempts,
+                    checkpoint_since=None if full or defer_rounds == 0 else started,
+                )
+                report.rounds = round_no + 1
+                final[dataset_id] = report
+                if report.deferred:
+                    deferred.append(dataset_id)
+            if not deferred:
+                break
+            logger.warning("datasets adiados", extra={"round": round_no + 1, "datasets": deferred})
+            queue = deferred
+            if pause_s:
+                sleep(pause_s)
+        return [final[d] for d in dict.fromkeys(dataset_ids)]
 
     def run(
-        self, dataset_id: str, *, run_id: str | None = None, full: bool = False, sync: bool = True
+        self,
+        dataset_id: str,
+        *,
+        run_id: str | None = None,
+        full: bool = False,
+        sync: bool = True,
+        defer_transient: bool = False,
+        attempts: int | None = None,
+        checkpoint_since: datetime | None = None,
     ) -> IngestionReport:
         """Ingere um dataset. Nunca propaga exceções do dataset; o resultado vai no relatório."""
         if sync:
@@ -212,18 +294,42 @@ class IngestionRunner:
         ingestion_id = str(uuid.uuid4())
         report = IngestionReport(ingestion_id=ingestion_id, dataset_id=dataset_id)
         started_at = datetime.now(UTC)
-        self._registry.start_ingestion(ingestion_id, dataset_id, run_id, {"full": full})
+        self._registry.start_ingestion(
+            ingestion_id,
+            dataset_id,
+            run_id,
+            {"full": full, "defer_transient": defer_transient, "attempts": attempts},
+        )
         with log_context(ingestion_id=ingestion_id, dataset_id=dataset_id):
             try:
                 if not dataset.enabled:
                     msg = f"dataset {dataset_id} desabilitado na configuração"
                     raise RuntimeError(msg)
                 self._capacity_check()
-                self._execute(dataset, ingestion_id, started_at, report, full=full)
+                self._execute(
+                    dataset,
+                    ingestion_id,
+                    started_at,
+                    report,
+                    full=full,
+                    defer_transient=defer_transient,
+                    attempts=attempts,
+                    checkpoint_since=checkpoint_since,
+                )
+            except DeferredIngestionError as exc:
+                report.status = "failed"
+                report.deferred = True
+                report.error = f"adiada: {exc}"
+                logger.warning("ingestion deferred", extra={"reason": str(exc)[:300]})
             except Exception as exc:
                 report.status = "failed"
                 report.error = f"{type(exc).__name__}: {exc}"
                 logger.exception("ingestion failed")
+            except BaseException as exc:
+                # Interrupção (Ctrl+C, SIGINT): registra a falha com motivo e propaga.
+                report.status = "failed"
+                report.error = f"interrompida ({type(exc).__name__})"
+                raise
             finally:
                 self._bronze.cleanup_staging(ingestion_id)
                 self._registry.finish_ingestion(
@@ -240,6 +346,9 @@ class IngestionRunner:
         report: IngestionReport,
         *,
         full: bool,
+        defer_transient: bool = False,
+        attempts: int | None = None,
+        checkpoint_since: datetime | None = None,
     ) -> None:
         connector = self.connector_for(dataset)
         watermark = Watermark() if full else self._registry.get_watermark(dataset.id)
@@ -249,6 +358,10 @@ class IngestionRunner:
         failures: list[str] = []
 
         with self._http_factory(connector) as http:
+            if attempts is not None:
+                http.policy = http.policy.model_copy(
+                    update={"max_attempts": min(attempts, http.policy.max_attempts)}
+                )
             plan = connector.plan(dataset.id, http, watermark, full=full)
             report.planned = len(plan.requests)
             report.notes.extend(plan.notes)
@@ -265,6 +378,13 @@ class IngestionRunner:
                     "reference_period": request.reference_period,
                 }
                 dest = staging / f"{index:05d}-{request.artifact_name}"
+                if checkpoint_since is not None:
+                    checkpoint = self._registry.find_checkpoint(
+                        dataset.id, request.partition_key, request.url, checkpoint_since
+                    )
+                    if checkpoint is not None:
+                        pending[request.partition_key] = self._resume(checkpoint, base, report)
+                        continue
                 try:
                     result = connector.extract(request, http, dest)
                 except HttpError as exc:
@@ -279,6 +399,8 @@ class IngestionRunner:
                             **base,
                         ),
                     )
+                    if defer_transient and exc.transient:
+                        raise DeferredIngestionError(str(exc)) from exc
                     failures.append(f"{request.partition_key}: {exc}")
                     continue
                 report.bytes_downloaded += result.size_bytes
@@ -382,6 +504,38 @@ class IngestionRunner:
             etag=result.headers.get("etag"),
             last_modified=result.headers.get("last-modified"),
             source_version=result.headers.get("last-modified"),
+        )
+        return state, artifact_id
+
+    def _resume(
+        self, checkpoint: Checkpoint, base: Mapping[str, Any], report: IngestionReport
+    ) -> tuple[PartitionState, str | None]:
+        """Reaproveita a partição baixada nesta execução (sem novo download)."""
+        artifact_id = str(uuid.uuid4())
+        headers = dict(checkpoint.response_headers)
+        self._record(
+            report,
+            ArtifactRecord(
+                artifact_id=artifact_id,
+                retrieved_at=checkpoint.retrieved_at,
+                status="reused",
+                http_status=checkpoint.http_status,
+                content_type=checkpoint.content_type,
+                file_size_bytes=checkpoint.file_size_bytes,
+                checksum_sha256=checkpoint.checksum_sha256,
+                storage_uri=checkpoint.storage_uri,
+                reused_from=checkpoint.artifact_id,
+                source_version=headers.get("last-modified"),
+                response_headers=headers,
+                validation={"resumed_from_checkpoint": True},
+                **base,
+            ),
+        )
+        state = PartitionState(
+            checksum_sha256=checkpoint.checksum_sha256,
+            etag=headers.get("etag"),
+            last_modified=headers.get("last-modified"),
+            source_version=headers.get("last-modified"),
         )
         return state, artifact_id
 

@@ -3,6 +3,8 @@
 import dataclasses
 import io
 import json
+import shutil
+import tempfile
 import zipfile
 from collections.abc import Iterator
 from datetime import UTC, datetime
@@ -24,11 +26,16 @@ from odb_api.portal import PortalConfigError, check_against_release, load_portal
 from odb_api.release import ReleaseContext, ReleaseResolver, ReleaseUnavailableError
 from odb_catalog.publication import Release, TableVersion
 from odb_query_engine import DuckDBConfig, DuckDBReadEngine
+from odb_semantics import PanoramaConfigError, load_panorama
 from tests.gold_support import GoldEnv
 from tests.support import duckdb_extension_directory
 
 REPO = Path(__file__).resolve().parents[3]
-PORTAL_DIR = REPO / "configs" / "portal"
+# Só o portal curado: a Gold de teste tem as tabelas das fixtures. Os fragmentos
+# gerados do panorama dependem da Gold real (conferidos em test_panorama_gen).
+PORTAL_DIR = Path(tempfile.mkdtemp(prefix="odb-portal-"))
+shutil.copy(REPO / "configs" / "portal" / "demografia.toml", PORTAL_DIR)
+PANORAMA = REPO / "configs" / "catalog" / "panorama.toml"
 
 
 class FakeCatalog:
@@ -114,7 +121,12 @@ def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[dict[str, Any]]:
         settings=settings,
         resolver=ReleaseResolver(lambda: state["release"], ttl_s=0),
         gold=gold,
-        kpis=KpiService(gold, load_portal(PORTAL_DIR, "demografia"), page_max=1000),
+        kpis=KpiService(
+            gold,
+            load_portal(PORTAL_DIR, "demografia"),
+            page_max=1000,
+            panorama=load_panorama(PANORAMA),
+        ),
         catalog=catalog,  # type: ignore[arg-type]
         engine=duck,
         closers=[duck],
@@ -165,7 +177,7 @@ def test_health_release_and_catalog(stack: dict[str, Any]) -> None:
 
 def test_navigation_lists_mvp_kpis(stack: dict[str, Any]) -> None:
     nav = _get(stack, "/api/v1/portal/navigation")
-    assert nav["dimension_order"] == ["c86", "c2"]
+    assert nav["dimension_order"] == ["c86", "c2", "c339", "c12190"]
     kpis = {k["kpi_id"]: k for t in nav["themes"] for s in t["subthemes"] for k in s["kpis"]}
     pop = kpis["populacao_residente"]
     assert [d["classification_id"] for d in pop["dimensions"]] == ["c86", "c2"]
@@ -174,6 +186,46 @@ def test_navigation_lists_mvp_kpis(stack: dict[str, Any]) -> None:
     assert pop["map_levels"] == ["brasil", "regiao", "uf"]
     assert kpis["indigenas_em_terras_indigenas"]["source"]["source_table_id"] == "9954"
     assert _get(stack, "/api/v1/kpis/pessoas_quilombolas")["unit"] == "Pessoas"
+
+
+def test_navigation_follows_panorama(stack: dict[str, Any]) -> None:
+    nav = _get(stack, "/api/v1/portal/navigation")
+    themes = {t["theme_id"]: t for t in nav["themes"]}
+    assert len(themes) == 20
+    assert sum(len(t["subthemes"]) for t in themes.values()) == 64
+    pop = {s["subtheme_id"]: s for s in themes["populacao"]["subthemes"]}
+    # Publicados no lugar do panorama, na ordem do panorama; o resto planejado.
+    assert [k["kpi_id"] for k in pop["tamanho_crescimento"]["kpis"]] == [
+        "populacao_estimada",
+        "populacao_residente",
+        "area_territorial",
+        "densidade_demografica",
+    ]
+    planned = pop["tamanho_crescimento"]["planned"]
+    assert [p["kpi_id"] for p in planned] == ["crescimento_populacional", "populacao_nos_censos"]
+    assert planned[0]["source_table_id"] == "4709"
+    # Temas sem dados publicados: só planejados; filtros adaptados ao tema.
+    agro = themes["agropecuaria"]
+    assert all(not s["kpis"] for s in agro["subthemes"])
+    assert {f["filter_id"] for f in agro["filters"]} == {"produto", "especie"}
+    assert "cor_raca" in {f["filter_id"] for f in themes["populacao"]["filters"]}
+    published = [k["kpi_id"] for t in nav["themes"] for s in t["subthemes"] for k in s["kpis"]]
+    # 12 com `kpi` explícito e a 9605, ligada pelo id do item (populacao_cor_raca_censos).
+    assert len(published) == 13
+    assert "populacao_cor_raca_censos" in published
+
+
+def test_panorama_must_cover_portal(tmp_path: Path, stack: dict[str, Any]) -> None:
+    text = PANORAMA.read_text(encoding="utf-8")
+    path = tmp_path / "panorama.toml"
+    # Sem `kpi` e com outro id, o item deixa de ligar o KPI do portal.
+    orphaned = text.replace(', kpi = "populacao_estimada"', "", 1).replace(
+        'id = "populacao_estimada"', 'id = "populacao_estimada_antiga"', 1
+    )
+    path.write_text(orphaned, encoding="utf-8")
+    portal = load_portal(PORTAL_DIR, "demografia")
+    with pytest.raises(PanoramaConfigError, match="fora do panorama"):
+        KpiService(stack["gold"], portal, page_max=10, panorama=load_panorama(path))
 
 
 def test_map_detail_series_and_table(stack: dict[str, Any]) -> None:
@@ -409,7 +461,7 @@ def test_rate_limiter() -> None:
 
 def test_portal_config_is_checked(tmp_path: Path, stack: dict[str, Any]) -> None:
     text = (PORTAL_DIR / "demografia.toml").read_text(encoding="utf-8")
-    bad_order = text.replace('dimension_order = ["c86", "c2"]', 'dimension_order = ["c2", "c86"]')
+    bad_order = text.replace('dimension_order = ["c86", "c2",', 'dimension_order = ["c2", "c86",')
     (tmp_path / "demografia.toml").write_text(bad_order, encoding="utf-8")
     with pytest.raises(PortalConfigError, match="fora da ordem"):
         load_portal(tmp_path, "demografia")

@@ -18,6 +18,33 @@ odb ingest status [dataset] --limit 20  # últimas ingestões e contagens por es
   normalmente.
 - Toda execução fica em `operations.pipeline_run` (`command = 'ingest.run'`).
 
+### Timeouts: adiar e repescar
+
+A fonte pode demorar em algumas tabelas (no SIDRA, as consultas com nível municipal
+levam de 10 a 120 s, com timeouts eventuais). Por padrão, `odb ingest run`:
+
+1. dá **2 tentativas** a cada requisição (`--tentativas-iniciais`). Uma falha
+   transitória (timeout, conexão, 429 ou 5xx) **adia** o dataset: a ingestão
+   termina `failed` com o erro `adiada: …`, e o dataset vai para o fim da fila;
+2. depois dos demais, faz até **2 rodadas** com os adiados (`--rodadas`), com
+   **60 s** de pausa entre elas (`--pausa`). A última rodada usa as tentativas
+   normais da fonte (`[sources.http] max_attempts`);
+3. na repescagem, as partições já baixadas e validadas **na mesma execução**
+   voltam da Bronze como `reused` (`validation.resumed_from_checkpoint`), sem
+   novo download.
+
+O watermark continua sendo gravado só com o dataset completo, então a Silver
+nunca vê carga parcial. Recusas da fonte (4xx) não são adiadas. Com
+`--rodadas 0`, o comportamento antigo volta: uma passada, sem adiamento.
+
+```bash
+odb ingest run --rodadas 3 --pausa 120 ibge-sidra-4412 ibge-sidra-5457
+```
+
+Uma interrupção (Ctrl+C ou SIGINT) registra a ingestão como `failed`, com o erro
+`interrompida (KeyboardInterrupt)`. Use `docker kill --signal=SIGINT`, e não
+`docker stop`.
+
 ## Estados de artefato
 
 | Estado | Significado | Bytes gravados |

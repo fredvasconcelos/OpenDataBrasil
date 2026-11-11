@@ -3,11 +3,13 @@ import { NextIntlClientProvider } from "next-intl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import messages from "../../messages/pt-BR.json";
-import type { Detail, DetailNode, GeoCollection, Kpi, Table } from "../lib/types";
+import type { Detail, DetailNode, GeoCollection, Kpi, Navigation, Series, Table } from "../lib/types";
 import { DataTable } from "./DataTable";
 import { DetailTooltip } from "./DetailTooltip";
 import { KpiInfo } from "./KpiInfo";
 import { MapView } from "./MapView";
+import { SeriesChart } from "./SeriesChart";
+import { Sidebar } from "./Sidebar";
 
 afterEach(cleanup);
 
@@ -253,5 +255,100 @@ describe("KpiInfo", () => {
     expect(more.textContent).toContain("Pessoas residentes.");
     expect(more.textContent).toContain("Nota A");
     expect(more.textContent).toContain("2010–2022");
+  });
+});
+
+describe("SeriesChart", () => {
+  const series: Series = {
+    kpi_id: "populacao_residente",
+    indicator_id: "populacao_estimada",
+    geography: { geography_key: "brasil:1", name: "Brasil", level_id: "brasil" },
+    unit: "Pessoas",
+    series: [
+      {
+        key: "total",
+        label: "Total",
+        categories: {},
+        points: [
+          { period: "2021", value: 213317639, status: "valid" },
+          { period: "2024", value: 212583750, status: "valid" },
+        ],
+      },
+    ],
+    provenance: { release_id: "r", tables: [], derived: false, truncated: false },
+  } as unknown as Series;
+
+  it("mostra o valor do ponto sob o ponteiro, sem dica nativa do navegador", () => {
+    const { container } = wrap(<SeriesChart data={series} />);
+    expect(container.querySelector("title")).toBeNull();
+    expect(screen.queryByRole("status")).toBeNull();
+    const points = screen.getAllByTestId("series-point");
+    expect(points).toHaveLength(2);
+    fireEvent.pointerEnter(points[1] as Element);
+    const tip = screen.getByRole("status");
+    expect(tip.textContent).toContain("2024");
+    expect(tip.textContent).toContain("212.583.750");
+    expect(tip.textContent).toContain("pessoas");
+    fireEvent.pointerLeave(points[1] as Element);
+    expect(screen.queryByRole("status")).toBeNull();
+  });
+
+  it("abre o valor pelo teclado (foco no ponto)", () => {
+    wrap(<SeriesChart data={series} />);
+    fireEvent.focus(screen.getAllByTestId("series-point")[0] as Element);
+    expect(screen.getByRole("status").textContent).toContain("213.317.639");
+  });
+});
+
+describe("Sidebar", () => {
+  const live = { kpi_id: "populacao_estimada", label: "População estimada", levels: [], map_levels: [], periods: [], dimensions: [] } as unknown as Kpi;
+  const nav: Navigation = {
+    release_id: "r",
+    scope: "demografia",
+    dimension_order: [],
+    themes: [
+      {
+        theme_id: "populacao",
+        label: "População e demografia",
+        filters: [{ filter_id: "sexo", label: "Sexo" }],
+        subthemes: [
+          {
+            subtheme_id: "tamanho",
+            label: "Tamanho e crescimento",
+            kpis: [live],
+            planned: [{ kpi_id: "crescimento", label: "Taxa de crescimento", source_table_id: "4709", survey: "Censo Demográfico", filters: [], note: null }],
+          },
+        ],
+      },
+      {
+        theme_id: "agropecuaria",
+        label: "Agropecuária",
+        filters: [{ filter_id: "produto", label: "Produto" }],
+        subthemes: [
+          {
+            subtheme_id: "lavouras",
+            label: "Lavouras",
+            kpis: [],
+            planned: [{ kpi_id: "pam", label: "Produção das lavouras", source_table_id: "5457", survey: "PAM", filters: ["produto"], note: null }],
+          },
+        ],
+      },
+    ],
+  };
+  const props = { dimensions: [], onDimensions: vi.fn(), level: "", period: "", onLevel: vi.fn(), onPeriod: vi.fn(), onClear: vi.fn(), canClear: false };
+
+  it("abre só o tema do indicador atual e mostra os planejados sem ação", () => {
+    const onKpi = vi.fn();
+    const { container } = wrap(<Sidebar nav={nav} kpi={live} onKpi={onKpi} {...props} />);
+    const themes = container.querySelectorAll<HTMLDetailsElement>("nav.themes > details");
+    expect([...themes].map((d) => d.open)).toEqual([true, false]);
+    // Tema sem dados publicados: marcado "em preparação".
+    expect(themes[1]?.querySelector("summary")?.textContent).toContain("em preparação");
+    const planned = container.querySelector("li.planned") as HTMLElement;
+    expect(planned.textContent).toContain("Taxa de crescimento");
+    expect(planned.getAttribute("title")).toBe("Em preparação · tabela SIDRA 4709 (Censo Demográfico)");
+    expect(planned.querySelector("button")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "População estimada" }));
+    expect(onKpi).toHaveBeenCalledWith("populacao_estimada");
   });
 });

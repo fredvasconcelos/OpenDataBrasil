@@ -29,7 +29,8 @@ documentation_url = "https://apisidra.ibge.gov.br/home/ajuda"
 
 [sources.http]
 min_interval_s = 2.0
-timeout_s = 120.0
+# A API leva mais de 120 s em algumas consultas municipais (4412, 2026-11-11).
+timeout_s = 300.0
 max_attempts = 5
 backoff_initial_s = 2.0
 
@@ -481,3 +482,33 @@ code_field = "CD_MUN"
 name_field = "NM_MUN"
 uf_field = "SIGLA_UF"
 territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-6715"
+source = "ibge-sidra"
+official_id = "6715"
+title = "Despesa monetária e não monetária média mensal familiar - valor e distribuição - por classes de rendimento total e variação patrimonial mensal familiar, segundo os tipos de despesa"
+description = "POF 2017-2018 (período 2018): despesa média mensal familiar (1201, Reais) e sua distribuição (1204, %), por classes de rendimento (c339, 7 classes e Total) e tipos de despesa (c12190, 93 categorias em árvore). Códigos do descritor oficial (/DescritoresTabela/t/6715, 2026-11-11)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/6715"
+
+[datasets.params]
+table = "6715"
+variables = ["1201", "1204"]
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c339" = "all", "c12190" = "all" }
+# 8 classes x 93 tipos x 33 territórios = 24.552 valores por variável; as duas
+# juntas (49.104) ficam perto do limite de 50.000: uma requisição por variável.
+split_by_variable = true
+estimated_values_per_period = 24552
+min_rows = 24552
+max_rows = 24552
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+# Médias e distribuições: o descritor marca as duas variáveis como não somáveis
+# entre territórios (PermiteSomaUnidadesTerritoriais = false).

@@ -17,6 +17,7 @@ from odb_catalog.publication import PublicationService
 from odb_common.settings import Settings
 from odb_common.storage import LakehouseLayout, Layer
 from odb_query_engine import DuckDBConfig, DuckDBReadEngine, ReadEngine
+from odb_semantics import load_panorama
 
 
 class _NoVerifier:
@@ -58,11 +59,12 @@ def build_deps(settings: Settings | None = None, api: ApiSettings | None = None)
     duck = DuckDBReadEngine(DuckDBConfig.from_settings(settings), [layout.layer_uri(Layer.GOLD)])
     gold = GoldGateway(duck, geometry_cache_size=api.geometry_cache_size)
     portal = load_portal(api.portal_config_dir, api.scope)
+    panorama = load_panorama(api.panorama_path) if api.panorama_path else None
     return ApiDeps(
         settings=api,
         resolver=ReleaseResolver(lambda: publication.active(api.scope), ttl_s=api.release_ttl_s),
         gold=gold,
-        kpis=KpiService(gold, portal, page_max=api.page_max),
+        kpis=KpiService(gold, portal, page_max=api.page_max, panorama=panorama),
         catalog=CatalogRepository(pg),
         engine=duck,
         closers=[duck, pg],

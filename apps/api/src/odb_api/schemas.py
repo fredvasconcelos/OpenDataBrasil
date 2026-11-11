@@ -184,12 +184,31 @@ class KpiOut(_Out):
     source: KpiSourceOut
 
 
+class FilterOut(_Out):
+    """Filtro previsto para um tema do panorama (ex.: sexo, produto)."""
+
+    filter_id: str
+    label: str
+
+
+class PlannedKpiOut(_Out):
+    """KPI do panorama ainda sem dados publicados ("em preparação")."""
+
+    kpi_id: str
+    label: str
+    source_table_id: str = Field(description="Código da tabela no SIDRA.")
+    survey: str = Field(description="Pesquisa de origem (inferida do acervo).")
+    filters: list[str] = Field(description="Filtros previstos (filter_id).")
+    note: str | None
+
+
 class SubthemeOut(_Out):
     """Subtema da navegação."""
 
     subtheme_id: str
     label: str
     kpis: list[KpiOut]
+    planned: list[PlannedKpiOut] = Field(description="KPIs do panorama em preparação.")
 
 
 class ThemeOut(_Out):
@@ -197,6 +216,7 @@ class ThemeOut(_Out):
 
     theme_id: str
     label: str
+    filters: list[FilterOut] = Field(description="Filtros previstos para o tema.")
     subthemes: list[SubthemeOut]
 
 

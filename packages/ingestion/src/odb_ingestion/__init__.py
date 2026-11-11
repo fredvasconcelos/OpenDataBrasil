@@ -15,6 +15,8 @@ from odb_ingestion.contract import (
 from odb_ingestion.http import HttpClient, HttpError
 from odb_ingestion.runner import (
     ArtifactRecord,
+    Checkpoint,
+    DeferredIngestionError,
     DuplicateContentError,
     IngestionRegistry,
     IngestionReport,
@@ -27,7 +29,9 @@ __all__ = [
     "BaseConnector",
     "BronzeStore",
     "Capability",
+    "Checkpoint",
     "ConfigError",
+    "DeferredIngestionError",
     "DuplicateContentError",
     "ExtractionPlan",
     "ExtractionRequest",

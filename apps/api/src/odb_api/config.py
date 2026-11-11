@@ -18,6 +18,8 @@ class ApiSettings(BaseSettings):
 
     scope: str = "demografia"
     portal_config_dir: str = "configs/portal"
+    # Taxonomia do panorama (ADR-0010). Vazio: navegação só com os KPIs do portal.
+    panorama_path: str = "configs/catalog/panorama.toml"
     # Origens do portal autorizadas (CORS restritivo, §18.5).
     cors_origins: tuple[str, ...] = ("http://localhost:3000",)
     # Por quanto tempo o release ativo lido do PostgreSQL é reaproveitado.

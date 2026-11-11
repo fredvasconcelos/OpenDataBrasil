@@ -1,5 +1,7 @@
 """API com PostgreSQL real (papel ``odb_reader``) sobre um release publicado pela CLI."""
 
+import shutil
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -22,7 +24,8 @@ from tests.integration.test_gold import lake  # noqa: F401 - fixture reaproveita
 from tests.support import duckdb_extension_directory
 
 pytestmark = pytest.mark.integration
-PORTAL = Path(__file__).resolve().parents[2] / "configs" / "portal"
+PORTAL = Path(tempfile.mkdtemp(prefix="odb-portal-"))
+shutil.copy(Path(__file__).resolve().parents[2] / "configs" / "portal" / "demografia.toml", PORTAL)
 
 
 def test_api_with_reader_role(lake: Path, reader_engine: Engine, tmp_path: Path) -> None:  # noqa: F811

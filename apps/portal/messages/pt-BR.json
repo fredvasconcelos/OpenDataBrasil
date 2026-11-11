@@ -22,7 +22,8 @@
     "searchPlaceholder": "Ex.: população, quilombolas, indígenas",
     "searchEmpty": "Nenhum indicador encontrado.",
     "open": "Abrir no painel",
-    "themes": "Temas"
+    "themes": "Temas",
+    "plannedCount": "{count, plural, =0 {} one {# indicador em preparação} other {# indicadores em preparação}}"
   },
   "dashboard": {
     "menu": "Temas e indicadores",
@@ -60,14 +61,16 @@
       "upTo": "Até {value}",
       "over": "Mais de {value}",
       "title": {
-        "people": "População",
+        "people": "Pessoas",
         "percent": "Percentual (%)",
         "density": "Densidade (hab/km²)",
         "area": "Área (km²)"
       }
     },
     "filters": "Filtros",
-    "chartAndTable": "Gráfico e tabela"
+    "chartAndTable": "Gráfico e tabela",
+    "planned": "em preparação",
+    "plannedSource": "Em preparação · tabela SIDRA {table} ({survey})"
   },
   "levels": {
     "brasil": "Brasil",

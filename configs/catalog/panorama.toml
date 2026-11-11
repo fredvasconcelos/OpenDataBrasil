@@ -1,0 +1,738 @@
+# Panorama do Brasil: taxonomia do portal e KPIs do Tier 1 (ADR-0010).
+#
+# Pergunta que o Tier 1 responde: "qual é o panorama geral do país?".
+# Regra de escolha (decisão do mantenedor, 2026-11-10):
+#   * a tabela-base é a de MENOR detalhe da família (ex.: 417 e não 418/419);
+#   * o KPI é o valor do Total; a dimensão principal entra pelas suas
+#     categorias como percentual do Total; as demais dimensões ficam no Total;
+#   * as variantes da mesma família com uma única dimensão viram FILTROS;
+#   * cruzamentos, recortes especiais (MDA, PRONAF, FAO, tipologia) e séries
+#     encerradas ou experimentais com substituta ficam de fora.
+#
+# Filtros: território e período valem para todos os temas. Os demais são
+# por tema (uma tabela de agropecuária não tem cor ou raça).
+#
+# `tabela` é o código oficial do SIDRA, conferido contra o snapshot do acervo
+# (configs/catalog/sidra_acervo_2026-11-10.csv). `pesquisa` é inferida do
+# título e fica a confirmar pelos exports por pesquisa do acervo.
+# `kpi` liga o item a um KPI curado do portal (configs/portal/*.toml). Sem `kpi`,
+# o item está publicado se o portal tem um KPI com o mesmo id (os KPIs de Total
+# gerados por `odb panorama gerar`); senão, aparece como "em preparação".
+# `variavel` fixa a variável SIDRA do KPI quando a regra do gerador não serve.
+# `requer_categoria = true` marca KPIs cujo Total é só o universo da tabela
+# (por exemplo, o número de municípios): esperam a onda das categorias.
+# Metadados verificados na API ficam em panorama_verificacao.json
+# (`odb panorama verificar`) e os descritores oficiais das tabelas, em
+# descritores/ (`odb panorama descrever`, ADR-0010, decisão 7).
+
+config_version = "1.0.0"
+acervo = "sidra_acervo_2026-11-10.csv"
+acervo_sha256 = "a9ec32ee30cf69c19f532e3a2b8d8b0f08384f2fc6509d7ad4d1cf8325b97c5c"
+acervo_obtido_em = "2026-11-10"
+acervo_origem = "https://sidra.ibge.gov.br/acervo (exportação 'Salvar TSV' do acervo completo, feita pelo mantenedor no navegador)"
+
+[[filtros]]
+id = "sexo"
+label = "Sexo"
+
+[[filtros]]
+id = "idade"
+label = "Grupos de idade"
+
+[[filtros]]
+id = "cor_raca"
+label = "Cor ou raça"
+
+[[filtros]]
+id = "situacao"
+label = "Situação do domicílio"
+
+[[filtros]]
+id = "instrucao"
+label = "Nível de instrução"
+
+[[filtros]]
+id = "renda"
+label = "Faixa de rendimento"
+
+[[filtros]]
+id = "atividade"
+label = "Atividade econômica"
+
+[[filtros]]
+id = "porte"
+label = "Porte (pessoal ocupado)"
+
+[[filtros]]
+id = "produto"
+label = "Produto"
+
+[[filtros]]
+id = "especie"
+label = "Espécie ou rebanho"
+
+[[filtros]]
+id = "grupo_produto"
+label = "Grupo de produtos ou despesas"
+
+[[filtros]]
+id = "bioma"
+label = "Bioma"
+
+[[filtros]]
+id = "tamanho_municipio"
+label = "Tamanho do município"
+
+# ======================================================================= 1
+[[temas]]
+id = "populacao"
+label = "População e demografia"
+filtros = ["sexo", "idade", "cor_raca", "situacao"]
+
+[[temas.subtemas]]
+id = "tamanho_crescimento"
+label = "Tamanho e crescimento"
+kpis = [
+  { id = "populacao_estimada", label = "População estimada", tabela = "6579", pesquisa = "Estimativas de População", kpi = "populacao_estimada" },
+  { id = "populacao_residente", label = "População residente (Censo)", tabela = "9606", pesquisa = "Censo Demográfico", filtros = ["cor_raca", "sexo"], kpi = "populacao_residente" },
+  { id = "area_territorial", label = "Área territorial", tabela = "4714", pesquisa = "Censo Demográfico", kpi = "area_territorial" },
+  { id = "densidade_demografica", label = "Densidade demográfica", tabela = "4714", pesquisa = "Censo Demográfico", kpi = "densidade_demografica" },
+  { id = "crescimento_populacional", label = "Taxa de crescimento da população", tabela = "4709", pesquisa = "Censo Demográfico", variavel = "10605" },
+  { id = "populacao_nos_censos", label = "População nos Censos (série histórica)", tabela = "1286", pesquisa = "Censo Demográfico" },
+]
+
+[[temas.subtemas]]
+id = "estrutura_populacao"
+label = "Sexo, idade e cor ou raça"
+kpis = [
+  { id = "envelhecimento", label = "Índice de envelhecimento, idade mediana e razão de sexo", tabela = "9515", pesquisa = "Censo Demográfico" },
+  { id = "populacao_sexo_idade", label = "População por sexo e idade", tabela = "9514", pesquisa = "Censo Demográfico", filtros = ["sexo", "idade"] },
+  { id = "populacao_cor_raca_censos", label = "População por cor ou raça (2010 e 2022)", tabela = "9605", pesquisa = "Censo Demográfico", filtros = ["cor_raca"] },
+]
+
+[[temas.subtemas]]
+id = "povos_indigenas"
+label = "Povos indígenas"
+kpis = [
+  { id = "pessoas_indigenas", label = "Pessoas indígenas", tabela = "9971", pesquisa = "Censo Demográfico", filtros = ["sexo"], kpi = "pessoas_indigenas" },
+  { id = "percentual_indigenas", label = "Percentual de pessoas indígenas", tabela = "9718", pesquisa = "Censo Demográfico", kpi = "percentual_indigenas" },
+  { id = "indigenas_em_terras_indigenas", label = "Pessoas indígenas em terras indígenas", tabela = "9954", pesquisa = "Censo Demográfico", filtros = ["sexo"], kpi = "indigenas_em_terras_indigenas" },
+  { id = "residentes_em_terras_indigenas", label = "Pessoas residentes em terras indígenas", tabela = "9954", pesquisa = "Censo Demográfico", filtros = ["sexo"], kpi = "residentes_em_terras_indigenas" },
+]
+
+[[temas.subtemas]]
+id = "quilombolas"
+label = "Quilombolas"
+kpis = [
+  { id = "pessoas_quilombolas", label = "Pessoas quilombolas", tabela = "8176", pesquisa = "Censo Demográfico", filtros = ["sexo"], kpi = "pessoas_quilombolas" },
+  { id = "percentual_quilombolas", label = "Percentual de pessoas quilombolas", tabela = "9578", pesquisa = "Censo Demográfico", kpi = "percentual_quilombolas" },
+  { id = "quilombolas_em_territorios", label = "Pessoas quilombolas em territórios quilombolas", tabela = "9765", pesquisa = "Censo Demográfico", filtros = ["sexo"], kpi = "quilombolas_em_territorios" },
+  { id = "residentes_em_territorios_quilombolas", label = "Pessoas residentes em territórios quilombolas", tabela = "9765", pesquisa = "Censo Demográfico", filtros = ["sexo"], kpi = "residentes_em_territorios_quilombolas" },
+]
+
+[[temas.subtemas]]
+id = "natalidade_mortalidade"
+label = "Fecundidade, mortalidade e esperança de vida"
+kpis = [
+  { id = "esperanca_vida", label = "Esperança de vida ao nascer e mortalidade infantil", tabela = "7362", pesquisa = "Projeção da População", filtros = ["sexo"] },
+  { id = "fecundidade_total", label = "Taxa de fecundidade total", tabela = "3727", pesquisa = "Indicadores de Desenvolvimento Sustentável" },
+]
+
+[[temas.subtemas]]
+id = "migracao"
+label = "Migração"
+kpis = [
+  { id = "migrantes_uf", label = "Pessoas que não residiam na UF cinco anos antes", tabela = "10159", pesquisa = "Censo Demográfico" },
+]
+
+# ======================================================================= 2
+[[temas]]
+id = "registro_civil"
+label = "Registro civil"
+filtros = ["sexo", "idade"]
+
+[[temas.subtemas]]
+id = "nascimentos_obitos"
+label = "Nascimentos e óbitos"
+kpis = [
+  { id = "nascidos_vivos", label = "Nascidos vivos", tabela = "2609", pesquisa = "Estatísticas do Registro Civil", filtros = ["sexo"] },
+  { id = "obitos", label = "Óbitos", tabela = "2654", pesquisa = "Estatísticas do Registro Civil", filtros = ["sexo", "idade"] },
+]
+
+[[temas.subtemas]]
+id = "casamentos_divorcios"
+label = "Casamentos e divórcios"
+kpis = [
+  { id = "casamentos", label = "Casamentos", tabela = "4412", pesquisa = "Estatísticas do Registro Civil" },
+  { id = "divorcios", label = "Divórcios", tabela = "1695", pesquisa = "Estatísticas do Registro Civil" },
+]
+
+# ======================================================================= 3
+[[temas]]
+id = "domicilios"
+label = "Domicílios e famílias"
+filtros = ["situacao", "sexo", "cor_raca", "renda"]
+
+[[temas.subtemas]]
+id = "domicilios_moradores"
+label = "Domicílios e moradores"
+kpis = [
+  { id = "domicilios_ocupados", label = "Domicílios ocupados e média de moradores", tabela = "4712", pesquisa = "Censo Demográfico" },
+  { id = "arranjos_domiciliares", label = "Domicílios por tipo de arranjo (unidade doméstica)", tabela = "6788", pesquisa = "PNAD Contínua anual", filtros = ["sexo"], requer_categoria = true },
+]
+
+[[temas.subtemas]]
+id = "condicoes_moradia"
+label = "Condições de moradia"
+kpis = [
+  { id = "condicao_ocupacao", label = "Domicílios próprios, alugados e cedidos", tabela = "6821", pesquisa = "PNAD Contínua anual", requer_categoria = true },
+  { id = "material_paredes", label = "Domicílios por material das paredes", tabela = "6822", pesquisa = "PNAD Contínua anual", requer_categoria = true },
+  { id = "posse_bens", label = "Domicílios por posse de bens", tabela = "6677", pesquisa = "PNAD Contínua anual", requer_categoria = true },
+]
+
+[[temas.subtemas]]
+id = "favelas"
+label = "Favelas e comunidades urbanas"
+kpis = [
+  { id = "populacao_favelas", label = "População, área e densidade em favelas", tabela = "9888", pesquisa = "Censo Demográfico" },
+  { id = "numero_favelas", label = "Número de favelas e comunidades urbanas", tabela = "9883", pesquisa = "Censo Demográfico" },
+]
+
+# ======================================================================= 4
+[[temas]]
+id = "saneamento"
+label = "Saneamento básico"
+filtros = ["situacao"]
+
+[[temas.subtemas]]
+id = "agua"
+label = "Abastecimento de água"
+kpis = [
+  { id = "rede_geral_agua", label = "Domicílios ligados à rede geral de água (Censo)", tabela = "6803", pesquisa = "Censo Demográfico", requer_categoria = true },
+  { id = "fonte_abastecimento", label = "Principal fonte de abastecimento de água", tabela = "6731", pesquisa = "PNAD Contínua anual", filtros = ["situacao"] },
+  { id = "servico_agua_municipios", label = "Municípios com serviço de abastecimento por rede geral", tabela = "7460", pesquisa = "Pesquisa Nacional de Saneamento Básico" },
+]
+
+[[temas.subtemas]]
+id = "esgoto"
+label = "Esgotamento sanitário"
+kpis = [
+  { id = "esgotamento_censo", label = "Domicílios por tipo de esgotamento sanitário (Censo)", tabela = "6805", pesquisa = "Censo Demográfico", requer_categoria = true },
+  { id = "esgotamento_pnad", label = "Domicílios por tipo de esgotamento sanitário", tabela = "7192", pesquisa = "PNAD Contínua anual", filtros = ["situacao"] },
+  { id = "servico_esgoto_municipios", label = "Municípios com rede coletora de esgoto", tabela = "7461", pesquisa = "Pesquisa Nacional de Saneamento Básico" },
+]
+
+[[temas.subtemas]]
+id = "lixo"
+label = "Coleta de lixo"
+kpis = [
+  { id = "destino_lixo_censo", label = "Domicílios por destino do lixo (Censo)", tabela = "6892", pesquisa = "Censo Demográfico", requer_categoria = true },
+  { id = "destino_lixo_pnad", label = "Domicílios por destino do lixo", tabela = "6736", pesquisa = "PNAD Contínua anual", filtros = ["situacao"] },
+]
+
+# ======================================================================= 5
+[[temas]]
+id = "educacao"
+label = "Educação"
+filtros = ["sexo", "idade", "cor_raca", "situacao", "instrucao"]
+
+[[temas.subtemas]]
+id = "alfabetizacao"
+label = "Alfabetização"
+kpis = [
+  { id = "taxa_alfabetizacao_censo", label = "Taxa de alfabetização (15 anos ou mais, Censo)", tabela = "9543", pesquisa = "Censo Demográfico", filtros = ["sexo", "cor_raca", "idade"] },
+  { id = "taxa_analfabetismo", label = "Taxa de analfabetismo (15 anos ou mais)", tabela = "7113", pesquisa = "PNAD Contínua anual", filtros = ["sexo", "idade"] },
+]
+
+[[temas.subtemas]]
+id = "escolarizacao"
+label = "Frequência escolar"
+kpis = [
+  { id = "taxa_escolarizacao", label = "Taxa de escolarização", tabela = "7138", pesquisa = "PNAD Contínua anual", filtros = ["sexo", "idade"] },
+  { id = "frequencia_liquida", label = "Taxa ajustada de frequência escolar líquida", tabela = "7141", pesquisa = "PNAD Contínua anual", filtros = ["sexo"] },
+]
+
+[[temas.subtemas]]
+id = "instrucao"
+label = "Nível de instrução"
+kpis = [
+  { id = "nivel_instrucao", label = "Pessoas de 25 anos ou mais por nível de instrução", tabela = "7189", pesquisa = "PNAD Contínua anual", filtros = ["sexo"], requer_categoria = true },
+  { id = "anos_estudo", label = "Média de anos de estudo (15 anos ou mais)", tabela = "7126", pesquisa = "PNAD Contínua anual", filtros = ["sexo", "idade"] },
+  { id = "nivel_instrucao_censo", label = "Nível de instrução (18 anos ou mais, Censo)", tabela = "10061", pesquisa = "Censo Demográfico", filtros = ["sexo", "cor_raca", "idade"], requer_categoria = true },
+]
+
+# ======================================================================= 6
+[[temas]]
+id = "trabalho_rendimento"
+label = "Trabalho e rendimento"
+filtros = ["sexo", "idade", "cor_raca", "instrucao", "situacao", "atividade"]
+
+[[temas.subtemas]]
+id = "ocupacao"
+label = "Ocupação e desocupação"
+kpis = [
+  { id = "forca_trabalho", label = "Força de trabalho, ocupação e desocupação", tabela = "4093", pesquisa = "PNAD Contínua trimestral", filtros = ["sexo"] },
+  { id = "taxas_desocupacao", label = "Taxas de desocupação e de subutilização", tabela = "4099", pesquisa = "PNAD Contínua trimestral" },
+]
+
+[[temas.subtemas]]
+id = "informalidade"
+label = "Informalidade"
+kpis = [
+  { id = "taxa_informalidade", label = "Taxa de informalidade", tabela = "4708", pesquisa = "PNAD Contínua trimestral" },
+]
+
+[[temas.subtemas]]
+id = "rendimento_trabalho"
+label = "Rendimento do trabalho"
+kpis = [
+  { id = "rendimento_medio_trabalho", label = "Rendimento médio real do trabalho", tabela = "5436", pesquisa = "PNAD Contínua anual", filtros = ["sexo"] },
+  { id = "massa_rendimento", label = "Massa de rendimento real do trabalho", tabela = "5606", pesquisa = "PNAD Contínua trimestral" },
+]
+
+[[temas.subtemas]]
+id = "rendimento_domiciliar"
+label = "Rendimento domiciliar, desigualdade e pobreza"
+kpis = [
+  { id = "gini_domiciliar", label = "Índice de Gini do rendimento domiciliar per capita", tabela = "7435", pesquisa = "PNAD Contínua anual" },
+  { id = "rendimento_domiciliar_censo", label = "Rendimento domiciliar per capita (Censo)", tabela = "10295", pesquisa = "Censo Demográfico", filtros = ["sexo", "cor_raca", "idade"], variavel = "13431" },
+  { id = "pobreza_linha_nacional", label = "Proporção da população abaixo da linha de pobreza nacional", tabela = "5877", pesquisa = "Objetivos de Desenvolvimento Sustentável" },
+]
+
+[[temas.subtemas]]
+id = "trabalho_infantil_cuidados"
+label = "Trabalho infantil e cuidados"
+kpis = [
+  { id = "trabalho_infantil", label = "Pessoas de 5 a 17 anos em trabalho infantil", tabela = "9836", pesquisa = "PNAD Contínua anual", filtros = ["idade"], nota = "Estatística experimental do IBGE." },
+  { id = "afazeres_domesticos", label = "Horas dedicadas a afazeres domésticos e cuidados", tabela = "7015", pesquisa = "PNAD Contínua anual", filtros = ["sexo"] },
+]
+
+# ======================================================================= 7
+[[temas]]
+id = "saude"
+label = "Saúde"
+filtros = ["sexo", "idade", "cor_raca", "instrucao", "renda", "situacao"]
+
+[[temas.subtemas]]
+id = "condicoes_saude"
+label = "Condições de saúde"
+kpis = [
+  { id = "autoavaliacao_saude", label = "Avaliação do próprio estado de saúde", tabela = "7666", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"], requer_categoria = true },
+  { id = "doenca_cronica", label = "Pessoas com pelo menos uma doença crônica", tabela = "7972", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
+  { id = "hipertensao", label = "Diagnóstico de hipertensão arterial", tabela = "4418", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
+  { id = "diabetes", label = "Diagnóstico de diabetes", tabela = "4487", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
+]
+
+[[temas.subtemas]]
+id = "fatores_risco"
+label = "Hábitos e fatores de risco"
+kpis = [
+  { id = "fumantes", label = "Fumantes atuais de tabaco", tabela = "4173", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
+  { id = "consumo_abusivo_alcool", label = "Consumo abusivo de álcool", tabela = "7726", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
+  { id = "insuficientemente_ativos", label = "Pessoas insuficientemente ativas", tabela = "7740", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
+  { id = "excesso_peso", label = "Excesso de peso ou obesidade", tabela = "8476", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
+]
+
+[[temas.subtemas]]
+id = "acesso_servicos"
+label = "Acesso a serviços de saúde"
+kpis = [
+  { id = "plano_saude", label = "Pessoas com plano de saúde", tabela = "4938", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
+  { id = "consulta_medica", label = "Consultaram médico nos últimos 12 meses", tabela = "5055", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
+  { id = "estabelecimentos_saude", label = "Estabelecimentos de saúde", tabela = "211", pesquisa = "Pesquisa de Assistência Médico-Sanitária" },
+]
+
+[[temas.subtemas]]
+id = "materno_infantil"
+label = "Saúde materno-infantil"
+kpis = [
+  { id = "pre_natal", label = "Mulheres que realizaram pré-natal", tabela = "8289", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["cor_raca"] },
+  { id = "aleitamento_exclusivo", label = "Aleitamento materno exclusivo (menos de 6 meses)", tabela = "5905", pesquisa = "Pesquisa Nacional de Saúde" },
+]
+
+[[temas.subtemas]]
+id = "mortalidade"
+label = "Mortalidade"
+kpis = [
+  { id = "mortalidade_materna", label = "Razão de mortalidade materna", tabela = "6694", pesquisa = "Objetivos de Desenvolvimento Sustentável" },
+  { id = "mortalidade_menores_5", label = "Taxa de mortalidade em menores de 5 anos", tabela = "6695", pesquisa = "Objetivos de Desenvolvimento Sustentável" },
+  { id = "mortalidade_doencas_cronicas", label = "Mortalidade por doenças crônicas não transmissíveis", tabela = "4277", pesquisa = "Objetivos de Desenvolvimento Sustentável" },
+]
+
+[[temas.subtemas]]
+id = "saude_escolar"
+label = "Saúde do escolar"
+kpis = [
+  { id = "escolares_fumaram", label = "Escolares de 13 a 17 anos que fumaram nos últimos 30 dias", tabela = "6356", pesquisa = "Pesquisa Nacional de Saúde do Escolar", filtros = ["sexo"] },
+  { id = "escolares_alcool", label = "Escolares de 13 a 17 anos que consumiram bebida alcoólica", tabela = "6358", pesquisa = "Pesquisa Nacional de Saúde do Escolar", filtros = ["sexo"] },
+  { id = "escolares_excesso_peso", label = "Escolares de 13 a 17 anos com excesso de peso", tabela = "6378", pesquisa = "Pesquisa Nacional de Saúde do Escolar", filtros = ["sexo"] },
+]
+
+[[temas.subtemas]]
+id = "covid"
+label = "COVID-19"
+kpis = [
+  { id = "vacinacao_covid", label = "Vacinados contra a COVID-19", tabela = "9730", pesquisa = "PNAD Contínua", filtros = ["sexo", "idade"] },
+  { id = "tiveram_covid", label = "Pessoas que tiveram ou consideram que tiveram COVID-19", tabela = "9373", pesquisa = "PNAD Contínua", filtros = ["sexo"] },
+]
+
+# ======================================================================= 8
+[[temas]]
+id = "consumo_familias"
+label = "Consumo e orçamentos familiares"
+filtros = ["renda", "situacao", "grupo_produto"]
+
+[[temas.subtemas]]
+id = "despesas_rendimentos"
+label = "Despesas e rendimentos das famílias"
+kpis = [
+  { id = "despesa_familiar", label = "Despesa média mensal familiar", tabela = "6715", pesquisa = "Pesquisa de Orçamentos Familiares", filtros = ["grupo_produto", "renda"] },
+  { id = "rendimento_familiar", label = "Rendimento médio mensal familiar", tabela = "6974", pesquisa = "Pesquisa de Orçamentos Familiares", filtros = ["renda"] },
+]
+
+[[temas.subtemas]]
+id = "alimentacao"
+label = "Alimentação e segurança alimentar"
+kpis = [
+  { id = "aquisicao_alimentar", label = "Aquisição alimentar domiciliar per capita", tabela = "417", pesquisa = "Pesquisa de Orçamentos Familiares", filtros = ["grupo_produto", "renda"], nota = "Exemplo do mantenedor: grupos de produtos em % do Total, classe de recebimento no Total." },
+  { id = "seguranca_alimentar", label = "Domicílios por situação de segurança alimentar", tabela = "9552", pesquisa = "PNAD Contínua", filtros = ["situacao"], requer_categoria = true },
+]
+
+# ======================================================================= 9
+[[temas]]
+id = "tecnologia"
+label = "Tecnologia e comunicação"
+filtros = ["sexo", "idade", "situacao", "instrucao"]
+
+[[temas.subtemas]]
+id = "internet"
+label = "Internet"
+kpis = [
+  { id = "domicilios_internet", label = "Domicílios com utilização da internet", tabela = "7307", pesquisa = "PNAD Contínua anual", filtros = ["situacao"], requer_categoria = true },
+  { id = "pessoas_internet", label = "Pessoas que utilizaram a internet", tabela = "7325", pesquisa = "PNAD Contínua anual", filtros = ["sexo"], requer_categoria = true },
+]
+
+[[temas.subtemas]]
+id = "telefonia_tv"
+label = "Telefonia e televisão"
+kpis = [
+  { id = "celular_uso_pessoal", label = "Pessoas com celular para uso pessoal", tabela = "7373", pesquisa = "PNAD Contínua anual", filtros = ["sexo"], requer_categoria = true },
+  { id = "domicilios_televisao", label = "Domicílios com televisão", tabela = "7167", pesquisa = "PNAD Contínua anual", filtros = ["situacao"], requer_categoria = true },
+]
+
+# ======================================================================= 10
+[[temas]]
+id = "seguranca"
+label = "Segurança e vitimização"
+filtros = ["sexo", "idade", "cor_raca", "instrucao", "situacao"]
+
+[[temas.subtemas]]
+id = "percepcao_seguranca"
+label = "Percepção de segurança"
+kpis = [
+  { id = "sensacao_seguranca", label = "Pessoas que se sentem seguras ao andar sozinhas perto de casa", tabela = "8713", pesquisa = "PNAD Contínua", filtros = ["sexo"] },
+]
+
+[[temas.subtemas]]
+id = "vitimizacao"
+label = "Vitimização e violência"
+kpis = [
+  { id = "vitimas_roubo", label = "Vítimas de roubo nos últimos 12 meses", tabela = "8503", pesquisa = "PNAD Contínua", filtros = ["sexo"] },
+  { id = "violencia", label = "Pessoas que sofreram violência nos últimos 12 meses", tabela = "8022", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
+  { id = "homicidios", label = "Vítimas de homicídio por 100 mil habitantes", tabela = "6606", pesquisa = "Objetivos de Desenvolvimento Sustentável", variavel = "13532" },
+]
+
+# ======================================================================= 11
+[[temas]]
+id = "agropecuaria"
+label = "Agropecuária"
+filtros = ["produto", "especie"]
+
+[[temas.subtemas]]
+id = "lavouras"
+label = "Lavouras"
+kpis = [
+  { id = "producao_lavouras", label = "Área, produção e valor das lavouras", tabela = "5457", pesquisa = "Produção Agrícola Municipal", filtros = ["produto"] },
+  { id = "safra_estimada", label = "Estimativa da safra (área, produção e rendimento)", tabela = "6588", pesquisa = "Levantamento Sistemático da Produção Agrícola", filtros = ["produto"] },
+]
+
+[[temas.subtemas]]
+id = "pecuaria"
+label = "Pecuária e produção animal"
+kpis = [
+  { id = "efetivo_rebanhos", label = "Efetivo dos rebanhos", tabela = "3939", pesquisa = "Pesquisa da Pecuária Municipal", filtros = ["especie"] },
+  { id = "producao_origem_animal", label = "Produção de origem animal", tabela = "74", pesquisa = "Pesquisa da Pecuária Municipal", filtros = ["produto"] },
+  { id = "abate_bovinos", label = "Abate de bovinos", tabela = "1092", pesquisa = "Pesquisa Trimestral do Abate de Animais" },
+  { id = "leite_adquirido", label = "Leite adquirido e industrializado", tabela = "1086", pesquisa = "Pesquisa Trimestral do Leite" },
+  { id = "ovos_produzidos", label = "Produção de ovos de galinha", tabela = "7524", pesquisa = "Produção de Ovos de Galinha" },
+]
+
+[[temas.subtemas]]
+id = "silvicultura_extracao"
+label = "Silvicultura e extração vegetal"
+kpis = [
+  { id = "extracao_vegetal", label = "Produção da extração vegetal", tabela = "289", pesquisa = "Produção da Extração Vegetal e da Silvicultura", filtros = ["produto"] },
+  { id = "silvicultura", label = "Produção da silvicultura", tabela = "291", pesquisa = "Produção da Extração Vegetal e da Silvicultura", filtros = ["produto"] },
+  { id = "area_silvicultura", label = "Área de silvicultura por espécie florestal", tabela = "5930", pesquisa = "Produção da Extração Vegetal e da Silvicultura", filtros = ["especie"] },
+]
+
+[[temas.subtemas]]
+id = "estrutura_agraria"
+label = "Estabelecimentos agropecuários"
+kpis = [
+  { id = "estabelecimentos_area", label = "Número e área dos estabelecimentos agropecuários", tabela = "6878", pesquisa = "Censo Agropecuário" },
+  { id = "estabelecimentos_serie", label = "Estabelecimentos agropecuários (série histórica 1920–2006)", tabela = "1030", pesquisa = "Censo Agropecuário" },
+]
+
+[[temas.subtemas]]
+id = "insumos"
+label = "Insumos agrícolas"
+kpis = [
+  { id = "agrotoxicos", label = "Comercialização de agrotóxicos", tabela = "5802", pesquisa = "Indicadores de Desenvolvimento Sustentável" },
+  { id = "fertilizantes", label = "Fertilizantes entregues ao consumidor final", tabela = "770", pesquisa = "Indicadores de Desenvolvimento Sustentável" },
+]
+
+# ======================================================================= 12
+[[temas]]
+id = "industria"
+label = "Indústria"
+filtros = ["atividade", "porte"]
+
+[[temas.subtemas]]
+id = "producao_industrial"
+label = "Produção industrial"
+kpis = [
+  { id = "producao_fisica", label = "Produção física industrial", tabela = "8888", pesquisa = "Pesquisa Industrial Mensal - Produção Física", filtros = ["atividade"] },
+]
+
+[[temas.subtemas]]
+id = "estrutura_industrial"
+label = "Estrutura e peso da indústria"
+kpis = [
+  { id = "industria_uf", label = "Unidades locais industriais, pessoal ocupado e salários", tabela = "10457", pesquisa = "Pesquisa Industrial Anual - Empresa", filtros = ["atividade"], variavel = "13816" },
+  { id = "va_industria_pib", label = "Valor adicionado da indústria em proporção do PIB", tabela = "6587", pesquisa = "Objetivos de Desenvolvimento Sustentável" },
+  { id = "emprego_industria", label = "Emprego na indústria em proporção do emprego total", tabela = "6608", pesquisa = "Objetivos de Desenvolvimento Sustentável" },
+]
+
+# ======================================================================= 13
+[[temas]]
+id = "construcao"
+label = "Construção"
+filtros = ["atividade", "porte"]
+
+[[temas.subtemas]]
+id = "atividade_construcao"
+label = "Atividade da construção"
+kpis = [
+  { id = "empresas_construcao", label = "Empresas de construção: pessoal, salários e valor das obras", tabela = "10442", pesquisa = "Pesquisa Anual da Indústria da Construção" },
+  { id = "vendas_materiais", label = "Vendas de materiais de construção", tabela = "8757", pesquisa = "Pesquisa Mensal de Comércio" },
+]
+
+[[temas.subtemas]]
+id = "custos_construcao"
+label = "Custos e insumos da construção"
+kpis = [
+  { id = "custo_m2", label = "Custo médio do metro quadrado da construção", tabela = "2296", pesquisa = "SINAPI" },
+  { id = "insumos_construcao", label = "Produção de insumos típicos da construção civil", tabela = "8886", pesquisa = "Pesquisa Industrial Mensal - Produção Física" },
+]
+
+# ======================================================================= 14
+[[temas]]
+id = "comercio"
+label = "Comércio"
+filtros = ["atividade", "porte"]
+
+[[temas.subtemas]]
+id = "varejo"
+label = "Comércio varejista"
+kpis = [
+  { id = "vendas_varejo", label = "Volume e receita de vendas no varejo", tabela = "8880", pesquisa = "Pesquisa Mensal de Comércio" },
+  { id = "vendas_varejo_ampliado", label = "Volume e receita de vendas no varejo ampliado", tabela = "8881", pesquisa = "Pesquisa Mensal de Comércio" },
+]
+
+[[temas.subtemas]]
+id = "estrutura_comercio"
+label = "Empresas comerciais"
+kpis = [
+  { id = "empresas_comerciais", label = "Resultados das empresas comerciais", tabela = "10646", pesquisa = "Pesquisa Anual de Comércio", filtros = ["atividade"] },
+]
+
+[[temas.subtemas]]
+id = "comercio_exterior"
+label = "Comércio exterior"
+kpis = [
+  { id = "exportacoes_importacoes", label = "Exportações, importações e saldo comercial", tabela = "5945", pesquisa = "Indicadores de Desenvolvimento Sustentável" },
+]
+
+# ======================================================================= 15
+[[temas]]
+id = "servicos"
+label = "Serviços"
+filtros = ["atividade", "porte"]
+
+[[temas.subtemas]]
+id = "servicos_empresariais"
+label = "Serviços"
+kpis = [
+  { id = "volume_servicos", label = "Volume e receita de serviços", tabela = "5906", pesquisa = "Pesquisa Mensal de Serviços" },
+  { id = "servicos_nao_financeiros", label = "Resultados dos serviços empresariais não financeiros", tabela = "2581", pesquisa = "Pesquisa Anual de Serviços", filtros = ["atividade"] },
+]
+
+[[temas.subtemas]]
+id = "turismo_transportes"
+label = "Turismo e transportes"
+kpis = [
+  { id = "atividades_turisticas", label = "Volume e receita das atividades turísticas", tabela = "8694", pesquisa = "Pesquisa Mensal de Serviços" },
+  { id = "transporte_passageiros_cargas", label = "Volume e receita do transporte de passageiros e cargas", tabela = "8695", pesquisa = "Pesquisa Mensal de Serviços" },
+  { id = "viagens", label = "Viagens realizadas pelos moradores", tabela = "7204", pesquisa = "PNAD Contínua" },
+]
+
+# ======================================================================= 16
+[[temas]]
+id = "empresas"
+label = "Empresas e organizações"
+filtros = ["atividade", "porte", "sexo", "instrucao"]
+
+[[temas.subtemas]]
+id = "cadastro_empresas"
+label = "Empresas e emprego formal"
+kpis = [
+  { id = "empresas_emprego_formal", label = "Empresas, pessoal ocupado e salários", tabela = "9509", pesquisa = "Cadastro Central de Empresas" },
+]
+
+[[temas.subtemas]]
+id = "empreendedorismo"
+label = "Empreendedorismo"
+kpis = [
+  { id = "microempreendedores", label = "Microempreendedores individuais (MEI)", tabela = "9597", pesquisa = "Estatísticas dos Cadastros de Microempreendedores Individuais", filtros = ["atividade"] },
+  { id = "nascimentos_empresas", label = "Nascimentos de empresas e taxa de sobrevivência", tabela = "9949", pesquisa = "Demografia das Empresas e Estatísticas de Empreendedorismo", filtros = ["atividade"] },
+]
+
+[[temas.subtemas]]
+id = "inovacao"
+label = "Inovação e P&D"
+kpis = [
+  { id = "empresas_inovadoras", label = "Empresas que implementaram inovações", tabela = "5453", pesquisa = "Pesquisa de Inovação", filtros = ["atividade"], variavel = "5977" },
+  { id = "pd_pib", label = "Dispêndio em P&D em proporção do PIB", tabela = "6610", pesquisa = "Objetivos de Desenvolvimento Sustentável" },
+]
+
+# ======================================================================= 17
+[[temas]]
+id = "precos"
+label = "Preços"
+filtros = ["grupo_produto", "atividade"]
+
+[[temas.subtemas]]
+id = "precos_consumidor"
+label = "Inflação ao consumidor"
+kpis = [
+  { id = "ipca", label = "IPCA", tabela = "1737", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo" },
+  { id = "inpc", label = "INPC", tabela = "1736", pesquisa = "Índice Nacional de Preços ao Consumidor" },
+  { id = "ipca15", label = "IPCA-15", tabela = "3065", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo 15" },
+]
+
+[[temas.subtemas]]
+id = "precos_produtor"
+label = "Preços ao produtor"
+kpis = [
+  { id = "ipp", label = "Índice de Preços ao Produtor", tabela = "6904", pesquisa = "Índice de Preços ao Produtor", filtros = ["atividade"] },
+]
+
+# ======================================================================= 18
+[[temas]]
+id = "contas_nacionais"
+label = "Contas nacionais e regionais"
+filtros = ["atividade"]
+
+[[temas.subtemas]]
+id = "pib_brasil"
+label = "PIB do Brasil"
+kpis = [
+  { id = "pib_per_capita", label = "PIB e PIB per capita", tabela = "6784", pesquisa = "Contas Nacionais Anuais" },
+  { id = "pib_trimestral", label = "PIB trimestral a preços correntes", tabela = "1846", pesquisa = "Contas Nacionais Trimestrais" },
+  { id = "variacao_pib_trimestral", label = "Taxa de variação do PIB trimestral", tabela = "5932", pesquisa = "Contas Nacionais Trimestrais" },
+]
+
+[[temas.subtemas]]
+id = "pib_municipios"
+label = "PIB dos municípios"
+kpis = [
+  { id = "pib_municipios", label = "PIB dos municípios e valor adicionado por atividade", tabela = "5938", pesquisa = "Produto Interno Bruto dos Municípios", filtros = ["atividade"] },
+]
+
+[[temas.subtemas]]
+id = "investimento_poupanca"
+label = "Investimento e poupança"
+kpis = [
+  { id = "taxa_investimento", label = "Taxa de investimento", tabela = "6727", pesquisa = "Contas Nacionais Anuais" },
+  { id = "taxa_poupanca", label = "Taxa de poupança", tabela = "6726", pesquisa = "Contas Nacionais Anuais" },
+]
+
+# ======================================================================= 19
+[[temas]]
+id = "meio_ambiente"
+label = "Meio ambiente"
+filtros = ["bioma"]
+
+[[temas.subtemas]]
+id = "biomas_areas_protegidas"
+label = "Biomas e áreas protegidas"
+kpis = [
+  { id = "area_biomas", label = "Área dos biomas", tabela = "3926", pesquisa = "Indicadores de Desenvolvimento Sustentável" },
+  { id = "unidades_conservacao", label = "Unidades de conservação terrestres", tabela = "5619", pesquisa = "Indicadores de Desenvolvimento Sustentável" },
+  { id = "area_florestal", label = "Área florestal em proporção do território", tabela = "6843", pesquisa = "Objetivos de Desenvolvimento Sustentável" },
+]
+
+[[temas.subtemas]]
+id = "queimadas_desmatamento"
+label = "Queimadas e desmatamento"
+kpis = [
+  { id = "focos_calor", label = "Focos de calor por bioma", tabela = "5805", pesquisa = "Indicadores de Desenvolvimento Sustentável", filtros = ["bioma"] },
+  { id = "desflorestamento_amazonia", label = "Desflorestamento na Amazônia Legal", tabela = "896", pesquisa = "Indicadores de Desenvolvimento Sustentável" },
+]
+
+[[temas.subtemas]]
+id = "emissoes_energia"
+label = "Emissões e energia"
+kpis = [
+  { id = "emissoes_gee", label = "Emissões de gases de efeito estufa", tabela = "5911", pesquisa = "Indicadores de Desenvolvimento Sustentável" },
+  { id = "energia_renovavel", label = "Energias renováveis na oferta interna de energia", tabela = "6592", pesquisa = "Objetivos de Desenvolvimento Sustentável" },
+]
+
+[[temas.subtemas]]
+id = "recursos_hidricos"
+label = "Recursos hídricos"
+kpis = [
+  { id = "estresse_hidrico", label = "Nível de estresse hídrico", tabela = "7077", pesquisa = "Objetivos de Desenvolvimento Sustentável" },
+  { id = "esgoto_tratado", label = "Águas residuais domésticas tratadas de forma segura", tabela = "8916", pesquisa = "Objetivos de Desenvolvimento Sustentável" },
+]
+
+# ======================================================================= 20
+[[temas]]
+id = "gestao_municipal"
+label = "Gestão pública municipal"
+filtros = ["tamanho_municipio"]
+
+[[temas.subtemas]]
+id = "planejamento_municipal"
+label = "Planejamento e meio ambiente"
+kpis = [
+  { id = "plano_diretor", label = "Municípios com Plano Diretor", tabela = "5882", pesquisa = "Pesquisa de Informações Básicas Municipais", filtros = ["tamanho_municipio"], requer_categoria = true },
+  { id = "legislacao_ambiental", label = "Municípios com legislação ambiental", tabela = "5608", pesquisa = "Indicadores de Desenvolvimento Sustentável", variavel = "6299" },
+]
+
+[[temas.subtemas]]
+id = "riscos_desastres"
+label = "Riscos e desastres"
+kpis = [
+  { id = "municipios_desastres", label = "Municípios atingidos por enchentes ou deslizamentos", tabela = "8536", pesquisa = "Pesquisa de Informações Básicas Municipais", filtros = ["tamanho_municipio"] },
+  { id = "plano_seca", label = "Municípios atingidos pela seca e com plano de contingência", tabela = "8530", pesquisa = "Pesquisa de Informações Básicas Municipais", filtros = ["tamanho_municipio"], requer_categoria = true },
+]
+
+[[temas.subtemas]]
+id = "politicas_sociais"
+label = "Políticas sociais"
+kpis = [
+  { id = "planos_municipais_sociais", label = "Municípios com planos municipais nas áreas sociais", tabela = "9985", pesquisa = "Pesquisa de Informações Básicas Municipais", filtros = ["tamanho_municipio"], requer_categoria = true },
+  { id = "conselhos_municipais_sociais", label = "Municípios com conselhos municipais nas áreas sociais", tabela = "9987", pesquisa = "Pesquisa de Informações Básicas Municipais", filtros = ["tamanho_municipio"], requer_categoria = true },
+]

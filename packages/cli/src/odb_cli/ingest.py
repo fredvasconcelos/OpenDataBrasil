@@ -123,12 +123,29 @@ def ingest_plan(
 
 
 @ingest_app.command("run")
-def ingest_run(
+def ingest_run(  # noqa: PLR0917 - opções da linha de comando (Typer)
     dataset_ids: Annotated[list[str] | None, typer.Argument(help="Datasets a ingerir.")] = None,
     all_datasets: Annotated[bool, typer.Option("--all", help="Todos os habilitados.")] = False,
     full: Annotated[bool, typer.Option(help="Baixa todas as partições.")] = False,
+    rodadas: Annotated[
+        int,
+        typer.Option(
+            min=0,
+            help="Rodadas extras para datasets adiados por timeout ou falha transitória "
+            "(0 desliga o adiamento).",
+        ),
+    ] = 2,
+    tentativas_iniciais: Annotated[
+        int, typer.Option(min=1, help="Tentativas por requisição antes de adiar o dataset.")
+    ] = 2,
+    pausa: Annotated[float, typer.Option(min=0, help="Pausa (s) entre as rodadas.")] = 60.0,
 ) -> None:
-    """Executa a ingestão. Um dataset com falha não impede os demais."""
+    """Executa a ingestão. Um dataset com falha não impede os demais.
+
+    Um dataset com timeout vai para o fim da fila e é tentado de novo depois dos
+    demais, reaproveitando os períodos já baixados nesta execução. A última
+    rodada usa as tentativas normais da fonte.
+    """
     rt = _runtime(_settings())
     targets = [d.id for d in rt.catalog.datasets.values() if d.enabled] if all_datasets else []
     targets += [d for d in dataset_ids or [] if d not in targets]
@@ -142,7 +159,14 @@ def ingest_run(
         with tracked_run(
             rt.engine, "ingest.run", rt.settings.code_version, {"datasets": targets, "full": full}
         ) as run_id:
-            for report in rt.runner.run_many(targets, run_id=run_id, full=full):
+            for report in rt.runner.run_many(
+                targets,
+                run_id=run_id,
+                full=full,
+                defer_rounds=rodadas,
+                first_pass_attempts=tentativas_iniciais,
+                pause_s=pausa,
+            ):
                 reports.append(asdict(report))
             failed = [r["dataset_id"] for r in reports if r["status"] != "succeeded"]
             if failed:

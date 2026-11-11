@@ -153,10 +153,12 @@ describe("state", () => {
       {
         theme_id: "t",
         label: "T",
+        filters: [],
         subthemes: [
           {
             subtheme_id: "s",
             label: "S",
+            planned: [],
             kpis: [kpi("pop", ["c86", "c2"], ["brasil", "uf", "municipio"], ["2010", "2022"]), kpi("ti", ["c2"], ["uf", "terra_indigena"], ["2022"])],
           },
         ],
@@ -174,7 +176,7 @@ describe("state", () => {
   it("abre na Grande Região quando o KPI tem esse mapa", () => {
     const withRegion: Navigation = {
       ...nav,
-      themes: [{ theme_id: "t", label: "T", subthemes: [{ subtheme_id: "s", label: "S", kpis: [kpi("r", [], ["brasil", "regiao", "uf"], ["2022"])] }] }],
+      themes: [{ theme_id: "t", label: "T", filters: [], subthemes: [{ subtheme_id: "s", label: "S", planned: [], kpis: [kpi("r", [], ["brasil", "regiao", "uf"], ["2022"])] }] }],
     };
     expect(readState(new URLSearchParams(""), withRegion).level).toBe("regiao");
   });

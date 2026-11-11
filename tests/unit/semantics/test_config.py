@@ -15,7 +15,7 @@ def _write(tmp_path: Path, content: str, name: str = "demografia.toml") -> Path:
 
 
 def test_repository_catalog_is_valid() -> None:
-    catalog = load_scope(REPO_INDICATORS, "demografia")
+    catalog = load_catalog(REPO_INDICATORS / "demografia.toml")
     assert catalog.scope == "demografia"
     assert len(catalog.indicators) == 22
     assert len(catalog.consistency) == 6
@@ -149,3 +149,69 @@ def test_scope_file_errors(tmp_path: Path) -> None:
     _write(tmp_path, "isto não é toml = [", "quebrado.toml")
     with pytest.raises(SemanticConfigError, match="inválido"):
         load_catalog(tmp_path / "quebrado.toml")
+
+
+def test_scope_merges_fragments(tmp_path: Path) -> None:
+    _write(tmp_path, BASE)
+    (tmp_path / "demografia").mkdir()
+    fragment = """
+config_version = "1.0.0"
+scope = "demografia"
+
+[[facts]]
+id = "fact_extra"
+dataset = "ibge-sidra-1"
+grain = "território x ano"
+description = "extra"
+fixed_categories = { "Sexo" = "6794" }
+
+[[indicators]]
+id = "extra"
+name = "Extra"
+description = "extra"
+dataset = "ibge-sidra-1"
+variable = "1"
+fact = "fact_extra"
+column = "valor"
+unit = "Pessoas"
+additivity = "non_additive"
+concept = "extra"
+path = ["Tema"]
+"""
+    _write(tmp_path / "demografia", fragment, "extra.toml")
+    base = load_catalog(tmp_path / "demografia.toml")
+    merged = load_scope(tmp_path, "demografia")
+    assert len(merged.indicators) == len(base.indicators) + 1
+    assert merged.fact("fact_extra").fixed_categories == {"Sexo": "6794"}
+    assert merged.content_sha256 != base.content_sha256
+    _write(
+        tmp_path / "demografia",
+        fragment.replace('scope = "demografia"', 'scope = "x"'),
+        "extra.toml",
+    )
+    with pytest.raises(SemanticConfigError, match="escopo"):
+        load_scope(tmp_path, "demografia")
+    misc = fragment.replace('scope = "demografia"', 'scope = "demografia"\nmisc = 1')
+    _write(tmp_path / "demografia", misc, "extra.toml")
+    with pytest.raises(SemanticConfigError, match="não aceitas"):
+        load_scope(tmp_path, "demografia")
+    _write(
+        tmp_path / "demografia",
+        fragment.replace('"Sexo" = "6794"', '"Cor ou raça" = "95251"').replace(
+            'description = "extra"\nfixed',
+            'description = "extra"\nclassifications = { "c86" = "k" }\nfixed',
+        ),
+        "extra.toml",
+    )
+    with pytest.raises(SemanticConfigError, match="fixas e classificadas"):
+        load_scope(tmp_path, "demografia")
+
+
+def test_repository_scope_with_fragments_matches_sources() -> None:
+    from odb_ingestion import load_sources  # noqa: PLC0415
+
+    catalog = load_scope(REPO_INDICATORS, "demografia")
+    sources = load_sources(REPO_INDICATORS.parent / "sources")
+    missing = [d for d in catalog.datasets() if d not in sources.datasets]
+    assert not missing
+    assert "despesa_familiar" in {i.id for i in catalog.indicators}

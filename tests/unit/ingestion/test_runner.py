@@ -167,3 +167,81 @@ def test_plan_only(env: Env) -> None:
     plan = env.runner.plan("ibge-sidra-4714")
     assert [r.partition_key for r in plan.requests] == ["n1n2n3-p2022"]
     assert env.bronze_files() == []
+
+
+def test_transient_failure_defers_dataset_and_resumes_without_redownload(env: Env) -> None:
+    """Timeout: o dataset vai para o fim da fila; a repescagem reaproveita o que já baixou."""
+    slow = "/values/t/6579/n1/all/n2/all/n3/all/v/9324/p/2003"
+    calls = {"slow": 0}
+
+    def flaky(_r: httpx.Request) -> httpx.Response:
+        calls["slow"] += 1
+        if calls["slow"] <= 2:  # as 2 tentativas da 1ª passada
+            raise httpx.ReadTimeout("simulado")
+        del env.fake.overrides[slow]
+        return env.fake.handler(_r)
+
+    env.fake.overrides[slow] = flaky
+    pauses: list[float] = []
+    reports = env.runner.run_many(
+        ["ibge-sidra-6579", "ibge-sidra-4714"], defer_rounds=2, pause_s=5, sleep=pauses.append
+    )
+    assert [r.dataset_id for r in reports] == ["ibge-sidra-6579", "ibge-sidra-4714"]
+    assert [r.status for r in reports] == ["succeeded", "succeeded"]
+    assert [r.rounds for r in reports] == [2, 1]
+    assert pauses == [5]
+    # A 1ª passada parou no período com timeout e foi registrada como adiada.
+    first = [i for i in env.registry.ingestions.values() if i["dataset_id"] == "ibge-sidra-6579"]
+    assert first[0]["status"] == "failed"
+    assert str(first[0]["error"]).startswith("adiada:")
+    # Na repescagem, os períodos já baixados vêm da Bronze, sem novo download.
+    second = reports[0]
+    assert second.counts["reused"] >= 1
+    assert second.counts["reused"] + second.counts["stored"] == 22
+    downloads = [r for r in env.fake.requests if "/p/2001" in r.url.path]
+    assert len(downloads) == 1
+    assert len(env.registry.watermarks["ibge-sidra-6579"]) == 22
+
+
+def test_refusal_is_not_deferred(env: Env) -> None:
+    """Recusa da fonte (4xx) não é transitória: falha na hora, sem rodadas extras."""
+    env.fake.overrides["/values/t/6579/n1/all/n2/all/n3/all/v/9324/p/2003"] = lambda _r: (
+        httpx.Response(400, text="Parâmetro inválido")
+    )
+    reports = env.runner.run_many(["ibge-sidra-6579"], defer_rounds=2, sleep=lambda _s: None)
+    assert reports[0].status == "failed"
+    assert reports[0].rounds == 1
+    assert not reports[0].deferred
+    assert "6579" not in "".join(env.registry.watermarks)
+
+
+def test_last_round_uses_full_attempts_and_fails_cleanly(env: Env) -> None:
+    calls: list[str] = []
+
+    def unavailable(request: httpx.Request) -> httpx.Response:
+        calls.append(request.url.path)
+        return httpx.Response(503)
+
+    env.fake.overrides["/values/t/4714/n1/all/n2/all/n3/all/v/93,6318,614/p/2022"] = unavailable
+    reports = env.runner.run_many(
+        ["ibge-sidra-4714"], defer_rounds=1, first_pass_attempts=1, sleep=lambda _s: None
+    )
+    assert reports[0].status == "failed"
+    assert reports[0].rounds == 2
+    assert not reports[0].deferred
+    # 1 tentativa na passada com adiamento; na última, as tentativas da fonte.
+    policy = env.catalog.sources["ibge-sidra"].http.max_attempts
+    assert len(calls) == 1 + policy
+    assert f"falhou após {policy} tentativas" in (reports[0].error or "")
+
+
+def test_interruption_is_recorded_with_reason(env: Env) -> None:
+    def interrupt(_r: httpx.Request) -> httpx.Response:
+        raise KeyboardInterrupt
+
+    env.fake.overrides["/values/t/6579/n1/all/n2/all/n3/all/v/9324/p/2003"] = interrupt
+    with pytest.raises(KeyboardInterrupt):
+        env.runner.run("ibge-sidra-6579")
+    (ingestion,) = env.registry.ingestions.values()
+    assert ingestion["status"] == "failed"
+    assert ingestion["error"] == "interrompida (KeyboardInterrupt)"

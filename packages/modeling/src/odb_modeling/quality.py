@@ -49,13 +49,36 @@ def input_checks(
     catalog: SemanticCatalog,
     datasets: Mapping[str, DatasetInfo],
     pending_report: Sequence[Mapping[str, object]],
+    fixed_problems: Mapping[str, Mapping[str, Sequence[str]]] | None = None,
 ) -> list[CheckResult]:
-    """Conferência do catálogo semântico contra os dados Silver."""
+    """Conferência do catálogo semântico contra os dados Silver.
+
+    ``selected`` já vem sem as dimensões de categoria fixa; ``fixed_problems``
+    traz as divergências encontradas ao retirá-las.
+    """
     results: list[CheckResult] = []
+    fixed_count = sum(len(f.fixed_categories) for f in catalog.facts)
+    results.append(
+        _result(
+            "semantics.fixed_categories",
+            dict(fixed_problems or {}),
+            f"{fixed_count} dimensões de categoria fixa conferem com a Silver",
+            "dimensões de categoria fixa com outra categoria ou ausentes na Silver",
+        )
+    )
     present = {
         (r["table_id"], r["variable_id"]): r
         for r in selected.group_by("table_id", "variable_id")
-        .agg(pl.col("unit_name").unique().alias("units"), pl.len().alias("n"))
+        .agg(
+            # Sem valor ("...", não disponível), a fonte não informa unidade: só os
+            # valores publicados definem a unidade da variável.
+            pl.col("unit_name")
+            .filter(~((pl.col("unit_name") == "") & (pl.col("value_status") == "not_available")))
+            .unique()
+            .sort()
+            .alias("units"),
+            pl.len().alias("n"),
+        )
         .iter_rows(named=True)
     }
     missing = []

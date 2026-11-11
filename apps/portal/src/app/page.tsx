@@ -25,13 +25,18 @@ export default async function Home() {
             {th.subthemes.map((s) => (
               <div key={s.subtheme_id}>
                 <strong>{s.label}</strong>
-                <ul className="small" style={{ paddingLeft: 18 }}>
-                  {s.kpis.map((k) => (
-                    <li key={k.kpi_id}>
-                      <Link href={`/dashboard?kpi=${k.kpi_id}`}>{k.label}</Link>
-                    </li>
-                  ))}
-                </ul>
+                {s.kpis.length ? (
+                  <ul className="small" style={{ paddingLeft: 18 }}>
+                    {s.kpis.map((k) => (
+                      <li key={k.kpi_id}>
+                        <Link href={`/dashboard?kpi=${k.kpi_id}`}>{k.label}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                {s.planned.length ? (
+                  <p className="small home-planned">{t("plannedCount", { count: s.planned.length })}</p>
+                ) : null}
               </div>
             ))}
           </div>

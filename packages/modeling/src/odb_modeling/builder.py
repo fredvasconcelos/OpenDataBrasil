@@ -349,11 +349,15 @@ class GoldBuilder:
             .filter(pl.col("table_id").is_in([d.table_id for d in datasets.values()]))
             .collect()
         )
-        selected = model.select_silver(silver, mapping)
+        selected, fixed_problems = model.strip_fixed_categories(
+            model.select_silver(silver, mapping), self._catalog
+        )
         pending, pending_report = model.resolve_pending_installation(
             self._catalog, silver, datasets
         )
-        build.checks = input_checks(selected, self._catalog, datasets, pending_report)
+        build.checks = input_checks(
+            selected, self._catalog, datasets, pending_report, fixed_problems
+        )
         if blocking(build.checks):
             return {}
 

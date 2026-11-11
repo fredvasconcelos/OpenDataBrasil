@@ -13,13 +13,13 @@ está detalhada. Exemplo, com cor ou raça e sexo:
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
 
 from odb_api.gold import GoldGateway, NotFoundError
-from odb_api.portal import KpiConfig, PortalConfig, check_against_release
+from odb_api.portal import KpiConfig, PortalConfig, PortalConfigError, check_against_release
 from odb_api.release import ReleaseContext
 from odb_api.schemas import (
     CategoryOut,
@@ -28,12 +28,14 @@ from odb_api.schemas import (
     DetailNodeOut,
     DetailOut,
     DimensionOut,
+    FilterOut,
     GeographyRefOut,
     KpiOut,
     KpiSourceOut,
     MapOut,
     MapValueOut,
     NavigationOut,
+    PlannedKpiOut,
     PointOut,
     Provenance,
     SeriesItemOut,
@@ -44,7 +46,14 @@ from odb_api.schemas import (
     TableVersionOut,
     ThemeOut,
 )
-from odb_semantics import IndicatorQuery, SemanticError, plan_query
+from odb_semantics import (
+    IndicatorQuery,
+    Panorama,
+    SemanticError,
+    check_against_portal,
+    plan_query,
+    resolve_links,
+)
 
 Combo = tuple[str, ...]
 
@@ -85,10 +94,27 @@ def provenance(
 class KpiService:
     """Operações do portal sobre os KPIs configurados."""
 
-    def __init__(self, gold: GoldGateway, portal: PortalConfig, *, page_max: int) -> None:
-        """Recebe o acesso à Gold e a configuração do portal."""
+    def __init__(
+        self,
+        gold: GoldGateway,
+        portal: PortalConfig,
+        *,
+        page_max: int,
+        panorama: Panorama | None = None,
+    ) -> None:
+        """Recebe o acesso à Gold, a configuração do portal e, opcionalmente, o panorama.
+
+        Com o panorama (ADR-0010), a navegação segue a sua taxonomia: os KPIs
+        publicados entram no lugar indicado por ``kpi`` e os demais aparecem
+        como planejados.
+        """
+        self._links: dict[str, str | None] = {}
+        if panorama is not None:
+            check_against_portal(panorama, {k.id: k for k in portal.kpis()})
+            self._links = resolve_links(panorama, (k.id for k in portal.kpis()))
         self._gold = gold
         self._portal = portal
+        self._panorama = panorama
         self._page_max = page_max
         self._checked: set[str] = set()
 
@@ -96,10 +122,27 @@ class KpiService:
 
     def _check(self, ctx: ReleaseContext) -> None:
         if ctx.release_id not in self._checked:
-            check_against_release(
-                self._portal, self._gold.indicators(ctx), self._gold.partitions(ctx)
-            )
+            indicators = self._gold.indicators(ctx)
+            check_against_release(self._portal, indicators, self._gold.partitions(ctx))
+            if self._panorama is not None:
+                self._check_panorama_tables(self._panorama, indicators)
             self._checked.add(ctx.release_id)
+
+    def _check_panorama_tables(
+        self, panorama: Panorama, indicators: Mapping[str, Mapping[str, Any]]
+    ) -> None:
+        """A tabela de origem publicada é a mesma que o panorama declara."""
+        problems = []
+        for _, _, item in panorama.items():
+            link = self._links.get(item.id)
+            kpi = self._portal.kpi(link) if link else None
+            if kpi is None:  # planejado (a ligação com o portal já foi conferida)
+                continue
+            published = str(indicators[kpi.indicator]["source_table_id"])
+            if published != item.tabela:
+                problems.append(f"{item.id}: tabela {item.tabela} no panorama, {published} na Gold")
+        if problems:
+            raise PortalConfigError("; ".join(problems))
 
     def kpi(self, ctx: ReleaseContext, kpi_id: str) -> KpiConfig:
         """KPI configurado e conferido contra o release."""
@@ -174,28 +217,76 @@ class KpiService:
         )
 
     def navigation(self, ctx: ReleaseContext) -> NavigationOut:
-        """Temas, subtemas e KPIs."""
+        """Temas, subtemas e KPIs (publicados e, com o panorama, planejados)."""
         self._check(ctx)
-        return NavigationOut(
-            release_id=ctx.release_id,
-            scope=self._portal.scope,
-            dimension_order=list(self._portal.dimension_order),
-            themes=[
+        themes = (
+            self._panorama_themes(ctx, self._panorama)
+            if self._panorama is not None
+            else [
                 ThemeOut(
                     theme_id=t.id,
                     label=t.label,
+                    filters=[],
                     subthemes=[
                         SubthemeOut(
                             subtheme_id=s.id,
                             label=s.label,
                             kpis=[self.describe(ctx, k, t.id, s.id) for k in s.kpis],
+                            planned=[],
                         )
                         for s in t.subthemes
                     ],
                 )
                 for t in self._portal.themes
-            ],
+            ]
         )
+        return NavigationOut(
+            release_id=ctx.release_id,
+            scope=self._portal.scope,
+            dimension_order=list(self._portal.dimension_order),
+            themes=themes,
+        )
+
+    def _panorama_themes(self, ctx: ReleaseContext, panorama: Panorama) -> list[ThemeOut]:
+        out = []
+        for theme in panorama.temas:
+            subthemes = []
+            for sub in theme.subtemas:
+                published = []
+                for item in sub.kpis:
+                    link = self._links.get(item.id)
+                    kpi = self._portal.kpi(link) if link else None
+                    if kpi is not None:
+                        published.append(self.describe(ctx, kpi, theme.id, sub.id))
+                planned = [
+                    PlannedKpiOut(
+                        kpi_id=item.id,
+                        label=item.label,
+                        source_table_id=item.tabela,
+                        survey=item.pesquisa,
+                        filters=list(item.filtros),
+                        note=item.nota,
+                    )
+                    for item in sub.kpis
+                    if self._links.get(item.id) is None
+                ]
+                subthemes.append(
+                    SubthemeOut(
+                        subtheme_id=sub.id, label=sub.label, kpis=published, planned=planned
+                    )
+                )
+            out.append(
+                ThemeOut(
+                    theme_id=theme.id,
+                    label=theme.label,
+                    filters=[
+                        FilterOut(filter_id=f, label=panorama.filter_label(f))
+                        for f in theme.filtros
+                    ],
+                    subthemes=subthemes,
+                )
+            )
+        return out
 
     # ------------------------------------------------------------- consulta
 

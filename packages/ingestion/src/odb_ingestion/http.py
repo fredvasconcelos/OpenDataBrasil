@@ -32,13 +32,20 @@ KEPT_HEADERS = ("content-type", "content-length", "last-modified", "etag", "date
 
 
 class HttpError(RuntimeError):
-    """Falha definitiva de uma requisição (após as tentativas permitidas)."""
+    """Falha definitiva de uma requisição (após as tentativas permitidas).
 
-    def __init__(self, message: str, *, url: str, status: int | None = None) -> None:
-        """Guarda a URL e o status HTTP, quando houver."""
+    ``transient`` indica falha que pode passar com o tempo (timeout, conexão,
+    429 ou 5xx esgotados), e não uma recusa da fonte (4xx).
+    """
+
+    def __init__(
+        self, message: str, *, url: str, status: int | None = None, transient: bool = False
+    ) -> None:
+        """Guarda a URL, o status HTTP, quando houver, e se a falha é transitória."""
         super().__init__(message)
         self.url = url
         self.status = status
+        self.transient = transient
 
 
 @dataclass(frozen=True, slots=True)
@@ -181,7 +188,7 @@ class HttpClient:
                         f"{url}: Retry-After de {retry_after:.0f}s excede o máximo "
                         f"permitido ({self.policy.max_retry_after_s:.0f}s)"
                     )
-                    raise HttpError(msg, url=url, status=status)
+                    raise HttpError(msg, url=url, status=status, transient=True)
                 delay = max(delay, retry_after)
             logger.warning(
                 "http retry",
@@ -189,7 +196,7 @@ class HttpClient:
             )
             self._sleep(delay)
         msg = f"{url}: falhou após {self.policy.max_attempts} tentativas ({last_error})"
-        raise HttpError(msg, url=url, status=status)
+        raise HttpError(msg, url=url, status=status, transient=True)
 
     # ------------------------------------------------------------- operações
 

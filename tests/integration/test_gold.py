@@ -15,7 +15,7 @@ from typer.testing import CliRunner
 
 from odb_cli import ingest as ingest_cli
 from odb_cli.main import app
-from tests.gold_support import REPO_INDICATORS
+from tests.gold_support import REPO_INDICATORS, curated_indicators
 from tests.ingestion_support import TEST_SOURCES, FakeSources
 
 pytestmark = pytest.mark.integration
@@ -28,7 +28,7 @@ def lake(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, engine: Engine) -> Pat
         (root / layer).mkdir(parents=True)
     monkeypatch.setenv("ODB_LAKEHOUSE_ROOT_URI", root.as_uri())
     monkeypatch.setenv("ODB_SOURCES_CONFIG_DIR", str(TEST_SOURCES))
-    monkeypatch.setenv("ODB_INDICATORS_CONFIG_DIR", str(REPO_INDICATORS))
+    monkeypatch.setenv("ODB_INDICATORS_CONFIG_DIR", str(curated_indicators(tmp_path)))
     monkeypatch.setenv("ODB_DUCKDB_TEMP_DIRECTORY", str(tmp_path / "duck"))
     monkeypatch.setenv("ODB_DUCKDB_MEMORY_LIMIT", "512MB")
     monkeypatch.setenv("ODB_DUCKDB_THREADS", "2")
@@ -206,7 +206,7 @@ def test_gold_publish_query_and_preserve_on_failure(  # noqa: PLR0915 - cenário
     ) == [("failed",)]
 
     # A consulta continua servindo o release anterior.
-    monkeypatch.setenv("ODB_INDICATORS_CONFIG_DIR", str(REPO_INDICATORS))
+    monkeypatch.setenv("ODB_INDICATORS_CONFIG_DIR", str(curated_indicators(tmp_path)))
     still = _query(runner, "-i", "censo_pessoas_quilombolas", "--level", "brasil")
     assert still["provenance"]["release_id"] == release_id
 

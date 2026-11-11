@@ -11,7 +11,7 @@
 
 config_version = "1.0.0"
 scope = "demografia"
-dimension_order = ["c86", "c2"]
+dimension_order = ["c86", "c2", "c339", "c12190"]
 
 [[themes]]
 id = "demografia"
@@ -29,6 +29,13 @@ dimensions = [
     { classification = "c86", partition = "cor_ou_raca", label = "Cor ou raça" },
     { classification = "c2", partition = "sexo", label = "Sexo" },
 ]
+
+[[themes.subthemes.kpis]]
+# Tabela 9605 (Censos 2010 e 2022), já publicada na Gold; item do panorama de mesmo id.
+id = "populacao_cor_raca_censos"
+label = "População por cor ou raça (2010 e 2022)"
+indicator = "censo_populacao_cor_raca"
+dimensions = [{ classification = "c86", partition = "cor_ou_raca", label = "Cor ou raça" }]
 
 [[themes.subthemes.kpis]]
 id = "populacao_estimada"

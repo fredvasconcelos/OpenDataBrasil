@@ -94,11 +94,45 @@ class PortalConfig(_Strict):
         return next((k for k in self.kpis() if k.id == kpi_id), None)
 
 
+def merge_themes(
+    themes: Sequence[Mapping[str, Any]], extra: Sequence[Mapping[str, Any]]
+) -> list[dict[str, Any]]:
+    """Acrescenta temas de um fragmento: mesmo ``id`` junta subtemas e KPIs."""
+    merged = [
+        {**t, "subthemes": [{**s, "kpis": list(s["kpis"])} for s in t["subthemes"]]} for t in themes
+    ]
+    for theme in extra:
+        target = next((t for t in merged if t["id"] == theme["id"]), None)
+        if target is None:
+            merged.append(
+                {**theme, "subthemes": [{**s, "kpis": list(s["kpis"])} for s in theme["subthemes"]]}
+            )
+            continue
+        for sub in theme["subthemes"]:
+            same = next((s for s in target["subthemes"] if s["id"] == sub["id"]), None)
+            if same is None:
+                target["subthemes"].append({**sub, "kpis": list(sub["kpis"])})
+            else:
+                same["kpis"].extend(sub["kpis"])
+    return merged
+
+
 def load_portal(config_dir: str | Path, scope: str) -> PortalConfig:
-    """Carrega ``<config_dir>/<scope>.toml``."""
+    """Carrega ``<config_dir>/<scope>.toml`` e os fragmentos ``<config_dir>/<scope>/*.toml``.
+
+    Um fragmento (por exemplo, os KPIs gerados por ``odb panorama gerar``)
+    declara o mesmo ``scope`` e só acrescenta ``themes``.
+    """
     path = Path(config_dir) / f"{scope}.toml"
     try:
         data = tomllib.loads(path.read_text(encoding="utf-8"))
+        for fragment in sorted((Path(config_dir) / scope).glob("*.toml")):
+            extra = tomllib.loads(fragment.read_text(encoding="utf-8"))
+            unknown = sorted(set(extra) - {"config_version", "scope", "themes"})
+            if extra.get("scope") != scope or unknown:
+                msg = f"{fragment}: fragmento do portal inválido (escopo ou chaves {unknown})"
+                raise PortalConfigError(msg)
+            data["themes"] = merge_themes(data.get("themes", []), extra.get("themes", []))
         config = PortalConfig.model_validate(data)
     except (OSError, tomllib.TOMLDecodeError, ValidationError) as exc:
         msg = f"{path}: configuração do portal inválida: {exc}"

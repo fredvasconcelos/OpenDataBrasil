@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import hashlib
 import tomllib
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Literal
 
@@ -144,6 +145,12 @@ class FactConfig(_Strict):
     description: str
     # Classificação → coluna de chave de categoria no fato.
     classifications: dict[str, str] = Field(default_factory=dict)
+    # Dimensões da Silver publicadas numa única categoria (em geral o Total),
+    # sem classificação declarada: nome da dimensão → código da categoria. A
+    # Gold confere que todas as observações têm essa categoria e retira a
+    # dimensão (o fato fica sem desagregação). Usado pelos KPIs de Total do
+    # panorama (ADR-0010), cujas classificações ainda não têm código conhecido.
+    fixed_categories: dict[str, str] = Field(default_factory=dict)
 
 
 class Incompatibility(_Strict):
@@ -246,10 +253,17 @@ class SemanticCatalog(_Strict):
         facts = {f.id: f for f in self.facts}
         indicators = {i.id for i in self.indicators}
         columns: dict[str, set[str]] = {f.id: set(f.classifications.values()) for f in self.facts}
+        dimension_of = {c.id: c.silver_dimension for c in self.classifications}
         for fact in self.facts:
             unknown = sorted(set(fact.classifications) - classes)
             if unknown:
                 problems.append(f"{fact.id}: classificações não declaradas {unknown}")
+            both = sorted(
+                set(fact.fixed_categories)
+                & {dimension_of[c] for c in fact.classifications if c in dimension_of}
+            )
+            if both:
+                problems.append(f"{fact.id}: dimensões fixas e classificadas ao mesmo tempo {both}")
         for ind in self.indicators:
             fact_cfg = facts.get(ind.fact)
             if fact_cfg is None:
@@ -339,26 +353,54 @@ class SemanticCatalog(_Strict):
         }
 
 
-def load_catalog(path: Path) -> SemanticCatalog:
-    """Lê e valida um arquivo de catálogo semântico."""
-    content = path.read_bytes()
+# Listas que um fragmento (``<dir>/<escopo>/*.toml``) pode acrescentar ao catálogo.
+_FRAGMENT_LISTS = (
+    "classifications",
+    "facts",
+    "indicators",
+    "pending_installation",
+    "consistency",
+)
+
+
+def load_catalog(path: Path, fragments: Sequence[Path] = ()) -> SemanticCatalog:
+    """Lê e valida um catálogo semântico, com os fragmentos acrescentados.
+
+    Cada fragmento declara o mesmo ``scope`` e só acrescenta itens às listas
+    de ``_FRAGMENT_LISTS``. O hash cobre o arquivo principal e os fragmentos.
+    """
+    digest = hashlib.sha256()
     try:
+        content = path.read_bytes()
+        digest.update(content)
         data = tomllib.loads(content.decode("utf-8"))
-        return SemanticCatalog.model_validate(
-            {**data, "content_sha256": hashlib.sha256(content).hexdigest()}
-        )
+        for fragment in fragments:
+            raw = fragment.read_bytes()
+            digest.update(fragment.name.encode() + b"\0" + raw)
+            extra = tomllib.loads(raw.decode("utf-8"))
+            if extra.get("scope") != data.get("scope"):
+                msg = f"{fragment}: escopo {extra.get('scope')!r} difere de {data.get('scope')!r}"
+                raise SemanticConfigError(msg)
+            unknown = sorted(set(extra) - {"config_version", "scope", *_FRAGMENT_LISTS})
+            if unknown:
+                msg = f"{fragment}: chaves não aceitas num fragmento: {unknown}"
+                raise SemanticConfigError(msg)
+            for key in _FRAGMENT_LISTS:
+                data[key] = [*data.get(key, []), *extra.get(key, [])]
+        return SemanticCatalog.model_validate({**data, "content_sha256": digest.hexdigest()})
     except (tomllib.TOMLDecodeError, ValidationError) as exc:
         msg = f"{path}: catálogo semântico inválido: {exc}"
         raise SemanticConfigError(msg) from exc
 
 
 def load_scope(config_dir: str | Path, scope: str) -> SemanticCatalog:
-    """Catálogo do escopo informado (``<dir>/<escopo>.toml``)."""
+    """Catálogo do escopo (``<dir>/<escopo>.toml`` e os fragmentos ``<dir>/<escopo>/*.toml``)."""
     path = Path(config_dir) / f"{scope}.toml"
     if not path.is_file():
         msg = f"catálogo semântico do escopo {scope!r} não encontrado em {path}"
         raise SemanticConfigError(msg)
-    catalog = load_catalog(path)
+    fragments = sorted((Path(config_dir) / scope).glob("*.toml"))
+    catalog = load_catalog(path, fragments)
     if catalog.scope != scope:
         msg = f"{path}: escopo declarado {catalog.scope!r} difere do nome do arquivo"
         raise SemanticConfigError(msg)

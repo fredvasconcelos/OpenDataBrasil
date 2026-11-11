@@ -1,0 +1,1602 @@
+# Gerado por `odb panorama gerar` a partir de configs/catalog/panorama.toml e
+# configs/catalog/panorama_verificacao.json (ADR-0010). Não editar à mão:
+# ajuste o panorama e gere de novo.
+
+config_version = "1.0.0"
+scope = "demografia"
+
+[[facts]]
+id = "fact_sidra_4709"
+dataset = "ibge-sidra-4709"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Taxa de crescimento da população: Total da tabela SIDRA 4709 (População residente, Variação absoluta de população residente e Taxa de crescimento geométrico)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_1286"
+dataset = "ibge-sidra-1286"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "População nos Censos (série histórica): Total da tabela SIDRA 1286 (População e Distribuição da população pelas Grandes Regiões e Unidades da Federação nos Censos Demográficos)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_9515"
+dataset = "ibge-sidra-9515"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Índice de envelhecimento, idade mediana e razão de sexo: Total da tabela SIDRA 9515 (Índice de envelhecimento, idade mediana e razão de sexo da população)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_9514"
+dataset = "ibge-sidra-9514"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "População por sexo e idade: Total da tabela SIDRA 9514 (População residente, por sexo, idade e forma de declaração da idade)."
+fixed_categories = { "Sexo" = "6794", "Forma de declaração da idade" = "113635", "Idade" = "100362" }
+
+[[facts]]
+id = "fact_sidra_3727"
+dataset = "ibge-sidra-3727"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Taxa de fecundidade total: Total da tabela SIDRA 3727 (Taxa de fecundidade total)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_10159"
+dataset = "ibge-sidra-10159"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Pessoas que não residiam na UF cinco anos antes: Total da tabela SIDRA 10159 (Pessoas de 5 anos ou mais de idade que não residiam na Unidade da Federação 5 anos antes da data de referência, por lugar de residência 5 anos antes da data de referência)."
+fixed_categories = { "Lugar de residência 5 anos antes da data de referência" = "77808" }
+
+[[facts]]
+id = "fact_sidra_2609"
+dataset = "ibge-sidra-2609"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Nascidos vivos: Total da tabela SIDRA 2609 (Nascidos vivos, por ano de nascimento, grupos de idade da mãe na ocasião do parto, sexo e lugar de residência da mãe)."
+fixed_categories = { "Sexo" = "0", "Ano de nascimento" = "0", "Idade da mãe na ocasião do parto" = "0" }
+
+[[facts]]
+id = "fact_sidra_2654"
+dataset = "ibge-sidra-2654"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Óbitos: Total da tabela SIDRA 2654 (Óbitos, ocorridos no ano, por mês de ocorrência, natureza do óbito, sexo, idade, local de ocorrência e lugar de residência do falecido)."
+fixed_categories = { "Sexo" = "0", "Mês de ocorrência" = "0", "Local de ocorrência" = "0", "Idade do(a) falecido(a)" = "0", "Natureza do óbito" = "0" }
+
+[[facts]]
+id = "fact_sidra_4412"
+dataset = "ibge-sidra-4412"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Casamentos: Total da tabela SIDRA 4412 (Casamentos, por mês de ocorrência, estado civil dos cônjuges, grupos de idade dos cônjuges e lugar do registro)."
+fixed_categories = { "Mês de ocorrência" = "0", "Estado civil do primeiro cônjuge" = "0", "Estado civil do segundo cônjuge" = "0", "Grupo de idade do primeiro cônjuge" = "0", "Grupo de idade do segundo cônjuge" = "0" }
+
+[[facts]]
+id = "fact_sidra_1695"
+dataset = "ibge-sidra-1695"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Divórcios: Total da tabela SIDRA 1695 (Divórcios concedidos em 1ª instância ou por escritura, por tempo transcorrido entre a data do casamento e a data da sentença ou da escritura, grupos de idade do marido e da mulher na data da sentença ou da escritura, regime de bens do casamento e lugar da ação do processo)."
+fixed_categories = { "Regime de bens do casamento" = "0", "Grupos de idade do marido na data da sentença" = "0", "Grupos de idade da mulher na data da sentença" = "0", "Tempo transcorrido entre a data do casamento e a data da sentença ou da escritura" = "0" }
+
+[[facts]]
+id = "fact_sidra_4712"
+dataset = "ibge-sidra-4712"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Domicílios ocupados e média de moradores: Total da tabela SIDRA 4712 (Domicílios particulares permanentes ocupados, Moradores em domicílios particulares permanentes ocupados e Média de moradores em domicílios particulares permanentes ocupados)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_9888"
+dataset = "ibge-sidra-9888"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "População, área e densidade em favelas: Total da tabela SIDRA 9888 (População residente, Área territorial e Densidade demográfica em favelas e comunidades urbanas, segundo as Favelas e Comunidades Urbanas)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_9883"
+dataset = "ibge-sidra-9883"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Número de favelas e comunidades urbanas: Total da tabela SIDRA 9883 (Número de favelas e comunidades urbanas, segundo os Municípios)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_7460"
+dataset = "ibge-sidra-7460"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Municípios com serviço de abastecimento por rede geral: Total da tabela SIDRA 7460 (Municípios com serviço de abastecimento de água por rede geral de distribuição, por condição de funcionamento do serviço)."
+fixed_categories = { "Condição de funcionamento do serviço" = "48278" }
+
+[[facts]]
+id = "fact_sidra_7461"
+dataset = "ibge-sidra-7461"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Municípios com rede coletora de esgoto: Total da tabela SIDRA 7461 (Municípios com serviço de esgotamento sanitário por rede coletora, por condição de funcionamento do serviço)."
+fixed_categories = { "Condição de funcionamento do serviço" = "48278" }
+
+[[facts]]
+id = "fact_sidra_9543"
+dataset = "ibge-sidra-9543"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Taxa de alfabetização (15 anos ou mais, Censo): Total da tabela SIDRA 9543 (Taxa de alfabetização das pessoas de 15 anos ou mais de idade por sexo, cor ou raça e grupos de idade)."
+fixed_categories = { "Sexo" = "6794", "Cor ou raça" = "95251", "Idade" = "100362" }
+
+[[facts]]
+id = "fact_sidra_7138"
+dataset = "ibge-sidra-7138"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Taxa de escolarização: Total da tabela SIDRA 7138 (Taxa de escolarização, por sexo e grupo de idade)."
+fixed_categories = { "Sexo" = "6794", "Grupo de idade" = "95253" }
+
+[[facts]]
+id = "fact_sidra_4708"
+dataset = "ibge-sidra-4708"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Taxa de informalidade: Total da tabela SIDRA 4708 (Taxa de informalidade das pessoas de 14 anos ou mais de idade ocupadas na semana de referência)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_7435"
+dataset = "ibge-sidra-7435"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Índice de Gini do rendimento domiciliar per capita: Total da tabela SIDRA 7435 (Índice de Gini do rendimento domiciliar per capita, a preços médios do ano)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_10295"
+dataset = "ibge-sidra-10295"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Rendimento domiciliar per capita (Censo): Total da tabela SIDRA 10295 (Moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a), valor do rendimento domiciliar mensal per capita, médio e mediano, por sexo, cor ou raça e grupos de idade)."
+fixed_categories = { "Sexo" = "6794", "Grupo de idade" = "95253", "Cor ou raça" = "95251" }
+
+[[facts]]
+id = "fact_sidra_5877"
+dataset = "ibge-sidra-5877"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Proporção da população abaixo da linha de pobreza nacional: Total da tabela SIDRA 5877 (Indicador 1.2.1 - Proporção da população vivendo abaixo da linha de pobreza nacional)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_9836"
+dataset = "ibge-sidra-9836"
+grain = "território (Brasil, Grande Região) x ano"
+description = "Pessoas de 5 a 17 anos em trabalho infantil: Total da tabela SIDRA 9836 (Percentual de pessoas de 5 a 17 anos de idade em situação de trabalho infantil, por grupo de idade - Estatísticas experimentais)."
+fixed_categories = { "Grupo de idade" = "95253" }
+
+[[facts]]
+id = "fact_sidra_7015"
+dataset = "ibge-sidra-7015"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Horas dedicadas a afazeres domésticos e cuidados: Total da tabela SIDRA 7015 (Média de horas dedicadas pelas pessoas de 14 anos ou mais de idade aos afazeres domésticos e/ou às tarefas de cuidado de pessoas, por sexo)."
+fixed_categories = { "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_7972"
+dataset = "ibge-sidra-7972"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Pessoas com pelo menos uma doença crônica: Total da tabela SIDRA 7972 (Pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica, por sexo e situação do domicílio)."
+fixed_categories = { "Situação do domicílio" = "6795", "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_4418"
+dataset = "ibge-sidra-4418"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Diagnóstico de hipertensão arterial: Total da tabela SIDRA 4418 (Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial, por sexo e situação do domicílio)."
+fixed_categories = { "Situação do domicílio" = "6795", "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_4487"
+dataset = "ibge-sidra-4487"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Diagnóstico de diabetes: Total da tabela SIDRA 4487 (Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes, por sexo e situação do domicílio)."
+fixed_categories = { "Situação do domicílio" = "6795", "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_4173"
+dataset = "ibge-sidra-4173"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Fumantes atuais de tabaco: Total da tabela SIDRA 4173 (Pessoas de 18 anos ou mais de idade fumantes atuais de tabaco, por sexo e situação do domicílio)."
+fixed_categories = { "Situação do domicílio" = "6795", "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_7726"
+dataset = "ibge-sidra-7726"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Consumo abusivo de álcool: Total da tabela SIDRA 7726 (Pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa, por sexo e situação do domicílio (2019))."
+fixed_categories = { "Situação do domicílio" = "6795", "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_7740"
+dataset = "ibge-sidra-7740"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Pessoas insuficientemente ativas: Total da tabela SIDRA 7740 (Pessoas de 18 anos ou mais de idade insuficientemente ativas, por sexo e situação do domicílio (2019))."
+fixed_categories = { "Situação do domicílio" = "6795", "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_8476"
+dataset = "ibge-sidra-8476"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Excesso de peso ou obesidade: Total da tabela SIDRA 8476 (Pessoas de 18 anos ou mais de idade com excesso de peso ou obesidade, por sexo e situação do domicílio)."
+fixed_categories = { "Situação do domicílio" = "6795", "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_4938"
+dataset = "ibge-sidra-4938"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Pessoas com plano de saúde: Total da tabela SIDRA 4938 (Pessoas que tinham algum plano de saúde (médico ou odontológico), por sexo e situação do domicílio)."
+fixed_categories = { "Situação do domicílio" = "6795", "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_5055"
+dataset = "ibge-sidra-5055"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Consultaram médico nos últimos 12 meses: Total da tabela SIDRA 5055 (Pessoas que consultaram médico nos últimos 12 meses, por sexo e situação do domicílio)."
+fixed_categories = { "Situação do domicílio" = "6795", "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_211"
+dataset = "ibge-sidra-211"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Estabelecimentos de saúde: Total da tabela SIDRA 211 (Estabelecimentos de saúde)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_8289"
+dataset = "ibge-sidra-8289"
+grain = "território (Brasil, Grande Região) x ano"
+description = "Mulheres que realizaram pré-natal: Total da tabela SIDRA 8289 (Mulheres que realizaram pré-natal, por cor ou raça e situação do domicílio (2019))."
+fixed_categories = { "Situação do domicílio" = "6795", "Cor ou raça" = "95251" }
+
+[[facts]]
+id = "fact_sidra_5905"
+dataset = "ibge-sidra-5905"
+grain = "território (Brasil, Grande Região) x ano"
+description = "Aleitamento materno exclusivo (menos de 6 meses): Total da tabela SIDRA 5905 (Crianças com menos de 6 meses de idade que são amamentadas exclusivamente com leite materno, por situação do domicílio)."
+fixed_categories = { "Situação do domicílio" = "6795" }
+
+[[facts]]
+id = "fact_sidra_6694"
+dataset = "ibge-sidra-6694"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Razão de mortalidade materna: Total da tabela SIDRA 6694 (Indicador 3.1.1 - Razão de Mortalidade Materna)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_6695"
+dataset = "ibge-sidra-6695"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Taxa de mortalidade em menores de 5 anos: Total da tabela SIDRA 6695 (Indicador 3.2.1 - Taxa de mortalidade em menores de 5 anos)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_6356"
+dataset = "ibge-sidra-6356"
+grain = "território (Brasil, Grande Região) x ano"
+description = "Escolares de 13 a 17 anos que fumaram nos últimos 30 dias: Total da tabela SIDRA 6356 (Percentual de escolares com idade de 13 a 17 anos que fumaram nos 30 dias anteriores à pesquisa, por sexo, dependência administrativa da escola e grupo de idade do escolar)."
+fixed_categories = { "Sexo" = "6794", "Grupo de idade" = "40087", "Dependência administrativa da escola" = "31050" }
+
+[[facts]]
+id = "fact_sidra_6358"
+dataset = "ibge-sidra-6358"
+grain = "território (Brasil, Grande Região) x ano"
+description = "Escolares de 13 a 17 anos que consumiram bebida alcoólica: Total da tabela SIDRA 6358 (Percentual de escolares com idade de 13 a 17 anos que consumiram bebidas alcoólicas pelo menos um dia nos 30 dias anteriores à pesquisa, por sexo, dependência administrativa da escola e grupo de idade do escolar)."
+fixed_categories = { "Sexo" = "6794", "Grupo de idade" = "40087", "Dependência administrativa da escola" = "31050" }
+
+[[facts]]
+id = "fact_sidra_6378"
+dataset = "ibge-sidra-6378"
+grain = "território (Brasil, Grande Região) x ano"
+description = "Escolares de 13 a 17 anos com excesso de peso: Total da tabela SIDRA 6378 (Percentual de escolares com idade de 13 a 17 anos que apresentaram excesso de peso, por sexo, dependência administrativa da escola e grupo de idade do escolar)."
+fixed_categories = { "Sexo" = "6794", "Grupo de idade" = "40087", "Dependência administrativa da escola" = "31050" }
+
+[[facts]]
+id = "fact_sidra_9730"
+dataset = "ibge-sidra-9730"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Vacinados contra a COVID-19: Total da tabela SIDRA 9730 (Pessoas de 5 anos ou mais de idade que se vacinaram pelo menos uma vez contra a COVID-19, por sexo e grupo de idade)."
+fixed_categories = { "Sexo" = "6794", "Grupo de idade" = "95253" }
+
+[[facts]]
+id = "fact_sidra_9373"
+dataset = "ibge-sidra-9373"
+grain = "território (Brasil, Grande Região) x ano"
+description = "Pessoas que tiveram ou consideram que tiveram COVID-19: Total da tabela SIDRA 9373 (Pessoas de 5 anos ou mais de idade que tiveram ou consideram que tiveram COVID-19, por situação do domicílio e sexo)."
+fixed_categories = { "Situação do domicílio" = "6795", "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_6974"
+dataset = "ibge-sidra-6974"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Rendimento médio mensal familiar: Total da tabela SIDRA 6974 (Rendimento total e variação patrimonial médio mensal familiar - valor e distribuição - por classes de rendimento total e variação patrimonial mensal familiar, segundo a origem do rendimento)."
+fixed_categories = { "Classes de rendimento total e variação patrimonial mensal familiar" = "7999", "Origem dos rendimentos" = "8049" }
+
+[[facts]]
+id = "fact_sidra_8713"
+dataset = "ibge-sidra-8713"
+grain = "território (Brasil, Grande Região) x ano"
+description = "Pessoas que se sentem seguras ao andar sozinhas perto de casa: Total da tabela SIDRA 8713 (Pessoas de 15 anos ou mais de idade que se sentem seguras ao andar sozinhas nas redondezas ou arredores do seu domicílio, por sexo)."
+fixed_categories = { "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_8503"
+dataset = "ibge-sidra-8503"
+grain = "território (Brasil, Grande Região) x ano"
+description = "Vítimas de roubo nos últimos 12 meses: Total da tabela SIDRA 8503 (Pessoas de 15 anos ou mais de idade que foram vítimas de roubo nos últimos 12 meses, por sexo)."
+fixed_categories = { "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_8022"
+dataset = "ibge-sidra-8022"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Pessoas que sofreram violência nos últimos 12 meses: Total da tabela SIDRA 8022 (Pessoas de 18 anos ou mais de idade que sofreram violência nos últimos 12 meses, por sexo e situação do domicílio)."
+fixed_categories = { "Situação do domicílio" = "6795", "Sexo" = "6794" }
+
+[[facts]]
+id = "fact_sidra_6606"
+dataset = "ibge-sidra-6606"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Vítimas de homicídio por 100 mil habitantes: Total da tabela SIDRA 6606 (Indicador 16.1.1 - Número de vítimas de homicídios intencionais por 100 mil habitantes)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_5457"
+dataset = "ibge-sidra-5457"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Área, produção e valor das lavouras: Total da tabela SIDRA 5457 (Área plantada ou destinada à colheita, área colhida, quantidade produzida, rendimento médio e valor da produção das lavouras temporárias e permanentes)."
+fixed_categories = { "Produto das lavouras temporárias e permanentes" = "0" }
+
+[[facts]]
+id = "fact_sidra_5930"
+dataset = "ibge-sidra-5930"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Área de silvicultura por espécie florestal: Total da tabela SIDRA 5930 (Área total existente em 31/12 dos efetivos da silvicultura, por espécie florestal)."
+fixed_categories = { "Espécie florestal" = "0" }
+
+[[facts]]
+id = "fact_sidra_6878"
+dataset = "ibge-sidra-6878"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Número e área dos estabelecimentos agropecuários: Total da tabela SIDRA 6878 (Número de estabelecimentos agropecuários e Área dos estabelecimentos agropecuários, por tipologia, grupos de atividade econômica, sexo do produtor, classe de idade do produtor e condição do produtor em relação às terras)."
+fixed_categories = { "Condição do produtor em relação às terras" = "46502", "Tipologia" = "46302", "Grupos de atividade econômica" = "113601", "Sexo do produtor" = "41145", "Classe de idade do produtor" = "45951" }
+
+[[facts]]
+id = "fact_sidra_1030"
+dataset = "ibge-sidra-1030"
+grain = "território (Brasil) x ano"
+description = "Estabelecimentos agropecuários (série histórica 1920–2006): Total da tabela SIDRA 1030 (Número, Área total e Área média dos estabelecimentos agropecuários - série histórica (1920/2006))."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_5802"
+dataset = "ibge-sidra-5802"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Comercialização de agrotóxicos: Total da tabela SIDRA 5802 (Comercialização de ingredientes ativos de agrotóxicos e afins, por classe de uso)."
+fixed_categories = { "Classe de uso de agrotóxicos e afins" = "33616" }
+
+[[facts]]
+id = "fact_sidra_770"
+dataset = "ibge-sidra-770"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Fertilizantes entregues ao consumidor final: Total da tabela SIDRA 770 (Quantidade de fertilizantes entregue ao consumidor final e Utilização de fertilizantes por unidade de área por tipo de nutriente)."
+fixed_categories = { "Tipo de nutriente" = "119127" }
+
+[[facts]]
+id = "fact_sidra_10457"
+dataset = "ibge-sidra-10457"
+grain = "território (UF) x ano"
+description = "Unidades locais industriais, pessoal ocupado e salários: Total da tabela SIDRA 10457 (Dados gerais das unidades locais industriais de empresas industriais com 5 ou mais pessoas ocupadas, por Unidade da Federação, segundo as divisões de atividades (CNAE 2.0) (série nova))."
+fixed_categories = { "Classificação Nacional de Atividades Econômicas (CNAE 2.0)" = "117897" }
+
+[[facts]]
+id = "fact_sidra_6587"
+dataset = "ibge-sidra-6587"
+grain = "território (Brasil, UF) x ano"
+description = "Valor adicionado da indústria em proporção do PIB: Total da tabela SIDRA 6587 (Indicador 9.2.1 - Valor adicionado da indústria em proporção do PIB e per capita)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_6608"
+dataset = "ibge-sidra-6608"
+grain = "território (Brasil, UF) x ano"
+description = "Emprego na indústria em proporção do emprego total: Total da tabela SIDRA 6608 (Indicador 9.2.2 - Emprego na indústria em proporção do emprego total)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_10442"
+dataset = "ibge-sidra-10442"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Empresas de construção: pessoal, salários e valor das obras: Total da tabela SIDRA 10442 (Pessoal Ocupado, salários, retiradas e outras remunerações, custos e valor das incorporações, obras e/ou serviços da construção, das empresas de construção com 5 ou mais pessoas ocupadas (série nova))."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_10646"
+dataset = "ibge-sidra-10646"
+grain = "território (Brasil) x ano"
+description = "Resultados das empresas comerciais: Total da tabela SIDRA 10646 (Resultados das empresas comerciais segundo a divisão de comércio (série nova))."
+fixed_categories = { "Divisão de comércio" = "90067" }
+
+[[facts]]
+id = "fact_sidra_5945"
+dataset = "ibge-sidra-5945"
+grain = "território (Grande Região, UF) x ano"
+description = "Exportações, importações e saldo comercial: Total da tabela SIDRA 5945 (Valor das exportações, importações e saldo comercial - Grandes Regiões e Unidades da Federação)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_2581"
+dataset = "ibge-sidra-2581"
+grain = "território (Brasil) x ano"
+description = "Resultados dos serviços empresariais não financeiros: Total da tabela SIDRA 2581 (Resultados dos serviços empresariais não-financeiros - CNAE 2.0)."
+fixed_categories = { "Atividades" = "103847" }
+
+[[facts]]
+id = "fact_sidra_7204"
+dataset = "ibge-sidra-7204"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Viagens realizadas pelos moradores: Total da tabela SIDRA 7204 (Viagens realizadas pelos moradores dos domicílios no período de referência dos últimos três meses, por finalidade da viagem)."
+fixed_categories = { "Finalidade da viagem" = "47975" }
+
+[[facts]]
+id = "fact_sidra_9509"
+dataset = "ibge-sidra-9509"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Empresas, pessoal ocupado e salários: Total da tabela SIDRA 9509 (Unidades locais, empresas e outras organizações atuantes, pessoal ocupado total, pessoal ocupado assalariado, pessoal assalariado médio, salários e outras remunerações e salário médio mensal)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_9597"
+dataset = "ibge-sidra-9597"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Microempreendedores individuais (MEI): Total da tabela SIDRA 9597 (Número de microempreendedores individuais (MEIs), número de MEIs entrando, saindo e saldo, por grande grupamento e seções da classificação de atividade econômica (CNAE 2.0))."
+fixed_categories = { "Grande grupamento e seções da classificação de atividade econômica (CNAE 2.0)" = "59983" }
+
+[[facts]]
+id = "fact_sidra_9949"
+dataset = "ibge-sidra-9949"
+grain = "território (Brasil) x ano"
+description = "Nascimentos de empresas e taxa de sobrevivência: Total da tabela SIDRA 9949 (Número de nascimentos de empresas empregadoras e taxas de sobrevivência, segundo as seções da classificação de atividade e faixas de pessoal ocupado assalariado)."
+fixed_categories = { "Faixas de pessoal ocupado assalariado" = "9504", "Classificação Nacional de Atividades Econômicas (CNAE 2.0)" = "117897" }
+
+[[facts]]
+id = "fact_sidra_5453"
+dataset = "ibge-sidra-5453"
+grain = "território (Brasil) x ano"
+description = "Empresas que implementaram inovações: Total da tabela SIDRA 5453 (Empresas, total e as que implementaram inovações e/ou com projetos, por atividades da indústria, do setor de eletricidade e gás e dos serviços selecionados)."
+fixed_categories = { "Atividades da indústria, do setor de eletricidade e gás e dos serviços selecionados" = "33413" }
+
+[[facts]]
+id = "fact_sidra_6610"
+dataset = "ibge-sidra-6610"
+grain = "território (Brasil) x ano"
+description = "Dispêndio em P&D em proporção do PIB: Total da tabela SIDRA 6610 (Indicador 9.5.1 - Dispêndio em P&D em proporção do PIB)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_6784"
+dataset = "ibge-sidra-6784"
+grain = "território (Brasil) x ano"
+description = "PIB e PIB per capita: Total da tabela SIDRA 6784 (Produto Interno Bruto, Produto Interno Bruto per capita, População residente e Deflator)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_5938"
+dataset = "ibge-sidra-5938"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "PIB dos municípios e valor adicionado por atividade: Total da tabela SIDRA 5938 (Produto interno bruto a preços correntes, impostos, líquidos de subsídios, sobre produtos a preços correntes e valor adicionado bruto a preços correntes total e por atividade econômica, e respectivas participações - Referência 2010)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_5619"
+dataset = "ibge-sidra-5619"
+grain = "território (Brasil) x ano"
+description = "Unidades de conservação terrestres: Total da tabela SIDRA 5619 (Número e área das unidades de conservação terrestres e proporção em relação à área territorial brasileira)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_6843"
+dataset = "ibge-sidra-6843"
+grain = "território (Brasil) x ano"
+description = "Área florestal em proporção do território: Total da tabela SIDRA 6843 (Indicador 15.1.1 - Área florestal como proporção da área total do território)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_5805"
+dataset = "ibge-sidra-5805"
+grain = "território (Brasil) x ano"
+description = "Focos de calor por bioma: Total da tabela SIDRA 5805 (Número de focos de calor, segundo os Biomas)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_896"
+dataset = "ibge-sidra-896"
+grain = "território (UF) x ano"
+description = "Desflorestamento na Amazônia Legal: Total da tabela SIDRA 896 (Desflorestamento bruto, anual e acumulado, na Amazônia Legal, em 01/08, e Taxa estimada, anual e acumulada, de desflorestamento bruto anual em relação à área total das Unidades da Federação que formam a Amazônia Legal, segundo as Unidades da Federação)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_6592"
+dataset = "ibge-sidra-6592"
+grain = "território (Brasil) x ano"
+description = "Energias renováveis na oferta interna de energia: Total da tabela SIDRA 6592 (Indicador 7.2.1 - Participação percentual das energias renováveis na Oferta Interna de Energia (OIE))."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_7077"
+dataset = "ibge-sidra-7077"
+grain = "território (Brasil) x ano"
+description = "Nível de estresse hídrico: Total da tabela SIDRA 7077 (Indicador 6.4.2 - Nível de Stress Hídrico: Proporção entre a Retirada de Água Doce e o Total dos Recursos de Água Doce Disponíveis)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_8916"
+dataset = "ibge-sidra-8916"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Águas residuais domésticas tratadas de forma segura: Total da tabela SIDRA 8916 (Indicador 6.3.1 - Proporção de Águas Residuais Domésticas Tratadas de Forma Segura no Brasil)."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_5608"
+dataset = "ibge-sidra-5608"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Municípios com legislação ambiental: Total da tabela SIDRA 5608 (Municípios, total e com legislação ambiental, e respectiva proporção)."
+fixed_categories = {}
+
+[[indicators]]
+id = "crescimento_populacional"
+name = "Taxa de crescimento geométrico"
+description = "Taxa de crescimento geométrico (Censo Demográfico, tabela SIDRA 4709). Tabela sem classificações. Fonte: IBGE - Censo Demográfico."
+dataset = "ibge-sidra-4709"
+variable = "10605"
+fact = "fact_sidra_4709"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "crescimento_populacional"
+path = ["População e demografia", "Tamanho e crescimento"]
+caveats = ["Nota da tabela 4709: 1- Dados do Universo.", "Nota da tabela 4709: 2- Para a obtenção da variação absoluta e da taxa de crescimento geométrico do período 2010/2022 foram utilizadas a população residente em 2010 (reconstituída de acordo com a base territorial de 2022) e a população residente em 2022, sendo que para este último ano foi incluída a população estimada (aproximadamente 8 milhões de habitantes) para os domicílios particulares permanentes ocupados sem entrevista.", "Nota da tabela 4709: 3- Os dados apresentados foram atualizados em 27/10/23 e se referem aos dados coletados até o dia 28/05/2023, com a incorporação das revisões realizadas entre 29/05/2023 e 07/07/2023.", "Nota da tabela 4709: 4- Os dados referentes aos municípios Abel Figueiredo (PA) e São Pedro da Água Branca (MA) foram corrigidos no dia 22/12/2023, impactando nos totais dos estados do Pará e do Maranhão e nos totais das Grandes Regiões do Norte e Nordeste."]
+
+[[indicators]]
+id = "populacao_nos_censos"
+name = "População"
+description = "População (Censo Demográfico, tabela SIDRA 1286). Tabela sem classificações. Fonte: IBGE - Censo Demográfico."
+dataset = "ibge-sidra-1286"
+variable = "606"
+fact = "fact_sidra_1286"
+column = "valor"
+unit = "Pessoas"
+additivity = "non_additive"
+concept = "populacao_nos_censos"
+path = ["População e demografia", "Tamanho e crescimento"]
+caveats = ["Série encerrada na fonte em 2010: é a série publicada, sem atualização.", "Nota da tabela 1286: 1 - Para 1872 até 1950: População presente;", "Nota da tabela 1286: 2 - Para 1960 até 1980: População recenseada;", "Nota da tabela 1286: 3 - Para 1991 até 2010: População residente;", "Nota da tabela 1286: 4 - Para 1940, 1950 e 1960: Os dados referentes ao Brasil e à região Sudeste incluem a população da região de Serra dos Aimorés, área de litigio entre Minas Gerais e Espírito Santo;", "Nota da tabela 1286: 5 - Os dados referentes à unidade da federação Pernambuco, referentes aos anos 1950, 1960, 1970 e 1980, incluem os do território federal de Fernando de Noronha;", "Nota da tabela 1286: 6 - Os dados referentes à unidade da federação Pernambuco, a partir de 1991, incluem os do distrito estadual de Fernando de Noronha, criado em 06.10.1988;", "Nota da tabela 1286: 7 - Para 1940, 1950 e 1960: Os dados para a unidade da federação Minas Gerais incluem a população recenseada na parte da Serra dos Aimorés anexada à unidade da federação Minas Gerais;", "Nota da tabela 1286: 8 - Para 1940, 1950 e 1960: Os dados para a unidade da federação Espírito Santo incluem a população recenseada na parte da Serra dos Aimorés anexada à unidade da federação Espírito Santo;", "Mais 5 notas na tabela oficial (SIDRA 1286)."]
+
+[[indicators]]
+id = "envelhecimento"
+name = "Índice de envelhecimento"
+description = "Índice de envelhecimento (Censo Demográfico, tabela SIDRA 9515). Tabela sem classificações. Fonte: IBGE - Censo Demográfico."
+dataset = "ibge-sidra-9515"
+variable = "10612"
+fact = "fact_sidra_9515"
+column = "valor"
+unit = "Razão"
+additivity = "non_additive"
+concept = "envelhecimento"
+path = ["População e demografia", "Sexo, idade e cor ou raça"]
+caveats = ["Nota da tabela 9515: 1 - Dados do Universo.", "Nota da tabela 9515: 2 - Idade mediana", "Nota da tabela 9515: É a medida separatriz que utiliza o critério de idade para dividir a população em duas partes iguais, ou seja, é a idade que separa a metade mais jovem da metade mais velha da população.", "Nota da tabela 9515: 3 - Índice de envelhecimento", "Nota da tabela 9515: O índice de envelhecimento (IE) representa o número de pessoas com 65 anos e mais de idade em relação a um grupo de 100 crianças de zero a 14 anos. É determinado pela seguinte fórmula:", "Nota da tabela 9515: IE = (P65+ / P0-14) x 100", "Nota da tabela 9515: Sendo P65+ representando a população de 65 anos ou mais de idade e P0-14 a população de 0 a 14 anos.", "Nota da tabela 9515: 4 - Razão de sexo", "Mais 4 notas na tabela oficial (SIDRA 9515)."]
+
+[[indicators]]
+id = "populacao_sexo_idade"
+name = "População residente"
+description = "População residente (Censo Demográfico, tabela SIDRA 9514). Valores no Total: Sexo: Total; Forma de declaração da idade: Total; Idade: Total. Fonte: IBGE - Censo Demográfico."
+dataset = "ibge-sidra-9514"
+variable = "93"
+fact = "fact_sidra_9514"
+column = "valor"
+unit = "Pessoas"
+additivity = "non_additive"
+concept = "populacao_sexo_idade"
+path = ["População e demografia", "Sexo, idade e cor ou raça"]
+caveats = ["Nota da tabela 9514: 1 - Dados do Universo.", "Nota da tabela 9514: 2- Os dados referentes aos municípios Abel Figueiredo (PA) e São Pedro da Água Branca (MA) foram corrigidos no dia 22/12/2023, impactando nos totais dos estados do Pará e do Maranhão e nos totais das Grandes Regiões do Norte e Nordeste."]
+
+[[indicators]]
+id = "fecundidade_total"
+name = "Taxa de fecundidade total"
+description = "Taxa de fecundidade total (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 3727). Tabela sem classificações. Fonte: IBGE, Proje&ccedil;&atilde;o da Popula&ccedil;&atilde;o do Brasil, por Sexo e Idade, para o Per&iacute;odo 2000/2060, Revis&atilde;o 2013, e Proje&ccedil;&atilde;o da Popula&ccedil;&atilde;o das Unidades da Federa&ccedil;&atilde;o, por Sexo e Idade, para o Per&iacute;odo 2000/2030, Revis&atilde;o 2013.."
+dataset = "ibge-sidra-3727"
+variable = "2493"
+fact = "fact_sidra_3727"
+column = "valor"
+unit = "Filhos"
+additivity = "non_additive"
+concept = "fecundidade_total"
+path = ["População e demografia", "Fecundidade, mortalidade e esperança de vida"]
+caveats = []
+
+[[indicators]]
+id = "migrantes_uf"
+name = "Pessoas de 5 anos ou mais de idade que não residiam na Unidade da Federação 5 anos antes da data de referência"
+description = "Pessoas de 5 anos ou mais de idade que não residiam na Unidade da Federação 5 anos antes da data de referência (Censo Demográfico, tabela SIDRA 10159). Valores no Total: Lugar de residência 5 anos antes da data de referência: Total. Fonte: IBGE - Censo Demográfico."
+dataset = "ibge-sidra-10159"
+variable = "13339"
+fact = "fact_sidra_10159"
+column = "valor"
+unit = "Pessoas"
+additivity = "additive"
+concept = "migrantes_uf"
+path = ["População e demografia", "Migração"]
+caveats = ["Nota da tabela 10159: 1 - Dados dos Resultados preliminares da amostra, estimados a partir de áreas de ponderação preliminares.", "Nota da tabela 10159: 2 - A data de referência do Censo Demográfico 2022 é 31/07/2022."]
+
+[[indicators]]
+id = "nascidos_vivos"
+name = "Nascidos vivos registrados no ano"
+description = "Nascidos vivos registrados no ano (Estatísticas do Registro Civil, tabela SIDRA 2609). Valores no Total: Sexo: Total; Ano de nascimento: Total; Idade da mãe na ocasião do parto: Total. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
+dataset = "ibge-sidra-2609"
+variable = "217"
+fact = "fact_sidra_2609"
+column = "valor"
+unit = "Pessoas"
+additivity = "additive"
+concept = "nascidos_vivos"
+path = ["Registro civil", "Nascimentos e óbitos"]
+caveats = []
+
+[[indicators]]
+id = "obitos"
+name = "Número de óbitos ocorridos no ano"
+description = "Número de óbitos ocorridos no ano (Estatísticas do Registro Civil, tabela SIDRA 2654). Valores no Total: Sexo: Total; Mês de ocorrência: Total; Local de ocorrência: Total; Idade do(a) falecido(a): Total; Natureza do óbito: Total. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
+dataset = "ibge-sidra-2654"
+variable = "343"
+fact = "fact_sidra_2654"
+column = "valor"
+unit = "Pessoas"
+additivity = "additive"
+concept = "obitos"
+path = ["Registro civil", "Nascimentos e óbitos"]
+caveats = ["Nota da tabela 2654: A categoria \"Hospital\" para a classificação \"Local de ocorrência\" inclui os estabelecimentos de saúde sem internação."]
+
+[[indicators]]
+id = "casamentos"
+name = "Número de casamentos"
+description = "Número de casamentos (Estatísticas do Registro Civil, tabela SIDRA 4412). Valores no Total: Mês de ocorrência: Total; Estado civil do primeiro cônjuge: Total; Estado civil do segundo cônjuge: Total; Grupo de idade do primeiro cônjuge: Total; Grupo de idade do segundo cônjuge: Total. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
+dataset = "ibge-sidra-4412"
+variable = "4993"
+fact = "fact_sidra_4412"
+column = "valor"
+unit = "Unidades"
+additivity = "additive"
+concept = "casamentos"
+path = ["Registro civil", "Casamentos e divórcios"]
+caveats = ["Nota da tabela 4412: Para os casamentos entre cônjuges masculino e feminino considerou-se como primeiro cônjuge o homem e segundo cônjuge a mulher."]
+
+[[indicators]]
+id = "divorcios"
+name = "Número de divórcios concedidos em 1ª instância ou por escritura"
+description = "Número de divórcios concedidos em 1ª instância ou por escritura (Estatísticas do Registro Civil, tabela SIDRA 1695). Valores no Total: Regime de bens do casamento: Total; Grupos de idade do marido na data da sentença: Total; Grupos de idade da mulher na data da sentença: Total; Tempo transcorrido entre a data do casamento e a data da sentença ou da escritura: Total. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
+dataset = "ibge-sidra-1695"
+variable = "393"
+fact = "fact_sidra_1695"
+column = "valor"
+unit = "Unidades"
+additivity = "additive"
+concept = "divorcios"
+path = ["Registro civil", "Casamentos e divórcios"]
+caveats = []
+
+[[indicators]]
+id = "domicilios_ocupados"
+name = "Domicílios particulares permanentes ocupados"
+description = "Domicílios particulares permanentes ocupados (Censo Demográfico, tabela SIDRA 4712). Tabela sem classificações. Fonte: IBGE - Censo Demográfico."
+dataset = "ibge-sidra-4712"
+variable = "381"
+fact = "fact_sidra_4712"
+column = "valor"
+unit = "Domicílios"
+additivity = "non_additive"
+concept = "domicilios_ocupados"
+path = ["Domicílios e famílias", "Domicílios e moradores"]
+caveats = ["Nota da tabela 4712: 1- Dados do Universo.", "Nota da tabela 4712: 2- Os dados apresentados foram atualizados em 27/10/23 e se referem aos dados coletados até o dia 28/05/2023, com a incorporação das revisões realizadas entre 29/05/2023 e 07/07/2023.", "Nota da tabela 4712: 3- Os dados referentes aos municípios Abel Figueiredo (PA) e São Pedro da Água Branca (MA) foram corrigidos no dia 22/12/2023, impactando nos totais dos estados do Pará e do Maranhão e nos totais das Grandes Regiões do Norte e Nordeste."]
+
+[[indicators]]
+id = "populacao_favelas"
+name = "População residente em favelas e comunidades urbanas"
+description = "População residente em favelas e comunidades urbanas (Censo Demográfico, tabela SIDRA 9888). Tabela sem classificações. Fonte: IBGE - Censo Demográfico."
+dataset = "ibge-sidra-9888"
+variable = "9612"
+fact = "fact_sidra_9888"
+column = "valor"
+unit = "Pessoas"
+additivity = "non_additive"
+concept = "populacao_favelas"
+path = ["Domicílios e famílias", "Favelas e comunidades urbanas"]
+caveats = ["Nota da tabela 9888: 1 - Dados do Universo;", "Nota da tabela 9888: 2 - Para informações detalhadas a respeito da identificação das Favelas e Comunidades Urbanas, pelo IBGE, e dos critérios de divulgação dos resultados censitários para essas áreas, consultar a publicação Favelas e Comunidades Urbanas: Primeiros Resultados do Universo;", "Nota da tabela 9888: 3 - População residente são as pessoas que tinham o domicílio como local de residência habitual e estavam presentes na data de referência da pesquisa, ou ausentes, temporariamente, por período não superior a 12 meses em relação àquela data; e", "Nota da tabela 9888: 4 - O cálculo da área territorial das Favelas e Comunidades Urbanas foi feito a partir dos limites dos setores censitários. Por essa razão, a área territorial calculada para algumas Favelas e Comunidades Urbanas pode incluir áreas urbanas próximas não ocupadas, ou seja, sem domicílios ou edificações."]
+
+[[indicators]]
+id = "numero_favelas"
+name = "Número de favelas e comunidades urbanas"
+description = "Número de favelas e comunidades urbanas (Censo Demográfico, tabela SIDRA 9883). Tabela sem classificações. Fonte: IBGE - Censo Demográfico."
+dataset = "ibge-sidra-9883"
+variable = "9910"
+fact = "fact_sidra_9883"
+column = "valor"
+unit = "Unidades"
+additivity = "non_additive"
+concept = "numero_favelas"
+path = ["Domicílios e famílias", "Favelas e comunidades urbanas"]
+caveats = ["Nota da tabela 9883: 1 - Dados do Universo;", "Nota da tabela 9883: 2 - Para informações detalhadas a respeito da identificação das Favelas e Comunidades Urbanas, pelo IBGE, e dos critérios de divulgação dos resultados censitários para essas áreas, consultar a publicação Favelas e Comunidades Urbanas: Primeiros Resultados do Universo."]
+
+[[indicators]]
+id = "servico_agua_municipios"
+name = "Municípios com serviço de abastecimento de água por rede geral de distribuição"
+description = "Municípios com serviço de abastecimento de água por rede geral de distribuição (Pesquisa Nacional de Saneamento Básico, tabela SIDRA 7460). Valores no Total: Condição de funcionamento do serviço: Total. Fonte: IBGE - Pesquisa Nacional de Saneamento Básico."
+dataset = "ibge-sidra-7460"
+variable = "2598"
+fact = "fact_sidra_7460"
+column = "valor"
+unit = "Unidades"
+additivity = "non_additive"
+concept = "servico_agua_municipios"
+path = ["Saneamento básico", "Abastecimento de água"]
+caveats = ["Nota da tabela 7460: A tabela contabiliza um Município sempre que pelo menos uma entidade do Município informa realizar determinada atividade, ou possuir uma dada característica. Um mesmo Município pode ter mais de uma entidade executora do serviço."]
+
+[[indicators]]
+id = "servico_esgoto_municipios"
+name = "Municípios com serviço de esgotamento sanitário"
+description = "Municípios com serviço de esgotamento sanitário (Pesquisa Nacional de Saneamento Básico, tabela SIDRA 7461). Valores no Total: Condição de funcionamento do serviço: Total. Fonte: IBGE - Pesquisa Nacional de Saneamento Básico."
+dataset = "ibge-sidra-7461"
+variable = "2601"
+fact = "fact_sidra_7461"
+column = "valor"
+unit = "Unidades"
+additivity = "non_additive"
+concept = "servico_esgoto_municipios"
+path = ["Saneamento básico", "Esgotamento sanitário"]
+caveats = ["Nota da tabela 7461: A tabela contabiliza um Município sempre que pelo menos uma entidade do Município informa realizar determinada atividade, ou possuir uma dada característica. Um mesmo Município pode ter mais de uma entidade executora do serviço."]
+
+[[indicators]]
+id = "taxa_alfabetizacao_censo"
+name = "Taxa de alfabetização das pessoas de 15 anos ou mais de idade"
+description = "Taxa de alfabetização das pessoas de 15 anos ou mais de idade (Censo Demográfico, tabela SIDRA 9543). Valores no Total: Sexo: Total; Cor ou raça: Total; Idade: Total. Fonte: IBGE - Censo Demográfico."
+dataset = "ibge-sidra-9543"
+variable = "2513"
+fact = "fact_sidra_9543"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "taxa_alfabetizacao_censo"
+path = ["Educação", "Alfabetização"]
+caveats = ["Nota da tabela 9543: 1 - Dados do Universo", "Nota da tabela 9543: 2 - No Censo Demográfico 2022, definiu-se como indígena a pessoa residente em localidades indígenas que se declarou indígena pelo quesito de cor ou raça ou pelo quesito se considera indígena; ou a pessoa residente fora das localidades indígenas que se declarou indígena no quesito de cor ou raça. Por essa razão, o total de pessoas indígenas é superior ou igual ao total de pessoas de cor ou raça declarada indígena, nos diferentes recortes.", "Nota da tabela 9543: 3 - No Censo Demográfico 2022, foram consideradas localidades indígenas aquelas que compõem o conjunto das Terras Indígenas, dos agrupamentos indígenas e das demais áreas de conhecida ou potencial ocupação indígena. Para mais detalhes, consultar a documentação metodológica.", "Nota da tabela 9543: 4 - No Censo Demográfico 2022, foram consideradas as Terras Indígenas declaradas, homologadas, regularizadas ou encaminhadas como Reservas Indígenas até 31 de julho de 2022, data de referência da pesquisa, conforme os dados da Fundação Nacional dos Povos Indígenas – FUNAI. Para mais informações, consultar a documentação metodológica.", "Nota da tabela 9543: 5 - A categoria Total de cor ou raça inclui os ignorados omitidos na tabela."]
+
+[[indicators]]
+id = "taxa_escolarizacao"
+name = "Taxa de escolarização"
+description = "Taxa de escolarização (PNAD Contínua anual, tabela SIDRA 7138). Valores no Total: Sexo: Total; Grupo de idade: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 2º trimestre."
+dataset = "ibge-sidra-7138"
+variable = "10276"
+fact = "fact_sidra_7138"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "taxa_escolarizacao"
+path = ["Educação", "Frequência escolar"]
+caveats = ["Nota da tabela 7138: Taxa de escolarização é a razão entre o número de estudantes de determinada faixa etária e o total de pessoas dessa mesma faixa etária.", "Nota da tabela 7138: A partir de 01 de agosto de 2022, as estimativas deste tema passaram a ser divulgadas com base no novo método de ponderação da pesquisa, conforme a Nota Técnica 03/2021. Consequentemente, a série histórica dos indicadores foi atualizada.", "Nota da tabela 7138: A partir de 2025, as estimativas deste tema passaram a ser divulgadas com base na nova ponderação da pesquisa, conforme a Nota Técnica 02/2025. Consequentemente, a série histórica dos indicadores foi atualizada."]
+
+[[indicators]]
+id = "taxa_informalidade"
+name = "Taxa de informalidade das pessoas de 14 anos ou mais de idade ocupadas na semana de referência"
+description = "Taxa de informalidade das pessoas de 14 anos ou mais de idade ocupadas na semana de referência (PNAD Contínua trimestral, tabela SIDRA 4708). Tabela sem classificações. Fonte: IBGE. Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua, acumulado de primeiras visitas, exceto 2020-2022, acumulado de quintas visitas, devido &agrave; pandemia de Covid-19.."
+dataset = "ibge-sidra-4708"
+variable = "12466"
+fact = "fact_sidra_4708"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "taxa_informalidade"
+path = ["Trabalho e rendimento", "Informalidade"]
+caveats = ["Nota da tabela 4708: A situação de informalidade se refere às pessoas ocupadas como “Empregado no setor privado, exclusive trabalhador doméstico - sem carteira de trabalho assinada”, “Trabalhador doméstico - sem carteira de trabalho assinada”, “Empregador sem CNPJ”, “Conta própria sem CNPJ” e “Trabalhador familiar auxiliar” no trabalho principal.", "Nota da tabela 4708: A partir de 2025, as estimativas deste tema passaram a ser divulgadas com base na nova ponderação da pesquisa, conforme a Nota Técnica 02/2025. Consequentemente, a série histórica dos indicadores foi atualizada."]
+
+[[indicators]]
+id = "gini_domiciliar"
+name = "Índice de Gini do rendimento domiciliar per capita, a preços médios do ano"
+description = "Índice de Gini do rendimento domiciliar per capita, a preços médios do ano (PNAD Contínua anual, tabela SIDRA 7435). Tabela sem classificações. Fonte: IBGE. Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua, acumulado de primeiras visitas, exceto 2020-2022, acumulado de quintas visitas, devido &agrave; pandemia de Covid-19.."
+dataset = "ibge-sidra-7435"
+variable = "10681"
+fact = "fact_sidra_7435"
+column = "valor"
+unit = "Índice"
+additivity = "non_additive"
+concept = "gini_domiciliar"
+path = ["Trabalho e rendimento", "Rendimento domiciliar, desigualdade e pobreza"]
+caveats = ["Nota da tabela 7435: O rendimento de trabalho é captado somente para pessoas de 14 anos ou mais de idade.", "Nota da tabela 7435: Exclusive as pessoas cuja condição no domicílio era \"Pensionista\", \"Empregado doméstico\" ou \"Parente de empregado doméstico\".", "Nota da tabela 7435: A partir de 19 de novembro de 2021, as estimativas deste tema passaram a ser divulgadas com base no novo método de ponderação da pesquisa, conforme a Nota Técnica 03/2021. Consequentemente, a série histórica dos indicadores foi atualizada.", "Nota da tabela 7435: Até o 3º trimestre de 2015, as pessoas em licença remunerada na semana de referência da pesquisa e que estavam afastadas por período inferior a 4 meses eram classificadas como \"ocupadas\". Caso esse afastamento fosse igual ou superior a 4 meses, essas pessoas eram definidas como \"fora da força de trabalho\" e, portanto, não se investigava o rendimento do trabalho.", "Nota da tabela 7435: A partir do 4º trimestre de 2015, em acordo com as recomendações da 19ª Conferência Internacional de Estatísticos do Trabalho - CIET, da OIT, pessoas em licença remunerada, independentemente do tempo de afastamento, passaram a ser classificadas como \"ocupadas\" e seus rendimentos do trabalho foram coletados normalmente."]
+
+[[indicators]]
+id = "rendimento_domiciliar_censo"
+name = "Valor do rendimento nominal médio mensal domiciliar per capita dos moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a)"
+description = "Valor do rendimento nominal médio mensal domiciliar per capita dos moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a) (Censo Demográfico, tabela SIDRA 10295). Valores no Total: Sexo: Total; Grupo de idade: Total; Cor ou raça: Total. Fonte: IBGE - Censo Demográfico."
+dataset = "ibge-sidra-10295"
+variable = "13431"
+fact = "fact_sidra_10295"
+column = "valor"
+unit = "Reais"
+additivity = "non_additive"
+concept = "rendimento_domiciliar_censo"
+path = ["Trabalho e rendimento", "Rendimento domiciliar, desigualdade e pobreza"]
+caveats = ["Nota da tabela 10295: 1) Dados dos resultados preliminares da amostra, estimados a partir de áreas de ponderação preliminares.", "Nota da tabela 10295: 2) Exclusive não moradores em domicílios particulares permanentes e pessoas cuja condição no arranjo domiciliar era pensionista, empregado doméstico ou parente do empregado doméstico.", "Nota da tabela 10295: 3) A categoria Total de cor ou raça inclui os ignorados omitidos na tabela.", "Nota da tabela 10295: 4) No Censo Demográfico 2022, definiu-se como indígena a pessoa residente em localidades indígenas que se declarou indígena pelo quesito de cor ou raça ou pelo quesito se considera indígena; ou a pessoa residente fora das localidades indígenas que se declarou indígena no quesito de cor ou raça. Por essa razão, o total de pessoas indígenas é superior ou igual ao total de pessoas de cor ou raça declarada indígena, nos diferentes recortes.", "Nota da tabela 10295: 5) No Censo Demográfico 2022, foram consideradas localidades indígenas aquelas que compõem o conjunto das Terras Indígenas, dos agrupamentos indígenas e das demais áreas de conhecida ou potencial ocupação indígena. Para mais detalhes, consultar a documentação metodológica.", "Nota da tabela 10295: 6) No Censo Demográfico 2022, foram consideradas as Terras Indígenas declaradas, homologadas, regularizadas ou encaminhadas como Reservas Indígenas até 31 de julho de 2022, data de referência da pesquisa, conforme os dados da Fundação Nacional dos Povos Indígenas – FUNAI. Para mais informações, consultar a documentação metodológica."]
+
+[[indicators]]
+id = "pobreza_linha_nacional"
+name = "Proporção da população abaixo da linha de pobreza nacional"
+description = "Proporção da população abaixo da linha de pobreza nacional (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 5877). Tabela sem classificações. Fonte: IBGE, Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua (PNAD Cont&iacute;nua)."
+dataset = "ibge-sidra-5877"
+variable = "9948"
+fact = "fact_sidra_5877"
+column = "valor"
+unit = "Proporção (%)"
+additivity = "non_additive"
+concept = "pobreza_linha_nacional"
+path = ["Trabalho e rendimento", "Rendimento domiciliar, desigualdade e pobreza"]
+caveats = ["Nota da tabela 5877: Nota 1: Consolidado das primeiras entrevistas de 2012-2019, 2023-2024 e das quintas entrevistas de 2020-2022 .", "Nota da tabela 5877: Nota 2: Linha de 8,30 dólares por dia, convertidos pela paridade do poder do compra (PPC-2021) do consumo final de R$2,44983620 por dólar.", "Nota da tabela 5877: Nota 3: Depois de convertido, o valor da linha é corrigido pela inflação acordo com os deflatores utilizados pela PNAD Contínua.", "Nota da tabela 5877: Nota 4: As estatísticas reportadas se referem a proporção de pessoas com rendimento domiciliar per capita abaixo da linha de pobreza.", "Nota da tabela 5877: Nota 5: Nos cálculos são excluidas as pessoas na condição no domicílio de pensionista, empregado doméstico ou parente de empregado doméstico."]
+
+[[indicators]]
+id = "trabalho_infantil"
+name = "Percentual de pessoas de 5 a 17 anos de idade em situação de trabalho infantil"
+description = "Percentual de pessoas de 5 a 17 anos de idade em situação de trabalho infantil (PNAD Contínua anual, tabela SIDRA 9836). Valores no Total: Grupo de idade: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 5&ordf; visita.."
+dataset = "ibge-sidra-9836"
+variable = "9489"
+fact = "fact_sidra_9836"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "trabalho_infantil"
+path = ["Trabalho e rendimento", "Trabalho infantil e cuidados"]
+caveats = ["Estatística experimental do IBGE.", "Nota da tabela 9836: Essa tabela contém estatísticas classificadas como experimentais e devem ser usadas com cautela, pois são estatísticas novas que ainda estão em fase de teste e sob avaliação. Elas são desenvolvidas e publicadas visando envolver os usuários e partes interessadas para avaliação de sua relevância e qualidade.", "Nota da tabela 9836: Os conceitos usados nos indicadores de Trabalho de crianças e adolescentes podem ser consultados na Nota Técnica (dez./2020) - Aspectos metodológicos do Trabalho de Crianças e Adolescentes da PNAD Contínua.", "Nota da tabela 9836: A partir de 2025, as estimativas deste tema passaram a ser divulgadas com base na nova ponderação da pesquisa, conforme a Nota Técnica 02/2025. Consequentemente, a série histórica dos indicadores foi atualizada."]
+
+[[indicators]]
+id = "afazeres_domesticos"
+name = "Média de horas dedicadas pelas pessoas de 14 anos ou mais de idade aos afazeres domésticos e/ou às tarefas de cuidado de pessoas"
+description = "Média de horas dedicadas pelas pessoas de 14 anos ou mais de idade aos afazeres domésticos e/ou às tarefas de cuidado de pessoas (PNAD Contínua anual, tabela SIDRA 7015). Valores no Total: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 5ª visita."
+dataset = "ibge-sidra-7015"
+variable = "10192"
+fact = "fact_sidra_7015"
+column = "valor"
+unit = "Horas"
+additivity = "non_additive"
+concept = "afazeres_domesticos"
+path = ["Trabalho e rendimento", "Trabalho infantil e cuidados"]
+caveats = ["Nota da tabela 7015: A partir de 03 de outubro de 2022, as estimativas deste tema passaram a ser divulgadas com base no novo método de ponderação da pesquisa, conforme a Nota Técnica 03/2021. Consequentemente, a série histórica dos indicadores foi atualizada."]
+
+[[indicators]]
+id = "doenca_cronica"
+name = "Pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica"
+description = "Pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica (Pesquisa Nacional de Saúde, tabela SIDRA 7972). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+dataset = "ibge-sidra-7972"
+variable = "11216"
+fact = "fact_sidra_7972"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "non_additive"
+concept = "doenca_cronica"
+path = ["Saúde", "Condições de saúde"]
+caveats = ["Nota da tabela 7972: A classificação \"Situação do domicílio\" está disponível apenas para o nível territorial Brasil.", "Nota da tabela 7972: Foram consideradas as seguintes doenças crônicas: hipertensão, diabetes, câncer (exceto o câncer de pele não melanoma), doença do coração, depressão, outra doença mental, problema crônico de coluna, insuficiência renal crônica, asma, outra doença crônica do pulmão, artrite ou DORT."]
+
+[[indicators]]
+id = "hipertensao"
+name = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial"
+description = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial (Pesquisa Nacional de Saúde, tabela SIDRA 4418). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+dataset = "ibge-sidra-4418"
+variable = "4396"
+fact = "fact_sidra_4418"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "additive"
+concept = "hipertensao"
+path = ["Saúde", "Condições de saúde"]
+caveats = ["Nota da tabela 4418: A classificação \"Situação do domicílio\" está disponível apenas para o nível territorial Brasil."]
+
+[[indicators]]
+id = "diabetes"
+name = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes"
+description = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes (Pesquisa Nacional de Saúde, tabela SIDRA 4487). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+dataset = "ibge-sidra-4487"
+variable = "4462"
+fact = "fact_sidra_4487"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "additive"
+concept = "diabetes"
+path = ["Saúde", "Condições de saúde"]
+caveats = ["Nota da tabela 4487: A classificação \"Situação do domicílio\" está disponível apenas para o nível territorial Brasil."]
+
+[[indicators]]
+id = "fumantes"
+name = "Pessoas de 18 anos ou mais de idade fumantes atuais de tabaco"
+description = "Pessoas de 18 anos ou mais de idade fumantes atuais de tabaco (Pesquisa Nacional de Saúde, tabela SIDRA 4173). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+dataset = "ibge-sidra-4173"
+variable = "4160"
+fact = "fact_sidra_4173"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "non_additive"
+concept = "fumantes"
+path = ["Saúde", "Hábitos e fatores de risco"]
+caveats = ["Nota da tabela 4173: A classificação \"Situação do domicílio\" está disponível apenas para o nível territorial Brasil."]
+
+[[indicators]]
+id = "consumo_abusivo_alcool"
+name = "Pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa"
+description = "Pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa (Pesquisa Nacional de Saúde, tabela SIDRA 7726). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+dataset = "ibge-sidra-7726"
+variable = "4298"
+fact = "fact_sidra_7726"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "non_additive"
+concept = "consumo_abusivo_alcool"
+path = ["Saúde", "Hábitos e fatores de risco"]
+caveats = ["Nota da tabela 7726: A classificação \"Situação do domicílio\" está disponível apenas para o nível territorial Brasil.", "Nota da tabela 7726: Por motivos de mudança na captação das informações no questionário, os dados de períodos anteriores estão disponibilizados na tabela 4364."]
+
+[[indicators]]
+id = "insuficientemente_ativos"
+name = "Pessoas de 18 anos ou mais de idade insuficientemente ativas"
+description = "Pessoas de 18 anos ou mais de idade insuficientemente ativas (Pesquisa Nacional de Saúde, tabela SIDRA 7740). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+dataset = "ibge-sidra-7740"
+variable = "4262"
+fact = "fact_sidra_7740"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "additive"
+concept = "insuficientemente_ativos"
+path = ["Saúde", "Hábitos e fatores de risco"]
+caveats = ["Nota da tabela 7740: A classificação \"Situação do domicílio\" está disponível apenas para o nível territorial Brasil.", "Nota da tabela 7740: Por motivos de mudança na captação das informações no questionário, os dados de períodos anteriores estão disponibilizados na tabela 4279."]
+
+[[indicators]]
+id = "excesso_peso"
+name = "Pessoas de 18 anos ou mais de idade com excesso de peso"
+description = "Pessoas de 18 anos ou mais de idade com excesso de peso (Pesquisa Nacional de Saúde, tabela SIDRA 8476). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+dataset = "ibge-sidra-8476"
+variable = "11671"
+fact = "fact_sidra_8476"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "non_additive"
+concept = "excesso_peso"
+path = ["Saúde", "Hábitos e fatores de risco"]
+caveats = ["Série encerrada na fonte em 2013: é a série publicada, sem atualização.", "Nota da tabela 8476: Os indicadores de estado nutricional foram calculados de acordo com as recomendações da Organização Mundial da Saúde (OMS) para avaliação do perfil antropométrico nutricional de adultos e adolescentes, conforme detalhado na Nota técnica 01/2021 da Pesquisa.", "Nota da tabela 8476: A classificação \"Situação do domicílio\" está disponível apenas para os níveis territoriais Brasil e Grandes Regiões."]
+
+[[indicators]]
+id = "plano_saude"
+name = "Pessoas que tinham algum plano de saúde (médico ou odontológico)"
+description = "Pessoas que tinham algum plano de saúde (médico ou odontológico) (Pesquisa Nacional de Saúde, tabela SIDRA 4938). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+dataset = "ibge-sidra-4938"
+variable = "5260"
+fact = "fact_sidra_4938"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "non_additive"
+concept = "plano_saude"
+path = ["Saúde", "Acesso a serviços de saúde"]
+caveats = ["Nota da tabela 4938: A classificação \"Situação do domicílio\" está disponível apenas para o nível territorial Brasil."]
+
+[[indicators]]
+id = "consulta_medica"
+name = "Pessoas que consultaram médico nos últimos 12 meses"
+description = "Pessoas que consultaram médico nos últimos 12 meses (Pesquisa Nacional de Saúde, tabela SIDRA 5055). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+dataset = "ibge-sidra-5055"
+variable = "5358"
+fact = "fact_sidra_5055"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "non_additive"
+concept = "consulta_medica"
+path = ["Saúde", "Acesso a serviços de saúde"]
+caveats = ["Nota da tabela 5055: A classificação \"Situação do domicílio\" está disponível apenas para o nível territorial Brasil."]
+
+[[indicators]]
+id = "estabelecimentos_saude"
+name = "Estabelecimentos de saúde"
+description = "Estabelecimentos de saúde (Pesquisa de Assistência Médico-Sanitária, tabela SIDRA 211). Tabela sem classificações. Fonte: IBGE - Pesquisa de Assistência Médico-Sanitária."
+dataset = "ibge-sidra-211"
+variable = "1665"
+fact = "fact_sidra_211"
+column = "valor"
+unit = "Unidades"
+additivity = "non_additive"
+concept = "estabelecimentos_saude"
+path = ["Saúde", "Acesso a serviços de saúde"]
+caveats = ["Série encerrada na fonte em 2005: é a série publicada, sem atualização.", "Nota da tabela 211: 1 - A partir de 1992 foram incorporados na pesquisa os estabelecimentos que realizavam exclusivamente Serviços de Apoio à Diagnose e Terapia.", "Nota da tabela 211: 2 - Em 1999 não foram investigados os estabelecimentos que realizavam exclusivamente Análises Clínicas.", "Nota da tabela 211: 3 - A partir de 1983 e até 1987: Inclusive Fernando de Noronha.", "Nota da tabela 211: 4 - A partir de 1988 Fernando de Noronha está incluído na Unidade da Federação Pernambuco."]
+
+[[indicators]]
+id = "pre_natal"
+name = "Mulheres que realizaram pré-natal"
+description = "Mulheres que realizaram pré-natal (Pesquisa Nacional de Saúde, tabela SIDRA 8289). Valores no Total: Situação do domicílio: Total; Cor ou raça: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+dataset = "ibge-sidra-8289"
+variable = "6635"
+fact = "fact_sidra_8289"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "non_additive"
+concept = "pre_natal"
+path = ["Saúde", "Saúde materno-infantil"]
+caveats = ["Nota da tabela 8289: Foram consideradas as mulheres de 15 anos ou mais de idade cujo último parto ocorreu no período de referência.", "Nota da tabela 8289: A classificação \"Situação do domicílio\" está disponível apenas para o nível territorial Brasil.", "Nota da tabela 8289: A categoria Total para \"Cor ou raça\" inclui as pessoas que se declararam indígenas, amarelas ou sem declaração.", "Nota da tabela 8289: Caso a mulher tenha tido mais de um parto no período de referência, foi considerado o último parto.", "Nota da tabela 8289: Por motivos de mudança na captação das informações no questionário, os dados de períodos anteriores estão disponibilizados na tabela 5811."]
+
+[[indicators]]
+id = "aleitamento_exclusivo"
+name = "Crianças com menos de 6 meses de idade que são amamentadas exclusivamente com leite materno"
+description = "Crianças com menos de 6 meses de idade que são amamentadas exclusivamente com leite materno (Pesquisa Nacional de Saúde, tabela SIDRA 5905). Valores no Total: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+dataset = "ibge-sidra-5905"
+variable = "7175"
+fact = "fact_sidra_5905"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "non_additive"
+concept = "aleitamento_exclusivo"
+path = ["Saúde", "Saúde materno-infantil"]
+caveats = ["Nota da tabela 5905: As informações referiram-se somente a única ou mais nova criança de menos de 2 anos de idade residente no domicílio.", "Nota da tabela 5905: A classificação \"Situação do domicílio\" está disponível apenas para o nível territorial Brasil."]
+
+[[indicators]]
+id = "mortalidade_materna"
+name = "Razão de mortalidade materna"
+description = "Razão de mortalidade materna (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6694). Tabela sem classificações. Fonte: Minist&eacute;rio da Sa&uacute;de. Sistema de Informa&ccedil;&atilde;o Sobre Mortalidade - SIM e Sistema de Informa&ccedil;&otilde;es sobre Nascidos Vivos - SINASC.."
+dataset = "ibge-sidra-6694"
+variable = "9730"
+fact = "fact_sidra_6694"
+column = "valor"
+unit = "Óbitos por 100 mil nascidos vivos"
+additivity = "non_additive"
+concept = "mortalidade_materna"
+path = ["Saúde", "Mortalidade"]
+caveats = ["Nota da tabela 6694: 1. Última atualização: 25 de julho de 2025 (toda a série da razão de mortalidade materna e inclusão de dados referentes ao ano de 2023).", "Nota da tabela 6694: 2. Atualização anterior: 22 de fevereiro de 2024 (inclusão de dados referentes ao ano de 2022).", "Nota da tabela 6694: 3. De 2009 a 2023 a RMM foi corrigida utilizando-se a Vigilância de Óbitos de Mulher em Idade Fértil."]
+
+[[indicators]]
+id = "mortalidade_menores_5"
+name = "Taxa de mortalidade em menores de 5 anos"
+description = "Taxa de mortalidade em menores de 5 anos (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6695). Tabela sem classificações. Fonte: Minist&eacute;rio da Sa&uacute;de, Sistema de Informa&ccedil;&otilde;es sobre Mortalidade (SIM), Sistema de Informa&ccedil;&otilde;es sobre Nascidos Vivos (SINASC); IBGE. Proje&ccedil;&otilde;es da Popula&ccedil;&atilde;o do Brasil e Unidades da Federa&ccedil;&atilde;o: 2000-2070, ed. 2024, Estimativas de Sub-Registro de Nascimentos e &Oacute;bitos (2015- ) e Sistema de Estat&iacute;sticas Vitais, Estudo Complementar &agrave; Aplica&ccedil;&atilde;o da T&eacute;cnica de Captura-Recaptura (2015-2022).."
+dataset = "ibge-sidra-6695"
+variable = "9731"
+fact = "fact_sidra_6695"
+column = "valor"
+unit = "Óbitos por mil nascidos vivos"
+additivity = "non_additive"
+concept = "mortalidade_menores_5"
+path = ["Saúde", "Mortalidade"]
+caveats = []
+
+[[indicators]]
+id = "escolares_fumaram"
+name = "Percentual de escolares com idade de 13 a 17 anos que fumaram nos 30 dias anteriores à pesquisa"
+description = "Percentual de escolares com idade de 13 a 17 anos que fumaram nos 30 dias anteriores à pesquisa (Pesquisa Nacional de Saúde do Escolar, tabela SIDRA 6356). Valores no Total: Sexo: Total; Grupo de idade: 13 a 17 anos; Dependência administrativa da escola: Total. Fonte: IBGE - Pesquisa Nacional de Saúde do Escolar."
+dataset = "ibge-sidra-6356"
+variable = "8586"
+fact = "fact_sidra_6356"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "escolares_fumaram"
+path = ["Saúde", "Saúde do escolar"]
+caveats = []
+
+[[indicators]]
+id = "escolares_alcool"
+name = "Percentual de escolares com idade de 13 a 17 anos que consumiram bebidas alcoólicas pelo menos um dia nos 30 dias anteriores à pesquisa"
+description = "Percentual de escolares com idade de 13 a 17 anos que consumiram bebidas alcoólicas pelo menos um dia nos 30 dias anteriores à pesquisa (Pesquisa Nacional de Saúde do Escolar, tabela SIDRA 6358). Valores no Total: Sexo: Total; Grupo de idade: 13 a 17 anos; Dependência administrativa da escola: Total. Fonte: IBGE - Pesquisa Nacional de Saúde do Escolar."
+dataset = "ibge-sidra-6358"
+variable = "8592"
+fact = "fact_sidra_6358"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "escolares_alcool"
+path = ["Saúde", "Saúde do escolar"]
+caveats = []
+
+[[indicators]]
+id = "escolares_excesso_peso"
+name = "Percentual de escolares com idade de 13 a 17 anos que apresentaram excesso de peso"
+description = "Percentual de escolares com idade de 13 a 17 anos que apresentaram excesso de peso (Pesquisa Nacional de Saúde do Escolar, tabela SIDRA 6378). Valores no Total: Sexo: Total; Grupo de idade: 13 a 17 anos; Dependência administrativa da escola: Total. Fonte: IBGE - Pesquisa Nacional de Saúde do Escolar."
+dataset = "ibge-sidra-6378"
+variable = "8196"
+fact = "fact_sidra_6378"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "escolares_excesso_peso"
+path = ["Saúde", "Saúde do escolar"]
+caveats = ["Nota da tabela 6378: 1 - Indicadores calculados com base na distribuição de referência OMS - Organização Mundial da Saúde (ONIS et al.,2007).", "Nota da tabela 6378: 2 - Excesso de peso é a soma dos percentuais dos estados nutricionais de sobrepeso e obesidade."]
+
+[[indicators]]
+id = "vacinacao_covid"
+name = "Pessoas de 5 anos ou mais de idade que se vacinaram pelo menos uma vez contra a COVID-19"
+description = "Pessoas de 5 anos ou mais de idade que se vacinaram pelo menos uma vez contra a COVID-19 (PNAD Contínua, tabela SIDRA 9730). Valores no Total: Sexo: Total; Grupo de idade: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 1&ordm; trimestre."
+dataset = "ibge-sidra-9730"
+variable = "8992"
+fact = "fact_sidra_9730"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "non_additive"
+concept = "vacinacao_covid"
+path = ["Saúde", "COVID-19"]
+caveats = []
+
+[[indicators]]
+id = "tiveram_covid"
+name = "Pessoas de 5 anos ou mais de idade que tiveram ou consideram que tiveram COVID-19"
+description = "Pessoas de 5 anos ou mais de idade que tiveram ou consideram que tiveram COVID-19 (PNAD Contínua, tabela SIDRA 9373). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 1&ordm; trimestre."
+dataset = "ibge-sidra-9373"
+variable = "9446"
+fact = "fact_sidra_9373"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "non_additive"
+concept = "tiveram_covid"
+path = ["Saúde", "COVID-19"]
+caveats = ["Nota da tabela 9373: Foram consideradas pessoas que tiveram Covid-19 aquelas que testaram positivo ou receberam diagnóstico médico sem ter tido confirmação por teste."]
+
+[[indicators]]
+id = "rendimento_familiar"
+name = "Rendimento total e variação patrimonial médio mensal familiar"
+description = "Rendimento total e variação patrimonial médio mensal familiar (Pesquisa de Orçamentos Familiares, tabela SIDRA 6974). Valores no Total: Classes de rendimento total e variação patrimonial mensal familiar: Total; Origem dos rendimentos: Rendimento total e variação patrimonial. Fonte: IBGE - Pesquisa de Orçamentos Familiares."
+dataset = "ibge-sidra-6974"
+variable = "388"
+fact = "fact_sidra_6974"
+column = "valor"
+unit = "Reais"
+additivity = "non_additive"
+concept = "rendimento_familiar"
+path = ["Consumo e orçamentos familiares", "Despesas e rendimentos das famílias"]
+caveats = ["Nota da tabela 6974: 1 - O termo família está sendo utilizado para indicar a unidade de investigação da pesquisa \"Unidade de Consumo\".", "Nota da tabela 6974: 2 - A classificação Classes de rendimento total e variação patrimonial mensal familiar inclui os rendimentos monetários, não-monetários e variação patrimonial.", "Nota da tabela 6974: 3 - A categoria Até 1.908 Reais inclui as famílias Sem rendimento.", "Nota da tabela 6974: 4 - Médias obtidas segundo o rendimento de cada célula sobre o número de famílias correspondente."]
+
+[[indicators]]
+id = "sensacao_seguranca"
+name = "Pessoas de 15 anos ou mais de idade que se sentem seguras ao andar sozinhas nas redondezas ou arredores do seu domicílio"
+description = "Pessoas de 15 anos ou mais de idade que se sentem seguras ao andar sozinhas nas redondezas ou arredores do seu domicílio (PNAD Contínua, tabela SIDRA 8713). Valores no Total: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
+dataset = "ibge-sidra-8713"
+variable = "12567"
+fact = "fact_sidra_8713"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "non_additive"
+concept = "sensacao_seguranca"
+path = ["Segurança e vitimização", "Percepção de segurança"]
+caveats = []
+
+[[indicators]]
+id = "vitimas_roubo"
+name = "Pessoas de 15 anos ou mais de idade que foram vítimas de roubo nos últimos 12 meses"
+description = "Pessoas de 15 anos ou mais de idade que foram vítimas de roubo nos últimos 12 meses (PNAD Contínua, tabela SIDRA 8503). Valores no Total: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
+dataset = "ibge-sidra-8503"
+variable = "12452"
+fact = "fact_sidra_8503"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "non_additive"
+concept = "vitimas_roubo"
+path = ["Segurança e vitimização", "Vitimização e violência"]
+caveats = []
+
+[[indicators]]
+id = "violencia"
+name = "Pessoas de 18 anos ou mais de idade que sofreram violência nos últimos 12 meses"
+description = "Pessoas de 18 anos ou mais de idade que sofreram violência nos últimos 12 meses (Pesquisa Nacional de Saúde, tabela SIDRA 8022). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+dataset = "ibge-sidra-8022"
+variable = "11392"
+fact = "fact_sidra_8022"
+column = "valor"
+unit = "Mil pessoas"
+additivity = "non_additive"
+concept = "violencia"
+path = ["Segurança e vitimização", "Vitimização e violência"]
+caveats = ["Nota da tabela 8022: A classificação \"Situação do domicílio\" está disponível apenas para o nível territorial Brasil."]
+
+[[indicators]]
+id = "homicidios"
+name = "Taxa de vítimas de homicídios intencionais"
+description = "Taxa de vítimas de homicídios intencionais (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6606). Tabela sem classificações. Fonte: <div>Minist&eacute;rio da Sa&uacute;de. SVS/DANTPS/CGIAE - Sistema de Informa&ccedil;&otilde;es sobre Mortalidade (SIM).</div>\n<div>Instituto Brasileiro de Geografia e Estat&iacute;stica (IBGE), disponibilizado no Datasus. Popula&ccedil;&atilde;o RIPSA/IBGE.</div>."
+dataset = "ibge-sidra-6606"
+variable = "13532"
+fact = "fact_sidra_6606"
+column = "valor"
+unit = "Óbitos por 100 mil habitantes"
+additivity = "non_additive"
+concept = "homicidios"
+path = ["Segurança e vitimização", "Vitimização e violência"]
+caveats = []
+
+[[indicators]]
+id = "producao_lavouras"
+name = "Área plantada ou destinada à colheita"
+description = "Área plantada ou destinada à colheita (Produção Agrícola Municipal, tabela SIDRA 5457). Valores no Total: Produto das lavouras temporárias e permanentes: Total. Fonte: IBGE - Produção Agrícola Municipal."
+dataset = "ibge-sidra-5457"
+variable = "8331"
+fact = "fact_sidra_5457"
+column = "valor"
+unit = "Hectares"
+additivity = "additive"
+concept = "producao_lavouras"
+path = ["Agropecuária", "Lavouras"]
+caveats = ["Nota da tabela 5457: 1 - Os municípios sem informação para pelo menos um produto da lavoura não aparecem nas listas;", "Nota da tabela 5457: 2 - A partir do ano de 2001 as quantidades produzidas dos produtos abacate, banana, caqui, figo, goiaba, laranja, limão, maçã, mamão, manga, maracujá, marmelo, melancia, melão, pera, pêssego e tangerina passam a ser expressas em toneladas. Nos anos anteriores eram expressas em mil frutos, com exceção da banana, que era expressa em mil cachos. O rendimento médio passa a ser expresso em Kg/ha. Nos anos anteriores era expresso em frutos/ha, com exceção da banana, que era expressa em cachos/ha.", "Nota da tabela 5457: 3 - Veja em https://sidra.ibge.gov.br/content/documentos/pam/AlteracoesUnidadesMedidaFrutas.pdf um documento com as alterações de unidades de medida das frutíferas ocorridas em 2001 e a tabela de conversão fruto x quilograma.", "Nota da tabela 5457: 4 - Até 2001, café (em coco), a partir de 2002, café (beneficiado ou em grão).", "Nota da tabela 5457: 5 - Os produtos girassol e triticale só apresentam informação a partir de 2005.", "Nota da tabela 5457: 6 - As quantidades produzidas de abacaxi e de coco-da-baía são expressas em mil frutos e o rendimento médio em frutos/ha.", "Nota da tabela 5457: 7 - Valores para a categoria Total indisponíveis para as variáveis Quantidade produzida e Rendimento médio, pois as unidades de medida diferem para determinados produtos.", "Nota da tabela 5457: 8 - Subentende a possibilidade de cultivos sucessivos ou simultâneos (simples, associados e/ou intercalados) no mesmo ano e no mesmo local, podendo, por isto, a área informada da cultura exceder a área geográfica do município.", "Mais 6 notas na tabela oficial (SIDRA 5457)."]
+
+[[indicators]]
+id = "area_silvicultura"
+name = "Área total existente em 31/12 dos efetivos da silvicultura"
+description = "Área total existente em 31/12 dos efetivos da silvicultura (Produção da Extração Vegetal e da Silvicultura, tabela SIDRA 5930). Valores no Total: Espécie florestal: Total. Fonte: IBGE - Produção da Extração Vegetal e da Silvicultura."
+dataset = "ibge-sidra-5930"
+variable = "6549"
+fact = "fact_sidra_5930"
+column = "valor"
+unit = "Hectares"
+additivity = "additive"
+concept = "area_silvicultura"
+path = ["Agropecuária", "Silvicultura e extração vegetal"]
+caveats = ["Nota da tabela 5930: 1 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "estabelecimentos_area"
+name = "Número de estabelecimentos agropecuários"
+description = "Número de estabelecimentos agropecuários (Censo Agropecuário, tabela SIDRA 6878). Valores no Total: Condição do produtor em relação às terras: Total; Tipologia: Total; Grupos de atividade econômica: Total; Sexo do produtor: Total; Classe de idade do produtor: Total. Fonte: IBGE - Censo Agropecuário."
+dataset = "ibge-sidra-6878"
+variable = "183"
+fact = "fact_sidra_6878"
+column = "valor"
+unit = "Unidades"
+additivity = "additive"
+concept = "estabelecimentos_area"
+path = ["Agropecuária", "Estabelecimentos agropecuários"]
+caveats = ["Nota da tabela 6878: 1 - Agricultura familiar referente ao Decreto 9.064 de 31/05/2017 e PRONAF referente ao MCR/BACEN em 31/12/2017 (MCR - Manual de Crédito Rural).", "Nota da tabela 6878: 2 - Pronaf: Programa Nacional de Fortalecimento da Agricultura Familiar.", "Nota da tabela 6878: 3 - Pronamp: Programa Nacional de Apoio ao Médio Produtor Rural."]
+
+[[indicators]]
+id = "estabelecimentos_serie"
+name = "Número de estabelecimentos agropecuários"
+description = "Número de estabelecimentos agropecuários (Censo Agropecuário, tabela SIDRA 1030). Tabela sem classificações. Fonte: IBGE - Censo Agropecuário."
+dataset = "ibge-sidra-1030"
+variable = "183"
+fact = "fact_sidra_1030"
+column = "valor"
+unit = "Unidades"
+additivity = "non_additive"
+concept = "estabelecimentos_serie"
+path = ["Agropecuária", "Estabelecimentos agropecuários"]
+caveats = ["Série encerrada na fonte em 2006: é a série publicada, sem atualização."]
+
+[[indicators]]
+id = "agrotoxicos"
+name = "Quantidade comercializada de ingredientes ativos de agrotóxicos e afins"
+description = "Quantidade comercializada de ingredientes ativos de agrotóxicos e afins (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5802). Valores no Total: Classe de uso de agrotóxicos e afins: Total. Fonte: IBAMA. Relat&oacute;rios de Comercializa&ccedil;&atilde;o de Agrot&oacute;xicos - Boletim Anual de Produ&ccedil;&atilde;o, Importa&ccedil;&atilde;o, Exporta&ccedil;&atilde;o e Vendas de Agrot&oacute;xicos no Brasil. Boletins 2009 - 2014, Bras&iacute;lia, DF: Instituto Brasileiro do Meio Ambiente e dos Recursos Naturais Renov&aacute;veis, Diretoria de Qualidade Ambiental. Dispon&iacute;vel em: &lt;http://www.ibama.gov.br/areas-tematicas-qa/relatorio-de-comercializacao-de-agrotoxicos/pagina-3&gt;. Acesso em: abr. 2016.."
+dataset = "ibge-sidra-5802"
+variable = "6535"
+fact = "fact_sidra_5802"
+column = "valor"
+unit = "Toneladas"
+additivity = "additive"
+concept = "agrotoxicos"
+path = ["Agropecuária", "Insumos agrícolas"]
+caveats = ["Série encerrada na fonte em 2014: é a série publicada, sem atualização.", "Nota da tabela 5802: 1 - No nível territorial Brasil, sem especificação de Unidade da Federação são contabilizadas as vendas de algumas empresas titulares de registro, que dispõem de contratos para comercialização de seus produtos por terceiros, e não conhecem com precisão a distribuição dessas vendas.", "Nota da tabela 5802: 2 - Vendas com sinal negativo: representa que houve retorno à Indústria/Estoque.", "Nota da tabela 5802: 3 - Para o ano de 2014 não constam quantidades comercializadas para os seguintes ingredientes ativos: a) Espalhante, Inseticida; b) Feromônios."]
+
+[[indicators]]
+id = "fertilizantes"
+name = "Quantidade de fertilizantes entregue ao consumidor final"
+description = "Quantidade de fertilizantes entregue ao consumidor final (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 770). Valores no Total: Tipo de nutriente: Total. Fonte: <p>Anu&aacute;rio estat&iacute;stico do setor de fertilizantes 2014, S&atilde;o Paulo: Associa&ccedil;&atilde;o Nacional para Difus&atilde;o de Adubos, 2015;<br />Produ&ccedil;&atilde;o agr&iacute;cola municipal 2014 In: IBGE. Sistema IBGE de Recupera&ccedil;&atilde;o Autom&aacute;tica - SIDRA. Rio de Janeiro, 2015.<br />Dispon&iacute;vel em: <a href=\"../pesquisa/pam\" target=\"_blank\" rel=\"noopener\">https://sidra.ibge.gov.br/pesquisa/pam</a>. Acesso em: nov. 2015.</p>."
+dataset = "ibge-sidra-770"
+variable = "2397"
+fact = "fact_sidra_770"
+column = "valor"
+unit = "Toneladas"
+additivity = "non_additive"
+concept = "fertilizantes"
+path = ["Agropecuária", "Insumos agrícolas"]
+caveats = ["Série encerrada na fonte em 2014: é a série publicada, sem atualização."]
+
+[[indicators]]
+id = "industria_uf"
+name = "Número de unidades locais de empresas com 5 ou mais pessoas ocupadas"
+description = "Número de unidades locais de empresas com 5 ou mais pessoas ocupadas (Pesquisa Industrial Anual - Empresa, tabela SIDRA 10457). Valores no Total: Classificação Nacional de Atividades Econômicas (CNAE 2.0): Total. Fonte: IBGE - Pesquisa Industrial Anual - Empresa."
+dataset = "ibge-sidra-10457"
+variable = "13816"
+fact = "fact_sidra_10457"
+column = "valor"
+unit = "Unidades"
+additivity = "non_additive"
+concept = "industria_uf"
+path = ["Indústria", "Estrutura e peso da indústria"]
+caveats = ["A fonte não publica esta tabela para o Brasil: os dados vêm por UF, como publicados (tabela SIDRA 10457).", "Nota da tabela 10457: 1 - Exclusive as variações monetárias passivas, as despesas financeiras, os resultados negativos de participações societárias e em sociedades em cota de paraticipação e as despesas não-operacionais.", "Nota da tabela 10457: 2 - Para a variável Número de empresas: cada empresa é contada uma vez em cada abertura. Por isso, os totais de grupos, divisões e do Brasil podem ser menores que a soma de suas categorias."]
+
+[[indicators]]
+id = "va_industria_pib"
+name = "Valor adicionado da indústria de transformação em proporção do PIB"
+description = "Valor adicionado da indústria de transformação em proporção do PIB (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6587). Tabela sem classificações. Fonte: IBGE, &nbsp;Sistema de Contas Nacionais - CONAC; e Estimativas da Popula&ccedil;&atilde;o - COPIS."
+dataset = "ibge-sidra-6587"
+variable = "9312"
+fact = "fact_sidra_6587"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "va_industria_pib"
+path = ["Indústria", "Estrutura e peso da indústria"]
+caveats = []
+
+[[indicators]]
+id = "emprego_industria"
+name = "Emprego na indústria em proporção do emprego total"
+description = "Emprego na indústria em proporção do emprego total (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6608). Tabela sem classificações. Fonte: IBGE, &nbsp;Sistema de Contas Nacionais - CONAC; e Estimativas da Popula&ccedil;&atilde;o - COPIS."
+dataset = "ibge-sidra-6608"
+variable = "9314"
+fact = "fact_sidra_6608"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "emprego_industria"
+path = ["Indústria", "Estrutura e peso da indústria"]
+caveats = []
+
+[[indicators]]
+id = "empresas_construcao"
+name = "Empresas com 5 ou mais pessoas ocupadas - unidades da federação de origem - sede"
+description = "Empresas com 5 ou mais pessoas ocupadas - unidades da federação de origem - sede (Pesquisa Anual da Indústria da Construção, tabela SIDRA 10442). Tabela sem classificações. Fonte: IBGE - Pesquisa Anual da Indústria da Construção."
+dataset = "ibge-sidra-10442"
+variable = "13807"
+fact = "fact_sidra_10442"
+column = "valor"
+unit = "Unidades"
+additivity = "non_additive"
+concept = "empresas_construcao"
+path = ["Construção", "Atividade da construção"]
+caveats = ["Nota da tabela 10442: A variável Empresas atuantes nas Unidades da Federação refere-se ao número de empresas com atuação na Unidade da Federação e na região. Assim sendo, cada empresa é contada apenas uma vez na Unidade da Federação e na região onde atua. Logo, o número total de empresas numa região é igual ou menor do que a soma dos totais de cada UF dessa região. Pela mesma razão, o número total de empresas no Brasil é igual ou menor do que a soma dos totais de cada região."]
+
+[[indicators]]
+id = "empresas_comerciais"
+name = "Receita operacional líquida"
+description = "Receita operacional líquida (Pesquisa Anual de Comércio, tabela SIDRA 10646). Valores no Total: Divisão de comércio: Total. Fonte: IBGE - Pesquisa Anual de Comércio."
+dataset = "ibge-sidra-10646"
+variable = "643"
+fact = "fact_sidra_10646"
+column = "valor"
+unit = "Mil Reais"
+additivity = "additive"
+concept = "empresas_comerciais"
+path = ["Comércio", "Empresas comerciais"]
+caveats = ["Nota da tabela 10646: 1 - Outras despesas operacionais e outros custos incluem o custo de fabricação própria e o custo de material de embalagens e outros materiais (de reposição, de peças, etc).", "Nota da tabela 10646: 2 - A variável Gastos com pessoal - salários, retiradas e outras remunerações inclui participação nos lucros, honorários da diretoria e remuneração dos sócios.", "Nota da tabela 10646: 3 - A categoria Comércio de veículos automotores e motocicletas exclui a cnae 45.2."]
+
+[[indicators]]
+id = "exportacoes_importacoes"
+name = "Valor das exportações"
+description = "Valor das exportações (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5945). Tabela sem classificações. Fonte: <font size=3>Minist&eacute;rio de Desenvolvimento Ind&uacute;stria e Com&eacute;rcio  Exterior, Secretaria de Com&eacute;rcio Exterior, Estat&iacute;sticas de com&eacute;rcio exterior. Balan&ccedil;a comercial brasileira - Unidades da Federa&ccedil;&atilde;o, BR-BC-201312. Dispon&iacute;vel em: &lt;http://www.desenvolvimento.gov.br/sitio/interna/interna.php?area=5&menu=4893&refr=1076&gt;. Acesso em: jan 2016. e  IBGE, Diretoria de Pesquisas, Coordena&ccedil;&atilde;o de Contas Nacionais.</font>."
+dataset = "ibge-sidra-5945"
+variable = "2153"
+fact = "fact_sidra_5945"
+column = "valor"
+unit = "Mil dólares FOB"
+additivity = "non_additive"
+concept = "exportacoes_importacoes"
+path = ["Comércio", "Comércio exterior"]
+caveats = ["A fonte não publica esta tabela para o Brasil: os dados vêm por Grande Região, UF, como publicados (tabela SIDRA 5945).", "Nota da tabela 5945: A soma das Unidades da Federação não corresponde ao total para o Brasil, cujo valor inclui documentos de exportação ou importação em que não consta a declaração da Unidade da Federação."]
+
+[[indicators]]
+id = "servicos_nao_financeiros"
+name = "Receita operacional líquida"
+description = "Receita operacional líquida (Pesquisa Anual de Serviços, tabela SIDRA 2581). Valores no Total: Atividades: Total. Fonte: IBGE - Pesquisa Anual de Serviços."
+dataset = "ibge-sidra-2581"
+variable = "643"
+fact = "fact_sidra_2581"
+column = "valor"
+unit = "Mil Reais"
+additivity = "non_additive"
+concept = "servicos_nao_financeiros"
+path = ["Serviços", "Serviços"]
+caveats = ["Nota da tabela 2581: 1 - Os dados referentes a valores econômicos estão expressos em 1 000 R$.", "Nota da tabela 2581: 2 - Para a variável Salários, retiradas e outras remunerações: inclusive participação nos lucros (somente a parte distribuída aos empregados) e honorários da diretoria, remuneração de sócios cooperados (somente para as cooperativas de trabalho) e as retiradas pró-labore.", "Nota da tabela 2581: 3 - Para a variável Custos das mercadorias revendidas: inclusive custo de vendas de imóveis próprios.", "Nota da tabela 2581: 4 - Para a categoria Serviços prestados principalmente às famílias: o conceito adotado na PAS é menos abrangente que o definido nas Contas Nacionais.", "Nota da tabela 2581: 5 - Nas variáveis Coeficiente de variação, referentes às estimativas de algumas variáveis, os possíveis indicadores e respectivos significados são os seguintes:", "Nota da tabela 2581: A - até 5% - nível de precisão: ótimo", "Nota da tabela 2581: B - mais de 5 a 15% - nível de precisão: bom", "Nota da tabela 2581: C - mais de 15 a 30% - nível de precisão: razoável", "Mais 3 notas na tabela oficial (SIDRA 2581)."]
+
+[[indicators]]
+id = "viagens"
+name = "Viagens realizadas pelos moradores dos domicílios"
+description = "Viagens realizadas pelos moradores dos domicílios (PNAD Contínua, tabela SIDRA 7204). Valores no Total: Finalidade da viagem: Total. Fonte: IBGE. Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua,&nbsp;2019 (3&ordm; trimestre), a partir de 2020 (acumulado de segundas visitas).."
+dataset = "ibge-sidra-7204"
+variable = "10390"
+fact = "fact_sidra_7204"
+column = "valor"
+unit = "Mil unidades"
+additivity = "non_additive"
+concept = "viagens"
+path = ["Serviços", "Turismo e transportes"]
+caveats = ["Nota da tabela 7204: Foram consideradas somente as informações das três viagens mais recentes realizadas no período de referência dos últimos três meses.", "Nota da tabela 7204: A partir de 2025, as estimativas deste tema passaram a ser divulgadas com base na nova ponderação da pesquisa, conforme a Nota Técnica 02/2025. Consequentemente, a série histórica dos indicadores foi atualizada."]
+
+[[indicators]]
+id = "empresas_emprego_formal"
+name = "Número de unidades locais"
+description = "Número de unidades locais (Cadastro Central de Empresas, tabela SIDRA 9509). Tabela sem classificações. Fonte: IBGE - Cadastro Central de Empresas."
+dataset = "ibge-sidra-9509"
+variable = "706"
+fact = "fact_sidra_9509"
+column = "valor"
+unit = "Unidades"
+additivity = "additive"
+concept = "empresas_emprego_formal"
+path = ["Empresas e organizações", "Empresas e emprego formal"]
+caveats = ["Nota da tabela 9509: 1 - Os dados com menos de 3 (três) informantes estão desidentificados com o caracter X.", "Nota da tabela 9509: 2 - Esta tabela substitui a tabela 454."]
+
+[[indicators]]
+id = "microempreendedores"
+name = "Número de microempreendedores individuais (MEIs)"
+description = "Número de microempreendedores individuais (MEIs) (Estatísticas dos Cadastros de Microempreendedores Individuais, tabela SIDRA 9597). Valores no Total: Grande grupamento e seções da classificação de atividade econômica (CNAE 2.0): Total. Fonte: IBGE - Estatísticas dos Cadastros de Microempreendedores Individuais."
+dataset = "ibge-sidra-9597"
+variable = "8862"
+fact = "fact_sidra_9597"
+column = "valor"
+unit = "Unidades"
+additivity = "non_additive"
+concept = "microempreendedores"
+path = ["Empresas e organizações", "Empreendedorismo"]
+caveats = ["Nota da tabela 9597: A fonte de dados da Classificação Nacional de Atividades Econômicas (CNAE 2.0) dos microempreendedores individuais (MEIs) é o Cadastro Nacional de Pessoas Jurídicas (CNPJ) e não passou por procedimento de crítica.", "Nota da tabela 9597: Número de microempreendedores individuais (MEIs) (saldo) consiste na diferença entre o total de MEIs do ano de referência e do ano anterior ao de referência. Ele não necessariamente é o mesmo valor das entradas menos as saídas, pois as entradas e saídas não levam em conta mudanças de atividade econômica. Ou seja, um MEI que simplesmente alterou a atividade econômica não é considerado entrada ou saída."]
+
+[[indicators]]
+id = "nascimentos_empresas"
+name = "Número de nascimentos de empresas empregadoras"
+description = "Número de nascimentos de empresas empregadoras (Demografia das Empresas e Estatísticas de Empreendedorismo, tabela SIDRA 9949). Valores no Total: Faixas de pessoal ocupado assalariado: Total; Classificação Nacional de Atividades Econômicas (CNAE 2.0): Total. Fonte: IBGE - Demografia das Empresas e Estatísticas de Empreendedorismo."
+dataset = "ibge-sidra-9949"
+variable = "13234"
+fact = "fact_sidra_9949"
+column = "valor"
+unit = "Unidades"
+additivity = "additive"
+concept = "nascimentos_empresas"
+path = ["Empresas e organizações", "Empreendedorismo"]
+caveats = []
+
+[[indicators]]
+id = "empresas_inovadoras"
+name = "Número de empresas que implementaram inovações de produto e/ou processo, no triênio de referência"
+description = "Número de empresas que implementaram inovações de produto e/ou processo, no triênio de referência (Pesquisa de Inovação, tabela SIDRA 5453). Valores no Total: Atividades da indústria, do setor de eletricidade e gás e dos serviços selecionados: Total. Fonte: IBGE - Pesquisa de Inovação."
+dataset = "ibge-sidra-5453"
+variable = "5977"
+fact = "fact_sidra_5453"
+column = "valor"
+unit = "Unidades"
+additivity = "additive"
+concept = "empresas_inovadoras"
+path = ["Empresas e organizações", "Inovação e P&D"]
+caveats = ["Nota da tabela 5453: 1 - As informações de natureza quantitativa (dispêndios, pessoal ocupado, receita líquida de vendas e % de impactos das inovações) e também de uso de biotecnologia e de nanotecnologia se referem ao último ano do triênio de referência da pesquisa; ao passo que as informações de natureza qualitativa se referem ao triênio de referência da pesquisa."]
+
+[[indicators]]
+id = "pd_pib"
+name = "Dispêndio em P&D em proporção do PIB"
+description = "Dispêndio em P&D em proporção do PIB (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6610). Tabela sem classificações. Fonte: &nbsp;IBGE, &nbsp;Sistema de Contas Nacionais - CONAC; Disp&ecirc;ndios federais: Sistema Integrado de Administra&ccedil;&atilde;o Financeira do Governo Federal (SIAFI).&nbsp;."
+dataset = "ibge-sidra-6610"
+variable = "9316"
+fact = "fact_sidra_6610"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "pd_pib"
+path = ["Empresas e organizações", "Inovação e P&D"]
+caveats = []
+
+[[indicators]]
+id = "pib_per_capita"
+name = "PIB - valores correntes"
+description = "PIB - valores correntes (Contas Nacionais Anuais, tabela SIDRA 6784). Tabela sem classificações. Fonte: IBGE - Contas Nacionais Anuais."
+dataset = "ibge-sidra-6784"
+variable = "9808"
+fact = "fact_sidra_6784"
+column = "valor"
+unit = "Milhões de Reais"
+additivity = "non_additive"
+concept = "pib_per_capita"
+path = ["Contas nacionais e regionais", "PIB do Brasil"]
+caveats = []
+
+[[indicators]]
+id = "pib_municipios"
+name = "Produto Interno Bruto a preços correntes"
+description = "Produto Interno Bruto a preços correntes (Produto Interno Bruto dos Municípios, tabela SIDRA 5938). Tabela sem classificações. Fonte: IBGE, em parceria com os &Oacute;rg&atilde;os Estaduais de Estat&iacute;stica, Secretarias Estaduais de Governo e Superintend&ecirc;ncia da Zona Franca de Manaus - SUFRAMA."
+dataset = "ibge-sidra-5938"
+variable = "37"
+fact = "fact_sidra_5938"
+column = "valor"
+unit = "Mil Reais"
+additivity = "additive"
+concept = "pib_municipios"
+path = ["Contas nacionais e regionais", "PIB dos municípios"]
+caveats = ["Nota da tabela 5938: 1 - Os dados de 2022 e 2023 estarão sujeitos a revisão na próxima publicação.", "Nota da tabela 5938: 2 - Para os anos de 2022 e 2023 foram divulgados apenas o Produto Interno Bruto e o Produto Interno Bruto per capita, conforme a nota técnica 02/2024 do Sistema de Contas Nacionais, que pode ser acessada em https://biblioteca.ibge.gov.br/visualizacao/livros/liv102094.pdf.", "Nota da tabela 5938: 3 - Os dados da série retropolada (de 2002 a 2009) também têm como referência o ano de 2010, seguindo a nova referência das Contas Nacionais."]
+
+[[indicators]]
+id = "unidades_conservacao"
+name = "Número de unidades de conservação terrestres"
+description = "Número de unidades de conservação terrestres (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5619). Tabela sem classificações. Fonte: Minist&eacute;rio do Meio Ambiente, Departamento de &Aacute;reas Protegidas, Cadastro Nacional de Unidades de Conserva&ccedil;&atilde;o - CNUC; IBGE. &Aacute;rea Territorial Brasileira. Dispon&iacute;vel em: &lt;http://www.ibge.gov.br/home/geociencias/areaterritorial/principal.shtm&gt;. Acesso em: fevereiro de 2017.."
+dataset = "ibge-sidra-5619"
+variable = "6306"
+fact = "fact_sidra_5619"
+column = "valor"
+unit = "Unidades"
+additivity = "additive"
+concept = "unidades_conservacao"
+path = ["Meio ambiente", "Biomas e áreas protegidas"]
+caveats = ["Nota da tabela 5619: 1 - Dados do Cadastro Nacional de Unidades de Conservação - CNUC atualizados em 09/08/2016; área territorial brasileira: 8.515.767,049 km2; há sobreposição entre unidades de conservação, que ocorre mais intensamente (em termos percentuais) no Bioma Mata Atlântica.", "Nota da tabela 5619: 2 - No número de unidades de conservação não foram incluídas as unidades de conservação marinhas.", "Nota da tabela 5619: 3 - Na área das unidades de conservação não foram incluídas as áreas de conservação marinhas."]
+
+[[indicators]]
+id = "area_florestal"
+name = "Área de floresta como proporção da área total terrestre"
+description = "Área de floresta como proporção da área total terrestre (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6843). Tabela sem classificações. Fonte: https://fra-data.fao.org/assessments/fra/2025/BRA/sections/sustainableDevelopment; Resolu&ccedil;&atilde;o n&ordm; 1 de 15/01/2013 do IBGE (dado usado no FRA 2015)."
+dataset = "ibge-sidra-6843"
+variable = "9971"
+fact = "fact_sidra_6843"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "area_florestal"
+path = ["Meio ambiente", "Biomas e áreas protegidas"]
+caveats = []
+
+[[indicators]]
+id = "focos_calor"
+name = "Número de focos de calor"
+description = "Número de focos de calor (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5805). Tabela sem classificações. Fonte: Queimadas: monitoramento de focos. Cachoeira Paulista, SP: Instituto Nacional de Pesquisas Espaciais - INPE, Centro de Previs&atilde;o de Tempo e Estudos Clim&aacute;ticos - CPTEC. Dispon&iacute;vel em: &lt;http://www.dpi.inpe.br/proarco/bdqueimadas/&gt;. Acesso em: jan. 2017.."
+dataset = "ibge-sidra-5805"
+variable = "2142"
+fact = "fact_sidra_5805"
+column = "valor"
+unit = "Unidades"
+additivity = "additive"
+concept = "focos_calor"
+path = ["Meio ambiente", "Queimadas e desmatamento"]
+caveats = ["Nota da tabela 5805: 1. Dados de focos de calor obtidos pelos satétites NOAA12 Noite (1999 a 2007) e AQUA M-T (2007 a 2016).", "Nota da tabela 5805: 2. Os focos com localização indeterminada ou sem informação foram computados em Bioma não definido.", "Nota da tabela 5805: 3. Simbologia: - (hífen) indica que não houve focos de calor com localização indeterminada ou sem informação nos anos correspondentes."]
+
+[[indicators]]
+id = "desflorestamento_amazonia"
+name = "Desflorestamento bruto anual na Amazônia Legal, em 01/08"
+description = "Desflorestamento bruto anual na Amazônia Legal, em 01/08 (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 896). Tabela sem classificações. Fonte: Projeto PRODES: Monitoramento da Floresta Amaz&ocirc;nica Brasileira por Sat&eacute;lite. S&atilde;o Jos&eacute; dos Campos: Instituto Nacional de Pesquisas Espaciais - INPE, 2017. Dispon&iacute;vel em: &lt;http://www.obt.inpe.br/prodes/index.html&gt;. Acesso em: 26 de maio de 2017; e &Aacute;rea territorial oficial. Rio de Janeiro: IBGE, [2015]. Dispon&iacute;vel em: &lt;http://www.ibge.gov.br/home/geociencias/areaterritorial/principal.shtm&gt;. Acesso em: 26 de maio de 2017.."
+dataset = "ibge-sidra-896"
+variable = "2144"
+fact = "fact_sidra_896"
+column = "valor"
+unit = "Quilômetros quadrados"
+additivity = "non_additive"
+concept = "desflorestamento_amazonia"
+path = ["Meio ambiente", "Queimadas e desmatamento"]
+caveats = ["A fonte não publica esta tabela para o Brasil: os dados vêm por UF, como publicados (tabela SIDRA 896).", "Nota da tabela 896: 1 - Os dados para 1994 são referentes ao período entre agosto de 1992 a agosto de 1994 (para 2 anos). Para os demais anos considera-se agosto do ano anterior a agosto do ano de referência.", "Nota da tabela 896: 2 - As áreas desflorestadas no Estado do Maranhão são referentes apenas à porção que faz parte da Amazônia Legal (oeste do Estado). Portanto, como denominador da taxa de desflorestamento foi usada a área desse Estado relativa à Amazônia Legal.", "Nota da tabela 896: 3 - Os dados do desflorestamento bruto acumulado foram gerados somando-se a área desflorestada bruta acumulada até o ano de 1991 (fornecida pelo INPE) com os valores atualizados das áreas desflorestadas anualmente."]
+
+[[indicators]]
+id = "energia_renovavel"
+name = "Participação percentual das energias renováveis na Oferta Interna de Energia (OIE)"
+description = "Participação percentual das energias renováveis na Oferta Interna de Energia (OIE) (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6592). Tabela sem classificações. Fonte: Empresa de Pesquisa Energ&eacute;tica."
+dataset = "ibge-sidra-6592"
+variable = "9340"
+fact = "fact_sidra_6592"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "energia_renovavel"
+path = ["Meio ambiente", "Emissões e energia"]
+caveats = []
+
+[[indicators]]
+id = "estresse_hidrico"
+name = "Proporção entre a retirada de água doce e o total dos recursos de água doce disponíveis"
+description = "Proporção entre a retirada de água doce e o total dos recursos de água doce disponíveis (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 7077). Tabela sem classificações. Fonte: Ag&ecirc;ncia Nacional de &Aacute;guas e Saneamento B&aacute;sico (ANA) - Sistema Nacional de Informa&ccedil;&otilde;es sobre Recursos H&iacute;dricos (SNIRH)<br /> Institui&ccedil;&atilde;o produtora: Ag&ecirc;ncia Nacional de &Aacute;guas e Saneamento B&aacute;sico (ANA)."
+dataset = "ibge-sidra-7077"
+variable = "10233"
+fact = "fact_sidra_7077"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "estresse_hidrico"
+path = ["Meio ambiente", "Recursos hídricos"]
+caveats = []
+
+[[indicators]]
+id = "esgoto_tratado"
+name = "Proporção de águas residuais domésticas tratadas de forma segura"
+description = "Proporção de águas residuais domésticas tratadas de forma segura (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 8916). Tabela sem classificações. Fonte: Institui&ccedil;&atilde;o produtora: Ag&ecirc;ncia Nacional de &Aacute;guas e Saneamento B&aacute;sico (ANA)<br /> Fonte dos dados: Instituto Brasileiro de Geografia e Estat&iacute;stica (IBGE) - Pesquisa Nacional por Amostra de Domic&iacute;lios (PNAD) e Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua (PNAD Cont&iacute;nua), Minist&eacute;rio do Desenvolvimento Regional (MDR) - Sistema Nacional de Informa&ccedil;&otilde;es sobre Saneamento (SNIS) e Ag&ecirc;ncia Nacional de &Aacute;guas e Saneamento B&aacute;sico (ANA) - Sistema Nacional de Informa&ccedil;&otilde;es sobre Recursos H&iacute;dricos (SNIRH)."
+dataset = "ibge-sidra-8916"
+variable = "12735"
+fact = "fact_sidra_8916"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "esgoto_tratado"
+path = ["Meio ambiente", "Recursos hídricos"]
+caveats = []
+
+[[indicators]]
+id = "legislacao_ambiental"
+name = "Número de municípios com legislação ambiental"
+description = "Número de municípios com legislação ambiental (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5608). Tabela sem classificações. Fonte: IBGE, Diretoria de Pesquisas, Pesquisa de Informa&ccedil;&otilde;es B&aacute;sicas Municipais - Perfil dos Munic&iacute;pios Brasileiros."
+dataset = "ibge-sidra-5608"
+variable = "6299"
+fact = "fact_sidra_5608"
+column = "valor"
+unit = "Unidades"
+additivity = "additive"
+concept = "legislacao_ambiental"
+path = ["Gestão pública municipal", "Planejamento e meio ambiente"]
+caveats = ["Série encerrada na fonte em 2013: é a série publicada, sem atualização."]

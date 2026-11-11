@@ -102,22 +102,19 @@ class SourcesFile(_Strict):
     """Conteúdo de um arquivo de configuração de fontes."""
 
     config_version: str
-    institution: InstitutionConfig
+    # Sem instituição, o arquivo é um fragmento: só acrescenta datasets a
+    # fontes e licenças declaradas em outro arquivo (por exemplo, os datasets
+    # gerados por `odb panorama gerar`).
+    institution: InstitutionConfig | None = None
     licenses: tuple[LicenseConfig, ...] = ()
     sources: tuple[SourceConfig, ...] = ()
     datasets: tuple[DatasetConfig, ...] = ()
 
     @model_validator(mode="after")
-    def _references(self) -> SourcesFile:
-        licenses = {lic.id for lic in self.licenses}
-        sources = {src.id for src in self.sources}
-        for ds in self.datasets:
-            if ds.source not in sources:
-                msg = f"dataset {ds.id}: fonte desconhecida {ds.source!r}"
-                raise ValueError(msg)
-            if ds.license not in licenses:
-                msg = f"dataset {ds.id}: licença desconhecida {ds.license!r}"
-                raise ValueError(msg)
+    def _fragment(self) -> SourcesFile:
+        if self.institution is None and (self.licenses or self.sources):
+            msg = "um fragmento sem instituição só pode declarar datasets"
+            raise ValueError(msg)
         return self
 
 
@@ -133,14 +130,23 @@ class SourceCatalog:
         self.datasets: dict[str, DatasetConfig] = {}
         self.source_institution: dict[str, str] = {}
         for f in self.files:
-            self._add(self.institutions, f.institution.id, f.institution, "instituição")
+            if f.institution is not None:
+                self._add(self.institutions, f.institution.id, f.institution, "instituição")
+                for src in f.sources:
+                    self.source_institution[src.id] = f.institution.id
             for lic in f.licenses:
                 self._add(self.licenses, lic.id, lic, "licença")
             for src in f.sources:
                 self._add(self.sources, src.id, src, "fonte")
-                self.source_institution[src.id] = f.institution.id
             for ds in f.datasets:
                 self._add(self.datasets, ds.id, ds, "dataset")
+        for ds in self.datasets.values():
+            if ds.source not in self.sources:
+                msg = f"dataset {ds.id}: fonte desconhecida {ds.source!r}"
+                raise ConfigError(msg)
+            if ds.license not in self.licenses:
+                msg = f"dataset {ds.id}: licença desconhecida {ds.license!r}"
+                raise ConfigError(msg)
 
     @staticmethod
     def _add(index: dict[str, Any], key: str, value: Any, kind: str) -> None:

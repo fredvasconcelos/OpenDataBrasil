@@ -5,7 +5,14 @@ ao resolver.
 
 ## KI-001: notas das tabelas SIDRA não são obtidas automaticamente
 
-- **Estado:** aberto
+- **Estado:** resolvido para as tabelas do panorama (2026-11-11). O descritor
+  oficial `https://apisidra.ibge.gov.br/DescritoresTabela/t/<id>`, indicado pelo
+  mantenedor, traz as notas (`Nota`, em HTML) e a fonte (`Fonte`). `odb panorama
+  descrever` grava os descritores em `configs/catalog/descritores/`, e os KPIs
+  gerados levam as notas como ressalvas (ADR-0010, decisão 7). As notas das
+  tabelas curadas antes disso (6579 e outras) seguem transcritas à mão em
+  `docs/data_catalog/notas/`; levá-las do descritor para o catálogo é uma
+  pendência.
 - **Detectado em:** 2026-11-03
 - **Impacto:** as notas oficiais explicam valores (municípios com instalação
   prevista, populações judiciais, correções) e são necessárias para
@@ -45,6 +52,17 @@ navegador automatizado ou credenciais pessoais.
 - **Ação:** retestar periodicamente e, quando voltar, avaliar um conector de
   metadados.
 - **Retestes:** 2026-11-04, ainda sem resposta (HTTP 000).
+  2026-11-10: ainda sem resposta (timeout no IP 170.84.40.178:443, também a
+  partir de serviço externo). Nessa data, a página `sidra.ibge.gov.br/acervo` e
+  as páginas `ibge.gov.br/estatisticas/*` responderam 403 com desafio do
+  Cloudflare (não contornado, §7.3). Responderam `apisidra.ibge.gov.br/values` e
+  `ftp.ibge.gov.br`.
+  No mesmo dia, o check-host.net mostrou o serviço ativo a partir de outros
+  países, mas ele não responde a partir da Espanha, onde fica o mantenedor:
+  **provável restrição geográfica**. Decisão: não usar VPN nem proxy para
+  mascarar a origem (§7.3). Alternativas: a exportação oficial do acervo feita
+  pelo mantenedor no navegador e, na Fase 7, avaliar a ingestão hospedada no
+  Brasil.
 
 ## KI-003: licença do IBGE em `requires_review`
 

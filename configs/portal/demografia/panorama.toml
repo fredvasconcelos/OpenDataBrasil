@@ -1,0 +1,638 @@
+# Gerado por `odb panorama gerar` a partir de configs/catalog/panorama.toml e
+# configs/catalog/panorama_verificacao.json (ADR-0010). Não editar à mão:
+# ajuste o panorama e gere de novo.
+
+config_version = "1.0.0"
+scope = "demografia"
+
+[[themes]]
+id = "populacao"
+label = "População e demografia"
+
+[[themes.subthemes]]
+id = "tamanho_crescimento"
+label = "Tamanho e crescimento"
+
+[[themes.subthemes.kpis]]
+id = "crescimento_populacional"
+label = "Taxa de crescimento da população"
+indicator = "crescimento_populacional"
+
+[[themes.subthemes.kpis]]
+id = "populacao_nos_censos"
+label = "População nos Censos (série histórica)"
+indicator = "populacao_nos_censos"
+
+[[themes.subthemes]]
+id = "estrutura_populacao"
+label = "Sexo, idade e cor ou raça"
+
+[[themes.subthemes.kpis]]
+id = "envelhecimento"
+label = "Índice de envelhecimento, idade mediana e razão de sexo"
+indicator = "envelhecimento"
+
+[[themes.subthemes.kpis]]
+id = "populacao_sexo_idade"
+label = "População por sexo e idade"
+indicator = "populacao_sexo_idade"
+
+[[themes.subthemes]]
+id = "natalidade_mortalidade"
+label = "Fecundidade, mortalidade e esperança de vida"
+
+[[themes.subthemes.kpis]]
+id = "fecundidade_total"
+label = "Taxa de fecundidade total"
+indicator = "fecundidade_total"
+
+[[themes.subthemes]]
+id = "migracao"
+label = "Migração"
+
+[[themes.subthemes.kpis]]
+id = "migrantes_uf"
+label = "Pessoas que não residiam na UF cinco anos antes"
+indicator = "migrantes_uf"
+
+[[themes]]
+id = "registro_civil"
+label = "Registro civil"
+
+[[themes.subthemes]]
+id = "nascimentos_obitos"
+label = "Nascimentos e óbitos"
+
+[[themes.subthemes.kpis]]
+id = "nascidos_vivos"
+label = "Nascidos vivos"
+indicator = "nascidos_vivos"
+
+[[themes.subthemes.kpis]]
+id = "obitos"
+label = "Óbitos"
+indicator = "obitos"
+
+[[themes.subthemes]]
+id = "casamentos_divorcios"
+label = "Casamentos e divórcios"
+
+[[themes.subthemes.kpis]]
+id = "casamentos"
+label = "Casamentos"
+indicator = "casamentos"
+
+[[themes.subthemes.kpis]]
+id = "divorcios"
+label = "Divórcios"
+indicator = "divorcios"
+
+[[themes]]
+id = "domicilios"
+label = "Domicílios e famílias"
+
+[[themes.subthemes]]
+id = "domicilios_moradores"
+label = "Domicílios e moradores"
+
+[[themes.subthemes.kpis]]
+id = "domicilios_ocupados"
+label = "Domicílios ocupados e média de moradores"
+indicator = "domicilios_ocupados"
+
+[[themes.subthemes]]
+id = "favelas"
+label = "Favelas e comunidades urbanas"
+
+[[themes.subthemes.kpis]]
+id = "populacao_favelas"
+label = "População, área e densidade em favelas"
+indicator = "populacao_favelas"
+
+[[themes.subthemes.kpis]]
+id = "numero_favelas"
+label = "Número de favelas e comunidades urbanas"
+indicator = "numero_favelas"
+
+[[themes]]
+id = "saneamento"
+label = "Saneamento básico"
+
+[[themes.subthemes]]
+id = "agua"
+label = "Abastecimento de água"
+
+[[themes.subthemes.kpis]]
+id = "servico_agua_municipios"
+label = "Municípios com serviço de abastecimento por rede geral"
+indicator = "servico_agua_municipios"
+
+[[themes.subthemes]]
+id = "esgoto"
+label = "Esgotamento sanitário"
+
+[[themes.subthemes.kpis]]
+id = "servico_esgoto_municipios"
+label = "Municípios com rede coletora de esgoto"
+indicator = "servico_esgoto_municipios"
+
+[[themes]]
+id = "educacao"
+label = "Educação"
+
+[[themes.subthemes]]
+id = "alfabetizacao"
+label = "Alfabetização"
+
+[[themes.subthemes.kpis]]
+id = "taxa_alfabetizacao_censo"
+label = "Taxa de alfabetização (15 anos ou mais, Censo)"
+indicator = "taxa_alfabetizacao_censo"
+
+[[themes.subthemes]]
+id = "escolarizacao"
+label = "Frequência escolar"
+
+[[themes.subthemes.kpis]]
+id = "taxa_escolarizacao"
+label = "Taxa de escolarização"
+indicator = "taxa_escolarizacao"
+
+[[themes]]
+id = "trabalho_rendimento"
+label = "Trabalho e rendimento"
+
+[[themes.subthemes]]
+id = "informalidade"
+label = "Informalidade"
+
+[[themes.subthemes.kpis]]
+id = "taxa_informalidade"
+label = "Taxa de informalidade"
+indicator = "taxa_informalidade"
+
+[[themes.subthemes]]
+id = "rendimento_domiciliar"
+label = "Rendimento domiciliar, desigualdade e pobreza"
+
+[[themes.subthemes.kpis]]
+id = "gini_domiciliar"
+label = "Índice de Gini do rendimento domiciliar per capita"
+indicator = "gini_domiciliar"
+
+[[themes.subthemes.kpis]]
+id = "rendimento_domiciliar_censo"
+label = "Rendimento domiciliar per capita (Censo)"
+indicator = "rendimento_domiciliar_censo"
+
+[[themes.subthemes.kpis]]
+id = "pobreza_linha_nacional"
+label = "Proporção da população abaixo da linha de pobreza nacional"
+indicator = "pobreza_linha_nacional"
+
+[[themes.subthemes]]
+id = "trabalho_infantil_cuidados"
+label = "Trabalho infantil e cuidados"
+
+[[themes.subthemes.kpis]]
+id = "trabalho_infantil"
+label = "Pessoas de 5 a 17 anos em trabalho infantil"
+indicator = "trabalho_infantil"
+
+[[themes.subthemes.kpis]]
+id = "afazeres_domesticos"
+label = "Horas dedicadas a afazeres domésticos e cuidados"
+indicator = "afazeres_domesticos"
+
+[[themes]]
+id = "saude"
+label = "Saúde"
+
+[[themes.subthemes]]
+id = "condicoes_saude"
+label = "Condições de saúde"
+
+[[themes.subthemes.kpis]]
+id = "doenca_cronica"
+label = "Pessoas com pelo menos uma doença crônica"
+indicator = "doenca_cronica"
+
+[[themes.subthemes.kpis]]
+id = "hipertensao"
+label = "Diagnóstico de hipertensão arterial"
+indicator = "hipertensao"
+
+[[themes.subthemes.kpis]]
+id = "diabetes"
+label = "Diagnóstico de diabetes"
+indicator = "diabetes"
+
+[[themes.subthemes]]
+id = "fatores_risco"
+label = "Hábitos e fatores de risco"
+
+[[themes.subthemes.kpis]]
+id = "fumantes"
+label = "Fumantes atuais de tabaco"
+indicator = "fumantes"
+
+[[themes.subthemes.kpis]]
+id = "consumo_abusivo_alcool"
+label = "Consumo abusivo de álcool"
+indicator = "consumo_abusivo_alcool"
+
+[[themes.subthemes.kpis]]
+id = "insuficientemente_ativos"
+label = "Pessoas insuficientemente ativas"
+indicator = "insuficientemente_ativos"
+
+[[themes.subthemes.kpis]]
+id = "excesso_peso"
+label = "Excesso de peso ou obesidade"
+indicator = "excesso_peso"
+
+[[themes.subthemes]]
+id = "acesso_servicos"
+label = "Acesso a serviços de saúde"
+
+[[themes.subthemes.kpis]]
+id = "plano_saude"
+label = "Pessoas com plano de saúde"
+indicator = "plano_saude"
+
+[[themes.subthemes.kpis]]
+id = "consulta_medica"
+label = "Consultaram médico nos últimos 12 meses"
+indicator = "consulta_medica"
+
+[[themes.subthemes.kpis]]
+id = "estabelecimentos_saude"
+label = "Estabelecimentos de saúde"
+indicator = "estabelecimentos_saude"
+
+[[themes.subthemes]]
+id = "materno_infantil"
+label = "Saúde materno-infantil"
+
+[[themes.subthemes.kpis]]
+id = "pre_natal"
+label = "Mulheres que realizaram pré-natal"
+indicator = "pre_natal"
+
+[[themes.subthemes.kpis]]
+id = "aleitamento_exclusivo"
+label = "Aleitamento materno exclusivo (menos de 6 meses)"
+indicator = "aleitamento_exclusivo"
+
+[[themes.subthemes]]
+id = "mortalidade"
+label = "Mortalidade"
+
+[[themes.subthemes.kpis]]
+id = "mortalidade_materna"
+label = "Razão de mortalidade materna"
+indicator = "mortalidade_materna"
+
+[[themes.subthemes.kpis]]
+id = "mortalidade_menores_5"
+label = "Taxa de mortalidade em menores de 5 anos"
+indicator = "mortalidade_menores_5"
+
+[[themes.subthemes]]
+id = "saude_escolar"
+label = "Saúde do escolar"
+
+[[themes.subthemes.kpis]]
+id = "escolares_fumaram"
+label = "Escolares de 13 a 17 anos que fumaram nos últimos 30 dias"
+indicator = "escolares_fumaram"
+
+[[themes.subthemes.kpis]]
+id = "escolares_alcool"
+label = "Escolares de 13 a 17 anos que consumiram bebida alcoólica"
+indicator = "escolares_alcool"
+
+[[themes.subthemes.kpis]]
+id = "escolares_excesso_peso"
+label = "Escolares de 13 a 17 anos com excesso de peso"
+indicator = "escolares_excesso_peso"
+
+[[themes.subthemes]]
+id = "covid"
+label = "COVID-19"
+
+[[themes.subthemes.kpis]]
+id = "vacinacao_covid"
+label = "Vacinados contra a COVID-19"
+indicator = "vacinacao_covid"
+
+[[themes.subthemes.kpis]]
+id = "tiveram_covid"
+label = "Pessoas que tiveram ou consideram que tiveram COVID-19"
+indicator = "tiveram_covid"
+
+[[themes]]
+id = "consumo_familias"
+label = "Consumo e orçamentos familiares"
+
+[[themes.subthemes]]
+id = "despesas_rendimentos"
+label = "Despesas e rendimentos das famílias"
+
+[[themes.subthemes.kpis]]
+id = "rendimento_familiar"
+label = "Rendimento médio mensal familiar"
+indicator = "rendimento_familiar"
+
+[[themes]]
+id = "seguranca"
+label = "Segurança e vitimização"
+
+[[themes.subthemes]]
+id = "percepcao_seguranca"
+label = "Percepção de segurança"
+
+[[themes.subthemes.kpis]]
+id = "sensacao_seguranca"
+label = "Pessoas que se sentem seguras ao andar sozinhas perto de casa"
+indicator = "sensacao_seguranca"
+
+[[themes.subthemes]]
+id = "vitimizacao"
+label = "Vitimização e violência"
+
+[[themes.subthemes.kpis]]
+id = "vitimas_roubo"
+label = "Vítimas de roubo nos últimos 12 meses"
+indicator = "vitimas_roubo"
+
+[[themes.subthemes.kpis]]
+id = "violencia"
+label = "Pessoas que sofreram violência nos últimos 12 meses"
+indicator = "violencia"
+
+[[themes.subthemes.kpis]]
+id = "homicidios"
+label = "Vítimas de homicídio por 100 mil habitantes"
+indicator = "homicidios"
+
+[[themes]]
+id = "agropecuaria"
+label = "Agropecuária"
+
+[[themes.subthemes]]
+id = "lavouras"
+label = "Lavouras"
+
+[[themes.subthemes.kpis]]
+id = "producao_lavouras"
+label = "Área, produção e valor das lavouras"
+indicator = "producao_lavouras"
+
+[[themes.subthemes]]
+id = "silvicultura_extracao"
+label = "Silvicultura e extração vegetal"
+
+[[themes.subthemes.kpis]]
+id = "area_silvicultura"
+label = "Área de silvicultura por espécie florestal"
+indicator = "area_silvicultura"
+
+[[themes.subthemes]]
+id = "estrutura_agraria"
+label = "Estabelecimentos agropecuários"
+
+[[themes.subthemes.kpis]]
+id = "estabelecimentos_area"
+label = "Número e área dos estabelecimentos agropecuários"
+indicator = "estabelecimentos_area"
+
+[[themes.subthemes.kpis]]
+id = "estabelecimentos_serie"
+label = "Estabelecimentos agropecuários (série histórica 1920–2006)"
+indicator = "estabelecimentos_serie"
+
+[[themes.subthemes]]
+id = "insumos"
+label = "Insumos agrícolas"
+
+[[themes.subthemes.kpis]]
+id = "agrotoxicos"
+label = "Comercialização de agrotóxicos"
+indicator = "agrotoxicos"
+
+[[themes.subthemes.kpis]]
+id = "fertilizantes"
+label = "Fertilizantes entregues ao consumidor final"
+indicator = "fertilizantes"
+
+[[themes]]
+id = "industria"
+label = "Indústria"
+
+[[themes.subthemes]]
+id = "estrutura_industrial"
+label = "Estrutura e peso da indústria"
+
+[[themes.subthemes.kpis]]
+id = "industria_uf"
+label = "Unidades locais industriais, pessoal ocupado e salários"
+indicator = "industria_uf"
+
+[[themes.subthemes.kpis]]
+id = "va_industria_pib"
+label = "Valor adicionado da indústria em proporção do PIB"
+indicator = "va_industria_pib"
+
+[[themes.subthemes.kpis]]
+id = "emprego_industria"
+label = "Emprego na indústria em proporção do emprego total"
+indicator = "emprego_industria"
+
+[[themes]]
+id = "construcao"
+label = "Construção"
+
+[[themes.subthemes]]
+id = "atividade_construcao"
+label = "Atividade da construção"
+
+[[themes.subthemes.kpis]]
+id = "empresas_construcao"
+label = "Empresas de construção: pessoal, salários e valor das obras"
+indicator = "empresas_construcao"
+
+[[themes]]
+id = "comercio"
+label = "Comércio"
+
+[[themes.subthemes]]
+id = "estrutura_comercio"
+label = "Empresas comerciais"
+
+[[themes.subthemes.kpis]]
+id = "empresas_comerciais"
+label = "Resultados das empresas comerciais"
+indicator = "empresas_comerciais"
+
+[[themes.subthemes]]
+id = "comercio_exterior"
+label = "Comércio exterior"
+
+[[themes.subthemes.kpis]]
+id = "exportacoes_importacoes"
+label = "Exportações, importações e saldo comercial"
+indicator = "exportacoes_importacoes"
+
+[[themes]]
+id = "servicos"
+label = "Serviços"
+
+[[themes.subthemes]]
+id = "servicos_empresariais"
+label = "Serviços"
+
+[[themes.subthemes.kpis]]
+id = "servicos_nao_financeiros"
+label = "Resultados dos serviços empresariais não financeiros"
+indicator = "servicos_nao_financeiros"
+
+[[themes.subthemes]]
+id = "turismo_transportes"
+label = "Turismo e transportes"
+
+[[themes.subthemes.kpis]]
+id = "viagens"
+label = "Viagens realizadas pelos moradores"
+indicator = "viagens"
+
+[[themes]]
+id = "empresas"
+label = "Empresas e organizações"
+
+[[themes.subthemes]]
+id = "cadastro_empresas"
+label = "Empresas e emprego formal"
+
+[[themes.subthemes.kpis]]
+id = "empresas_emprego_formal"
+label = "Empresas, pessoal ocupado e salários"
+indicator = "empresas_emprego_formal"
+
+[[themes.subthemes]]
+id = "empreendedorismo"
+label = "Empreendedorismo"
+
+[[themes.subthemes.kpis]]
+id = "microempreendedores"
+label = "Microempreendedores individuais (MEI)"
+indicator = "microempreendedores"
+
+[[themes.subthemes.kpis]]
+id = "nascimentos_empresas"
+label = "Nascimentos de empresas e taxa de sobrevivência"
+indicator = "nascimentos_empresas"
+
+[[themes.subthemes]]
+id = "inovacao"
+label = "Inovação e P&D"
+
+[[themes.subthemes.kpis]]
+id = "empresas_inovadoras"
+label = "Empresas que implementaram inovações"
+indicator = "empresas_inovadoras"
+
+[[themes.subthemes.kpis]]
+id = "pd_pib"
+label = "Dispêndio em P&D em proporção do PIB"
+indicator = "pd_pib"
+
+[[themes]]
+id = "contas_nacionais"
+label = "Contas nacionais e regionais"
+
+[[themes.subthemes]]
+id = "pib_brasil"
+label = "PIB do Brasil"
+
+[[themes.subthemes.kpis]]
+id = "pib_per_capita"
+label = "PIB e PIB per capita"
+indicator = "pib_per_capita"
+
+[[themes.subthemes]]
+id = "pib_municipios"
+label = "PIB dos municípios"
+
+[[themes.subthemes.kpis]]
+id = "pib_municipios"
+label = "PIB dos municípios e valor adicionado por atividade"
+indicator = "pib_municipios"
+
+[[themes]]
+id = "meio_ambiente"
+label = "Meio ambiente"
+
+[[themes.subthemes]]
+id = "biomas_areas_protegidas"
+label = "Biomas e áreas protegidas"
+
+[[themes.subthemes.kpis]]
+id = "unidades_conservacao"
+label = "Unidades de conservação terrestres"
+indicator = "unidades_conservacao"
+
+[[themes.subthemes.kpis]]
+id = "area_florestal"
+label = "Área florestal em proporção do território"
+indicator = "area_florestal"
+
+[[themes.subthemes]]
+id = "queimadas_desmatamento"
+label = "Queimadas e desmatamento"
+
+[[themes.subthemes.kpis]]
+id = "focos_calor"
+label = "Focos de calor por bioma"
+indicator = "focos_calor"
+
+[[themes.subthemes.kpis]]
+id = "desflorestamento_amazonia"
+label = "Desflorestamento na Amazônia Legal"
+indicator = "desflorestamento_amazonia"
+
+[[themes.subthemes]]
+id = "emissoes_energia"
+label = "Emissões e energia"
+
+[[themes.subthemes.kpis]]
+id = "energia_renovavel"
+label = "Energias renováveis na oferta interna de energia"
+indicator = "energia_renovavel"
+
+[[themes.subthemes]]
+id = "recursos_hidricos"
+label = "Recursos hídricos"
+
+[[themes.subthemes.kpis]]
+id = "estresse_hidrico"
+label = "Nível de estresse hídrico"
+indicator = "estresse_hidrico"
+
+[[themes.subthemes.kpis]]
+id = "esgoto_tratado"
+label = "Águas residuais domésticas tratadas de forma segura"
+indicator = "esgoto_tratado"
+
+[[themes]]
+id = "gestao_municipal"
+label = "Gestão pública municipal"
+
+[[themes.subthemes]]
+id = "planejamento_municipal"
+label = "Planejamento e meio ambiente"
+
+[[themes.subthemes.kpis]]
+id = "legislacao_ambiental"
+label = "Municípios com legislação ambiental"
+indicator = "legislacao_ambiental"

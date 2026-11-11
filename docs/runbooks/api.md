@@ -67,6 +67,7 @@ curl -s -X POST localhost:8000/api/v1/exports -H 'Content-Type: application/json
 | Variável | Padrão | |
 |---|---|---|
 | `ODB_API_CORS_ORIGINS` | `["http://localhost:3000"]` | origens do portal (JSON) |
+| `ODB_API_PANORAMA_PATH` | `configs/catalog/panorama.toml` | taxonomia da navegação (ADR-0010); vazio: só os KPIs do portal |
 | `ODB_API_RELEASE_TTL_S` | 5 | releitura do release ativo |
 | `ODB_API_PAGE_MAX` | 1000 | linhas por página |
 | `ODB_API_EXPORT_MAX_ROWS` | 1.000.000 | limite da exportação síncrona |
@@ -75,7 +76,55 @@ curl -s -X POST localhost:8000/api/v1/exports -H 'Content-Type: application/json
 
 ## Expor um KPI ou uma dimensão
 
-Edite `configs/portal/demografia.toml`, reconstrua a imagem e suba a API de
-novo. Na primeira requisição, a configuração é conferida contra o release
-(indicador publicado, classificação do indicador e partição existente). Uma
+Edite `configs/portal/demografia.toml` (ou um fragmento curado em
+`configs/portal/demografia/`, como `pof.toml`) e ligue o KPI ao item
+correspondente de `configs/catalog/panorama.toml`: pelo campo `kpi` ou dando ao
+KPI o mesmo id do item. Não edite `configs/portal/demografia/panorama.toml`:
+ele é gerado por `odb panorama gerar`. Depois, reconstrua a imagem e suba a
+API de novo, **só depois** de ativar um release que contenha os indicadores
+novos (senão a primeira requisição falha com `portal_config`). Na carga, cada KPI do portal precisa aparecer em exatamente
+um item do panorama. Na primeira requisição, a configuração é conferida contra o release
+(indicador publicado, classificação do indicador e partição existente) e
+contra o panorama (a tabela de origem na Gold é a declarada). Uma
 divergência gera erro `portal_config` (500) com a explicação.
+
+## Panorama (temas e Tier 1)
+
+`configs/catalog/panorama.toml` define os 20 temas, os 64 subtemas e os KPIs
+do Tier 1 (ADR-0010). Os itens sem `kpi` saem na navegação como `planned`.
+
+```bash
+uv run odb panorama validar            # estrutura, snapshot do acervo e ligação com o portal
+uv run odb panorama verificar          # metadados na API SIDRA (cerca de 45 min, retomável)
+uv run odb panorama verificar --retomar --tabela 6579 --tabela 417
+```
+
+A verificação grava `configs/catalog/panorama_verificacao.json` após cada
+tabela. Com `--retomar`, ela mantém as tabelas já verificadas com sucesso.
+
+### Descritores e KPIs de Total
+
+```bash
+uv run odb panorama descrever          # descritor oficial de cada tabela (147 req., ~5 min)
+uv run odb panorama gerar              # fragmentos de fontes, catálogo e portal (KPIs de Total)
+uv run odb panorama documentar         # docs/data_catalog/panorama-tier1.md, com os pendentes
+```
+
+`descrever` grava `/DescritoresTabela/t/<tabela>` em `configs/catalog/descritores/`
+(índice com SHA-256). `gerar` reescreve, a partir do panorama, da verificação e dos
+descritores:
+
+- `configs/sources/ibge-panorama.toml`;
+- `configs/indicators/demografia/panorama.toml`;
+- `configs/portal/demografia/panorama.toml`.
+
+O teste `test_repository_fragments_are_up_to_date` falha se esses arquivos
+ficarem desatualizados. Para publicar os KPIs gerados:
+
+```bash
+docker compose --profile data build worker
+docker compose --profile data run --rm worker odb ingest run <datasets novos>
+docker compose --profile data run --rm worker odb silver build <datasets novos>
+docker compose --profile data run --rm worker odb gold build --activate
+docker compose --profile web build api portal && docker compose --profile web up -d
+```

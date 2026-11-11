@@ -105,6 +105,57 @@ def select_silver(silver: pl.DataFrame, mapping: pl.DataFrame) -> pl.DataFrame:
     return silver.join(mapping, on=["table_id", "variable_id"], how="inner")
 
 
+def strip_fixed_categories(
+    selected: pl.DataFrame, catalog: SemanticCatalog
+) -> tuple[pl.DataFrame, dict[str, dict[str, list[str]]]]:
+    """Retira as dimensões de categoria fixa (``fixed_categories`` dos fatos).
+
+    Devolve as observações sem essas dimensões e as divergências encontradas:
+    fato → dimensão → categorias observadas, quando alguma observação não
+    está na categoria declarada (ou a dimensão não aparece).
+    """
+    fixed = {f.id: f.fixed_categories for f in catalog.facts if f.fixed_categories}
+    if not fixed:
+        return selected, {}
+    observed = (
+        selected.filter(pl.col("fact_table").is_in(list(fixed)))
+        .select("fact_table", "classification_key", "classifications")
+        .unique(["fact_table", "classification_key"])
+        .explode("classifications", empty_as_null=False)
+        .with_columns(
+            pl.col("classifications").struct.field("dimension").alias("dimension"),
+            pl.col("classifications").struct.field("category_id").alias("category_id"),
+        )
+        .group_by("fact_table", "dimension")
+        .agg(pl.col("category_id").unique().sort())
+    )
+    seen = {
+        (r["fact_table"], r["dimension"]): [str(c) for c in r["category_id"] if c is not None]
+        for r in observed.iter_rows(named=True)
+    }
+    problems: dict[str, dict[str, list[str]]] = {}
+    for fact_id, dims in fixed.items():
+        if not selected.filter(pl.col("fact_table") == fact_id).height:
+            continue
+        for dim, category in dims.items():
+            cats = seen.get((fact_id, dim), [])
+            if cats != [category]:
+                problems.setdefault(fact_id, {})[dim] = cats
+    stripped = pl.col("classifications")
+    for fact_id, dims in fixed.items():
+        names = list(dims)
+        stripped = (
+            pl.when(pl.col("fact_table") == fact_id)
+            .then(
+                pl.col("classifications").list.eval(
+                    pl.element().filter(~pl.element().struct.field("dimension").is_in(names))
+                )
+            )
+            .otherwise(stripped)
+        )
+    return selected.with_columns(stripped.alias("classifications")), problems
+
+
 def uf_abbreviations(silver: pl.DataFrame) -> dict[str, str]:
     """Sigla de cada UF, extraída dos nomes municipais publicados ("Nome - UF")."""
     rows = (

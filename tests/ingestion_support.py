@@ -6,12 +6,19 @@ import re
 import zipfile
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field, replace
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Literal
 
 import httpx
 
-from odb_ingestion import ArtifactRecord, DuplicateContentError, SourceCatalog, StoredArtifact
+from odb_ingestion import (
+    ArtifactRecord,
+    Checkpoint,
+    DuplicateContentError,
+    SourceCatalog,
+    StoredArtifact,
+)
 from odb_ingestion.contract import PartitionState, Watermark
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -236,6 +243,33 @@ class InMemoryRegistry:
             )
             raise DuplicateContentError("simulado")
         self.artifacts.append(record)
+
+    def find_checkpoint(
+        self, dataset_id: str, partition_key: str, source_url: str, since: datetime
+    ) -> Checkpoint | None:
+        by_id = {a.artifact_id: a for a in self.artifacts}
+        for a in reversed(self.artifacts):
+            if (
+                a.dataset_id == dataset_id
+                and a.partition_key == partition_key
+                and a.source_url == source_url
+                and a.status in ("stored", "reused")
+                and a.retrieved_at >= since
+            ):
+                src = by_id[a.reused_from] if a.reused_from else a
+                assert src.storage_uri is not None
+                assert src.checksum_sha256 is not None
+                return Checkpoint(
+                    artifact_id=src.artifact_id,
+                    storage_uri=src.storage_uri,
+                    checksum_sha256=src.checksum_sha256,
+                    retrieved_at=a.retrieved_at,
+                    http_status=a.http_status,
+                    content_type=a.content_type,
+                    file_size_bytes=a.file_size_bytes,
+                    response_headers=dict(a.response_headers),
+                )
+        return None
 
     def get_watermark(self, dataset_id: str) -> Watermark:
         return Watermark(partitions=dict(self.watermarks.get(dataset_id, {})))

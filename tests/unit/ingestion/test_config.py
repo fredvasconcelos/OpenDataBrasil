@@ -10,7 +10,8 @@ REPO_SOURCES = Path(__file__).parents[3] / "configs" / "sources"
 
 def test_repository_sources_are_valid() -> None:
     catalog = load_sources(REPO_SOURCES)
-    assert set(catalog.datasets) == {
+    curated = {d for d in catalog.datasets if d in _curated_ids()}
+    assert curated == {
         "ibge-sidra-6579",
         "ibge-sidra-4714",
         "ibge-sidra-9605",
@@ -26,7 +27,12 @@ def test_repository_sources_are_valid() -> None:
         "ibge-dtb",
         "ibge-malha-uf-2022",
         "ibge-malha-municipios-2022",
+        "ibge-sidra-6715",
     }
+    # O fragmento gerado do panorama só acrescenta datasets SIDRA.
+    generated = set(catalog.datasets) - curated
+    assert generated
+    assert all(d.startswith("ibge-sidra-") for d in generated)
     assert catalog.source_institution["ibge-sidra"] == "ibge"
     assert catalog.licenses["ibge-reuso-com-citacao"].review_status == "requires_review"
     assert set(build_connectors(catalog)) == {"ibge-sidra", "ibge-geoftp"}
@@ -35,6 +41,13 @@ def test_repository_sources_are_valid() -> None:
         "ibge-malha-uf-2022",
         "ibge-malha-municipios-2022",
     ]
+
+
+def _curated_ids() -> set[str]:
+    import tomllib  # noqa: PLC0415
+
+    data = tomllib.loads((REPO_SOURCES / "ibge.toml").read_text(encoding="utf-8"))
+    return {d["id"] for d in data["datasets"]}
 
 
 def test_config_checksum_is_stable_and_sensitive() -> None:
@@ -105,6 +118,27 @@ def test_duplicates_across_files_and_unknowns(tmp_path: Path) -> None:
         load_sources(tmp_path)
     with pytest.raises(ConfigError, match="nenhum arquivo"):
         load_sources(tmp_path / "vazio")
+
+
+def test_fragment_adds_datasets_only(tmp_path: Path) -> None:
+    _write(tmp_path, "a.toml", BASE)
+    _write(
+        tmp_path, "b.toml", 'config_version = "1"\n' + DATASET.format(source="src", license="lic")
+    )
+    catalog = load_sources(tmp_path)
+    assert set(catalog.datasets) == {"ds"}
+    assert catalog.source_institution == {"src": "inst"}
+    _write(tmp_path, "b.toml", 'config_version = "1"\n' + DATASET.format(source="x", license="lic"))
+    with pytest.raises(ConfigError, match="fonte desconhecida"):
+        load_sources(tmp_path)
+    _write(
+        tmp_path,
+        "b.toml",
+        'config_version = "1"\n[[sources]]\nid = "s2"\nname = "s"\n'
+        'connector = "http_file"\nbase_url = "https://y/"\n',
+    )
+    with pytest.raises(ConfigError, match="fragmento"):
+        load_sources(tmp_path)
 
 
 def test_unknown_connector_and_bad_params(tmp_path: Path) -> None:

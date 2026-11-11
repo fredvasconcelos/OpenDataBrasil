@@ -43,8 +43,8 @@ test("pesquisa, painel, recorte por duplo clique, tooltip, seleção, limpeza e 
   expect(await fill("uf:29")).not.toBe(await fill("regiao:3"));
   await expect(page.getByText("Fora do recorte")).toBeVisible();
   // Legenda com título e grupos redondos: "Até …" na primeira ponta, "Mais de …" na última.
-  const legend = map.locator("xpath=..").getByRole("group", { name: /Legenda: População/ });
-  await expect(legend.getByText("População", { exact: true })).toBeVisible();
+  const legend = map.locator("xpath=..").getByRole("group", { name: /Legenda: Pessoas/ });
+  await expect(legend.getByText("Pessoas", { exact: true })).toBeVisible();
   await expect(legend.locator("li").first()).toHaveText(/^Até /);
   await expect(legend.locator("li").nth(-2)).toHaveText(/^Mais de /);
   const trail = page.getByRole("navigation", { name: "Recorte do mapa" });
@@ -202,4 +202,47 @@ test("sobre os dados mostra release e licença", async ({ page }) => {
   await page.goto("/sobre");
   await expect(page.getByRole("heading", { name: "Release ativo" })).toBeVisible();
   await expect(page.getByText(/requires_review/).first()).toBeVisible();
+});
+
+test("panorama: 20 temas recolhidos, KPIs em preparação e tooltip da série", async ({ page }) => {
+  await page.goto("/dashboard?kpi=populacao_estimada");
+  const menu = page.getByRole("navigation", { name: "Temas e indicadores" });
+  const themes = menu.locator(":scope > details");
+  await expect(themes).toHaveCount(20);
+  // Só o tema do indicador atual fica aberto.
+  await expect(menu.locator(":scope > details[open]")).toHaveCount(1);
+  // Preços: só séries mensais, ainda em preparação (a Gold aceita só anos).
+  const prices = themes.filter({ has: page.locator("summary", { hasText: "Preços" }) });
+  await expect(prices.locator(":scope > summary")).toContainText("em preparação");
+  await prices.locator(":scope > summary").click();
+  await prices.locator("summary", { hasText: "Inflação ao consumidor" }).click();
+  const planned = prices.locator("li.planned").first();
+  await expect(planned).toBeVisible();
+  await expect(planned).toHaveAttribute("title", /tabela SIDRA 1737/);
+  await expect(planned.locator("button")).toHaveCount(0);
+  // Tooltip da evolução temporal: valor do ponto ao passar o mouse.
+  const point = page.getByTestId("series-point").last();
+  await point.hover();
+  await expect(page.locator(".chart-tip")).toBeVisible();
+  await expect(page.locator(".chart-tip")).toContainText(/\d{3}\.\d{3}/);
+});
+
+test("KPI de Total gerado do panorama: mapa por UF, fonte e notas oficiais", async ({ page }) => {
+  await page.goto("/dashboard?kpi=nascidos_vivos&nivel=uf");
+  await expect(page.getByRole("heading", { level: 1, name: "Nascidos vivos" })).toBeVisible();
+  const map = page.getByRole("img", { name: /Nascidos vivos/ });
+  await expect(map.locator("path.territory")).toHaveCount(27);
+  // Rodapé: tabela de origem e as limitações vindas das notas da tabela.
+  await expect(page.getByText(/tabela SIDRA 2609/).first()).toBeAttached();
+  await expect(page.getByText(/Fonte: IBGE/).first()).toBeAttached();
+});
+
+test("POF 6715 completa: classes de rendimento e despesas de consumo", async ({ page }) => {
+  await page.goto("/dashboard?kpi=despesa_familiar&nivel=uf&dim=c339,c12190");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Despesa média mensal familiar" }),
+  ).toBeVisible();
+  await expect(page.getByText("Classes de rendimento").first()).toBeVisible();
+  await expect(page.getByText("Despesas de consumo").first()).toBeVisible();
+  await expect(page.getByText("2.1.1 Alimentação").first()).toBeAttached();
 });

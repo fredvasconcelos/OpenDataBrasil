@@ -130,6 +130,7 @@ services:
       ODB_DUCKDB_TEMP_DIRECTORY: /lakehouse/tmp/duckdb
       ODB_API_CORS_ORIGINS: ${ODB_API_CORS_ORIGINS:-["http://localhost:3000"]}
       ODB_API_PORTAL_CONFIG_DIR: /app/configs/portal
+      ODB_API_PANORAMA_PATH: /app/configs/catalog/panorama.toml
     volumes:
       - lake_gold:/lakehouse/gold:ro
     tmpfs:

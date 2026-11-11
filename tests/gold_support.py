@@ -1,5 +1,6 @@
 """Registro Gold em memória e ambiente completo Bronze → Silver → Gold para testes."""
 
+import shutil
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -10,11 +11,22 @@ from odb_lakehouse import DeltaWriter, InProcessLock
 from odb_modeling.builder import GoldBuild, GoldBuilder, PreviousGoldBuild
 from odb_processing.quality import CheckResult
 from odb_processing.silver import PreviousRun, SilverBuilder
-from odb_semantics import SemanticCatalog, load_scope
+from odb_semantics import SemanticCatalog, load_catalog
 from tests.ingestion_support import TEST_SOURCES, FakeSources, InMemoryRegistry
 from tests.silver_support import InMemorySilverRegistry
 
 REPO_INDICATORS = Path(__file__).resolve().parents[1] / "configs" / "indicators"
+SOURCE_FRAGMENTS = Path(__file__).resolve().parent / "fixtures" / "sources_fragments"
+
+
+def curated_indicators(tmp_path: Path) -> Path:
+    """Diretório só com o catálogo curado (sem os fragmentos, que não têm fixtures)."""
+    target = tmp_path / "indicators-curated"
+    target.mkdir(exist_ok=True)
+    shutil.copy(REPO_INDICATORS / "demografia.toml", target)
+    return target
+
+
 SIDRA_DATASETS = [
     "ibge-sidra-6579",
     "ibge-sidra-4714",
@@ -61,8 +73,13 @@ class InMemoryGoldRegistry:
 class GoldEnv:
     """Fontes simuladas (fixtures reais) → Bronze → Silver → Gold em diretório temporário."""
 
-    def __init__(self, tmp_path: Path, catalog: SemanticCatalog | None = None) -> None:
-        self.sources = load_sources(TEST_SOURCES)
+    def __init__(
+        self,
+        tmp_path: Path,
+        catalog: SemanticCatalog | None = None,
+        sources_dir: Path = TEST_SOURCES,
+    ) -> None:
+        self.sources = load_sources(sources_dir)
         self.layout = LakehouseLayout((tmp_path / "lake").as_uri())
         self.fake = FakeSources()
         self.ingestion = InMemoryRegistry()
@@ -84,7 +101,9 @@ class GoldEnv:
         self.silver = SilverBuilder(
             self.sources, self.layout, self.writer, self.silver_registry, code_version="test"
         )
-        self.catalog = catalog or load_scope(REPO_INDICATORS, "demografia")
+        # Só o catálogo curado: as fixtures cobrem as tabelas dele. Os fragmentos
+        # (KPIs gerados do panorama, POF) são conferidos por testes próprios.
+        self.catalog = catalog or load_catalog(REPO_INDICATORS / "demografia.toml")
         self.registry = InMemoryGoldRegistry(self.silver_registry)
         self.gold = GoldBuilder(
             self.sources, self.catalog, self.layout, self.writer, self.registry, code_version="test"

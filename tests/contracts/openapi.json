@@ -2267,6 +2267,25 @@
         "title": "ExportIn",
         "description": "Exportação de um KPI."
       },
+      "FilterOut": {
+        "properties": {
+          "filter_id": {
+            "type": "string",
+            "title": "Filter Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "filter_id",
+          "label"
+        ],
+        "title": "FilterOut",
+        "description": "Filtro previsto para um tema do panorama (ex.: sexo, produto)."
+      },
       "GeographyOut": {
         "properties": {
           "geography_key": {
@@ -2807,6 +2826,58 @@
         "title": "NavigationOut",
         "description": "Navegação do portal no release ativo."
       },
+      "PlannedKpiOut": {
+        "properties": {
+          "kpi_id": {
+            "type": "string",
+            "title": "Kpi Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "source_table_id": {
+            "type": "string",
+            "title": "Source Table Id",
+            "description": "Código da tabela no SIDRA."
+          },
+          "survey": {
+            "type": "string",
+            "title": "Survey",
+            "description": "Pesquisa de origem (inferida do acervo)."
+          },
+          "filters": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Filters",
+            "description": "Filtros previstos (filter_id)."
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kpi_id",
+          "label",
+          "source_table_id",
+          "survey",
+          "filters",
+          "note"
+        ],
+        "title": "PlannedKpiOut",
+        "description": "KPI do panorama ainda sem dados publicados (\"em preparação\")."
+      },
       "PointOut": {
         "properties": {
           "period": {
@@ -3249,13 +3320,22 @@
             },
             "type": "array",
             "title": "Kpis"
+          },
+          "planned": {
+            "items": {
+              "$ref": "#/components/schemas/PlannedKpiOut"
+            },
+            "type": "array",
+            "title": "Planned",
+            "description": "KPIs do panorama em preparação."
           }
         },
         "type": "object",
         "required": [
           "subtheme_id",
           "label",
-          "kpis"
+          "kpis",
+          "planned"
         ],
         "title": "SubthemeOut",
         "description": "Subtema da navegação."
@@ -3397,6 +3477,14 @@
             "type": "string",
             "title": "Label"
           },
+          "filters": {
+            "items": {
+              "$ref": "#/components/schemas/FilterOut"
+            },
+            "type": "array",
+            "title": "Filters",
+            "description": "Filtros previstos para o tema."
+          },
           "subthemes": {
             "items": {
               "$ref": "#/components/schemas/SubthemeOut"
@@ -3409,6 +3497,7 @@
         "required": [
           "theme_id",
           "label",
+          "filters",
           "subthemes"
         ],
         "title": "ThemeOut",

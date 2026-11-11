@@ -1,5 +1,9 @@
 # Escopo de detalhamento do MVP e plano de expansão
 
+> **Expansão para todo o acervo SIDRA (2026-11-10):** os temas, os subtemas e os KPIs
+> do panorama nacional estão em [`panorama-tier1.md`](panorama-tier1.md) (ADR-0010).
+> Este documento trata do detalhamento dos KPIs de demografia já publicados.
+
 **Decisão do mantenedor (2026-11-05):** no MVP, as populações especiais
 (indígenas e quilombolas) e a população geral são apresentadas no portal com
 **Total e sexo**. **Grupos de idade, idades simples e meses de vida ficam

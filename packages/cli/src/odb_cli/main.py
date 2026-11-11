@@ -14,6 +14,7 @@ from odb_catalog.migrate import current_revision, head_revision, upgrade
 from odb_cli.doctor import Status, run_checks
 from odb_cli.gold import gold_app, indicators_app, quality_gold, query_command, release_app
 from odb_cli.ingest import ingest_app, sources_app
+from odb_cli.panorama import panorama_app
 from odb_cli.silver import quality_app, silver_app
 from odb_cli.smoke import run_lakehouse_smoke
 from odb_common.logging import configure_logging
@@ -33,6 +34,7 @@ app.add_typer(quality_app, name="quality")
 app.add_typer(gold_app, name="gold")
 app.add_typer(release_app, name="release")
 app.add_typer(indicators_app, name="indicators")
+app.add_typer(panorama_app, name="panorama")
 app.command("query")(query_command)
 quality_app.command("gold")(quality_gold)
 

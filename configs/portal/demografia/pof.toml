@@ -1,0 +1,22 @@
+# KPI curado da POF 2017-2018 (tabela 6715 completa). O id do KPI é o do item
+# do panorama (ligação implícita, ADR-0010).
+
+config_version = "1.0.0"
+scope = "demografia"
+
+[[themes]]
+id = "consumo_familias"
+label = "Consumo e orçamentos familiares"
+
+[[themes.subthemes]]
+id = "despesas_rendimentos"
+label = "Despesas e rendimentos das famílias"
+
+[[themes.subthemes.kpis]]
+id = "despesa_familiar"
+label = "Despesa média mensal familiar"
+indicator = "despesa_familiar"
+dimensions = [
+    { classification = "c339", partition = "classes_rendimento", label = "Classes de rendimento" },
+    { classification = "c12190", partition = "d2_1_despesas_de_consumo", label = "Despesas de consumo" },
+]

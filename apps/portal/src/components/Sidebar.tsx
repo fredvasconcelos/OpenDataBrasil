@@ -22,6 +22,8 @@ interface Props {
 
 // Barra lateral (Design System ODBr): no topo, o bloco "Filtros" (nível territorial,
 // período e "Detalhar por"); abaixo, "Temas e indicadores" (temas > subtemas > KPIs).
+// A taxonomia vem do panorama (ADR-0010): KPIs ainda sem dados aparecem desativados,
+// marcados "em preparação", com a tabela SIDRA de origem no title.
 // Todos os filtros do portal ficam aqui; a área central só tem conteúdo e exportações.
 export function Sidebar({
   nav,
@@ -90,25 +92,45 @@ export function Sidebar({
       ) : null}
       <nav className="themes" aria-label={t("dashboard.menu")}>
         <h2>{t("dashboard.menu")}</h2>
-        {nav.themes.map((theme) => (
-          <details key={theme.theme_id} open>
-            <summary>{theme.label}</summary>
-            {theme.subthemes.map((sub) => (
-              <details key={sub.subtheme_id} open={sub.kpis.some((k) => k.kpi_id === kpi?.kpi_id)}>
-                <summary style={{ fontWeight: 700 }}>{sub.label}</summary>
-                <ul>
-                  {sub.kpis.map((k) => (
-                    <li key={k.kpi_id}>
-                      <button type="button" aria-pressed={k.kpi_id === kpi?.kpi_id} onClick={() => onKpi(k.kpi_id)}>
-                        {k.label}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            ))}
-          </details>
-        ))}
+        {nav.themes.map((theme) => {
+          const current = theme.subthemes.some((s) => s.kpis.some((k) => k.kpi_id === kpi?.kpi_id));
+          const live = theme.subthemes.some((s) => s.kpis.length > 0);
+          return (
+            // Recolhidos por padrão: só o tema do indicador atual abre (20 temas no panorama).
+            <details key={theme.theme_id} open={current}>
+              <summary className={live ? undefined : "theme-planned"}>
+                <span>
+                  {theme.label}
+                  {live ? null : <span className="planned-badge">{t("dashboard.planned")}</span>}
+                </span>
+              </summary>
+              {theme.subthemes.map((sub) => (
+                <details key={sub.subtheme_id} open={sub.kpis.some((k) => k.kpi_id === kpi?.kpi_id)}>
+                  <summary style={{ fontWeight: 700 }}>{sub.label}</summary>
+                  <ul>
+                    {sub.kpis.map((k) => (
+                      <li key={k.kpi_id}>
+                        <button type="button" aria-pressed={k.kpi_id === kpi?.kpi_id} onClick={() => onKpi(k.kpi_id)}>
+                          {k.label}
+                        </button>
+                      </li>
+                    ))}
+                    {sub.planned.map((p) => (
+                      <li
+                        key={p.kpi_id}
+                        className="planned"
+                        title={t("dashboard.plannedSource", { table: p.source_table_id, survey: p.survey })}
+                      >
+                        {p.label}
+                        <span className="planned-badge">{t("dashboard.planned")}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              ))}
+            </details>
+          );
+        })}
       </nav>
     </aside>
   );
