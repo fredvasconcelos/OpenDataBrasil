@@ -15,3 +15,6 @@ Dockerfile text eol=lf
 
 # Respostas reais de fontes: preservar os bytes exatos (sem normalizar finais de linha).
 tests/fixtures/** -text
+# Artefatos oficiais com SHA-256 registrado (snapshot do acervo, descritores SIDRA).
+configs/catalog/sidra_acervo_*.csv -text
+configs/catalog/descritores/** -text
