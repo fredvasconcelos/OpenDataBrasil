@@ -134,7 +134,7 @@ kpis = [
 id = "natalidade_mortalidade"
 label = "Fecundidade, mortalidade e esperança de vida"
 kpis = [
-  { id = "esperanca_vida", label = "Esperança de vida ao nascer e mortalidade infantil", tabela = "7362", pesquisa = "Projeção da População", filtros = ["sexo"] },
+  { id = "esperanca_vida", label = "Esperança de vida ao nascer (projeção para 2026)", tabela = "7362", pesquisa = "Projeção da População", filtros = ["sexo"], referencia = { c1933 = "49042" } },
   { id = "fecundidade_total", label = "Taxa de fecundidade total", tabela = "3727", pesquisa = "Indicadores de Desenvolvimento Sustentável" },
 ]
 
@@ -249,7 +249,7 @@ id = "escolarizacao"
 label = "Frequência escolar"
 kpis = [
   { id = "taxa_escolarizacao", label = "Taxa de escolarização", tabela = "7138", pesquisa = "PNAD Contínua anual", filtros = ["sexo", "idade"] },
-  { id = "frequencia_liquida", label = "Taxa ajustada de frequência escolar líquida", tabela = "7141", pesquisa = "PNAD Contínua anual", filtros = ["sexo"] },
+  { id = "frequencia_liquida", label = "Frequência escolar líquida no ensino fundamental", tabela = "7141", pesquisa = "PNAD Contínua anual", filtros = ["sexo"], referencia = { c871 = "47815" } },
 ]
 
 [[temas.subtemas]]
@@ -460,7 +460,7 @@ kpis = [
 id = "pecuaria"
 label = "Pecuária e produção animal"
 kpis = [
-  { id = "efetivo_rebanhos", label = "Efetivo dos rebanhos", tabela = "3939", pesquisa = "Pesquisa da Pecuária Municipal", filtros = ["especie"] },
+  { id = "efetivo_rebanhos", label = "Efetivo de bovinos", tabela = "3939", pesquisa = "Pesquisa da Pecuária Municipal", filtros = ["especie"], referencia = { c79 = "2670" } },
   { id = "producao_origem_animal", label = "Produção de origem animal", tabela = "74", pesquisa = "Pesquisa da Pecuária Municipal", filtros = ["produto"] },
   { id = "abate_bovinos", label = "Abate de bovinos", tabela = "1092", pesquisa = "Pesquisa Trimestral do Abate de Animais", variavel = "284" },
   { id = "leite_adquirido", label = "Leite adquirido e industrializado", tabela = "1086", pesquisa = "Pesquisa Trimestral do Leite", variavel = "282" },
@@ -502,7 +502,7 @@ filtros = ["atividade", "porte"]
 id = "producao_industrial"
 label = "Produção industrial"
 kpis = [
-  { id = "producao_fisica", label = "Produção física industrial", tabela = "8888", pesquisa = "Pesquisa Industrial Mensal - Produção Física", filtros = ["atividade"] },
+  { id = "producao_fisica", label = "Produção física industrial", tabela = "8888", pesquisa = "Pesquisa Industrial Mensal - Produção Física", filtros = ["atividade"], referencia = { c544 = "129314" } },
 ]
 
 [[temas.subtemas]]
@@ -525,7 +525,7 @@ id = "atividade_construcao"
 label = "Atividade da construção"
 kpis = [
   { id = "empresas_construcao", label = "Empresas de construção: pessoal, salários e valor das obras", tabela = "10442", pesquisa = "Pesquisa Anual da Indústria da Construção" },
-  { id = "vendas_materiais", label = "Vendas de materiais de construção", tabela = "8757", pesquisa = "Pesquisa Mensal de Comércio" },
+  { id = "vendas_materiais", label = "Volume de vendas de materiais de construção", tabela = "8757", pesquisa = "Pesquisa Mensal de Comércio", referencia = { c11046 = "56732" } },
 ]
 
 [[temas.subtemas]]
@@ -546,8 +546,8 @@ filtros = ["atividade", "porte"]
 id = "varejo"
 label = "Comércio varejista"
 kpis = [
-  { id = "vendas_varejo", label = "Volume e receita de vendas no varejo", tabela = "8880", pesquisa = "Pesquisa Mensal de Comércio" },
-  { id = "vendas_varejo_ampliado", label = "Volume e receita de vendas no varejo ampliado", tabela = "8881", pesquisa = "Pesquisa Mensal de Comércio" },
+  { id = "vendas_varejo", label = "Volume de vendas no varejo", tabela = "8880", pesquisa = "Pesquisa Mensal de Comércio", referencia = { c11046 = "56734" } },
+  { id = "vendas_varejo_ampliado", label = "Volume de vendas no varejo ampliado", tabela = "8881", pesquisa = "Pesquisa Mensal de Comércio", referencia = { c11046 = "56736" } },
 ]
 
 [[temas.subtemas]]
@@ -574,7 +574,7 @@ filtros = ["atividade", "porte"]
 id = "servicos_empresariais"
 label = "Serviços"
 kpis = [
-  { id = "volume_servicos", label = "Volume e receita de serviços", tabela = "5906", pesquisa = "Pesquisa Mensal de Serviços" },
+  { id = "volume_servicos", label = "Volume de serviços", tabela = "5906", pesquisa = "Pesquisa Mensal de Serviços", referencia = { c11046 = "56726" } },
   { id = "servicos_nao_financeiros", label = "Resultados dos serviços empresariais não financeiros", tabela = "2581", pesquisa = "Pesquisa Anual de Serviços", filtros = ["atividade"] },
 ]
 
@@ -582,7 +582,7 @@ kpis = [
 id = "turismo_transportes"
 label = "Turismo e transportes"
 kpis = [
-  { id = "atividades_turisticas", label = "Volume e receita das atividades turísticas", tabela = "8694", pesquisa = "Pesquisa Mensal de Serviços" },
+  { id = "atividades_turisticas", label = "Volume das atividades turísticas", tabela = "8694", pesquisa = "Pesquisa Mensal de Serviços", referencia = { c11046 = "56728" } },
   { id = "transporte_passageiros_cargas", label = "Volume e receita do transporte de passageiros e cargas", tabela = "8695", pesquisa = "Pesquisa Mensal de Serviços" },
   { id = "viagens", label = "Viagens realizadas pelos moradores", tabela = "7204", pesquisa = "PNAD Contínua" },
 ]
@@ -649,8 +649,8 @@ id = "pib_brasil"
 label = "PIB do Brasil"
 kpis = [
   { id = "pib_per_capita", label = "PIB e PIB per capita", tabela = "6784", pesquisa = "Contas Nacionais Anuais" },
-  { id = "pib_trimestral", label = "PIB trimestral a preços correntes", tabela = "1846", pesquisa = "Contas Nacionais Trimestrais" },
-  { id = "variacao_pib_trimestral", label = "Taxa de variação do PIB trimestral", tabela = "5932", pesquisa = "Contas Nacionais Trimestrais" },
+  { id = "pib_trimestral", label = "PIB trimestral a preços correntes", tabela = "1846", pesquisa = "Contas Nacionais Trimestrais", referencia = { c11255 = "90707" } },
+  { id = "variacao_pib_trimestral", label = "Taxa de variação do PIB trimestral", tabela = "5932", pesquisa = "Contas Nacionais Trimestrais", referencia = { c11255 = "90707" } },
 ]
 
 [[temas.subtemas]]

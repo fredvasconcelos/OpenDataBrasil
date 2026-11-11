@@ -1,4 +1,5 @@
 // Formatação de números e unidades em pt-BR. Valor ausente nunca vira zero.
+import { formatPeriod as formatParsedPeriod, parsePeriod } from "@/lib/period";
 
 const integer = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
 const decimal = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
@@ -48,4 +49,14 @@ export function unitSuffix(unit: string): string {
   if (unit === "Quilômetros quadrados") return "km²";
   if (unit === "Habitante por quilômetro quadrado") return "hab/km²";
   return unit.toLowerCase();
+}
+
+/**
+ * Período da Gold para exibição, no mesmo formato do eixo e do tooltip da série
+ * (lib/period): "2022", "2026M09" → "set 2026", "2026T2" → "2º tri 2026".
+ * Código não reconhecido volta como veio.
+ */
+export function formatPeriod(period: string): string {
+  const parsed = parsePeriod(period);
+  return parsed ? formatParsedPeriod(parsed) : period;
 }

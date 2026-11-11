@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ODBr — Busca na barra lateral</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#1351B4}a:hover{color:#071D41}
+.kpi-btn{display:block;width:100%;padding:8px 10px;border:none;border-radius:8px;background:transparent;font:inherit;text-align:left;cursor:pointer;color:#071D41;transition:background-color .12s ease-out}
+.kpi-btn:hover{background:#F0F4FA}
+.busca-in:focus-visible{outline:3px solid #1351B4;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 1280px; height: 820px; overflow: hidden; background: #F4F6F9; font-family: Nunito, system-ui, sans-serif; color: #071D41; display: flex; flex-direction: column">
+<div style="height: 4px; display: flex; flex: none"><div style="flex: 2; background: #1351B4"></div><div style="flex: 1; background: #F2B600"></div><div style="flex: 1; background: #168821"></div></div>
+<header style="flex: none; height: 60px; background: #FFFFFF; border-bottom: 1px solid #DDE3EC; padding: 0 24px; display: flex; align-items: center; gap: 10px">
+<span style="font-size: 28px; font-weight: 900; letter-spacing: -1.4px; display: flex"><span style="color: #1351B4">O</span><span style="color: #F2B600">D</span><span style="color: #168821">Br</span></span>
+<span style="width: 2px; height: 22px; background: #DDE3EC"></span>
+<span style="font-size: 15px; font-weight: 800">Open Data Brasil</span>
+</header>
+<div style="flex: 1; min-height: 0; display: grid; grid-template-columns: 330px minmax(0, 1fr)">
+
+<aside style="background: #FFFFFF; border-right: 1px solid #DDE3EC; padding: 18px 16px; display: flex; flex-direction: column; gap: 14px; min-height: 0">
+<button type="button" aria-expanded="false" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; border: 1px solid #DDE3EC; border-radius: 12px; background: #FFFFFF; font-family: inherit; text-align: left; cursor: pointer">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #555F6E">Filtros</span><span style="font-size: 13px; font-weight: 700; color: #333E4F">Estado (UF) · 2026 · Cor ou raça</span></span>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555F6E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+
+<section aria-label="Temas e indicadores" style="flex: 1; min-height: 0; border: 1px solid #DDE3EC; border-radius: 14px; padding: 14px 12px; display: flex; flex-direction: column; gap: 10px">
+<div style="font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #555F6E; padding: 0 4px">Temas e indicadores</div>
+<div role="search" style="position: relative">
+<label for="busca-a" class="sr" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Buscar tema ou indicador</label>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555F6E" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 12px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input id="busca-a" class="busca-in" type="search" value="{{q}}" onChange="{{onQ}}" placeholder="Buscar tema ou indicador…" style="width: 100%; box-sizing: border-box; height: 40px; padding: 0 44px 0 36px; border: 1px solid #1351B4; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700; color: #071D41">
+<kbd style="position: absolute; right: 8px; top: 9px; padding: 1px 7px; border: 1px solid #C5D0DE; border-radius: 6px; background: #F4F6F9; font-family: inherit; font-size: 12px; font-weight: 800; color: #555F6E">/</kbd>
+</div>
+<div aria-live="polite" style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: #555F6E; padding: 0 4px">
+<span>{{resumo}}</span>
+<sc-if value="{{temQ}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{limpar}}" style="border: none; background: none; padding: 2px 4px; font-family: inherit; font-size: 12px; font-weight: 800; color: #1351B4; cursor: pointer">Limpar</button></sc-if>
+</div>
+<div style="flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{temas}}" as="tm" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 0 6px; font-size: 14px; font-weight: 900"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg><span><sc-for list="{{tm.partes}}" as="p"><sc-if value="{{p.hit}}" hint-placeholder-val="{{ false }}"><mark style="background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px">{{p.t}}</mark></sc-if><sc-if value="{{p.no}}" hint-placeholder-val="{{ true }}">{{p.t}}</sc-if></sc-for></span></div>
+<sc-for list="{{tm.subs}}" as="sb" hint-placeholder-count="1">
+<div style="padding-left: 20px; display: flex; flex-direction: column; gap: 1px">
+<div style="font-size: 13px; font-weight: 800; color: #555F6E; padding: 2px 6px">{{sb.label}}</div>
+<sc-for list="{{sb.kpis}}" as="k" hint-placeholder-count="2">
+<button type="button" class="kpi-btn" style="background: {{k.bg}}; box-shadow: {{k.sh}}">
+<span style="display: block; font-size: 14px; font-weight: {{k.peso}}"><sc-for list="{{k.partes}}" as="p"><sc-if value="{{p.hit}}" hint-placeholder-val="{{ false }}"><mark style="background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px">{{p.t}}</mark></sc-if><sc-if value="{{p.no}}" hint-placeholder-val="{{ true }}">{{p.t}}</sc-if></sc-for></span>
+<sc-if value="{{k.temTrecho}}" hint-placeholder-val="{{ false }}"><span style="display: block; margin-top: 2px; font-size: 12px; font-weight: 600; color: #555F6E; line-height: 1.35">{{k.onde}}: …<sc-for list="{{k.trecho}}" as="p"><sc-if value="{{p.hit}}" hint-placeholder-val="{{ false }}"><mark style="background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px">{{p.t}}</mark></sc-if><sc-if value="{{p.no}}" hint-placeholder-val="{{ true }}">{{p.t}}</sc-if></sc-for>…</span></sc-if>
+</button>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</sc-for>
+<sc-if value="{{vazio}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 16px 8px; text-align: center; display: flex; flex-direction: column; gap: 6px; align-items: center">
+<div style="font-size: 14px; font-weight: 800">Nenhum indicador para “{{q}}”</div>
+<div style="font-size: 12px; font-weight: 600; color: #555F6E">A busca ignora acentos e maiúsculas. Tente outra palavra, a tabela SIDRA ou a unidade.</div>
+</div>
+</sc-if>
+</div>
+</section>
+</aside>
+
+<main style="padding: 24px 32px; display: flex; flex-direction: column; gap: 16px; opacity: 0.45" aria-hidden="true">
+<div style="height: 18px; width: 260px; border-radius: 9px; background: #DDE3EC"></div>
+<div style="height: 34px; width: 380px; border-radius: 10px; background: #C5D0DE"></div>
+<div style="flex: 1; border-radius: 16px; background: #FFFFFF; border: 1px solid #DDE3EC"></div>
+<div style="height: 220px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px"><div style="border-radius: 16px; background: #FFFFFF; border: 1px solid #DDE3EC"></div><div style="border-radius: 16px; background: #FFFFFF; border: 1px solid #DDE3EC"></div></div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":820}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { q: 'pop' };
+}
+renderVals() {
+const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const q = this.state.q;
+const nq = norm(q.trim());
+const split = (text) => {
+if (!nq) return [{ t: text, hit: false, no: true }];
+const n = norm(text);
+const out = [];
+let i = 0;
+let at = n.indexOf(nq);
+while (at >= 0) {
+if (at > i) out.push({ t: text.slice(i, at), hit: false, no: true });
+out.push({ t: text.slice(at, at + nq.length), hit: true, no: false });
+i = at + nq.length;
+at = n.indexOf(nq, i);
+}
+if (i < text.length) out.push({ t: text.slice(i), hit: false, no: true });
+return out;
+};
+const snippet = (text) => {
+const n = norm(text);
+const at = n.indexOf(nq);
+const start = Math.max(0, at - 28);
+return split(text.slice(start, Math.min(text.length, at + nq.length + 40)));
+};
+const arvore = [
+{ tema: 'Demografia', subs: [{ label: 'População', kpis: [
+{ label: 'População residente (Censo)', desc: 'Pessoas residentes no Censo Demográfico, por cor ou raça e sexo.', fonte: 'IBGE · Tabela SIDRA 9606', ativo: false },
+{ label: 'População estimada', desc: 'Estimativa anual oficial da população residente, publicada pelo IBGE para o cálculo de cotas do Fundo de Participação dos Estados e Municípios.', fonte: 'IBGE · Tabela SIDRA 6579', ativo: true }
+] }] },
+{ tema: 'Território', subs: [{ label: 'Área e densidade', kpis: [
+{ label: 'Densidade demográfica', desc: 'Habitantes por quilômetro quadrado (hab/km²), a partir da população e da área territorial.', fonte: 'IBGE', ativo: false },
+{ label: 'Área territorial', desc: 'Área do território em quilômetros quadrados (km²).', fonte: 'IBGE', ativo: false }
+] }] },
+{ tema: 'Povos indígenas', subs: [{ label: 'População indígena', kpis: [
+{ label: 'Percentual de indígenas', desc: 'Parcela da população que se declarou indígena, por terra indígena e unidade territorial.', fonte: 'IBGE · Censo Demográfico', ativo: false }
+] }] },
+{ tema: 'Quilombolas', subs: [{ label: 'População quilombola', kpis: [
+{ label: 'Pessoas quilombolas', desc: 'Pessoas quilombolas residentes, por território quilombola e município.', fonte: 'IBGE · Censo Demográfico', ativo: false }
+] }] }
+];
+let nk = 0;
+const temasSet = new Set();
+const temas = [];
+arvore.forEach((th) => {
+const temaHit = nq && norm(th.tema).includes(nq);
+const subs = [];
+th.subs.forEach((sb) => {
+const kpis = [];
+sb.kpis.forEach((k) => {
+const inLabel = nq && norm(k.label).includes(nq);
+const inDesc = nq && norm(k.desc).includes(nq);
+const inFonte = nq && norm(k.fonte).includes(nq);
+const inPath = nq && norm(sb.label).includes(nq);
+if (!nq || temaHit || inLabel || inDesc || inFonte || inPath) {
+const campo = !inLabel && inDesc ? k.desc : !inLabel && inFonte ? k.fonte : null;
+kpis.push({ partes: split(k.label), temTrecho: Boolean(campo), onde: campo === k.desc ? 'descrição' : 'fonte', trecho: campo ? snippet(campo) : [], bg: k.ativo ? '#E8F0FC' : 'transparent', sh: k.ativo ? 'inset 3px 0 0 #1351B4' : 'none', peso: k.ativo ? 800 : 600 });
+}
+});
+if (kpis.length) { subs.push({ label: sb.label, kpis: kpis }); nk += kpis.length; temasSet.add(th.tema); }
+});
+if (subs.length) temas.push({ partes: split(th.tema), subs: subs });
+});
+const temQ = Boolean(nq);
+const resumo = temQ ? (nk ? nk + (nk === 1 ? ' indicador' : ' indicadores') + ' em ' + temasSet.size + (temasSet.size === 1 ? ' tema' : ' temas') : 'Nenhum resultado') : 'Todos os temas';
+return {
+q: q, temQ: temQ, resumo: resumo, temas: temas, vazio: temQ && nk === 0,
+onQ: (e) => this.setState({ q: e.target.value }),
+limpar: () => this.setState({ q: '' })
+};
+}
+}
+</script>
+</body>
+</html>

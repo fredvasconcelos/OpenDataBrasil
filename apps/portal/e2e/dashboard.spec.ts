@@ -4,8 +4,12 @@ import { expect, test } from "@playwright/test";
 // território e período, ver gráfico e mapa, identificar a fonte e exportar.
 test("pesquisa, painel, recorte por duplo clique, tooltip, seleção, limpeza e exportação", async ({ page }) => {
   await page.goto("/");
+  // Início (DS v2.3): a busca ignora acentos; o indicador abre a prévia e dela vai ao painel.
   await page.getByLabel("Buscar indicador").fill("populacao residente");
-  await page.getByRole("link", { name: "População residente (Censo)" }).first().click();
+  await page.getByRole("button", { name: "População residente (Censo)" }).first().click();
+  const preview = page.getByRole("dialog");
+  await expect(preview).toContainText("População residente (Censo)");
+  await preview.getByRole("link", { name: "Abrir no painel" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "População residente (Censo)" })).toBeVisible();
 
   // O mapa abre nas Grandes Regiões, sem dica nativa (<title>). Abaixo de 1600 px o
@@ -77,7 +81,7 @@ test("pesquisa, painel, recorte por duplo clique, tooltip, seleção, limpeza e 
   await expect(page.getByRole("img", { name: /Evolução temporal: Bahia/ })).toBeVisible();
 
   // Período.
-  await page.getByLabel("Período").selectOption("2010");
+  await page.getByRole("combobox", { name: /^Período/ }).selectOption("2010");
   await expect(page.getByRole("heading", { name: /Dados · Estado \(UF\) · Nordeste · 2010/ })).toBeVisible();
 
   // Duplo clique na Bahia: seus 417 municípios coloridos; as outras 26 UFs em cinza.
@@ -211,19 +215,33 @@ test("panorama: 20 temas recolhidos, KPIs em preparação e tooltip da série", 
   await expect(themes).toHaveCount(20);
   // Só o tema do indicador atual fica aberto.
   await expect(menu.locator(":scope > details[open]")).toHaveCount(1);
-  // Comércio: PMC ainda em preparação (tipos de índice sem Total, parte B).
-  const trade = themes.filter({ has: page.locator("summary", { hasText: "Comércio" }) });
-  await trade.locator(":scope > summary").click();
-  await trade.locator("summary", { hasText: "Comércio varejista" }).click();
-  const planned = trade.locator("li.planned").first();
+  // Serviços: transporte de passageiros e cargas (8695) ainda em preparação, sem
+  // referência defensável para o tipo de índice (parte B adiada).
+  const services = themes.filter({ has: page.locator(":scope > summary", { hasText: /^Serviços/ }) });
+  await services.locator(":scope > summary").click();
+  await services.locator("summary", { hasText: "Turismo e transportes" }).click();
+  const planned = services.locator("li.planned").first();
   await expect(planned).toBeVisible();
-  await expect(planned).toHaveAttribute("title", /tabela SIDRA 8880/);
+  await expect(planned).toHaveAttribute("title", /tabela SIDRA 8695/);
   await expect(planned.locator("button")).toHaveCount(0);
-  // Tooltip da evolução temporal: valor do ponto ao passar o mouse.
-  const point = page.getByTestId("series-point").last();
-  await point.hover();
-  await expect(page.locator(".chart-tip")).toBeVisible();
-  await expect(page.locator(".chart-tip")).toContainText(/\d{3}\.\d{3}/);
+  // Tooltip da evolução temporal (DS v2.3): período mais próximo do ponteiro e teclado.
+  const plot = page.locator(".series-plot svg");
+  // Abaixo de 1600 px o painel empilha: o gráfico fica na área central rolável.
+  await plot.scrollIntoViewIfNeeded();
+  const box = await plot.boundingBox();
+  if (!box) throw new Error("gráfico da série sem caixa");
+  await page.mouse.move(box.x + box.width - 30, box.y + box.height / 2);
+  const tip = page.locator(".series-tip");
+  await expect(tip).toBeVisible();
+  await expect(tip).toContainText(/\d{3}\.\d{3}/);
+  // O tooltip fica inteiro dentro do quadro do gráfico.
+  const tipBox = await tip.boundingBox();
+  expect(tipBox && tipBox.x + tipBox.width <= box.x + box.width + 1).toBe(true);
+  await page.mouse.move(0, 0);
+  await expect(tip).toBeHidden();
+  await plot.focus();
+  await page.keyboard.press("Home");
+  await expect(tip).toBeVisible();
 });
 
 test("KPI de Total gerado do panorama: mapa por UF, fonte e notas oficiais", async ({ page }) => {
@@ -244,17 +262,112 @@ test("POF 6715 completa: classes de rendimento e despesas de consumo", async ({ 
   await expect(page.getByText("Classes de rendimento").first()).toBeVisible();
   await expect(page.getByText("Despesas de consumo").first()).toBeVisible();
   await expect(page.getByText("2.1.1 Alimentação").first()).toBeAttached();
+  // DS v2.3: muitas variáveis → tooltip em matriz (classes × despesas), inteiro na janela.
+  const map = page.getByRole("img", { name: /Despesa média mensal familiar/ });
+  await map.getByRole("button", { name: /^Bahia:/ }).hover();
+  const tooltip = page.getByRole("tooltip");
+  await expect(tooltip).toHaveClass(/matrix/);
+  const box = await tooltip.boundingBox();
+  const view = page.viewportSize();
+  expect(box && view).toBeTruthy();
+  if (box && view) {
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(view.width);
+    expect(box.y + box.height).toBeLessThanOrEqual(view.height);
+  }
+  await page.screenshot({ path: "test-results/painel-pof-matriz.png", fullPage: false });
+});
+
+test("cabeçalho e rodapé (DS v2.3): GitHub, rodapé marinho e faixa fina no Painel", async ({ page }) => {
+  await page.goto("/");
+  const footer = page.locator("footer.footer");
+  await expect(footer).toBeVisible();
+  await expect(footer).not.toHaveClass(/slim/);
+  await expect(footer.getByRole("link", { name: "Sobre os dados" })).toBeVisible();
+  // O endereço do repositório vem do build (NEXT_PUBLIC_REPO_URL); sem valor, não aparece.
+  const repo = page.getByRole("banner").getByRole("link", { name: "Repositório do projeto no GitHub" });
+  if (await repo.count()) {
+    await expect(repo).toHaveAttribute("href", /^https:\/\/github\.com\//);
+    await expect(repo).toHaveAttribute("target", "_blank");
+    await expect(footer.getByRole("link", { name: "Código no GitHub" })).toBeVisible();
+  }
+  await page.screenshot({ path: "test-results/inicio-rodape.png", fullPage: true });
+  await page.goto("/dashboard?kpi=populacao_residente");
+  await expect(footer).toHaveClass(/slim/);
+  const height = await footer.evaluate((el) => el.getBoundingClientRect().height);
+  expect(Math.round(height)).toBe(44);
+  // O painel desconta a faixa: a página continua sem rolagem.
+  const overflow = await page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight);
+  expect(overflow).toBeLessThanOrEqual(1);
 });
 
 test("série mensal: IPCA com períodos formatados", async ({ page }) => {
   await page.goto("/dashboard?kpi=ipca");
   await expect(page.getByRole("heading", { level: 1, name: "IPCA" })).toBeVisible();
-  // Período mais recente formatado como mês/ano (2026M09 → set/2026), não o código.
-  await expect(page.locator(".crumb")).toContainText(/[a-z]{3}\/\d{4}/);
+  // Período mais recente formatado como mês e ano (2026M09 → set 2026), não o código.
+  await expect(page.locator(".crumb")).toContainText(/[a-z]{3} \d{4}/);
   // A série do IPCA no portal começa em 1998 (decisão do mantenedor; a Silver guarda 1979+).
-  await expect(page.getByLabel("Período")).toContainText("jan/1998");
-  await expect(page.getByLabel("Período")).not.toContainText("dez/1979");
-  const point = page.getByTestId("series-point").last();
-  await point.hover();
-  await expect(page.locator(".chart-tip-period")).toHaveText(/^[a-z]{3}\/\d{4}$/);
+  await expect(page.getByRole("combobox", { name: /^Período/ })).toContainText("jan 1998");
+  await expect(page.getByRole("combobox", { name: /^Período/ })).not.toContainText("dez 1979");
+  // Eixo de tempo: primeiro período ancorado no início; série longa rotula só os anos.
+  const ticks = page.locator(".series-tick text");
+  await expect(ticks.first()).toHaveText("jan 1998");
+  await expect(ticks.nth(1)).toHaveText(/^\d{4}$/);
+  const plot = page.locator(".series-plot svg");
+  await plot.focus();
+  await page.keyboard.press("End");
+  await expect(page.locator(".series-tip-head")).toHaveText(/^[a-z]{3} \d{4}$/);
+  await page.screenshot({ path: "test-results/painel-ipca-eixo-tempo.png", fullPage: false });
+});
+
+test("mapa em % de uma categoria (ADR-0010, decisão 16): municípios com Plano Diretor", async ({ page }) => {
+  await page.goto("/dashboard?kpi=plano_diretor&nivel=uf");
+  const map = page.getByRole("img", { name: /Plano Diretor/ });
+  await expect(map.locator("path.territory")).toHaveCount(27);
+  // A legenda diz o que o mapa mede: a parte da categoria no total de cada UF.
+  const legend = map.locator("xpath=..").getByRole("group", { name: /Legenda: % Com Plano Diretor/ });
+  await expect(legend).toBeVisible();
+  await map.getByRole("button", { name: /^Rondônia:/ }).hover();
+  await expect(page.getByRole("tooltip")).toContainText("Rondônia");
+  await page.screenshot({ path: "test-results/painel-plano-diretor-pct.png", fullPage: false });
+});
+
+test("Início e Sobre (DS v2.3): etiquetas de tema, itens em preparação e filtro de situação", async ({ page }) => {
+  await page.goto("/");
+  const stats = page.locator(".home-stats");
+  await expect(stats).toContainText("indicadores publicados");
+  await expect(stats).toContainText("em preparação");
+  // Etiqueta de tema filtra a lista; os itens em preparação aparecem sem ação.
+  await page.locator(".theme-chip", { hasText: "Serviços" }).click();
+  const chip = page.locator(".theme-chip", { hasText: "Serviços" });
+  await expect(chip).toHaveAttribute("aria-pressed", "true");
+  // Espera o fim da transição do fundo (120 ms) antes da captura.
+  await page.mouse.move(0, 0);
+  await expect(chip).not.toHaveCSS("background-color", "rgb(255, 255, 255)");
+  const pending = page.locator(".kpi-pending", { hasText: "Volume e receita do transporte de passageiros e cargas" });
+  await expect(pending).toBeVisible();
+  await expect(pending).toHaveAttribute("title", /tabela SIDRA 8695/);
+  await page.screenshot({ path: "test-results/inicio-tema-servicos.png", fullPage: false });
+  // A busca acha pelo número da tabela.
+  await page.locator(".theme-chip", { hasText: "Todos" }).click();
+  await page.getByLabel("Buscar indicador").fill("6579");
+  await expect(page.getByRole("button", { name: "População estimada" })).toBeVisible();
+  await page.screenshot({ path: "test-results/inicio-busca-tabela.png", fullPage: false });
+
+  await page.goto("/sobre");
+  const status = page.getByRole("group", { name: "Situação" });
+  await status.getByRole("button", { name: "Em preparação" }).click();
+  await page.locator(".theme-chip", { hasText: "Serviços" }).click();
+  const row = page.getByRole("button", { name: /Volume e receita do transporte de passageiros e cargas/ });
+  await row.click();
+  await expect(page.getByRole("link", { name: /8695/ })).toHaveAttribute("href", "https://sidra.ibge.gov.br/tabela/8695");
+  await page.screenshot({ path: "test-results/sobre-em-preparacao.png", fullPage: false });
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({ path: "test-results/sobre-topo.png", fullPage: false });
+
+  // Tema escuro: as famílias de cor dos temas têm variante dark (tokens v2.3).
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/");
+  await expect(page.locator(".theme-grid")).toBeVisible();
+  await page.screenshot({ path: "test-results/inicio-escuro.png", fullPage: false });
 });

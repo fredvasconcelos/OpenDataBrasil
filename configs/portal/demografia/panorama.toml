@@ -44,6 +44,11 @@ id = "natalidade_mortalidade"
 label = "Fecundidade, mortalidade e esperança de vida"
 
 [[themes.subthemes.kpis]]
+id = "esperanca_vida"
+label = "Esperança de vida ao nascer (projeção para 2026)"
+indicator = "esperanca_vida"
+
+[[themes.subthemes.kpis]]
 id = "fecundidade_total"
 label = "Taxa de fecundidade total"
 indicator = "fecundidade_total"
@@ -112,6 +117,7 @@ id = "arranjos_domiciliares"
 label = "Domicílios por tipo de arranjo (unidade doméstica)"
 indicator = "arranjos_domiciliares"
 dimensions = [{ "classification" = "c460", "partition" = "p45902", "label" = "Espécie de unidade doméstica" }]
+map_share = "12076"
 
 [[themes.subthemes]]
 id = "condicoes_moradia"
@@ -122,18 +128,21 @@ id = "condicao_ocupacao"
 label = "Domicílios próprios, alugados e cedidos"
 indicator = "condicao_ocupacao"
 dimensions = [{ "classification" = "c63", "partition" = "p95826", "label" = "Condição de ocupação do domicílio" }]
+map_share = "4342"
 
 [[themes.subthemes.kpis]]
 id = "material_paredes"
 label = "Domicílios por material das paredes"
 indicator = "material_paredes"
 dimensions = [{ "classification" = "c338", "partition" = "p7982", "label" = "Material predominante nas paredes" }]
+map_share = "7983"
 
 [[themes.subthemes.kpis]]
 id = "posse_bens"
 label = "Domicílios por posse de bens"
 indicator = "posse_bens"
 dimensions = [{ "classification" = "c845", "partition" = "p47557", "label" = "Posse de bens" }]
+map_share = "47552"
 
 [[themes.subthemes]]
 id = "favelas"
@@ -162,6 +171,7 @@ id = "rede_geral_agua"
 label = "Domicílios ligados à rede geral de água (Censo)"
 indicator = "rede_geral_agua"
 dimensions = [{ "classification" = "c1821", "partition" = "p72129", "label" = "Existência de ligação à rede geral de distribuição de água e principal forma de abastecimento de água" }]
+map_share = "72144"
 
 [[themes.subthemes.kpis]]
 id = "fonte_abastecimento"
@@ -184,6 +194,7 @@ id = "esgotamento_censo"
 label = "Domicílios por tipo de esgotamento sanitário (Censo)"
 indicator = "esgotamento_censo"
 dimensions = [{ "classification" = "c11558", "partition" = "p46292", "label" = "Tipo de esgotamento sanitário" }]
+map_share = "46290"
 
 [[themes.subthemes.kpis]]
 id = "esgotamento_pnad"
@@ -205,6 +216,7 @@ id = "destino_lixo_censo"
 label = "Domicílios por destino do lixo (Censo)"
 indicator = "destino_lixo_censo"
 dimensions = [{ "classification" = "c67", "partition" = "p10972", "label" = "Destino do lixo" }]
+map_share = "2520"
 
 [[themes.subthemes.kpis]]
 id = "destino_lixo_pnad"
@@ -241,6 +253,11 @@ label = "Taxa de escolarização"
 indicator = "taxa_escolarizacao"
 dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
 
+[[themes.subthemes.kpis]]
+id = "frequencia_liquida"
+label = "Frequência escolar líquida no ensino fundamental"
+indicator = "frequencia_liquida"
+
 [[themes.subthemes]]
 id = "instrucao"
 label = "Nível de instrução"
@@ -250,6 +267,7 @@ id = "nivel_instrucao"
 label = "Pessoas de 25 anos ou mais por nível de instrução"
 indicator = "nivel_instrucao"
 dimensions = [{ "classification" = "c1568", "partition" = "p120704", "label" = "Nível de instrução" }]
+map_share = "18837"
 
 [[themes.subthemes.kpis]]
 id = "anos_estudo"
@@ -349,6 +367,7 @@ id = "autoavaliacao_saude"
 label = "Avaliação do próprio estado de saúde"
 indicator = "autoavaliacao_saude"
 dimensions = [{ "classification" = "c12258", "partition" = "p10011", "label" = "Avaliação do estado de saúde" }]
+map_share = "104864"
 
 [[themes.subthemes.kpis]]
 id = "doenca_cronica"
@@ -513,6 +532,7 @@ id = "seguranca_alimentar"
 label = "Domicílios por situação de segurança alimentar"
 indicator = "seguranca_alimentar"
 dimensions = [{ "classification" = "c12404", "partition" = "p109106", "label" = "Situação de segurança alimentar existente no domicílio" }]
+map_share = "109098"
 
 [[themes]]
 id = "tecnologia"
@@ -527,12 +547,14 @@ id = "domicilios_internet"
 label = "Domicílios com utilização da internet"
 indicator = "domicilios_internet"
 dimensions = [{ "classification" = "c688", "partition" = "p33298", "label" = "Existência de utilização da Internet no domicílio" }]
+map_share = "48534"
 
 [[themes.subthemes.kpis]]
 id = "pessoas_internet"
 label = "Pessoas que utilizaram a internet"
 indicator = "pessoas_internet"
 dimensions = [{ "classification" = "c422", "partition" = "p10979", "label" = "Utilização da internet no período de referência dos últimos três meses" }]
+map_share = "48578"
 
 [[themes.subthemes]]
 id = "telefonia_tv"
@@ -543,12 +565,14 @@ id = "celular_uso_pessoal"
 label = "Pessoas com celular para uso pessoal"
 indicator = "celular_uso_pessoal"
 dimensions = [{ "classification" = "c427", "partition" = "p11326", "label" = "Posse de telefone móvel celular para uso pessoal" }]
+map_share = "11327"
 
 [[themes.subthemes.kpis]]
 id = "domicilios_televisao"
 label = "Domicílios com televisão"
 indicator = "domicilios_televisao"
 dimensions = [{ "classification" = "c937", "partition" = "p48455", "label" = "Existência de televisão no domicílio" }]
+map_share = "48456"
 
 [[themes]]
 id = "seguranca"
@@ -608,6 +632,11 @@ dimensions = [{ "classification" = "c48", "partition" = "p0", "label" = "Produto
 [[themes.subthemes]]
 id = "pecuaria"
 label = "Pecuária e produção animal"
+
+[[themes.subthemes.kpis]]
+id = "efetivo_rebanhos"
+label = "Efetivo de bovinos"
+indicator = "efetivo_rebanhos"
 
 [[themes.subthemes.kpis]]
 id = "abate_bovinos"
@@ -673,6 +702,15 @@ id = "industria"
 label = "Indústria"
 
 [[themes.subthemes]]
+id = "producao_industrial"
+label = "Produção industrial"
+
+[[themes.subthemes.kpis]]
+id = "producao_fisica"
+label = "Produção física industrial"
+indicator = "producao_fisica"
+
+[[themes.subthemes]]
 id = "estrutura_industrial"
 label = "Estrutura e peso da indústria"
 
@@ -705,6 +743,11 @@ id = "empresas_construcao"
 label = "Empresas de construção: pessoal, salários e valor das obras"
 indicator = "empresas_construcao"
 
+[[themes.subthemes.kpis]]
+id = "vendas_materiais"
+label = "Volume de vendas de materiais de construção"
+indicator = "vendas_materiais"
+
 [[themes.subthemes]]
 id = "custos_construcao"
 label = "Custos e insumos da construção"
@@ -722,6 +765,20 @@ indicator = "insumos_construcao"
 [[themes]]
 id = "comercio"
 label = "Comércio"
+
+[[themes.subthemes]]
+id = "varejo"
+label = "Comércio varejista"
+
+[[themes.subthemes.kpis]]
+id = "vendas_varejo"
+label = "Volume de vendas no varejo"
+indicator = "vendas_varejo"
+
+[[themes.subthemes.kpis]]
+id = "vendas_varejo_ampliado"
+label = "Volume de vendas no varejo ampliado"
+indicator = "vendas_varejo_ampliado"
 
 [[themes.subthemes]]
 id = "estrutura_comercio"
@@ -751,6 +808,11 @@ id = "servicos_empresariais"
 label = "Serviços"
 
 [[themes.subthemes.kpis]]
+id = "volume_servicos"
+label = "Volume de serviços"
+indicator = "volume_servicos"
+
+[[themes.subthemes.kpis]]
 id = "servicos_nao_financeiros"
 label = "Resultados dos serviços empresariais não financeiros"
 indicator = "servicos_nao_financeiros"
@@ -759,6 +821,11 @@ dimensions = [{ "classification" = "c85", "partition" = "p103847", "label" = "At
 [[themes.subthemes]]
 id = "turismo_transportes"
 label = "Turismo e transportes"
+
+[[themes.subthemes.kpis]]
+id = "atividades_turisticas"
+label = "Volume das atividades turísticas"
+indicator = "atividades_turisticas"
 
 [[themes.subthemes.kpis]]
 id = "viagens"
@@ -855,6 +922,16 @@ id = "pib_per_capita"
 label = "PIB e PIB per capita"
 indicator = "pib_per_capita"
 
+[[themes.subthemes.kpis]]
+id = "pib_trimestral"
+label = "PIB trimestral a preços correntes"
+indicator = "pib_trimestral"
+
+[[themes.subthemes.kpis]]
+id = "variacao_pib_trimestral"
+label = "Taxa de variação do PIB trimestral"
+indicator = "variacao_pib_trimestral"
+
 [[themes.subthemes]]
 id = "pib_municipios"
 label = "PIB dos municípios"
@@ -946,6 +1023,7 @@ id = "plano_diretor"
 label = "Municípios com Plano Diretor"
 indicator = "plano_diretor"
 dimensions = [{ "classification" = "c1480", "partition" = "p58278", "label" = "Existência de Plano Diretor" }]
+map_share = "58279"
 
 [[themes.subthemes.kpis]]
 id = "legislacao_ambiental"
@@ -961,6 +1039,7 @@ id = "plano_seca"
 label = "Municípios atingidos pela seca e com plano de contingência"
 indicator = "plano_seca"
 dimensions = [{ "classification" = "c1346", "partition" = "p57247", "label" = "Ocorrência de seca nos últimos 4 anos" }]
+map_share = "57248"
 
 [[themes.subthemes]]
 id = "politicas_sociais"
@@ -971,9 +1050,11 @@ id = "planos_municipais_sociais"
 label = "Municípios com planos municipais nas áreas sociais"
 indicator = "planos_municipais_sociais"
 dimensions = [{ "classification" = "c1329", "partition" = "p57146", "label" = "Existência de Plano Municipal" }]
+map_share = "15608"
 
 [[themes.subthemes.kpis]]
 id = "conselhos_municipais_sociais"
 label = "Municípios com conselhos municipais nas áreas sociais"
 indicator = "conselhos_municipais_sociais"
 dimensions = [{ "classification" = "c1328", "partition" = "p57131", "label" = "Existência de Conselho Municipal" }]
+map_share = "77667"

@@ -1,7 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
 
+import { flatten, flattenPlanned, highlight, matchKpi, matchPlanned, snippet } from "@/lib/catalog";
 import type { Kpi, Navigation } from "@/lib/types";
 import { formatPeriod } from "@/lib/format";
 
@@ -26,6 +28,9 @@ interface Props {
 // A taxonomia vem do panorama (ADR-0010): KPIs ainda sem dados aparecem desativados,
 // marcados "em preparação", com a tabela SIDRA de origem no title.
 // Todos os filtros do portal ficam aqui; a área central só tem conteúdo e exportações.
+// v2.3: busca sob "Temas e indicadores" (proposta A): filtra a árvore enquanto digita,
+// marca o termo, mostra o trecho da descrição quando o achado não está no nome,
+// "/" leva o foco ao campo e Esc limpa.
 export function Sidebar({
   nav,
   kpi,
@@ -93,46 +98,148 @@ export function Sidebar({
       ) : null}
       <nav className="themes" aria-label={t("dashboard.menu")}>
         <h2>{t("dashboard.menu")}</h2>
-        {nav.themes.map((theme) => {
-          const current = theme.subthemes.some((s) => s.kpis.some((k) => k.kpi_id === kpi?.kpi_id));
-          const live = theme.subthemes.some((s) => s.kpis.length > 0);
-          return (
-            // Recolhidos por padrão: só o tema do indicador atual abre (20 temas no panorama).
-            <details key={theme.theme_id} open={current}>
-              <summary className={live ? undefined : "theme-planned"}>
-                <span>
-                  {theme.label}
-                  {live ? null : <span className="planned-badge">{t("dashboard.planned")}</span>}
-                </span>
-              </summary>
-              {theme.subthemes.map((sub) => (
-                <details key={sub.subtheme_id} open={sub.kpis.some((k) => k.kpi_id === kpi?.kpi_id)}>
-                  <summary style={{ fontWeight: 700 }}>{sub.label}</summary>
-                  <ul>
-                    {sub.kpis.map((k) => (
-                      <li key={k.kpi_id}>
-                        <button type="button" aria-pressed={k.kpi_id === kpi?.kpi_id} onClick={() => onKpi(k.kpi_id)}>
-                          {k.label}
-                        </button>
-                      </li>
-                    ))}
-                    {sub.planned.map((p) => (
-                      <li
-                        key={p.kpi_id}
-                        className="planned"
-                        title={t("dashboard.plannedSource", { table: p.source_table_id, survey: p.survey })}
-                      >
-                        {p.label}
-                        <span className="planned-badge">{t("dashboard.planned")}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              ))}
-            </details>
-          );
-        })}
+        <TreeSearch nav={nav} kpi={kpi} onKpi={onKpi} />
       </nav>
     </aside>
+  );
+}
+
+function Marked({ text, query }: { text: string; query: string }) {
+  return (
+    <>
+      {highlight(text, query).map((part, i) => (part.hit ? <mark key={i}>{part.text}</mark> : <span key={i}>{part.text}</span>))}
+    </>
+  );
+}
+
+function TreeSearch({ nav, kpi, onKpi }: { nav: Navigation; kpi: Kpi | null; onKpi: (id: string) => void }) {
+  const t = useTranslations("dashboard");
+  const [q, setQ] = useState("");
+  const input = useRef<HTMLInputElement>(null);
+  const query = q.trim();
+
+  // "/" em qualquer lugar (fora de campos) leva o foco à busca.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.isContentEditable)) return;
+      e.preventDefault();
+      input.current?.focus();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
+  const items = flatten(nav);
+  const hits = new Map(items.map((it) => [it.kpi.kpi_id, query ? matchKpi(it, query) : "label"]));
+  // Em preparação (panorama): entram na árvore e na busca, sem ação (ainda sem dados).
+  const pending = flattenPlanned(nav);
+  const pendingHits = new Set(pending.filter((it) => !query || matchPlanned(it, query)).map((it) => it.planned.kpi_id));
+  const count = [...hits.values()].filter(Boolean).length;
+  const themeCount = new Set(items.filter((it) => hits.get(it.kpi.kpi_id)).map((it) => it.theme.theme_id)).size;
+  const status = !query
+    ? t("searchAll")
+    : count
+      ? t("searchCount", { count, themes: themeCount })
+      : pendingHits.size
+        ? t("searchPlannedOnly", { count: pendingHits.size })
+        : t("searchNone");
+
+  return (
+    <>
+      <div role="search" className="tree-search">
+        <label htmlFor="busca-indicador" className="sr-only">
+          {t("searchLabel")}
+        </label>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M20 20l-3.5-3.5" />
+        </svg>
+        <input
+          ref={input}
+          id="busca-indicador"
+          type="search"
+          value={q}
+          placeholder={t("searchPlaceholder")}
+          onChange={(e) => setQ(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setQ("");
+          }}
+        />
+        {q ? null : <kbd aria-hidden="true">/</kbd>}
+      </div>
+      <div className="tree-status" aria-live="polite">
+        <span>{status}</span>
+        {query ? (
+          <button type="button" onClick={() => setQ("")}>
+            {t("searchClear")}
+          </button>
+        ) : null}
+      </div>
+      {query && !count && !pendingHits.size ? (
+        <div className="tree-empty">
+          <strong>{t("searchEmptyTitle", { q: query })}</strong>
+          <span>{t("searchEmptyHint")}</span>
+        </div>
+      ) : null}
+      {nav.themes.map((theme) => {
+        const subs = theme.subthemes
+          .map((sub) => ({
+            sub,
+            kpis: sub.kpis.filter((k) => hits.get(k.kpi_id)),
+            planned: sub.planned.filter((p) => pendingHits.has(p.kpi_id)),
+          }))
+          .filter((x) => x.kpis.length || x.planned.length);
+        if (!subs.length) return null;
+        // Sem busca, os temas ficam recolhidos e só o do indicador atual abre (20 temas).
+        const current = theme.subthemes.some((s) => s.kpis.some((k) => k.kpi_id === kpi?.kpi_id));
+        const live = theme.subthemes.some((s) => s.kpis.length > 0);
+        return (
+          <details key={`${theme.theme_id}-${query ? "q" : "n"}`} open={Boolean(query) || current}>
+            <summary className={live ? undefined : "theme-planned"}>
+              <span>
+                <Marked text={theme.label} query={query} />
+                {live ? null : <span className="planned-badge">{t("planned")}</span>}
+              </span>
+            </summary>
+            {subs.map(({ sub, kpis, planned }) => (
+              <details key={sub.subtheme_id} open={Boolean(query) || sub.kpis.some((k) => k.kpi_id === kpi?.kpi_id)}>
+                <summary style={{ fontWeight: 700 }}>
+                  <Marked text={sub.label} query={query} />
+                </summary>
+                <ul>
+                  {kpis.map((k) => {
+                    const where = hits.get(k.kpi_id);
+                    const extra =
+                      where === "description" ? k.description : where === "name" ? k.name : where === "table" ? t("searchTable", { id: k.source.source_table_id }) : null;
+                    return (
+                      <li key={k.kpi_id}>
+                        <button type="button" aria-pressed={k.kpi_id === kpi?.kpi_id} onClick={() => onKpi(k.kpi_id)}>
+                          <span className="tree-kpi">
+                            <Marked text={k.label} query={query} />
+                          </span>
+                          {extra ? (
+                            <span className="tree-snippet">
+                              <Marked text={where === "table" ? extra : snippet(extra, query)} query={where === "table" ? "" : query} />
+                            </span>
+                          ) : null}
+                        </button>
+                      </li>
+                    );
+                  })}
+                  {planned.map((p) => (
+                    <li key={p.kpi_id} className="planned" title={t("plannedSource", { table: p.source_table_id, survey: p.survey })}>
+                      <Marked text={p.label} query={query} />
+                      <span className="planned-badge">{t("planned")}</span>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ))}
+          </details>
+        );
+      })}
+    </>
   );
 }

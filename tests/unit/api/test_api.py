@@ -539,3 +539,34 @@ def test_portal_fragment_extends_dimension_order(tmp_path: Path) -> None:
     assert config.dimension_order[-1] == "c1480"
     assert config.dimension_order.count("c2") == 1
     assert config.kpi("plano_diretor") is not None
+
+
+def test_map_share_of_a_category(tmp_path: Path, stack: dict[str, Any]) -> None:
+    """KPI cujo Total é só o universo: o mapa mostra o % de uma categoria (map_share)."""
+    text = (PORTAL_DIR / "demografia.toml").read_text(encoding="utf-8")
+    marker = 'indicator = "censo_populacao_cor_raca_sexo"\n'
+    assert marker in text
+    (tmp_path / "demografia.toml").write_text(
+        text.replace(marker, marker + 'map_share = "2776"\n', 1), encoding="utf-8"
+    )
+    portal = load_portal(tmp_path, "demografia")
+    service = KpiService(stack["gold"], portal, page_max=100)
+    ctx = ReleaseContext(stack["state"]["release"])
+    out = service.map(ctx, "populacao_residente", level="uf", period="2022", within=None)
+    assert out.measure == "share"
+    assert out.unit == "%"
+    assert out.measure_label == "% Branca"
+    total = service.map(ctx, "populacao_estimada", level="uf", period=None, within=None)
+    assert total.measure == "total"
+    shares = [v.value for v in out.values if v.value is not None]
+    assert shares
+    assert all(0 < s < 100 for s in shares)
+    # Sem dimensão, map_share é recusado na carga.
+    bad = text.replace(
+        'indicator = "populacao_estimada"\n',
+        'indicator = "populacao_estimada"\nmap_share = "1"\n',
+        1,
+    )
+    (tmp_path / "demografia.toml").write_text(bad, encoding="utf-8")
+    with pytest.raises(PortalConfigError, match="map_share exige"):
+        load_portal(tmp_path, "demografia")

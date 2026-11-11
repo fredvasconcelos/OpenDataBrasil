@@ -51,7 +51,7 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     gen = _generate()
     ids = {i["id"]: i for i in gen.indicators}
     skipped = {k: why for k, _, why in gen.skipped}
-    assert len(ids) == 116
+    assert len(ids) == 127
     # Variável fixada no panorama e regra automática (sem coeficientes de variação).
     assert ids["homicidios"]["variable"] == "13532"
     assert ids["taxa_escolarizacao"]["variable"] == "10276"
@@ -59,7 +59,11 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     assert "plano_diretor" in ids
     assert "o Total é só o universo" in skipped["nivel_instrucao_censo"]
     # Fora: sem Total, tabelas curadas, RM, unidade variável.
-    assert "sem categoria Total" in skipped["efetivo_rebanhos"]
+    # Sem Total: categoria de referência (parte B), com nota.
+    assert "Bovino" in ids["efetivo_rebanhos"]["caveats"][0]
+    pib = next(d for d in gen.datasets if d["official_id"] == "1846")
+    assert pib["params"]["classifications"] == {"c11255": "90707"}  # PIB a preços de mercado
+    assert "requer categoria de referência" in skipped["emissoes_gee"]
     assert "já configurada" in skipped["despesa_familiar"]
     assert "n7" in skipped["aquisicao_alimentar"]
     assert "unidade não é única" in skipped["producao_origem_animal"]
@@ -98,7 +102,10 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     assert analf["params"]["classifications"]["c58"] == "2795"
     assert analf["params"]["territorial_levels"]
     # Sem Total nem agregado: categoria de referência (parte B).
-    assert "requer categoria de referência" in skipped["vendas_varejo"]
+    assert ids["vendas_varejo"]["variable"]  # índice de volume como referência
+    # Total = universo: o mapa mostra o % da categoria principal.
+    assert gen.map_share["plano_diretor"] == "58279"  # Com Plano Diretor
+    assert "efetivo_rebanhos" not in gen.map_share
     # IPCA a partir de 1998 na Gold (a série inteira fica na Silver).
     assert ids["ipca"]["first_period"] == "1998"
     # Aditividade do descritor oficial (PermiteSomaUnidadesTerritoriais).
@@ -143,7 +150,7 @@ def test_rendered_fragments_load_with_the_curated_configs(tmp_path: Path) -> Non
     portal = load_portal(tmp_path / "portal", "demografia")
     assert all(d in sources.datasets for d in catalog.datasets())
     assert {k.indicator for k in portal.kpis()} <= {i.id for i in catalog.indicators}
-    assert len(portal.kpis()) == 13 + 116
+    assert len(portal.kpis()) == 13 + 127
 
 
 def test_repository_fragments_are_up_to_date() -> None:
@@ -191,9 +198,9 @@ def test_gerar_command_writes_three_fragments(tmp_path: Path) -> None:
         path.unlink()
     result = CliRunner().invoke(app, ["panorama", "gerar", "--raiz", str(tmp_path)])
     assert result.exit_code == 0, result.output
-    assert "116 KPIs gerados (116 tabelas), 72 com categorias" in result.output
+    assert "127 KPIs gerados (127 tabelas), 72 com categorias" in result.output
     data = tomllib.loads((tmp_path / "sources" / "ibge-panorama.toml").read_text("utf-8"))
-    assert len(data["datasets"]) == 116
+    assert len(data["datasets"]) == 127
     assert "institution" not in data
 
 

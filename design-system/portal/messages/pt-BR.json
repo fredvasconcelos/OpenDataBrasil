@@ -9,7 +9,11 @@
     "dashboard": "Painel de análise",
     "about": "Sobre os dados",
     "api": "API",
-    "skip": "Pular para o conteúdo"
+    "skip": "Pular para o conteúdo",
+    "contact": "Contato",
+    "repo": "Repositório do projeto no GitHub",
+    "code": "Código no GitHub",
+    "footer": "Rodapé"
   },
   "theme": {
     "toDark": "Ativar tema escuro",
@@ -19,10 +23,11 @@
     "title": "Dados oficiais do Brasil, prontos para consultar",
     "lead": "Explore indicadores do IBGE por território e período, veja a fonte de cada número e exporte os dados.",
     "searchLabel": "Buscar indicador",
-    "searchPlaceholder": "Ex.: população, quilombolas, indígenas",
+    "searchPlaceholder": "Ex.: IPCA, desocupação, quilombolas, tabela 6579",
     "searchEmpty": "Nenhum indicador encontrado.",
     "open": "Abrir no painel",
-    "themes": "Temas"
+    "themes": "Temas",
+    "plannedCount": "{count, plural, =0 {} one {# indicador em preparação} other {# indicadores em preparação}}"
   },
   "dashboard": {
     "menu": "Temas e indicadores",
@@ -60,14 +65,30 @@
       "upTo": "Até {value}",
       "over": "Mais de {value}",
       "title": {
-        "people": "População",
+        "people": "Pessoas",
         "percent": "Percentual (%)",
         "density": "Densidade (hab/km²)",
         "area": "Área (km²)"
       }
     },
     "filters": "Filtros",
-    "chartAndTable": "Gráfico e tabela"
+    "chartAndTable": "Gráfico e tabela",
+    "planned": "em preparação",
+    "plannedSource": "Em preparação · tabela SIDRA {table} ({survey})",
+    "gapNote": "Períodos sem publicação",
+    "seriesKeys": "Use as setas para percorrer os períodos.",
+    "seriesMore": "+ {count} séries · veja a tabela",
+    "relativeNote": "Barras proporcionais ao maior valor (indicador não aditivo).",
+    "searchLabel": "Buscar tema ou indicador",
+    "searchPlaceholder": "Buscar tema ou indicador…",
+    "searchAll": "Todos os temas",
+    "searchCount": "{count, plural, one {# indicador} other {# indicadores}} em {themes, plural, one {# tema} other {# temas}}",
+    "searchNone": "Nenhum resultado",
+    "searchPlannedOnly": "{count, plural, one {# indicador em preparação} other {# indicadores em preparação}}",
+    "searchClear": "Limpar",
+    "searchEmptyTitle": "Nenhum indicador para “{q}”",
+    "searchEmptyHint": "A busca ignora acentos e maiúsculas. Tente outra palavra ou o número da tabela.",
+    "searchTable": "Tabela {id}"
   },
   "levels": {
     "brasil": "Brasil",
@@ -116,12 +137,55 @@
     "activated": "ativado em {date}",
     "datasets": "Conjuntos de dados",
     "license": "Licença",
-    "review": "situação: {status}"
+    "review": "situação: {status}",
+    "searchLabel": "Buscar indicador ou tabela",
+    "searchPlaceholder": "Ex.: IPCA, óbitos, 9606",
+    "licenseReview": "Licença: {status}",
+    "colKpi": "Indicador",
+    "colTable": "Tabela",
+    "colStatus": "Situação",
+    "tableAtSource": "Tabela {id} na fonte ↗"
   },
   "unavailable": {
     "title": "Dados temporariamente indisponíveis",
     "lead": "O serviço de dados não respondeu. Isso costuma durar alguns segundos, por exemplo logo depois de um reinício. A página tenta de novo sozinha a cada 15 segundos.",
     "retry": "Tentar de novo",
     "code": "Código do erro: {digest}"
+  },
+  "catalog": {
+    "all": "Todos",
+    "filterByTheme": "Filtrar por tema",
+    "statKpis": "indicadores publicados",
+    "statPlanned": "em preparação",
+    "plannedCount": "{count, plural, one {# em preparação} other {# em preparação}}",
+    "planned": "Em preparação",
+    "plannedNote": "Ainda sem dados no portal. Fonte prevista: tabela SIDRA {table} ({survey}).",
+    "statusFilter": "Situação",
+    "statusAll": "Todos",
+    "statusPublished": "Publicados",
+    "statusPlanned": "Em preparação",
+    "statThemes": "temas",
+    "statTables": "tabelas da fonte",
+    "kpiCount": "{count, plural, =0 {nenhum indicador} one {# indicador} other {# indicadores}}",
+    "found": "{count, plural, =0 {Nenhum indicador encontrado} one {# indicador encontrado} other {# indicadores encontrados}}",
+    "searchHint": "Busca no nome do indicador, no tema, no subtema e pelo número da tabela · ignora acentos",
+    "seeAll": "Ver todos os {count} →",
+    "seeTheme": "Ver o tema →",
+    "empty": "Nenhum indicador encontrado. A busca ignora acentos e maiúsculas e também procura pelo número da tabela.",
+    "published": "Publicado",
+    "close": "Fechar",
+    "source": "Fonte",
+    "table": "Tabela {id}",
+    "officialSource": "Ver na fonte oficial",
+    "mainDimension": "Detalhar por",
+    "otherDimensions": "Outras classificações",
+    "totalOnly": "Não se aplica (só o Total)",
+    "unit": "Unidade",
+    "periods": "Períodos",
+    "mapLevels": "Níveis com mapa",
+    "license": "Licença",
+    "version": "Versão dos dados",
+    "caveats": "Limitações",
+    "escCloses": "Esc fecha"
   }
 }

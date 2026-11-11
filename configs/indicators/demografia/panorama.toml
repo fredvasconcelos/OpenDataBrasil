@@ -817,6 +817,13 @@ classifications = { "c2" = "c2_category_key" }
 fixed_categories = { "Forma de declaração da idade" = "113635", "Idade" = "100362" }
 
 [[facts]]
+id = "fact_sidra_7362"
+dataset = "ibge-sidra-7362"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Esperança de vida ao nascer (projeção para 2026): tabela SIDRA 7362 (Esperança de vida ao nascer e Taxa de mortalidade infantil, por sexo), no Total."
+fixed_categories = { "Sexo" = "6794", "Ano" = "49042" }
+
+[[facts]]
 id = "fact_sidra_3727"
 dataset = "ibge-sidra-3727"
 grain = "território (Brasil, Grande Região, UF) x ano"
@@ -1001,6 +1008,13 @@ grain = "território (Brasil, Grande Região, UF, Município) x ano x sexo"
 description = "Taxa de escolarização: tabela SIDRA 7138 (Taxa de escolarização, por sexo e grupo de idade), por sexo."
 classifications = { "c2" = "c2_category_key" }
 fixed_categories = { "Grupo de idade" = "95253" }
+
+[[facts]]
+id = "fact_sidra_7141"
+dataset = "ibge-sidra-7141"
+grain = "território (Brasil, Grande Região, UF) x ano"
+description = "Frequência escolar líquida no ensino fundamental: tabela SIDRA 7141 (Taxa ajustada de frequência escolar líquida, por sexo e faixa etária ideal por curso frequentado), no Total."
+fixed_categories = { "Sexo" = "6794", "Faixa etária ideal por curso frequentado" = "47815" }
 
 [[facts]]
 id = "fact_sidra_7189"
@@ -1353,6 +1367,13 @@ classifications = { "c48" = "c48_category_key" }
 fixed_categories = {}
 
 [[facts]]
+id = "fact_sidra_3939"
+dataset = "ibge-sidra-3939"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Efetivo de bovinos: tabela SIDRA 3939 (Efetivo dos rebanhos, por tipo de rebanho), no Total."
+fixed_categories = { "Tipo de rebanho" = "2670" }
+
+[[facts]]
 id = "fact_sidra_1092"
 dataset = "ibge-sidra-1092"
 grain = "território (Brasil, UF) x trimestre x tipo de rebanho bovino"
@@ -1416,6 +1437,13 @@ classifications = { "c12899" = "c12899_category_key" }
 fixed_categories = {}
 
 [[facts]]
+id = "fact_sidra_8888"
+dataset = "ibge-sidra-8888"
+grain = "território (Brasil, Grande Região, UF) x mes"
+description = "Produção física industrial: tabela SIDRA 8888 (Produção Física Industrial, por seções e atividades industriais), no Total."
+fixed_categories = { "Seções e atividades industriais (CNAE 2.0)" = "129314" }
+
+[[facts]]
 id = "fact_sidra_10457"
 dataset = "ibge-sidra-10457"
 grain = "território (UF) x ano x classificação nacional de atividades econômicas (cnae 2.0)"
@@ -1445,6 +1473,13 @@ description = "Empresas de construção: pessoal, salários e valor das obras: t
 fixed_categories = {}
 
 [[facts]]
+id = "fact_sidra_8757"
+dataset = "ibge-sidra-8757"
+grain = "território (Brasil, UF) x mes"
+description = "Volume de vendas de materiais de construção: tabela SIDRA 8757 (Índice e variação da receita nominal e do volume de vendas de materiais de construção (2022 = 100)), no Total."
+fixed_categories = { "Tipos de índice" = "56732" }
+
+[[facts]]
 id = "fact_sidra_2296"
 dataset = "ibge-sidra-2296"
 grain = "território (Brasil, Grande Região, UF) x mes"
@@ -1457,6 +1492,20 @@ dataset = "ibge-sidra-8886"
 grain = "território (Brasil) x mes"
 description = "Produção de insumos típicos da construção civil: tabela SIDRA 8886 (Produção Física Industrial dos insumos típicos da construção civil), no Total."
 fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_8880"
+dataset = "ibge-sidra-8880"
+grain = "território (Brasil, UF) x mes"
+description = "Volume de vendas no varejo: tabela SIDRA 8880 (Índice e variação da receita nominal e do volume de vendas no comércio varejista (2022 = 100)), no Total."
+fixed_categories = { "Tipos de índice" = "56734" }
+
+[[facts]]
+id = "fact_sidra_8881"
+dataset = "ibge-sidra-8881"
+grain = "território (Brasil, UF) x mes"
+description = "Volume de vendas no varejo ampliado: tabela SIDRA 8881 (Índice e variação da receita nominal e do volume de vendas no comércio varejista ampliado (2022 = 100)), no Total."
+fixed_categories = { "Tipos de índice" = "56736" }
 
 [[facts]]
 id = "fact_sidra_10646"
@@ -1474,12 +1523,26 @@ description = "Exportações, importações e saldo comercial: tabela SIDRA 5945
 fixed_categories = {}
 
 [[facts]]
+id = "fact_sidra_5906"
+dataset = "ibge-sidra-5906"
+grain = "território (Brasil, UF) x mes"
+description = "Volume de serviços: tabela SIDRA 5906 (Índice e variação da receita nominal e do volume de serviços (2022 = 100)), no Total."
+fixed_categories = { "Tipos de índice" = "56726" }
+
+[[facts]]
 id = "fact_sidra_2581"
 dataset = "ibge-sidra-2581"
 grain = "território (Brasil) x ano x atividades"
 description = "Resultados dos serviços empresariais não financeiros: tabela SIDRA 2581 (Resultados dos serviços empresariais não-financeiros - CNAE 2.0), por atividades."
 classifications = { "c85" = "c85_category_key" }
 fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_8694"
+dataset = "ibge-sidra-8694"
+grain = "território (Brasil, UF) x mes"
+description = "Volume das atividades turísticas: tabela SIDRA 8694 (Índice e variação da receita nominal e do volume das atividades turísticas (2022 = 100)), no Total."
+fixed_categories = { "Tipos de índice" = "56728" }
 
 [[facts]]
 id = "fact_sidra_7204"
@@ -1561,6 +1624,20 @@ dataset = "ibge-sidra-6784"
 grain = "território (Brasil) x ano"
 description = "PIB e PIB per capita: tabela SIDRA 6784 (Produto Interno Bruto, Produto Interno Bruto per capita, População residente e Deflator), no Total."
 fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_1846"
+dataset = "ibge-sidra-1846"
+grain = "território (Brasil) x trimestre"
+description = "PIB trimestral a preços correntes: tabela SIDRA 1846 (Valores a preços correntes), no Total."
+fixed_categories = { "Setores e subsetores" = "90707" }
+
+[[facts]]
+id = "fact_sidra_5932"
+dataset = "ibge-sidra-5932"
+grain = "território (Brasil) x trimestre"
+description = "Taxa de variação do PIB trimestral: tabela SIDRA 5932 (Taxa de variação do índice de volume trimestral), no Total."
+fixed_categories = { "Setores e subsetores" = "90707" }
 
 [[facts]]
 id = "fact_sidra_5938"
@@ -1716,7 +1793,7 @@ caveats = ["Nota da tabela 9515: 1 - Dados do Universo.", "Nota da tabela 9515: 
 [[indicators]]
 id = "populacao_sexo_idade"
 name = "População residente"
-description = "População residente (Censo Demográfico, tabela SIDRA 9514). Valores no Total: Sexo: Total; Forma de declaração da idade: Total; Idade: Total. Fonte: IBGE - Censo Demográfico."
+description = "População residente (Censo Demográfico, tabela SIDRA 9514). Recorte: Forma de declaração da idade: Total; Idade: Total. Fonte: IBGE - Censo Demográfico."
 dataset = "ibge-sidra-9514"
 variable = "93"
 fact = "fact_sidra_9514"
@@ -1726,6 +1803,20 @@ additivity = "non_additive"
 concept = "populacao_sexo_idade"
 path = ["População e demografia", "Sexo, idade e cor ou raça"]
 caveats = ["Nota da tabela 9514: 1 - Dados do Universo.", "Nota da tabela 9514: 2- Os dados referentes aos municípios Abel Figueiredo (PA) e São Pedro da Água Branca (MA) foram corrigidos no dia 22/12/2023, impactando nos totais dos estados do Pará e do Maranhão e nos totais das Grandes Regiões do Norte e Nordeste."]
+
+[[indicators]]
+id = "esperanca_vida"
+name = "Esperança de vida ao nascer"
+description = "Esperança de vida ao nascer (Projeção da População, tabela SIDRA 7362). Recorte: Sexo: Total; Ano: 2026. Fonte: IBGE - Projeção da População."
+dataset = "ibge-sidra-7362"
+variable = "2503"
+fact = "fact_sidra_7362"
+column = "valor"
+unit = "Anos"
+additivity = "non_additive"
+concept = "esperanca_vida"
+path = ["População e demografia", "Fecundidade, mortalidade e esperança de vida"]
+caveats = ["Valor de referência em Ano: 2026 (a classificação não tem Total; as categorias não se somam)."]
 
 [[indicators]]
 id = "fecundidade_total"
@@ -1744,7 +1835,7 @@ caveats = []
 [[indicators]]
 id = "migrantes_uf"
 name = "Pessoas de 5 anos ou mais de idade que não residiam na Unidade da Federação 5 anos antes da data de referência"
-description = "Pessoas de 5 anos ou mais de idade que não residiam na Unidade da Federação 5 anos antes da data de referência (Censo Demográfico, tabela SIDRA 10159). Valores no Total: Lugar de residência 5 anos antes da data de referência: Total. Fonte: IBGE - Censo Demográfico."
+description = "Pessoas de 5 anos ou mais de idade que não residiam na Unidade da Federação 5 anos antes da data de referência (Censo Demográfico, tabela SIDRA 10159). Tabela sem classificações. Fonte: IBGE - Censo Demográfico."
 dataset = "ibge-sidra-10159"
 variable = "13339"
 fact = "fact_sidra_10159"
@@ -1758,7 +1849,7 @@ caveats = ["As categorias de Lugar de residência 5 anos antes da data de refer�
 [[indicators]]
 id = "nascidos_vivos"
 name = "Nascidos vivos registrados no ano"
-description = "Nascidos vivos registrados no ano (Estatísticas do Registro Civil, tabela SIDRA 2609). Valores no Total: Sexo: Total; Ano de nascimento: Total; Idade da mãe na ocasião do parto: Total. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
+description = "Nascidos vivos registrados no ano (Estatísticas do Registro Civil, tabela SIDRA 2609). Recorte: Sexo: Total; Idade da mãe na ocasião do parto: Total. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
 dataset = "ibge-sidra-2609"
 variable = "217"
 fact = "fact_sidra_2609"
@@ -1772,7 +1863,7 @@ caveats = ["As categorias de Ano de nascimento vêm até Brasil, Grande Região,
 [[indicators]]
 id = "obitos"
 name = "Número de óbitos ocorridos no ano"
-description = "Número de óbitos ocorridos no ano (Estatísticas do Registro Civil, tabela SIDRA 2654). Valores no Total: Sexo: Total; Mês de ocorrência: Total; Local de ocorrência: Total; Idade do(a) falecido(a): Total; Natureza do óbito: Total. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
+description = "Número de óbitos ocorridos no ano (Estatísticas do Registro Civil, tabela SIDRA 2654). Recorte: Sexo: Total; Mês de ocorrência: Total; Local de ocorrência: Total; Idade do(a) falecido(a): Total. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
 dataset = "ibge-sidra-2654"
 variable = "343"
 fact = "fact_sidra_2654"
@@ -1786,7 +1877,7 @@ caveats = ["As categorias de Natureza do óbito vêm até Brasil, Grande Região
 [[indicators]]
 id = "casamentos"
 name = "Número de casamentos"
-description = "Número de casamentos (Estatísticas do Registro Civil, tabela SIDRA 4412). Valores no Total: Mês de ocorrência: Total; Estado civil do primeiro cônjuge: Total; Estado civil do segundo cônjuge: Total; Grupo de idade do primeiro cônjuge: Total; Grupo de idade do segundo cônjuge: Total. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
+description = "Número de casamentos (Estatísticas do Registro Civil, tabela SIDRA 4412). Recorte: Mês de ocorrência: Total; Estado civil do segundo cônjuge: Total; Grupo de idade do primeiro cônjuge: Total; Grupo de idade do segundo cônjuge: Total. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
 dataset = "ibge-sidra-4412"
 variable = "4993"
 fact = "fact_sidra_4412"
@@ -1800,7 +1891,7 @@ caveats = ["As categorias de Estado civil do primeiro cônjuge vêm até Brasil,
 [[indicators]]
 id = "divorcios"
 name = "Número de divórcios concedidos em 1ª instância ou por escritura"
-description = "Número de divórcios concedidos em 1ª instância ou por escritura (Estatísticas do Registro Civil, tabela SIDRA 1695). Valores no Total: Regime de bens do casamento: Total; Grupos de idade do marido na data da sentença: Total; Grupos de idade da mulher na data da sentença: Total; Tempo transcorrido entre a data do casamento e a data da sentença ou da escritura: Total. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
+description = "Número de divórcios concedidos em 1ª instância ou por escritura (Estatísticas do Registro Civil, tabela SIDRA 1695). Recorte: Regime de bens do casamento: Total; Grupos de idade do marido na data da sentença: Total; Grupos de idade da mulher na data da sentença: Total. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
 dataset = "ibge-sidra-1695"
 variable = "393"
 fact = "fact_sidra_1695"
@@ -1828,7 +1919,7 @@ caveats = ["Nota da tabela 4712: 1- Dados do Universo.", "Nota da tabela 4712: 2
 [[indicators]]
 id = "arranjos_domiciliares"
 name = "Domicílios"
-description = "Domicílios (PNAD Contínua anual, tabela SIDRA 6788). Valores no Total: Sexo do responsável pelo domicílio: Total; Espécie de unidade doméstica: Total. Fonte: IBGE. Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua, acumulado de primeiras visitas, exceto 2020-2021, acumulado de quintas visitas, devido &agrave; pandemia de Covid-19.."
+description = "Domicílios (PNAD Contínua anual, tabela SIDRA 6788). Recorte: Sexo do responsável pelo domicílio: Total. Fonte: IBGE. Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua, acumulado de primeiras visitas, exceto 2020-2021, acumulado de quintas visitas, devido &agrave; pandemia de Covid-19.."
 dataset = "ibge-sidra-6788"
 variable = "162"
 fact = "fact_sidra_6788"
@@ -1842,7 +1933,7 @@ caveats = ["As categorias de Espécie de unidade doméstica vêm até Brasil, Gr
 [[indicators]]
 id = "condicao_ocupacao"
 name = "Domicílios"
-description = "Domicílios (PNAD Contínua anual, tabela SIDRA 6821). Valores no Total: Condição de ocupação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1ª visita."
+description = "Domicílios (PNAD Contínua anual, tabela SIDRA 6821). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1ª visita."
 dataset = "ibge-sidra-6821"
 variable = "162"
 fact = "fact_sidra_6821"
@@ -1856,7 +1947,7 @@ caveats = ["As categorias de Condição de ocupação do domicílio podem se sob
 [[indicators]]
 id = "material_paredes"
 name = "Domicílios"
-description = "Domicílios (PNAD Contínua anual, tabela SIDRA 6822). Valores no Total: Material predominante nas paredes: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1ª visita."
+description = "Domicílios (PNAD Contínua anual, tabela SIDRA 6822). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1ª visita."
 dataset = "ibge-sidra-6822"
 variable = "162"
 fact = "fact_sidra_6822"
@@ -1870,7 +1961,7 @@ caveats = ["As categorias de Material predominante nas paredes podem se sobrepor
 [[indicators]]
 id = "posse_bens"
 name = "Domicílios"
-description = "Domicílios (PNAD Contínua anual, tabela SIDRA 6677). Valores no Total: Posse de bens: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1ª visita."
+description = "Domicílios (PNAD Contínua anual, tabela SIDRA 6677). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1ª visita."
 dataset = "ibge-sidra-6677"
 variable = "162"
 fact = "fact_sidra_6677"
@@ -1912,7 +2003,7 @@ caveats = ["Nota da tabela 9883: 1 - Dados do Universo;", "Nota da tabela 9883: 
 [[indicators]]
 id = "rede_geral_agua"
 name = "Domicílios particulares permanentes ocupados"
-description = "Domicílios particulares permanentes ocupados (Censo Demográfico, tabela SIDRA 6803). Valores no Total: Existência de ligação à rede geral de distribuição de água e principal forma de abastecimento de água: Total. Fonte: IBGE - Censo Demográfico."
+description = "Domicílios particulares permanentes ocupados (Censo Demográfico, tabela SIDRA 6803). Tabela sem classificações. Fonte: IBGE - Censo Demográfico."
 dataset = "ibge-sidra-6803"
 variable = "381"
 fact = "fact_sidra_6803"
@@ -1926,7 +2017,7 @@ caveats = ["As categorias de Existência de ligação à rede geral de distribui
 [[indicators]]
 id = "fonte_abastecimento"
 name = "Domicílios"
-description = "Domicílios (PNAD Contínua anual, tabela SIDRA 6731). Valores no Total: Situação do domicílio: Total; Principal fonte de abastecimento de água: . Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1ª visita."
+description = "Domicílios (PNAD Contínua anual, tabela SIDRA 6731). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1ª visita."
 dataset = "ibge-sidra-6731"
 variable = "162"
 fact = "fact_sidra_6731"
@@ -1940,7 +2031,7 @@ caveats = ["As categorias de Principal fonte de abastecimento de água podem se 
 [[indicators]]
 id = "servico_agua_municipios"
 name = "Municípios com serviço de abastecimento de água por rede geral de distribuição"
-description = "Municípios com serviço de abastecimento de água por rede geral de distribuição (Pesquisa Nacional de Saneamento Básico, tabela SIDRA 7460). Valores no Total: Condição de funcionamento do serviço: Total. Fonte: IBGE - Pesquisa Nacional de Saneamento Básico."
+description = "Municípios com serviço de abastecimento de água por rede geral de distribuição (Pesquisa Nacional de Saneamento Básico, tabela SIDRA 7460). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional de Saneamento Básico."
 dataset = "ibge-sidra-7460"
 variable = "2598"
 fact = "fact_sidra_7460"
@@ -1954,7 +2045,7 @@ caveats = ["Nota da tabela 7460: A tabela contabiliza um Município sempre que p
 [[indicators]]
 id = "esgotamento_censo"
 name = "Domicílios particulares permanentes ocupados"
-description = "Domicílios particulares permanentes ocupados (Censo Demográfico, tabela SIDRA 6805). Valores no Total: Tipo de esgotamento sanitário: Total. Fonte: IBGE - Censo Demográfico."
+description = "Domicílios particulares permanentes ocupados (Censo Demográfico, tabela SIDRA 6805). Tabela sem classificações. Fonte: IBGE - Censo Demográfico."
 dataset = "ibge-sidra-6805"
 variable = "381"
 fact = "fact_sidra_6805"
@@ -1968,7 +2059,7 @@ caveats = ["As categorias de Tipo de esgotamento sanitário vêm até Brasil, Gr
 [[indicators]]
 id = "esgotamento_pnad"
 name = "Domicílios com banheiro, sanitário ou buraco para dejeções"
-description = "Domicílios com banheiro, sanitário ou buraco para dejeções (PNAD Contínua anual, tabela SIDRA 7192). Valores no Total: Situação do domicílio: Total; Tipo de esgotamento sanitário: . Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1ª visita."
+description = "Domicílios com banheiro, sanitário ou buraco para dejeções (PNAD Contínua anual, tabela SIDRA 7192). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1ª visita."
 dataset = "ibge-sidra-7192"
 variable = "9986"
 fact = "fact_sidra_7192"
@@ -1982,7 +2073,7 @@ caveats = ["As categorias de Tipo de esgotamento sanitário podem se sobrepor (a
 [[indicators]]
 id = "servico_esgoto_municipios"
 name = "Municípios com serviço de esgotamento sanitário"
-description = "Municípios com serviço de esgotamento sanitário (Pesquisa Nacional de Saneamento Básico, tabela SIDRA 7461). Valores no Total: Condição de funcionamento do serviço: Total. Fonte: IBGE - Pesquisa Nacional de Saneamento Básico."
+description = "Municípios com serviço de esgotamento sanitário (Pesquisa Nacional de Saneamento Básico, tabela SIDRA 7461). Recorte: Condição de funcionamento do serviço: Total. Fonte: IBGE - Pesquisa Nacional de Saneamento Básico."
 dataset = "ibge-sidra-7461"
 variable = "2601"
 fact = "fact_sidra_7461"
@@ -1996,7 +2087,7 @@ caveats = ["Nota da tabela 7461: A tabela contabiliza um Município sempre que p
 [[indicators]]
 id = "destino_lixo_censo"
 name = "Domicílios particulares permanentes ocupados"
-description = "Domicílios particulares permanentes ocupados (Censo Demográfico, tabela SIDRA 6892). Valores no Total: Destino do lixo: Total. Fonte: IBGE - Censo Demográfico."
+description = "Domicílios particulares permanentes ocupados (Censo Demográfico, tabela SIDRA 6892). Tabela sem classificações. Fonte: IBGE - Censo Demográfico."
 dataset = "ibge-sidra-6892"
 variable = "381"
 fact = "fact_sidra_6892"
@@ -2010,7 +2101,7 @@ caveats = ["As categorias de Destino do lixo vêm até Brasil, Grande Região, U
 [[indicators]]
 id = "destino_lixo_pnad"
 name = "Domicílios"
-description = "Domicílios (PNAD Contínua anual, tabela SIDRA 6736). Valores no Total: Situação do domicílio: Total; Destino do lixo: . Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1ª visita."
+description = "Domicílios (PNAD Contínua anual, tabela SIDRA 6736). Recorte: Situação do domicílio: Total; Destino do lixo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1ª visita."
 dataset = "ibge-sidra-6736"
 variable = "162"
 fact = "fact_sidra_6736"
@@ -2024,7 +2115,7 @@ caveats = ["Nota da tabela 6736: A partir de 2025, as estimativas deste tema pas
 [[indicators]]
 id = "taxa_alfabetizacao_censo"
 name = "Taxa de alfabetização das pessoas de 15 anos ou mais de idade"
-description = "Taxa de alfabetização das pessoas de 15 anos ou mais de idade (Censo Demográfico, tabela SIDRA 9543). Valores no Total: Sexo: Total; Cor ou raça: Total; Idade: Total. Fonte: IBGE - Censo Demográfico."
+description = "Taxa de alfabetização das pessoas de 15 anos ou mais de idade (Censo Demográfico, tabela SIDRA 9543). Recorte: Cor ou raça: Total; Idade: Total. Fonte: IBGE - Censo Demográfico."
 dataset = "ibge-sidra-9543"
 variable = "2513"
 fact = "fact_sidra_9543"
@@ -2038,7 +2129,7 @@ caveats = ["Nota da tabela 9543: 1 - Dados do Universo", "Nota da tabela 9543: 2
 [[indicators]]
 id = "taxa_analfabetismo"
 name = "Taxa de analfabetismo das pessoas de 15 anos ou mais de idade"
-description = "Taxa de analfabetismo das pessoas de 15 anos ou mais de idade (PNAD Contínua anual, tabela SIDRA 7113). Valores no Total: Sexo: Total; Grupo de idade: . Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 2º trimestre."
+description = "Taxa de analfabetismo das pessoas de 15 anos ou mais de idade (PNAD Contínua anual, tabela SIDRA 7113). Recorte: Grupo de idade: 15 anos ou mais. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 2º trimestre."
 dataset = "ibge-sidra-7113"
 variable = "10267"
 fact = "fact_sidra_7113"
@@ -2052,7 +2143,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "taxa_escolarizacao"
 name = "Taxa de escolarização"
-description = "Taxa de escolarização (PNAD Contínua anual, tabela SIDRA 7138). Valores no Total: Sexo: Total; Grupo de idade: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 2º trimestre."
+description = "Taxa de escolarização (PNAD Contínua anual, tabela SIDRA 7138). Recorte: Grupo de idade: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 2º trimestre."
 dataset = "ibge-sidra-7138"
 variable = "10276"
 fact = "fact_sidra_7138"
@@ -2064,9 +2155,23 @@ path = ["Educação", "Frequência escolar"]
 caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-las): o percentual de cada uma é em relação ao Total, e a soma pode passar de 100%.", "As categorias de Sexo vêm até Brasil, Grande Região, UF; nos municípios, só o Total (a série municipal por categoria exigiria milhares de consultas à fonte).", "Nota da tabela 7138: Taxa de escolarização é a razão entre o número de estudantes de determinada faixa etária e o total de pessoas dessa mesma faixa etária.", "Nota da tabela 7138: A partir de 01 de agosto de 2022, as estimativas deste tema passaram a ser divulgadas com base no novo método de ponderação da pesquisa, conforme a Nota Técnica 03/2021. Consequentemente, a série histórica dos indicadores foi atualizada.", "Nota da tabela 7138: A partir de 2025, as estimativas deste tema passaram a ser divulgadas com base na nova ponderação da pesquisa, conforme a Nota Técnica 02/2025. Consequentemente, a série histórica dos indicadores foi atualizada."]
 
 [[indicators]]
+id = "frequencia_liquida"
+name = "Taxa ajustada de frequência escolar líquida"
+description = "Taxa ajustada de frequência escolar líquida (PNAD Contínua anual, tabela SIDRA 7141). Recorte: Sexo: Total; Faixa etária ideal por curso frequentado: 6 a 14 anos no ensino fundamental. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 2º trimestre."
+dataset = "ibge-sidra-7141"
+variable = "10282"
+fact = "fact_sidra_7141"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "frequencia_liquida"
+path = ["Educação", "Frequência escolar"]
+caveats = ["Valor de referência em Faixa etária ideal por curso frequentado: 6 a 14 anos no ensino fundamental (a classificação não tem Total; as categorias não se somam).", "Nota da tabela 7141: Taxa ajustada de frequência escolar líquida é a razão entre o número de pessoas que frequenta escola no nível de ensino adequado à sua faixa etária mais aquelas que já concluíram pelo menos esse nível de ensino e o total de pessoas dessa mesma faixa etária.", "Nota da tabela 7141: A partir de 01 de agosto de 2022, as estimativas deste tema passaram a ser divulgadas com base no novo método de ponderação da pesquisa, conforme a Nota Técnica 03/2021. Consequentemente, a série histórica dos indicadores foi atualizada.", "Nota da tabela 7141: A partir de 2025, as estimativas deste tema passaram a ser divulgadas com base na nova ponderação da pesquisa, conforme a Nota Técnica 02/2025. Consequentemente, a série histórica dos indicadores foi atualizada."]
+
+[[indicators]]
 id = "nivel_instrucao"
 name = "Pessoas de 25 anos ou mais de idade"
-description = "Pessoas de 25 anos ou mais de idade (PNAD Contínua anual, tabela SIDRA 7189). Valores no Total: Sexo: Total; Nível de instrução: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 2º trimestre."
+description = "Pessoas de 25 anos ou mais de idade (PNAD Contínua anual, tabela SIDRA 7189). Recorte: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 2º trimestre."
 dataset = "ibge-sidra-7189"
 variable = "1643"
 fact = "fact_sidra_7189"
@@ -2080,7 +2185,7 @@ caveats = ["Nota da tabela 7189: A partir de 01 de agosto de 2022, as estimativa
 [[indicators]]
 id = "anos_estudo"
 name = "Número médio de anos de estudo das pessoas de 15 anos ou mais de idade"
-description = "Número médio de anos de estudo das pessoas de 15 anos ou mais de idade (PNAD Contínua anual, tabela SIDRA 7126). Valores no Total: Sexo: Total; Grupo de idade: . Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 2º trimestre."
+description = "Número médio de anos de estudo das pessoas de 15 anos ou mais de idade (PNAD Contínua anual, tabela SIDRA 7126). Recorte: Grupo de idade: 15 anos ou mais. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 2º trimestre."
 dataset = "ibge-sidra-7126"
 variable = "3593"
 fact = "fact_sidra_7126"
@@ -2094,7 +2199,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "forca_trabalho"
 name = "Pessoas de 14 anos ou mais de idade ocupadas na semana de referência"
-description = "Pessoas de 14 anos ou mais de idade ocupadas na semana de referência (PNAD Contínua trimestral, tabela SIDRA 4093). Valores no Total: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua trimestral."
+description = "Pessoas de 14 anos ou mais de idade ocupadas na semana de referência (PNAD Contínua trimestral, tabela SIDRA 4093). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua trimestral."
 dataset = "ibge-sidra-4093"
 variable = "4090"
 fact = "fact_sidra_4093"
@@ -2136,7 +2241,7 @@ caveats = ["Nota da tabela 4708: A situação de informalidade se refere às pes
 [[indicators]]
 id = "rendimento_medio_trabalho"
 name = "Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente recebido no trabalho principal"
-description = "Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente recebido no trabalho principal (PNAD Contínua anual, tabela SIDRA 5436). Valores no Total: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua trimestral."
+description = "Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente recebido no trabalho principal (PNAD Contínua anual, tabela SIDRA 5436). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua trimestral."
 dataset = "ibge-sidra-5436"
 variable = "5932"
 fact = "fact_sidra_5436"
@@ -2178,7 +2283,7 @@ caveats = ["Nota da tabela 7435: O rendimento de trabalho é captado somente par
 [[indicators]]
 id = "rendimento_domiciliar_censo"
 name = "Valor do rendimento nominal médio mensal domiciliar per capita dos moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a)"
-description = "Valor do rendimento nominal médio mensal domiciliar per capita dos moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a) (Censo Demográfico, tabela SIDRA 10295). Valores no Total: Sexo: Total; Grupo de idade: Total; Cor ou raça: Total. Fonte: IBGE - Censo Demográfico."
+description = "Valor do rendimento nominal médio mensal domiciliar per capita dos moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a) (Censo Demográfico, tabela SIDRA 10295). Recorte: Grupo de idade: Total; Cor ou raça: Total. Fonte: IBGE - Censo Demográfico."
 dataset = "ibge-sidra-10295"
 variable = "13431"
 fact = "fact_sidra_10295"
@@ -2206,7 +2311,7 @@ caveats = ["Nota da tabela 5877: Nota 1: Consolidado das primeiras entrevistas d
 [[indicators]]
 id = "trabalho_infantil"
 name = "Percentual de pessoas de 5 a 17 anos de idade em situação de trabalho infantil"
-description = "Percentual de pessoas de 5 a 17 anos de idade em situação de trabalho infantil (PNAD Contínua anual, tabela SIDRA 9836). Valores no Total: Grupo de idade: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 5&ordf; visita.."
+description = "Percentual de pessoas de 5 a 17 anos de idade em situação de trabalho infantil (PNAD Contínua anual, tabela SIDRA 9836). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 5&ordf; visita.."
 dataset = "ibge-sidra-9836"
 variable = "9489"
 fact = "fact_sidra_9836"
@@ -2220,7 +2325,7 @@ caveats = ["As categorias de Grupo de idade podem se sobrepor (a fonte não perm
 [[indicators]]
 id = "afazeres_domesticos"
 name = "Média de horas dedicadas pelas pessoas de 14 anos ou mais de idade aos afazeres domésticos e/ou às tarefas de cuidado de pessoas"
-description = "Média de horas dedicadas pelas pessoas de 14 anos ou mais de idade aos afazeres domésticos e/ou às tarefas de cuidado de pessoas (PNAD Contínua anual, tabela SIDRA 7015). Valores no Total: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 5ª visita."
+description = "Média de horas dedicadas pelas pessoas de 14 anos ou mais de idade aos afazeres domésticos e/ou às tarefas de cuidado de pessoas (PNAD Contínua anual, tabela SIDRA 7015). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 5ª visita."
 dataset = "ibge-sidra-7015"
 variable = "10192"
 fact = "fact_sidra_7015"
@@ -2234,7 +2339,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "autoavaliacao_saude"
 name = "Pessoas de 18 anos ou mais de idade"
-description = "Pessoas de 18 anos ou mais de idade (Pesquisa Nacional de Saúde, tabela SIDRA 7666). Valores no Total: Sexo: Total; Avaliação do estado de saúde: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+description = "Pessoas de 18 anos ou mais de idade (Pesquisa Nacional de Saúde, tabela SIDRA 7666). Recorte: Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
 dataset = "ibge-sidra-7666"
 variable = "2667"
 fact = "fact_sidra_7666"
@@ -2248,7 +2353,7 @@ caveats = ["As categorias de Avaliação do estado de saúde podem se sobrepor (
 [[indicators]]
 id = "doenca_cronica"
 name = "Pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica"
-description = "Pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica (Pesquisa Nacional de Saúde, tabela SIDRA 7972). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+description = "Pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica (Pesquisa Nacional de Saúde, tabela SIDRA 7972). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
 dataset = "ibge-sidra-7972"
 variable = "11216"
 fact = "fact_sidra_7972"
@@ -2262,7 +2367,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "hipertensao"
 name = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial"
-description = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial (Pesquisa Nacional de Saúde, tabela SIDRA 4418). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+description = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial (Pesquisa Nacional de Saúde, tabela SIDRA 4418). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
 dataset = "ibge-sidra-4418"
 variable = "4396"
 fact = "fact_sidra_4418"
@@ -2276,7 +2381,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "diabetes"
 name = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes"
-description = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes (Pesquisa Nacional de Saúde, tabela SIDRA 4487). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+description = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes (Pesquisa Nacional de Saúde, tabela SIDRA 4487). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
 dataset = "ibge-sidra-4487"
 variable = "4462"
 fact = "fact_sidra_4487"
@@ -2290,7 +2395,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "fumantes"
 name = "Pessoas de 18 anos ou mais de idade fumantes atuais de tabaco"
-description = "Pessoas de 18 anos ou mais de idade fumantes atuais de tabaco (Pesquisa Nacional de Saúde, tabela SIDRA 4173). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+description = "Pessoas de 18 anos ou mais de idade fumantes atuais de tabaco (Pesquisa Nacional de Saúde, tabela SIDRA 4173). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
 dataset = "ibge-sidra-4173"
 variable = "4160"
 fact = "fact_sidra_4173"
@@ -2304,7 +2409,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "consumo_abusivo_alcool"
 name = "Pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa"
-description = "Pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa (Pesquisa Nacional de Saúde, tabela SIDRA 7726). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+description = "Pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa (Pesquisa Nacional de Saúde, tabela SIDRA 7726). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
 dataset = "ibge-sidra-7726"
 variable = "4298"
 fact = "fact_sidra_7726"
@@ -2318,7 +2423,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "insuficientemente_ativos"
 name = "Pessoas de 18 anos ou mais de idade insuficientemente ativas"
-description = "Pessoas de 18 anos ou mais de idade insuficientemente ativas (Pesquisa Nacional de Saúde, tabela SIDRA 7740). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+description = "Pessoas de 18 anos ou mais de idade insuficientemente ativas (Pesquisa Nacional de Saúde, tabela SIDRA 7740). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
 dataset = "ibge-sidra-7740"
 variable = "4262"
 fact = "fact_sidra_7740"
@@ -2332,7 +2437,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "excesso_peso"
 name = "Pessoas de 18 anos ou mais de idade com excesso de peso"
-description = "Pessoas de 18 anos ou mais de idade com excesso de peso (Pesquisa Nacional de Saúde, tabela SIDRA 8476). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+description = "Pessoas de 18 anos ou mais de idade com excesso de peso (Pesquisa Nacional de Saúde, tabela SIDRA 8476). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
 dataset = "ibge-sidra-8476"
 variable = "11671"
 fact = "fact_sidra_8476"
@@ -2346,7 +2451,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "plano_saude"
 name = "Pessoas que tinham algum plano de saúde (médico ou odontológico)"
-description = "Pessoas que tinham algum plano de saúde (médico ou odontológico) (Pesquisa Nacional de Saúde, tabela SIDRA 4938). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+description = "Pessoas que tinham algum plano de saúde (médico ou odontológico) (Pesquisa Nacional de Saúde, tabela SIDRA 4938). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
 dataset = "ibge-sidra-4938"
 variable = "5260"
 fact = "fact_sidra_4938"
@@ -2360,7 +2465,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "consulta_medica"
 name = "Pessoas que consultaram médico nos últimos 12 meses"
-description = "Pessoas que consultaram médico nos últimos 12 meses (Pesquisa Nacional de Saúde, tabela SIDRA 5055). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+description = "Pessoas que consultaram médico nos últimos 12 meses (Pesquisa Nacional de Saúde, tabela SIDRA 5055). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
 dataset = "ibge-sidra-5055"
 variable = "5358"
 fact = "fact_sidra_5055"
@@ -2388,7 +2493,7 @@ caveats = ["Série encerrada na fonte em 2005: é a série publicada, sem atuali
 [[indicators]]
 id = "pre_natal"
 name = "Mulheres que realizaram pré-natal"
-description = "Mulheres que realizaram pré-natal (Pesquisa Nacional de Saúde, tabela SIDRA 8289). Valores no Total: Situação do domicílio: Total; Cor ou raça: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+description = "Mulheres que realizaram pré-natal (Pesquisa Nacional de Saúde, tabela SIDRA 8289). Recorte: Situação do domicílio: Total; Cor ou raça: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
 dataset = "ibge-sidra-8289"
 variable = "6635"
 fact = "fact_sidra_8289"
@@ -2402,7 +2507,7 @@ caveats = ["Nota da tabela 8289: Foram consideradas as mulheres de 15 anos ou ma
 [[indicators]]
 id = "aleitamento_exclusivo"
 name = "Crianças com menos de 6 meses de idade que são amamentadas exclusivamente com leite materno"
-description = "Crianças com menos de 6 meses de idade que são amamentadas exclusivamente com leite materno (Pesquisa Nacional de Saúde, tabela SIDRA 5905). Valores no Total: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+description = "Crianças com menos de 6 meses de idade que são amamentadas exclusivamente com leite materno (Pesquisa Nacional de Saúde, tabela SIDRA 5905). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional de Saúde."
 dataset = "ibge-sidra-5905"
 variable = "7175"
 fact = "fact_sidra_5905"
@@ -2444,7 +2549,7 @@ caveats = []
 [[indicators]]
 id = "mortalidade_doencas_cronicas"
 name = "Probabilidade de morrer atribuída a doenças cardiovasculares, câncer, diabetes ou doenças respiratórias crônicas entre os 30 a 69 anos"
-description = "Probabilidade de morrer atribuída a doenças cardiovasculares, câncer, diabetes ou doenças respiratórias crônicas entre os 30 a 69 anos (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 4277). Valores no Total: Sexo: ; Grupo de idade: . Fonte: 1. Minist&eacute;rio da Sa&uacute;de, Sistema de Informa&ccedil;&otilde;es sobre Mortalidade - SIM. 2. IBGE, Proje&ccedil;&otilde;es da Popula&ccedil;&atilde;o do Brasil e Unidades da Federa&ccedil;&atilde;o por Sexo e Idade 2000-2070, Revis&atilde;o 2024.."
+description = "Probabilidade de morrer atribuída a doenças cardiovasculares, câncer, diabetes ou doenças respiratórias crônicas entre os 30 a 69 anos (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 4277). Recorte: Grupo de idade: 30 a 69 anos. Fonte: 1. Minist&eacute;rio da Sa&uacute;de, Sistema de Informa&ccedil;&otilde;es sobre Mortalidade - SIM. 2. IBGE, Proje&ccedil;&otilde;es da Popula&ccedil;&atilde;o do Brasil e Unidades da Federa&ccedil;&atilde;o por Sexo e Idade 2000-2070, Revis&atilde;o 2024.."
 dataset = "ibge-sidra-4277"
 variable = "11754"
 fact = "fact_sidra_4277"
@@ -2458,7 +2563,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "escolares_fumaram"
 name = "Percentual de escolares com idade de 13 a 17 anos que fumaram nos 30 dias anteriores à pesquisa"
-description = "Percentual de escolares com idade de 13 a 17 anos que fumaram nos 30 dias anteriores à pesquisa (Pesquisa Nacional de Saúde do Escolar, tabela SIDRA 6356). Valores no Total: Sexo: Total; Grupo de idade: 13 a 17 anos; Dependência administrativa da escola: Total. Fonte: IBGE - Pesquisa Nacional de Saúde do Escolar."
+description = "Percentual de escolares com idade de 13 a 17 anos que fumaram nos 30 dias anteriores à pesquisa (Pesquisa Nacional de Saúde do Escolar, tabela SIDRA 6356). Recorte: Sexo: Total; Grupo de idade: 13 a 17 anos. Fonte: IBGE - Pesquisa Nacional de Saúde do Escolar."
 dataset = "ibge-sidra-6356"
 variable = "8586"
 fact = "fact_sidra_6356"
@@ -2472,7 +2577,7 @@ caveats = ["As categorias de Dependência administrativa da escola podem se sobr
 [[indicators]]
 id = "escolares_alcool"
 name = "Percentual de escolares com idade de 13 a 17 anos que consumiram bebidas alcoólicas pelo menos um dia nos 30 dias anteriores à pesquisa"
-description = "Percentual de escolares com idade de 13 a 17 anos que consumiram bebidas alcoólicas pelo menos um dia nos 30 dias anteriores à pesquisa (Pesquisa Nacional de Saúde do Escolar, tabela SIDRA 6358). Valores no Total: Sexo: Total; Grupo de idade: 13 a 17 anos; Dependência administrativa da escola: Total. Fonte: IBGE - Pesquisa Nacional de Saúde do Escolar."
+description = "Percentual de escolares com idade de 13 a 17 anos que consumiram bebidas alcoólicas pelo menos um dia nos 30 dias anteriores à pesquisa (Pesquisa Nacional de Saúde do Escolar, tabela SIDRA 6358). Recorte: Sexo: Total; Grupo de idade: 13 a 17 anos. Fonte: IBGE - Pesquisa Nacional de Saúde do Escolar."
 dataset = "ibge-sidra-6358"
 variable = "8592"
 fact = "fact_sidra_6358"
@@ -2486,7 +2591,7 @@ caveats = ["As categorias de Dependência administrativa da escola podem se sobr
 [[indicators]]
 id = "escolares_excesso_peso"
 name = "Percentual de escolares com idade de 13 a 17 anos que apresentaram excesso de peso"
-description = "Percentual de escolares com idade de 13 a 17 anos que apresentaram excesso de peso (Pesquisa Nacional de Saúde do Escolar, tabela SIDRA 6378). Valores no Total: Sexo: Total; Grupo de idade: 13 a 17 anos; Dependência administrativa da escola: Total. Fonte: IBGE - Pesquisa Nacional de Saúde do Escolar."
+description = "Percentual de escolares com idade de 13 a 17 anos que apresentaram excesso de peso (Pesquisa Nacional de Saúde do Escolar, tabela SIDRA 6378). Recorte: Sexo: Total; Grupo de idade: 13 a 17 anos. Fonte: IBGE - Pesquisa Nacional de Saúde do Escolar."
 dataset = "ibge-sidra-6378"
 variable = "8196"
 fact = "fact_sidra_6378"
@@ -2500,7 +2605,7 @@ caveats = ["As categorias de Dependência administrativa da escola podem se sobr
 [[indicators]]
 id = "vacinacao_covid"
 name = "Pessoas de 5 anos ou mais de idade que se vacinaram pelo menos uma vez contra a COVID-19"
-description = "Pessoas de 5 anos ou mais de idade que se vacinaram pelo menos uma vez contra a COVID-19 (PNAD Contínua, tabela SIDRA 9730). Valores no Total: Sexo: Total; Grupo de idade: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 1&ordm; trimestre."
+description = "Pessoas de 5 anos ou mais de idade que se vacinaram pelo menos uma vez contra a COVID-19 (PNAD Contínua, tabela SIDRA 9730). Recorte: Grupo de idade: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 1&ordm; trimestre."
 dataset = "ibge-sidra-9730"
 variable = "8992"
 fact = "fact_sidra_9730"
@@ -2514,7 +2619,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "tiveram_covid"
 name = "Pessoas de 5 anos ou mais de idade que tiveram ou consideram que tiveram COVID-19"
-description = "Pessoas de 5 anos ou mais de idade que tiveram ou consideram que tiveram COVID-19 (PNAD Contínua, tabela SIDRA 9373). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 1&ordm; trimestre."
+description = "Pessoas de 5 anos ou mais de idade que tiveram ou consideram que tiveram COVID-19 (PNAD Contínua, tabela SIDRA 9373). Recorte: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 1&ordm; trimestre."
 dataset = "ibge-sidra-9373"
 variable = "9446"
 fact = "fact_sidra_9373"
@@ -2528,7 +2633,7 @@ caveats = ["As categorias de Situação do domicílio podem se sobrepor (a fonte
 [[indicators]]
 id = "rendimento_familiar"
 name = "Rendimento total e variação patrimonial médio mensal familiar"
-description = "Rendimento total e variação patrimonial médio mensal familiar (Pesquisa de Orçamentos Familiares, tabela SIDRA 6974). Valores no Total: Classes de rendimento total e variação patrimonial mensal familiar: Total; Origem dos rendimentos: Rendimento total e variação patrimonial. Fonte: IBGE - Pesquisa de Orçamentos Familiares."
+description = "Rendimento total e variação patrimonial médio mensal familiar (Pesquisa de Orçamentos Familiares, tabela SIDRA 6974). Recorte: Origem dos rendimentos: Rendimento total e variação patrimonial. Fonte: IBGE - Pesquisa de Orçamentos Familiares."
 dataset = "ibge-sidra-6974"
 variable = "388"
 fact = "fact_sidra_6974"
@@ -2542,7 +2647,7 @@ caveats = ["As categorias de Classes de rendimento total e variação patrimonia
 [[indicators]]
 id = "seguranca_alimentar"
 name = "Domicílios"
-description = "Domicílios (PNAD Contínua, tabela SIDRA 9552). Valores no Total: Situação do domicílio: Total; Situação de segurança alimentar existente no domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre.."
+description = "Domicílios (PNAD Contínua, tabela SIDRA 9552). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre.."
 dataset = "ibge-sidra-9552"
 variable = "162"
 fact = "fact_sidra_9552"
@@ -2556,7 +2661,7 @@ caveats = ["As categorias de Situação de segurança alimentar existente no dom
 [[indicators]]
 id = "domicilios_internet"
 name = "Domicílios"
-description = "Domicílios (PNAD Contínua anual, tabela SIDRA 7307). Valores no Total: Situação do domicílio: Total; Existência de utilização da Internet no domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
+description = "Domicílios (PNAD Contínua anual, tabela SIDRA 7307). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
 dataset = "ibge-sidra-7307"
 variable = "162"
 fact = "fact_sidra_7307"
@@ -2570,7 +2675,7 @@ caveats = ["As categorias de Existência de utilização da Internet no domicíl
 [[indicators]]
 id = "pessoas_internet"
 name = "Pessoas de 10 anos ou mais de idade"
-description = "Pessoas de 10 anos ou mais de idade (PNAD Contínua anual, tabela SIDRA 7325). Valores no Total: Sexo: Total; Utilização da internet no período de referência dos últimos três meses: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
+description = "Pessoas de 10 anos ou mais de idade (PNAD Contínua anual, tabela SIDRA 7325). Recorte: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
 dataset = "ibge-sidra-7325"
 variable = "140"
 fact = "fact_sidra_7325"
@@ -2584,7 +2689,7 @@ caveats = ["As categorias de Utilização da internet no período de referência
 [[indicators]]
 id = "celular_uso_pessoal"
 name = "Pessoas de 10 anos ou mais de idade"
-description = "Pessoas de 10 anos ou mais de idade (PNAD Contínua anual, tabela SIDRA 7373). Valores no Total: Sexo: Total; Posse de telefone móvel celular para uso pessoal: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
+description = "Pessoas de 10 anos ou mais de idade (PNAD Contínua anual, tabela SIDRA 7373). Recorte: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
 dataset = "ibge-sidra-7373"
 variable = "140"
 fact = "fact_sidra_7373"
@@ -2598,7 +2703,7 @@ caveats = ["As categorias de Posse de telefone móvel celular para uso pessoal p
 [[indicators]]
 id = "domicilios_televisao"
 name = "Domicílios"
-description = "Domicílios (PNAD Contínua anual, tabela SIDRA 7167). Valores no Total: Situação do domicílio: Total; Existência de televisão no domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
+description = "Domicílios (PNAD Contínua anual, tabela SIDRA 7167). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
 dataset = "ibge-sidra-7167"
 variable = "162"
 fact = "fact_sidra_7167"
@@ -2612,7 +2717,7 @@ caveats = ["As categorias de Existência de televisão no domicílio podem se so
 [[indicators]]
 id = "sensacao_seguranca"
 name = "Pessoas de 15 anos ou mais de idade que se sentem seguras ao andar sozinhas nas redondezas ou arredores do seu domicílio"
-description = "Pessoas de 15 anos ou mais de idade que se sentem seguras ao andar sozinhas nas redondezas ou arredores do seu domicílio (PNAD Contínua, tabela SIDRA 8713). Valores no Total: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
+description = "Pessoas de 15 anos ou mais de idade que se sentem seguras ao andar sozinhas nas redondezas ou arredores do seu domicílio (PNAD Contínua, tabela SIDRA 8713). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
 dataset = "ibge-sidra-8713"
 variable = "12567"
 fact = "fact_sidra_8713"
@@ -2626,7 +2731,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "vitimas_roubo"
 name = "Pessoas de 15 anos ou mais de idade que foram vítimas de roubo nos últimos 12 meses"
-description = "Pessoas de 15 anos ou mais de idade que foram vítimas de roubo nos últimos 12 meses (PNAD Contínua, tabela SIDRA 8503). Valores no Total: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
+description = "Pessoas de 15 anos ou mais de idade que foram vítimas de roubo nos últimos 12 meses (PNAD Contínua, tabela SIDRA 8503). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
 dataset = "ibge-sidra-8503"
 variable = "12452"
 fact = "fact_sidra_8503"
@@ -2640,7 +2745,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "violencia"
 name = "Pessoas de 18 anos ou mais de idade que sofreram violência nos últimos 12 meses"
-description = "Pessoas de 18 anos ou mais de idade que sofreram violência nos últimos 12 meses (Pesquisa Nacional de Saúde, tabela SIDRA 8022). Valores no Total: Situação do domicílio: Total; Sexo: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
+description = "Pessoas de 18 anos ou mais de idade que sofreram violência nos últimos 12 meses (Pesquisa Nacional de Saúde, tabela SIDRA 8022). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional de Saúde."
 dataset = "ibge-sidra-8022"
 variable = "11392"
 fact = "fact_sidra_8022"
@@ -2668,7 +2773,7 @@ caveats = []
 [[indicators]]
 id = "producao_lavouras"
 name = "Área plantada ou destinada à colheita"
-description = "Área plantada ou destinada à colheita (Produção Agrícola Municipal, tabela SIDRA 5457). Valores no Total: Produto das lavouras temporárias e permanentes: Total. Fonte: IBGE - Produção Agrícola Municipal."
+description = "Área plantada ou destinada à colheita (Produção Agrícola Municipal, tabela SIDRA 5457). Tabela sem classificações. Fonte: IBGE - Produção Agrícola Municipal."
 dataset = "ibge-sidra-5457"
 variable = "8331"
 fact = "fact_sidra_5457"
@@ -2682,7 +2787,7 @@ caveats = ["As categorias de Produto das lavouras temporárias e permanentes vê
 [[indicators]]
 id = "safra_estimada"
 name = "Área plantada"
-description = "Área plantada (Levantamento Sistemático da Produção Agrícola, tabela SIDRA 6588). Valores no Total: Produto das lavouras: Total. Fonte: IBGE - Levantamento Sistemático da Produção Agrícola."
+description = "Área plantada (Levantamento Sistemático da Produção Agrícola, tabela SIDRA 6588). Tabela sem classificações. Fonte: IBGE - Levantamento Sistemático da Produção Agrícola."
 dataset = "ibge-sidra-6588"
 variable = "109"
 fact = "fact_sidra_6588"
@@ -2694,9 +2799,23 @@ path = ["Agropecuária", "Lavouras"]
 caveats = ["Nota da tabela 6588: 1 - Para as Unidades da Federação que, por força do calendário agrícola, ainda não dispõem das estimativas iniciais, os dados correspondem a uma projeção obtida a partir das informações de anos anteriores;", "Nota da tabela 6588: 2 - As produções de abacaxi e de coco-da-baía são expressas em mil frutos e os seus rendimentos médios em frutos/ha.", "Nota da tabela 6588: 3 - Utilizou-se a padronização de 61% para a conversão da produção do algodão em caroço para caroço de algodão, apenas para a totalização da produção dos cereais, leguminosas e oleaginosas.", "Nota da tabela 6588: 4 - Possíveis diferenças entre somas de parcelas e respectivos totais são provenientes do critério de arredondamento.", "Nota da tabela 6588: 5 - As informações mensais que compõem a série histórica estão disponível a partir de setembro de 2006.", "Nota da tabela 6588: 6 - A partir de janeiro de 2018 foram retirados da divulgação os seguintes produtos: abacaxi, alho, cebola, coco-da-baía, guaraná, maçã, malva, pimenta-do-reino, sisal/agave. Os mesmos continuam sendo acompanhados na pesquisa anual da Produção Agrícola Municipal."]
 
 [[indicators]]
+id = "efetivo_rebanhos"
+name = "Efetivo dos rebanhos"
+description = "Efetivo dos rebanhos (Pesquisa da Pecuária Municipal, tabela SIDRA 3939). Recorte: Tipo de rebanho: Bovino. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-3939"
+variable = "105"
+fact = "fact_sidra_3939"
+column = "valor"
+unit = "Cabeças"
+additivity = "additive"
+concept = "efetivo_rebanhos"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de rebanho: Bovino (a classificação não tem Total; as categorias não se somam).", "Nota da tabela 3939: 1 - Os municípios sem informação para pelo menos um efetivo de rebanho não aparecem nas listas.", "Nota da tabela 3939: 2 - Efetivos dos rebanhos em 31/12.", "Nota da tabela 3939: 3 - Os dados sobre matrizes de suínos só estão disponíveis a partir de 2013.", "Nota da tabela 3939: 4 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
 id = "abate_bovinos"
 name = "Animais abatidos"
-description = "Animais abatidos (Pesquisa Trimestral do Abate de Animais, tabela SIDRA 1092). Valores no Total: Tipo de rebanho bovino: Total; Tipo de inspeção: Total; Referência temporal: Total do trimestre. Fonte: IBGE - Pesquisa Trimestral do Abate de Animais."
+description = "Animais abatidos (Pesquisa Trimestral do Abate de Animais, tabela SIDRA 1092). Recorte: Tipo de inspeção: Total; Referência temporal: Total do trimestre. Fonte: IBGE - Pesquisa Trimestral do Abate de Animais."
 dataset = "ibge-sidra-1092"
 variable = "284"
 fact = "fact_sidra_1092"
@@ -2710,7 +2829,7 @@ caveats = ["Nota da tabela 1092: 1 - Os dados divulgados são oriundos de estabe
 [[indicators]]
 id = "leite_adquirido"
 name = "Quantidade de leite cru, resfriado ou não, adquirido"
-description = "Quantidade de leite cru, resfriado ou não, adquirido (Pesquisa Trimestral do Leite, tabela SIDRA 1086). Valores no Total: Tipo de inspeção: Total; Referência temporal: Total do trimestre. Fonte: IBGE - Pesquisa Trimestral do Leite."
+description = "Quantidade de leite cru, resfriado ou não, adquirido (Pesquisa Trimestral do Leite, tabela SIDRA 1086). Recorte: Tipo de inspeção: Total. Fonte: IBGE - Pesquisa Trimestral do Leite."
 dataset = "ibge-sidra-1086"
 variable = "282"
 fact = "fact_sidra_1086"
@@ -2724,7 +2843,7 @@ caveats = ["Nota da tabela 1086: 1 - Até o 4º trimestre de 2005 os dados das U
 [[indicators]]
 id = "ovos_produzidos"
 name = "Quantidade de ovos produzidos"
-description = "Quantidade de ovos produzidos (Produção de Ovos de Galinha, tabela SIDRA 7524). Valores no Total: Finalidade da produção: Total; Referência temporal: Total do trimestre. Fonte: IBGE - Produção de Ovos de Galinha."
+description = "Quantidade de ovos produzidos (Produção de Ovos de Galinha, tabela SIDRA 7524). Recorte: Referência temporal: Total do trimestre. Fonte: IBGE - Produção de Ovos de Galinha."
 dataset = "ibge-sidra-7524"
 variable = "29"
 fact = "fact_sidra_7524"
@@ -2738,7 +2857,7 @@ caveats = ["Nota da tabela 7524: 1 - Até o 4º trimestre de 2011: As informaç�
 [[indicators]]
 id = "area_silvicultura"
 name = "Área total existente em 31/12 dos efetivos da silvicultura"
-description = "Área total existente em 31/12 dos efetivos da silvicultura (Produção da Extração Vegetal e da Silvicultura, tabela SIDRA 5930). Valores no Total: Espécie florestal: Total. Fonte: IBGE - Produção da Extração Vegetal e da Silvicultura."
+description = "Área total existente em 31/12 dos efetivos da silvicultura (Produção da Extração Vegetal e da Silvicultura, tabela SIDRA 5930). Tabela sem classificações. Fonte: IBGE - Produção da Extração Vegetal e da Silvicultura."
 dataset = "ibge-sidra-5930"
 variable = "6549"
 fact = "fact_sidra_5930"
@@ -2752,7 +2871,7 @@ caveats = ["As categorias de Espécie florestal vêm até Brasil, Grande Região
 [[indicators]]
 id = "estabelecimentos_area"
 name = "Número de estabelecimentos agropecuários"
-description = "Número de estabelecimentos agropecuários (Censo Agropecuário, tabela SIDRA 6878). Valores no Total: Condição do produtor em relação às terras: Total; Tipologia: Total; Grupos de atividade econômica: Total; Sexo do produtor: Total; Classe de idade do produtor: Total. Fonte: IBGE - Censo Agropecuário."
+description = "Número de estabelecimentos agropecuários (Censo Agropecuário, tabela SIDRA 6878). Recorte: Condição do produtor em relação às terras: Total; Grupos de atividade econômica: Total; Sexo do produtor: Total; Classe de idade do produtor: Total. Fonte: IBGE - Censo Agropecuário."
 dataset = "ibge-sidra-6878"
 variable = "183"
 fact = "fact_sidra_6878"
@@ -2780,7 +2899,7 @@ caveats = ["Série encerrada na fonte em 2006: é a série publicada, sem atuali
 [[indicators]]
 id = "agrotoxicos"
 name = "Quantidade comercializada de ingredientes ativos de agrotóxicos e afins"
-description = "Quantidade comercializada de ingredientes ativos de agrotóxicos e afins (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5802). Valores no Total: Classe de uso de agrotóxicos e afins: Total. Fonte: IBAMA. Relat&oacute;rios de Comercializa&ccedil;&atilde;o de Agrot&oacute;xicos - Boletim Anual de Produ&ccedil;&atilde;o, Importa&ccedil;&atilde;o, Exporta&ccedil;&atilde;o e Vendas de Agrot&oacute;xicos no Brasil. Boletins 2009 - 2014, Bras&iacute;lia, DF: Instituto Brasileiro do Meio Ambiente e dos Recursos Naturais Renov&aacute;veis, Diretoria de Qualidade Ambiental. Dispon&iacute;vel em: &lt;http://www.ibama.gov.br/areas-tematicas-qa/relatorio-de-comercializacao-de-agrotoxicos/pagina-3&gt;. Acesso em: abr. 2016.."
+description = "Quantidade comercializada de ingredientes ativos de agrotóxicos e afins (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5802). Tabela sem classificações. Fonte: IBAMA. Relat&oacute;rios de Comercializa&ccedil;&atilde;o de Agrot&oacute;xicos - Boletim Anual de Produ&ccedil;&atilde;o, Importa&ccedil;&atilde;o, Exporta&ccedil;&atilde;o e Vendas de Agrot&oacute;xicos no Brasil. Boletins 2009 - 2014, Bras&iacute;lia, DF: Instituto Brasileiro do Meio Ambiente e dos Recursos Naturais Renov&aacute;veis, Diretoria de Qualidade Ambiental. Dispon&iacute;vel em: &lt;http://www.ibama.gov.br/areas-tematicas-qa/relatorio-de-comercializacao-de-agrotoxicos/pagina-3&gt;. Acesso em: abr. 2016.."
 dataset = "ibge-sidra-5802"
 variable = "6535"
 fact = "fact_sidra_5802"
@@ -2794,7 +2913,7 @@ caveats = ["Série encerrada na fonte em 2014: é a série publicada, sem atuali
 [[indicators]]
 id = "fertilizantes"
 name = "Quantidade de fertilizantes entregue ao consumidor final"
-description = "Quantidade de fertilizantes entregue ao consumidor final (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 770). Valores no Total: Tipo de nutriente: Total. Fonte: <p>Anu&aacute;rio estat&iacute;stico do setor de fertilizantes 2014, S&atilde;o Paulo: Associa&ccedil;&atilde;o Nacional para Difus&atilde;o de Adubos, 2015;<br />Produ&ccedil;&atilde;o agr&iacute;cola municipal 2014 In: IBGE. Sistema IBGE de Recupera&ccedil;&atilde;o Autom&aacute;tica - SIDRA. Rio de Janeiro, 2015.<br />Dispon&iacute;vel em: <a href=\"../pesquisa/pam\" target=\"_blank\" rel=\"noopener\">https://sidra.ibge.gov.br/pesquisa/pam</a>. Acesso em: nov. 2015.</p>."
+description = "Quantidade de fertilizantes entregue ao consumidor final (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 770). Tabela sem classificações. Fonte: <p>Anu&aacute;rio estat&iacute;stico do setor de fertilizantes 2014, S&atilde;o Paulo: Associa&ccedil;&atilde;o Nacional para Difus&atilde;o de Adubos, 2015;<br />Produ&ccedil;&atilde;o agr&iacute;cola municipal 2014 In: IBGE. Sistema IBGE de Recupera&ccedil;&atilde;o Autom&aacute;tica - SIDRA. Rio de Janeiro, 2015.<br />Dispon&iacute;vel em: <a href=\"../pesquisa/pam\" target=\"_blank\" rel=\"noopener\">https://sidra.ibge.gov.br/pesquisa/pam</a>. Acesso em: nov. 2015.</p>."
 dataset = "ibge-sidra-770"
 variable = "2397"
 fact = "fact_sidra_770"
@@ -2806,9 +2925,23 @@ path = ["Agropecuária", "Insumos agrícolas"]
 caveats = ["Série encerrada na fonte em 2014: é a série publicada, sem atualização."]
 
 [[indicators]]
+id = "producao_fisica"
+name = "PIMPF - Número-índice (2022=100)"
+description = "PIMPF - Número-índice (2022=100) (Pesquisa Industrial Mensal - Produção Física, tabela SIDRA 8888). Recorte: Seções e atividades industriais (CNAE 2.0): 1 Indústria geral. Fonte: IBGE - Pesquisa Industrial Mensal - Produção Física."
+dataset = "ibge-sidra-8888"
+variable = "12606"
+fact = "fact_sidra_8888"
+column = "valor"
+unit = "Número-índice"
+additivity = "non_additive"
+concept = "producao_fisica"
+path = ["Indústria", "Produção industrial"]
+caveats = ["Valor de referência em Seções e atividades industriais (CNAE 2.0): 1 Indústria geral (a classificação não tem Total; as categorias não se somam)."]
+
+[[indicators]]
 id = "industria_uf"
 name = "Número de unidades locais de empresas com 5 ou mais pessoas ocupadas"
-description = "Número de unidades locais de empresas com 5 ou mais pessoas ocupadas (Pesquisa Industrial Anual - Empresa, tabela SIDRA 10457). Valores no Total: Classificação Nacional de Atividades Econômicas (CNAE 2.0): Total. Fonte: IBGE - Pesquisa Industrial Anual - Empresa."
+description = "Número de unidades locais de empresas com 5 ou mais pessoas ocupadas (Pesquisa Industrial Anual - Empresa, tabela SIDRA 10457). Tabela sem classificações. Fonte: IBGE - Pesquisa Industrial Anual - Empresa."
 dataset = "ibge-sidra-10457"
 variable = "13816"
 fact = "fact_sidra_10457"
@@ -2862,6 +2995,20 @@ path = ["Construção", "Atividade da construção"]
 caveats = ["Nota da tabela 10442: A variável Empresas atuantes nas Unidades da Federação refere-se ao número de empresas com atuação na Unidade da Federação e na região. Assim sendo, cada empresa é contada apenas uma vez na Unidade da Federação e na região onde atua. Logo, o número total de empresas numa região é igual ou menor do que a soma dos totais de cada UF dessa região. Pela mesma razão, o número total de empresas no Brasil é igual ou menor do que a soma dos totais de cada região."]
 
 [[indicators]]
+id = "vendas_materiais"
+name = "PMC - Número-índice (2022=100)"
+description = "PMC - Número-índice (2022=100) (Pesquisa Mensal de Comércio, tabela SIDRA 8757). Recorte: Tipos de índice: Índice de volume de vendas de materiais de construção. Fonte: IBGE - Pesquisa Mensal de Comércio."
+dataset = "ibge-sidra-8757"
+variable = "7169"
+fact = "fact_sidra_8757"
+column = "valor"
+unit = "Número-índice"
+additivity = "non_additive"
+concept = "vendas_materiais"
+path = ["Construção", "Atividade da construção"]
+caveats = ["Valor de referência em Tipos de índice: Índice de volume de vendas de materiais de construção (a classificação não tem Total; as categorias não se somam)."]
+
+[[indicators]]
 id = "custo_m2"
 name = "Custo médio m² - moeda corrente"
 description = "Custo médio m² - moeda corrente (SINAPI, tabela SIDRA 2296). Tabela sem classificações. Fonte: IBGE - Sistema Nacional de Pesquisa de Custos e Índices da Construção Civil."
@@ -2890,9 +3037,37 @@ path = ["Construção", "Custos e insumos da construção"]
 caveats = []
 
 [[indicators]]
+id = "vendas_varejo"
+name = "PMC - Número-índice (2022=100)"
+description = "PMC - Número-índice (2022=100) (Pesquisa Mensal de Comércio, tabela SIDRA 8880). Recorte: Tipos de índice: Índice de volume de vendas no comércio varejista. Fonte: IBGE - Pesquisa Mensal de Comércio."
+dataset = "ibge-sidra-8880"
+variable = "7169"
+fact = "fact_sidra_8880"
+column = "valor"
+unit = "Número-índice"
+additivity = "non_additive"
+concept = "vendas_varejo"
+path = ["Comércio", "Comércio varejista"]
+caveats = ["Valor de referência em Tipos de índice: Índice de volume de vendas no comércio varejista (a classificação não tem Total; as categorias não se somam)."]
+
+[[indicators]]
+id = "vendas_varejo_ampliado"
+name = "PMC - Número-índice (2022=100)"
+description = "PMC - Número-índice (2022=100) (Pesquisa Mensal de Comércio, tabela SIDRA 8881). Recorte: Tipos de índice: Índice de volume de vendas no comércio varejista ampliado. Fonte: IBGE - Pesquisa Mensal de Comércio."
+dataset = "ibge-sidra-8881"
+variable = "7169"
+fact = "fact_sidra_8881"
+column = "valor"
+unit = "Número-índice"
+additivity = "non_additive"
+concept = "vendas_varejo_ampliado"
+path = ["Comércio", "Comércio varejista"]
+caveats = ["Valor de referência em Tipos de índice: Índice de volume de vendas no comércio varejista ampliado (a classificação não tem Total; as categorias não se somam)."]
+
+[[indicators]]
 id = "empresas_comerciais"
 name = "Receita operacional líquida"
-description = "Receita operacional líquida (Pesquisa Anual de Comércio, tabela SIDRA 10646). Valores no Total: Divisão de comércio: Total. Fonte: IBGE - Pesquisa Anual de Comércio."
+description = "Receita operacional líquida (Pesquisa Anual de Comércio, tabela SIDRA 10646). Tabela sem classificações. Fonte: IBGE - Pesquisa Anual de Comércio."
 dataset = "ibge-sidra-10646"
 variable = "643"
 fact = "fact_sidra_10646"
@@ -2918,9 +3093,23 @@ path = ["Comércio", "Comércio exterior"]
 caveats = ["A fonte não publica esta tabela para o Brasil: os dados vêm por Grande Região, UF, como publicados (tabela SIDRA 5945).", "Nota da tabela 5945: A soma das Unidades da Federação não corresponde ao total para o Brasil, cujo valor inclui documentos de exportação ou importação em que não consta a declaração da Unidade da Federação."]
 
 [[indicators]]
+id = "volume_servicos"
+name = "PMS - Número-índice (2022=100)"
+description = "PMS - Número-índice (2022=100) (Pesquisa Mensal de Serviços, tabela SIDRA 5906). Recorte: Tipos de índice: Índice de volume de serviços. Fonte: IBGE - Pesquisa Mensal de Serviços."
+dataset = "ibge-sidra-5906"
+variable = "7167"
+fact = "fact_sidra_5906"
+column = "valor"
+unit = "Número-índice"
+additivity = "non_additive"
+concept = "volume_servicos"
+path = ["Serviços", "Serviços"]
+caveats = ["Valor de referência em Tipos de índice: Índice de volume de serviços (a classificação não tem Total; as categorias não se somam)."]
+
+[[indicators]]
 id = "servicos_nao_financeiros"
 name = "Receita operacional líquida"
-description = "Receita operacional líquida (Pesquisa Anual de Serviços, tabela SIDRA 2581). Valores no Total: Atividades: Total. Fonte: IBGE - Pesquisa Anual de Serviços."
+description = "Receita operacional líquida (Pesquisa Anual de Serviços, tabela SIDRA 2581). Tabela sem classificações. Fonte: IBGE - Pesquisa Anual de Serviços."
 dataset = "ibge-sidra-2581"
 variable = "643"
 fact = "fact_sidra_2581"
@@ -2932,9 +3121,23 @@ path = ["Serviços", "Serviços"]
 caveats = ["Nota da tabela 2581: 1 - Os dados referentes a valores econômicos estão expressos em 1 000 R$.", "Nota da tabela 2581: 2 - Para a variável Salários, retiradas e outras remunerações: inclusive participação nos lucros (somente a parte distribuída aos empregados) e honorários da diretoria, remuneração de sócios cooperados (somente para as cooperativas de trabalho) e as retiradas pró-labore.", "Nota da tabela 2581: 3 - Para a variável Custos das mercadorias revendidas: inclusive custo de vendas de imóveis próprios.", "Nota da tabela 2581: 4 - Para a categoria Serviços prestados principalmente às famílias: o conceito adotado na PAS é menos abrangente que o definido nas Contas Nacionais.", "Nota da tabela 2581: 5 - Nas variáveis Coeficiente de variação, referentes às estimativas de algumas variáveis, os possíveis indicadores e respectivos significados são os seguintes:", "Nota da tabela 2581: A - até 5% - nível de precisão: ótimo", "Nota da tabela 2581: B - mais de 5 a 15% - nível de precisão: bom", "Nota da tabela 2581: C - mais de 15 a 30% - nível de precisão: razoável", "Mais 3 notas na tabela oficial (SIDRA 2581)."]
 
 [[indicators]]
+id = "atividades_turisticas"
+name = "PMS - Número-índice (2022=100)"
+description = "PMS - Número-índice (2022=100) (Pesquisa Mensal de Serviços, tabela SIDRA 8694). Recorte: Tipos de índice: Índice de volume das atividades turísticas. Fonte: IBGE - Pesquisa Mensal de Serviços."
+dataset = "ibge-sidra-8694"
+variable = "7167"
+fact = "fact_sidra_8694"
+column = "valor"
+unit = "Número-índice"
+additivity = "non_additive"
+concept = "atividades_turisticas"
+path = ["Serviços", "Turismo e transportes"]
+caveats = ["Valor de referência em Tipos de índice: Índice de volume das atividades turísticas (a classificação não tem Total; as categorias não se somam)."]
+
+[[indicators]]
 id = "viagens"
 name = "Viagens realizadas pelos moradores dos domicílios"
-description = "Viagens realizadas pelos moradores dos domicílios (PNAD Contínua, tabela SIDRA 7204). Valores no Total: Finalidade da viagem: Total. Fonte: IBGE. Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua,&nbsp;2019 (3&ordm; trimestre), a partir de 2020 (acumulado de segundas visitas).."
+description = "Viagens realizadas pelos moradores dos domicílios (PNAD Contínua, tabela SIDRA 7204). Tabela sem classificações. Fonte: IBGE. Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua,&nbsp;2019 (3&ordm; trimestre), a partir de 2020 (acumulado de segundas visitas).."
 dataset = "ibge-sidra-7204"
 variable = "10390"
 fact = "fact_sidra_7204"
@@ -2962,7 +3165,7 @@ caveats = ["Nota da tabela 9509: 1 - Os dados com menos de 3 (três) informantes
 [[indicators]]
 id = "microempreendedores"
 name = "Número de microempreendedores individuais (MEIs)"
-description = "Número de microempreendedores individuais (MEIs) (Estatísticas dos Cadastros de Microempreendedores Individuais, tabela SIDRA 9597). Valores no Total: Grande grupamento e seções da classificação de atividade econômica (CNAE 2.0): Total. Fonte: IBGE - Estatísticas dos Cadastros de Microempreendedores Individuais."
+description = "Número de microempreendedores individuais (MEIs) (Estatísticas dos Cadastros de Microempreendedores Individuais, tabela SIDRA 9597). Tabela sem classificações. Fonte: IBGE - Estatísticas dos Cadastros de Microempreendedores Individuais."
 dataset = "ibge-sidra-9597"
 variable = "8862"
 fact = "fact_sidra_9597"
@@ -2976,7 +3179,7 @@ caveats = ["Nota da tabela 9597: A fonte de dados da Classificação Nacional de
 [[indicators]]
 id = "nascimentos_empresas"
 name = "Número de nascimentos de empresas empregadoras"
-description = "Número de nascimentos de empresas empregadoras (Demografia das Empresas e Estatísticas de Empreendedorismo, tabela SIDRA 9949). Valores no Total: Faixas de pessoal ocupado assalariado: Total; Classificação Nacional de Atividades Econômicas (CNAE 2.0): Total. Fonte: IBGE - Demografia das Empresas e Estatísticas de Empreendedorismo."
+description = "Número de nascimentos de empresas empregadoras (Demografia das Empresas e Estatísticas de Empreendedorismo, tabela SIDRA 9949). Recorte: Faixas de pessoal ocupado assalariado: Total; Classificação Nacional de Atividades Econômicas (CNAE 2.0): Total. Fonte: IBGE - Demografia das Empresas e Estatísticas de Empreendedorismo."
 dataset = "ibge-sidra-9949"
 variable = "13234"
 fact = "fact_sidra_9949"
@@ -2990,7 +3193,7 @@ caveats = []
 [[indicators]]
 id = "empresas_inovadoras"
 name = "Número de empresas que implementaram inovações de produto e/ou processo, no triênio de referência"
-description = "Número de empresas que implementaram inovações de produto e/ou processo, no triênio de referência (Pesquisa de Inovação, tabela SIDRA 5453). Valores no Total: Atividades da indústria, do setor de eletricidade e gás e dos serviços selecionados: Total. Fonte: IBGE - Pesquisa de Inovação."
+description = "Número de empresas que implementaram inovações de produto e/ou processo, no triênio de referência (Pesquisa de Inovação, tabela SIDRA 5453). Tabela sem classificações. Fonte: IBGE - Pesquisa de Inovação."
 dataset = "ibge-sidra-5453"
 variable = "5977"
 fact = "fact_sidra_5453"
@@ -3061,7 +3264,7 @@ caveats = []
 [[indicators]]
 id = "ipp"
 name = "IPP - Variação mês/mesmo mês do ano anterior (M/M-12)"
-description = "IPP - Variação mês/mesmo mês do ano anterior (M/M-12) (Índice de Preços ao Produtor, tabela SIDRA 6904). Valores no Total: Grandes categorias econômicas: Indústria geral. Fonte: IBGE - Índice de Preços ao Produtor."
+description = "IPP - Variação mês/mesmo mês do ano anterior (M/M-12) (Índice de Preços ao Produtor, tabela SIDRA 6904). Tabela sem classificações. Fonte: IBGE - Índice de Preços ao Produtor."
 dataset = "ibge-sidra-6904"
 variable = "1394"
 fact = "fact_sidra_6904"
@@ -3085,6 +3288,34 @@ additivity = "non_additive"
 concept = "pib_per_capita"
 path = ["Contas nacionais e regionais", "PIB do Brasil"]
 caveats = []
+
+[[indicators]]
+id = "pib_trimestral"
+name = "Valores a preços correntes"
+description = "Valores a preços correntes (Contas Nacionais Trimestrais, tabela SIDRA 1846). Recorte: Setores e subsetores: PIB a preços de mercado. Fonte: IBGE - Contas Nacionais Trimestrais."
+dataset = "ibge-sidra-1846"
+variable = "585"
+fact = "fact_sidra_1846"
+column = "valor"
+unit = "Milhões de Reais"
+additivity = "non_additive"
+concept = "pib_trimestral"
+path = ["Contas nacionais e regionais", "PIB do Brasil"]
+caveats = ["Valor de referência em Setores e subsetores: PIB a preços de mercado (a classificação não tem Total; as categorias não se somam)."]
+
+[[indicators]]
+id = "variacao_pib_trimestral"
+name = "Taxa trimestral (em relação ao mesmo período do ano anterior)"
+description = "Taxa trimestral (em relação ao mesmo período do ano anterior) (Contas Nacionais Trimestrais, tabela SIDRA 5932). Recorte: Setores e subsetores: PIB a preços de mercado. Fonte: IBGE - Contas Nacionais Trimestrais."
+dataset = "ibge-sidra-5932"
+variable = "6561"
+fact = "fact_sidra_5932"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "variacao_pib_trimestral"
+path = ["Contas nacionais e regionais", "PIB do Brasil"]
+caveats = ["Valor de referência em Setores e subsetores: PIB a preços de mercado (a classificação não tem Total; as categorias não se somam)."]
 
 [[indicators]]
 id = "pib_municipios"
@@ -3229,7 +3460,7 @@ caveats = []
 [[indicators]]
 id = "plano_diretor"
 name = "Número de municípios"
-description = "Número de municípios (Pesquisa de Informações Básicas Municipais, tabela SIDRA 5882). Valores no Total: Existência de Plano Diretor: Total; Classe de tamanho da população do município: Total. Fonte: IBGE - Pesquisa de Informações Básicas Municipais."
+description = "Número de municípios (Pesquisa de Informações Básicas Municipais, tabela SIDRA 5882). Recorte: Classe de tamanho da população do município: Total. Fonte: IBGE - Pesquisa de Informações Básicas Municipais."
 dataset = "ibge-sidra-5882"
 variable = "603"
 fact = "fact_sidra_5882"
@@ -3257,7 +3488,7 @@ caveats = ["Série encerrada na fonte em 2013: é a série publicada, sem atuali
 [[indicators]]
 id = "plano_seca"
 name = "Número de municípios"
-description = "Número de municípios (Pesquisa de Informações Básicas Municipais, tabela SIDRA 8530). Valores no Total: Ocorrência de seca nos últimos 4 anos: Total; Plano de Contingência e/ou Prevenção para a seca: Total; Classe de tamanho da população do município: Total. Fonte: IBGE - Pesquisa de Informações Básicas Municipais."
+description = "Número de municípios (Pesquisa de Informações Básicas Municipais, tabela SIDRA 8530). Recorte: Plano de Contingência e/ou Prevenção para a seca: Total; Classe de tamanho da população do município: Total. Fonte: IBGE - Pesquisa de Informações Básicas Municipais."
 dataset = "ibge-sidra-8530"
 variable = "603"
 fact = "fact_sidra_8530"
@@ -3271,7 +3502,7 @@ caveats = ["Nota da tabela 8530: Sem informação refere-se aos municípios que 
 [[indicators]]
 id = "planos_municipais_sociais"
 name = "Número de municípios"
-description = "Número de municípios (Pesquisa de Informações Básicas Municipais, tabela SIDRA 9985). Valores no Total: Existência de Plano Municipal: Total; Classe de tamanho da população do município: Total. Fonte: IBGE - Pesquisa de Informações Básicas Municipais."
+description = "Número de municípios (Pesquisa de Informações Básicas Municipais, tabela SIDRA 9985). Recorte: Classe de tamanho da população do município: Total. Fonte: IBGE - Pesquisa de Informações Básicas Municipais."
 dataset = "ibge-sidra-9985"
 variable = "603"
 fact = "fact_sidra_9985"
@@ -3285,7 +3516,7 @@ caveats = ["As categorias de Existência de Plano Municipal vêm até Brasil, Gr
 [[indicators]]
 id = "conselhos_municipais_sociais"
 name = "Número de municípios"
-description = "Número de municípios (Pesquisa de Informações Básicas Municipais, tabela SIDRA 9987). Valores no Total: Existência de Conselho Municipal: Total; Classe de tamanho da população do município: Total. Fonte: IBGE - Pesquisa de Informações Básicas Municipais."
+description = "Número de municípios (Pesquisa de Informações Básicas Municipais, tabela SIDRA 9987). Recorte: Classe de tamanho da população do município: Total. Fonte: IBGE - Pesquisa de Informações Básicas Municipais."
 dataset = "ibge-sidra-9987"
 variable = "603"
 fact = "fact_sidra_9987"

@@ -316,3 +316,48 @@
     --odbr-delay-tooltip: 0ms;
   }
 }
+
+/* ── Famílias de cor dos temas (v2.3 · Início e Sobre os dados) ──
+   Cada tema usa uma família: faixa do cabeçalho (band), quadro do ícone (icon-bg),
+   traço do ícone (icon) e borda do cartão (border). Mapa tema → família em lib/themes.ts. */
+:root {
+  --odbr-theme-azul-band: #EEF4FD; --odbr-theme-azul-icon-bg: #D6E4FA; --odbr-theme-azul-icon: #1351B4; --odbr-theme-azul-border: #D3E0F5;
+  --odbr-theme-verde-band: #EEF8EC; --odbr-theme-verde-icon-bg: #D3EED0; --odbr-theme-verde-icon: #168821; --odbr-theme-verde-border: #CDE6C9;
+  --odbr-theme-ocre-band: #FFF8E1; --odbr-theme-ocre-icon-bg: #FCEAB0; --odbr-theme-ocre-icon: #8A5F00; --odbr-theme-ocre-border: #F0DFA6;
+  --odbr-theme-petroleo-band: #EAF6F7; --odbr-theme-petroleo-icon-bg: #CDEBEE; --odbr-theme-petroleo-icon: #0E7C86; --odbr-theme-petroleo-border: #C6E3E6;
+  --odbr-theme-roxo-band: #F4EEFA; --odbr-theme-roxo-icon-bg: #E6D9F5; --odbr-theme-roxo-icon: #7A3BA8; --odbr-theme-roxo-border: #E0D2F0;
+  --odbr-theme-laranja-band: #FFF1EA; --odbr-theme-laranja-icon-bg: #FCDCCB; --odbr-theme-laranja-icon: #B23C08; --odbr-theme-laranja-border: #F5D3C2;
+  --odbr-theme-magenta-band: #FCEEF4; --odbr-theme-magenta-icon-bg: #F7D6E4; --odbr-theme-magenta-icon: #A8164E; --odbr-theme-magenta-border: #F0CFDD;
+  --odbr-theme-ardosia-band: #F1F3F6; --odbr-theme-ardosia-icon-bg: #DFE4EB; --odbr-theme-ardosia-icon: #4A5568; --odbr-theme-ardosia-border: #DCE1E8;
+  --odbr-overlay: rgba(7, 29, 65, 0.45);
+  --odbr-success-border: #CDE6C9;
+  --odbr-row-open: #F7F9FC;
+}
+:root[data-theme="dark"] {
+  --odbr-theme-azul-band: #0F3166; --odbr-theme-azul-icon-bg: #1A4485; --odbr-theme-azul-icon: #8DB6F4; --odbr-theme-azul-border: #2A4A80;
+  --odbr-theme-verde-band: #0E3330; --odbr-theme-verde-icon-bg: #145030; --odbr-theme-verde-icon: #2DB34A; --odbr-theme-verde-border: #1E5A3A;
+  --odbr-theme-ocre-band: #2B2C1E; --odbr-theme-ocre-icon-bg: #4A3F12; --odbr-theme-ocre-icon: #FFCD07; --odbr-theme-ocre-border: #5C4E14;
+  --odbr-theme-petroleo-band: #0E3340; --odbr-theme-petroleo-icon-bg: #12505C; --odbr-theme-petroleo-icon: #2EC4C9; --odbr-theme-petroleo-border: #1D5966;
+  --odbr-theme-roxo-band: #22264F; --odbr-theme-roxo-icon-bg: #3A2E6E; --odbr-theme-roxo-icon: #B98AF0; --odbr-theme-roxo-border: #433A7A;
+  --odbr-theme-laranja-band: #2E2430; --odbr-theme-laranja-icon-bg: #4E2E22; --odbr-theme-laranja-icon: #FF8A4C; --odbr-theme-laranja-border: #5E3A2C;
+  --odbr-theme-magenta-band: #2C2142; --odbr-theme-magenta-icon-bg: #4D2244; --odbr-theme-magenta-icon: #F06292; --odbr-theme-magenta-border: #5A2D52;
+  --odbr-theme-ardosia-band: #16304F; --odbr-theme-ardosia-icon-bg: #2A3F5E; --odbr-theme-ardosia-icon: #A3B1C6; --odbr-theme-ardosia-border: #33496B;
+  --odbr-overlay: rgba(0, 0, 0, 0.6);
+  --odbr-success-border: #1E5A3A;
+  --odbr-row-open: #0E2E5C;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --odbr-theme-azul-band: #0F3166; --odbr-theme-azul-icon-bg: #1A4485; --odbr-theme-azul-icon: #8DB6F4; --odbr-theme-azul-border: #2A4A80;
+    --odbr-theme-verde-band: #0E3330; --odbr-theme-verde-icon-bg: #145030; --odbr-theme-verde-icon: #2DB34A; --odbr-theme-verde-border: #1E5A3A;
+    --odbr-theme-ocre-band: #2B2C1E; --odbr-theme-ocre-icon-bg: #4A3F12; --odbr-theme-ocre-icon: #FFCD07; --odbr-theme-ocre-border: #5C4E14;
+    --odbr-theme-petroleo-band: #0E3340; --odbr-theme-petroleo-icon-bg: #12505C; --odbr-theme-petroleo-icon: #2EC4C9; --odbr-theme-petroleo-border: #1D5966;
+    --odbr-theme-roxo-band: #22264F; --odbr-theme-roxo-icon-bg: #3A2E6E; --odbr-theme-roxo-icon: #B98AF0; --odbr-theme-roxo-border: #433A7A;
+    --odbr-theme-laranja-band: #2E2430; --odbr-theme-laranja-icon-bg: #4E2E22; --odbr-theme-laranja-icon: #FF8A4C; --odbr-theme-laranja-border: #5E3A2C;
+    --odbr-theme-magenta-band: #2C2142; --odbr-theme-magenta-icon-bg: #4D2244; --odbr-theme-magenta-icon: #F06292; --odbr-theme-magenta-border: #5A2D52;
+    --odbr-theme-ardosia-band: #16304F; --odbr-theme-ardosia-icon-bg: #2A3F5E; --odbr-theme-ardosia-icon: #A3B1C6; --odbr-theme-ardosia-border: #33496B;
+    --odbr-overlay: rgba(0, 0, 0, 0.6);
+    --odbr-success-border: #1E5A3A;
+    --odbr-row-open: #0E2E5C;
+  }
+}

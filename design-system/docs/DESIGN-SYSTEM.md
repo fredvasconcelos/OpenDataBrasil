@@ -134,7 +134,9 @@ Ativo leva barra indicadora. Foco por teclado (`:focus-visible`) aparece por cim
 
 ## 8. Componentes
 
-- **Cabeçalho:** faixa da marca, logo + nome, abas, botão de tema à direita. Aviso do portal logo abaixo (`role="note"`, fundo `warning-bg`).
+- **Cabeçalho:** faixa da marca, logo + nome, abas, à direita: "Contato" (pílula 36 px, ícone de envelope + texto em `text-active`), botão redondo de 40 px com o ícone do GitHub (rótulo "Repositório do projeto no GitHub" em `aria-label`) e botão de tema. Abaixo de 720 px, "Contato" vira só ícone. Aviso do portal logo abaixo (`role="note"`, fundo `warning-bg`).
+- **Rodapé:** marinho nos dois temas (#071D41 claro; #04122A com divisa #1B3A6B no dark), logo nas cores do negativo, links "Sobre os dados", "Contato" e "Código no GitHub" (ícone + texto, #C5D4EB → branco no hover). No Painel de análise, faixa fina de 44 px.
+- **Ícone do GitHub:** sempre o `github` do Bootstrap Icons (MIT, `assets/icons/github.svg`, `viewBox 0 0 16 16`, `fill: currentColor`), sem alterar a forma. Endereços de contato e do repositório vêm de `NEXT_PUBLIC_CONTACT_URL` e `NEXT_PUBLIC_REPO_URL`; sem valor, o link não aparece.
 - **Barra lateral:** bloco "Filtros" com borda (selects "Nível territorial" e "Período", 40 px, rótulo acima; "Detalhar por" em `fieldset` com checkboxes na ordem de `dimension_order`); abaixo, "Temas e indicadores" com temas e subtemas em `details/summary` e KPIs como botões `aria-pressed`.
 - **Cabeçalho do mapa:** caminho (tema › subtema · nível · período) + H1 do indicador; à direita, "Imagem do mapa" (SVG, PNG).
 - **Cabeçalho de dados:** "Gráfico e tabela" (H2); à direita, "Baixar dados" (CSV, XLSX, Parquet, JSON).
@@ -146,6 +148,14 @@ Ativo leva barra indicadora. Foco por teclado (`:focus-visible`) aparece por cim
 - **Tabela:** cabeçalho fixo `bg-subtle`, ordenação por botão no título ("↓/↑"), números à direita, paginação "1–20 de 5.570" + Anterior/Próxima.
 - **Sobre este indicador:** linha da fonte sempre visível (Fonte · tabela · link oficial · licença · release); "Sobre este indicador" recolhível com descrição, Unidade, Períodos, Versão (mono) e Limitações. Aberto até 1599 px; em tela cheia vira rodapé, fechado.
 - **Pular para o conteúdo:** aparece só com Tab.
+
+### Páginas (v2.3)
+- **Temas:** cada tema tem um ícone (traço 2 px, viewBox 24, `lib/themes.ts`) e uma família de cor (`--odbr-theme-<família>-band | icon-bg | icon | border`, claro e dark). Famílias: azul, verde, ocre, petróleo, roxo, laranja, magenta, ardósia. A cor fica na faixa do cabeçalho do cartão, no quadro do ícone e na borda — nunca no texto nem nos dados (gráficos e mapa seguem a seção 9).
+- **Etiquetas de tema:** pílula 36 px com ícone em círculo de 26 px na cor da família, nome e contagem; selecionada em `primary` com texto `on-primary`. Funcionam como filtro (`aria-pressed`).
+- **Início:** título 40/900, lead 17/600, números em pílulas, busca grande (56 px, raio 28, borda 2 px `border-strong`) que procura no nome, tema, subtema e nº da tabela, ignorando acentos. Em "Todos" sem busca: grade de 3 colunas (2 em ≤ 1023 px, 1 em ≤ 639 px) com até 4 indicadores por tema e "Ver todos os N →". Com tema ou busca: um painel por tema com os subtemas em colunas (`columns: 3 260px`).
+- **Prévia do indicador:** diálogo modal 760 px, raio 20, véu `--odbr-overlay`; faixa na cor do tema com ícone, caminho (tema › subtema) e situação; nome 26/900, descrição, lista de metadados (Fonte e tabela com link oficial, Detalhar por, Outras classificações, Unidade, Períodos, Níveis com mapa, Licença, Versão dos dados), Limitações, "Abrir no painel". Foco inicial em "Fechar"; Esc e clique no véu fecham; o foco volta ao indicador.
+- **Sobre os dados:** cartão do release (id em mono, data de ativação, situação da licença em pílula de aviso) + 3 números; busca e etiquetas; um acordeão por tema (faixa na cor do tema) com cabeçalho de colunas e uma linha por indicador: nome + subtema, tabela, situação, Detalhar por, Outras classificações. A linha abre com descrição, limitações, "Abrir no painel", link da tabela na fonte e os metadados. Em ≤ 899 px a linha mostra só nome e tabela.
+- **Busca da barra lateral:** campo 40 px sob "Temas e indicadores" com tecla `/`; resumo "N indicadores em M temas" + "Limpar"; a árvore filtra enquanto digita, o termo vem marcado (`mark` #FFE58A) e, quando o achado está na descrição, aparece um trecho abaixo do nome. Sem resultado: mensagem com dica.
 
 ## 9. Visualização de dados (d3)
 
@@ -171,7 +181,12 @@ Ativo leva barra indicadora. Foco por teclado (`:focus-visible`) aparece por cim
 - Até 10 cores, nesta ordem — claro: #1351B4 · #168821 · #6E9FE3 · #A87400 · #071D41 · #D9480F · #0E7C86 · #8E44AD · #5C6B82 · #C2185B.
 - Dark: #5992ED · #2DB34A · #C5D9FA · #FFCD07 · #8FA3C2 · #FF8A4C · #2EC4C9 · #B98AF0 · #FFFFFF · #F06292.
 - As cores seguem a ordem das séries, não o nome da categoria (nenhuma cor deve sugerir tom de pele).
-- Série principal 2,5 px com área (opacidade 0,08 / 0,15); demais 1,5 px. Pontos com miolo da superfície. Grade `chart-grid`, eixo zero `chart-axis`, rótulos `chart-label` 12/700. No máximo 6 rótulos no eixo X. Ausências interrompem a linha.
+- Série principal 2,5 px com área (opacidade 0,08 / 0,15); demais 1,5 px. Pontos com miolo da superfície. Grade `chart-grid`, eixo zero `chart-axis`, rótulos `chart-label` 12/700. Ausências de valor (sigilo, "…") interrompem a linha.
+- **Eixo X de tempo (v2.3, `lib/period.ts`):** a posição é proporcional ao tempo. Códigos aceitos: `AAAA`, `AAAAMM`/`AAAA-MM` (mês), `AAAAT1`/`AAAA-Q1` (trimestre) e `AAAA01…04` como trimestre quando a série inteira usa só 01–04 em mais de um ano. Código não reconhecido → eixo ordinal com a mesma regra de rótulos.
+- **Rótulos do eixo X:** menor passo redondo que caiba na largura (ano: 1, 2, 5, 10, 20, 25, 50; trimestre: 1, 2, 4, 8…; mês: 1, 2, 3, 6, 12, 24…), mais o primeiro e o último período, sempre visíveis e ancorados por dentro (`start` / `end`). Rótulo interno que encostaria numa ponta é descartado. Em séries mensais com passo ≥ 12, só o ano. Margem esquerda calculada pelo maior rótulo do eixo Y.
+- **Períodos não publicados:** salto maior que 1,5× o passo típico (mediana) liga os pontos com traço `2 4`, 70% de opacidade, e a legenda ganha "Períodos sem publicação".
+- **Tooltip da série:** HTML dentro de `.series-plot` (não `<title>` nativo). Mostra o período por extenso, uma linha por série (ponto de cor, rótulo, valor 16/900, até 8 séries + "+N séries · veja a tabela") e a unidade. Abre 12 px à direita do ponto mais alto do período; se não couber, vira para a esquerda; se não couber acima, abre abaixo; nunca sai do quadro (4 px). Guia vertical tracejada `3 3` e pontos do período ampliados (+1,5 px, preenchidos). O período ativo é o mais próximo do ponteiro no eixo de tempo.
+- **Teclado:** o gráfico recebe foco; ← → percorrem os períodos, Home/End vão às pontas, Esc fecha; região `aria-live` anuncia período e valores.
 
 ### Tooltip do mapa (`DetailTooltip`)
 - 340 px, faixa da marca no topo, nome do território + etiqueta do período, total em 28/900 + unidade.
@@ -180,7 +195,11 @@ Ativo leva barra indicadora. Foco por teclado (`:focus-visible`) aparece por cim
 - **Só sexo:** pictograma de 10 figuras (cada uma ≈ 10%), barra dividida (série 1 / série 2) e os dois números grandes com valor absoluto.
 - Outros segundos níveis: lista curta sob a categoria.
 - Ausentes: texto de `formatValue` ("X (sigilo)", "…", "não se aplica", "sem dado"); nunca zero.
-- Posição: 16 px à direita do ponteiro; vira para a esquerda perto da borda; na metade de baixo da tela abre para cima. `pointer-events: none`.
+- **Muitas variáveis (v2.3) — largo e baixo.** A forma sai dos dados (`tooltipMode`):
+  - **Matriz:** todas as categorias têm os mesmos itens no 2º nível (mesmos rótulos, mesma ordem), mais de 14 linhas no total e até 12 categorias (ex.: POF, classe de rendimento × 11 grupos de despesa). Parte 1 (260 px): categorias numeradas do maior para o menor valor, com barra — parte do total quando há `share_pct`, ou proporção do maior valor quando o KPI não é aditivo (nota "Barras proporcionais ao maior valor"). Parte 2: tabela itens × categorias; colunas pelo número (selo com borda na cor da série), linhas com o código ("2.1.1") em cinza; célula com tom de `series-1` proporcional ao valor dentro da linha (até 22% claro / 30% dark) e o maior da linha em 900. Largura = 260 + 24 + 176 + 62 × colunas + 36. Sem espaço lateral: resumo em 2 colunas em cima e matriz embaixo.
+  - **Duas colunas:** mais de 10 categorias sem 2º nível → 560 px, lista em 2 colunas.
+  - Cor ou raça › sexo e só sexo continuam na forma normal (340 px).
+- Posição: 16 px à direita do ponteiro; vira para a esquerda perto da borda; na metade de baixo da tela abre para cima. Depois de desenhar, mede largura e altura reais e corrige para ficar inteiro na janela (12 px nas laterais, 8 px em cima/embaixo). `pointer-events: none`.
 - Nota final: unidade + "Percentuais calculados pela plataforma a partir dos valores publicados."
 
 ### Exportação

@@ -49,6 +49,35 @@ SIDRA_LEVELS = {
     "1124": "coordenacao_regional_funai",
     "1125": "terra_indigena",
 }
+# Colunas da Silver ``sidra_observation`` que a Gold usa. As demais (linhagem da
+# execução, URL de origem, nomes do nível e do período) ficam fora do build: a
+# rastreabilidade da Gold vai pelo artefato Bronze e pela versão da Silver (KI-007).
+SILVER_COLUMNS = (
+    "table_id",
+    "variable_id",
+    "variable_name",
+    "unit_name",
+    "territorial_level",
+    "territory_id",
+    "territory_name",
+    "period",
+    "classification_key",
+    "classifications",
+    "value_raw",
+    "value",
+    "value_status",
+    "value_decimals",
+    "bronze_artifact_id",
+    "bronze_checksum_sha256",
+)
+# Recorte municipal usado pelas siglas de UF e pelas notas de instalação prevista.
+MUNICIPAL_NAME_COLUMNS = (
+    "table_id",
+    "period",
+    "territorial_level",
+    "territory_id",
+    "territory_name",
+)
 NO_BREAKDOWN = "none"
 ABSENT = "absent"
 _RANK = {lv.id: lv.rank for lv in LEVELS}
@@ -170,6 +199,20 @@ def strip_fixed_categories(
     return selected.with_columns(stripped.alias("classifications")), problems
 
 
+def municipal_names(silver: pl.LazyFrame) -> pl.DataFrame:
+    """Nomes publicados dos municípios por tabela e período (``MUNICIPAL_NAME_COLUMNS``).
+
+    Basta para ``uf_abbreviations`` e ``resolve_pending_installation``, sem
+    carregar as observações inteiras.
+    """
+    return (
+        silver.filter(pl.col("territorial_level") == "6")
+        .select(MUNICIPAL_NAME_COLUMNS)
+        .unique()
+        .collect()
+    )
+
+
 def uf_abbreviations(silver: pl.DataFrame) -> dict[str, str]:
     """Sigla de cada UF, extraída dos nomes municipais publicados ("Nome - UF")."""
     rows = (
@@ -271,8 +314,10 @@ def build_observations(
         ],
         schema={"dataset_id": pl.String, "period": pl.String, "geography_key": pl.String},
     ).with_columns(pl.lit(["pending_installation"]).alias("flags"))
+    # Lazy: o plano junta as etapas e evita cópias intermediárias do quadro inteiro.
     frame = (
-        selected.with_columns(
+        selected.lazy()
+        .with_columns(
             pl.col("territorial_level")
             .replace_strict(SIDRA_LEVELS, default=None)
             .alias("level_id"),
@@ -290,7 +335,7 @@ def build_observations(
             pl.lit(silver_version, dtype=pl.Int64).alias("silver_table_version"),
             pl.lit(build_id).alias("gold_build_id"),
         )
-        .join(pending_keys, on=["dataset_id", "period", "geography_key"], how="left")
+        .join(pending_keys.lazy(), on=["dataset_id", "period", "geography_key"], how="left")
         .with_columns(pl.col("flags").fill_null(pl.lit([], dtype=pl.List(pl.String))))
     )
     period = pl.col("period")
@@ -301,8 +346,12 @@ def build_observations(
                 pl.when(pl.col("dataset_id").is_in(ids)).then(gold_period(kind)).otherwise(period)
             )
     frame = frame.with_columns(period.alias("period"))
-    return _conform(frame, INDICATOR_OBSERVATION).sort(
-        "indicator_id", "period", "geography_key", "breakdown_key"
+    schema = INDICATOR_OBSERVATION.frame_schema()
+    return (
+        frame.select(schema.names())
+        .cast(schema)
+        .sort("indicator_id", "period", "geography_key", "breakdown_key")
+        .collect()
     )
 
 

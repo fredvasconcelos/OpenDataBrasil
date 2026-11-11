@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ODBr — Tooltip do mapa · muitas variáveis</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1440px; height: 860px; box-sizing: border-box; background: {{c.page}}; font-family: Nunito, system-ui, sans-serif; color: {{c.text}}; padding: 40px; display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 40px; align-items: start; font-variant-numeric: tabular-nums">
+
+<div style="display: flex; flex-direction: column; gap: 18px">
+<div>
+<div style="font-size: 13px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: {{c.muted}}">Tooltip do mapa · v2.3</div>
+<div style="font-size: 26px; font-weight: 900; line-height: 1.15; margin-top: 6px">Muitas variáveis: largo e baixo</div>
+<div style="font-size: 14px; font-weight: 600; color: {{c.body}}; line-height: 1.5; margin-top: 8px">Com classe de rendimento × 11 grupos de despesa, a lista de 340 px passava da altura da janela. O tooltip agora se divide em duas partes lado a lado e cresce para os lados, não para baixo.</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px; font-weight: 600; color: {{c.body}}; line-height: 1.45">
+<div style="display: flex; gap: 10px"><span style="font-weight: 900; color: {{c.active}}; width: 18px">1</span><span><b style="color: {{c.text}}">Resumo.</b> Categorias numeradas, do maior para o menor valor, com barra. Indicador não aditivo (médias): barra proporcional ao maior valor, sem %.</span></div>
+<div style="display: flex; gap: 10px"><span style="font-weight: 900; color: {{c.active}}; width: 18px">2</span><span><b style="color: {{c.text}}">Matriz.</b> Linhas = itens do 2º nível (na ordem da fonte, com o código); colunas = número da categoria. Tom da célula pelo valor dentro da linha; o maior da linha em negrito.</span></div>
+</div>
+<div style="background: {{c.surface}}; border: 1px solid {{c.border}}; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; font-size: 12px; font-weight: 700; color: {{c.body}}">
+<div style="font-size: 13px; font-weight: 900; color: {{c.text}}">Qual forma, pelos dados</div>
+<sc-for list="{{modos}}" as="m" hint-placeholder-count="4">
+<div style="display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 8px; padding-top: 8px; border-top: 1px solid {{c.divider}}"><span style="font-weight: 900; color: {{c.text}}">{{m.nome}}</span><span style="font-weight: 600">{{m.regra}}</span></div>
+</sc-for>
+</div>
+<div style="font-size: 12px; font-weight: 600; color: {{c.muted}}; line-height: 1.5">Posição: 16 px do ponteiro, vira para a esquerda perto da borda e é medido antes de pintar para nunca sair da janela (12 px de margem). Em telas estreitas a matriz vai para baixo do resumo (resumo em 2 colunas).</div>
+<div style="font-size: 11px; font-weight: 700; color: {{c.muted}}; line-height: 1.5; padding: 8px 10px; border-radius: 8px; background: {{c.subtle}}">Exemplo: POF 2017–2018, tabela 6715, Nordeste. Total, as 5 classes e os 11 grupos da classe 1 vêm da captura enviada. As células cinza das classes 2–5 são só marcação de layout (sem valor).</div>
+</div>
+
+<div style="position: relative; padding-top: 24px">
+<div style="position: absolute; left: 0; top: 30px; width: 14px; height: 14px; border-radius: 7px; background: {{c.active}}; box-shadow: 0 0 0 4px {{c.ring}}"></div>
+<div role="tooltip" style="margin-left: 30px; width: 806px; background: {{c.surface}}; border: 1px solid {{c.border}}; border-radius: 14px; box-shadow: {{c.shadow}}; overflow: hidden; font-size: 13px">
+<div style="height: 4px; display: flex"><div style="flex: 2; background: {{c.o}}"></div><div style="flex: 1; background: {{c.d}}"></div><div style="flex: 1; background: {{c.br}}"></div></div>
+<div style="padding: 16px 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 18px; font-weight: 900">Nordeste</span><span style="font-size: 12px; font-weight: 800; padding: 2px 10px; border-radius: 10px; background: {{c.selected}}; color: {{c.active}}">2018</span></div>
+<div style="display: flex; align-items: baseline; gap: 6px"><span style="font-size: 28px; font-weight: 900; letter-spacing: -0.5px">3.166,07</span><span style="font-size: 13px; font-weight: 700; color: {{c.muted}}">reais</span></div>
+
+<div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 24px; align-items: start">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<div style="font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: {{c.muted}}; margin-bottom: 4px">1 · Classes de rendimento</div>
+<sc-for list="{{classes}}" as="k" hint-placeholder-count="5">
+<div style="display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 2px 8px; align-items: center">
+<span style="display: inline-grid; place-items: center; box-sizing: border-box; width: 18px; height: 18px; border-radius: 5px; border: 2px solid {{k.cor}}; font-size: 11px; font-weight: 900">{{k.n}}</span>
+<span style="font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{k.nome}}</span>
+<span style="font-weight: 700; color: {{c.body}}">{{k.valor}}</span>
+<span></span>
+<span style="grid-column: 2 / -1; height: 4px; border-radius: 2px; background: {{c.divider}}; margin-bottom: 4px"><span style="display: block; height: 100%; width: {{k.w}}; border-radius: 2px; background: {{k.cor}}"></span></span>
+</div>
+</sc-for>
+<div style="font-size: 11px; font-weight: 600; color: {{c.muted}}; line-height: 1.4">Barras proporcionais ao maior valor (indicador não aditivo).</div>
+</div>
+
+<div>
+<div style="font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: {{c.muted}}; margin-bottom: 4px">2 · Grupos de despesa × classe</div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) repeat(5, 62px); font-size: 11px">
+<span></span>
+<sc-for list="{{classes}}" as="k" hint-placeholder-count="5"><span style="display: grid; place-items: center; padding-bottom: 6px"><span style="display: inline-grid; place-items: center; box-sizing: border-box; width: 18px; height: 18px; border-radius: 5px; border: 2px solid {{k.cor}}; font-size: 11px; font-weight: 900">{{k.n}}</span></span></sc-for>
+<sc-for list="{{linhas}}" as="r" hint-placeholder-count="11">
+<span style="padding: 4px 5px; border-top: 1px solid {{c.divider}}; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><span style="color: {{c.muted}}; font-weight: 700; margin-right: 6px">{{r.cod}}</span>{{r.nome}}</span>
+<sc-for list="{{r.cells}}" as="v" hint-placeholder-count="5"><span style="padding: 4px 5px; border-top: 1px solid {{c.divider}}; text-align: right; font-weight: {{v.peso}}; color: {{v.cor}}; background: {{v.bg}}">{{v.txt}}<span style="display: {{v.ph}}; margin-left: auto; width: 34px; height: 8px; border-radius: 4px; background: {{c.ph}}"></span></span></sc-for>
+</sc-for>
+</div>
+</div>
+</div>
+
+<p style="margin: 0; padding-top: 10px; border-top: 1px solid {{c.divider}}; font-size: 11px; font-weight: 600; color: {{c.muted}}">reais · Despesa monetária e não monetária média mensal familiar</p>
+</div>
+</div>
+<div style="margin: 14px 0 0 30px; display: flex; gap: 24px; font-size: 12px; font-weight: 700; color: {{c.muted}}">
+<span>Antes: 340 × ~1.500 px (cortado)</span><span>Agora: 806 × ~480 px</span><span>Largura = 260 + 24 + 176 + 62 × colunas + 36 · até 12 colunas</span>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":860}}'>
+class Component extends DCLogic {
+renderVals() {
+const dark = this.props.dark ?? false;
+const c = dark
+? { page: '#071D41', surface: '#0B2852', subtle: '#0C326F', text: '#FFFFFF', body: '#DCE6F5', muted: '#C5D4EB', border: '#234476', divider: '#1B3A6B', selected: '#163D7A', active: '#FFFFFF', ring: 'rgba(89,146,237,0.35)', shadow: '0 12px 32px rgba(0,0,0,0.45)', o: '#5992ED', d: '#FFCD07', br: '#2DB34A', ph: '#234476', heat: [89,146,237], heatMax: 0.30 }
+: { page: '#F4F6F9', surface: '#FFFFFF', subtle: '#EEF1F5', text: '#071D41', body: '#333E4F', muted: '#555F6E', border: '#DDE3EC', divider: '#EEF1F5', selected: '#E8F0FC', active: '#1351B4', ring: 'rgba(19,81,180,0.2)', shadow: '0 12px 32px rgba(7,29,65,0.16)', o: '#1351B4', d: '#F2B600', br: '#168821', ph: '#E6EBF2', heat: [19,81,180], heatMax: 0.22 };
+const series = dark
+? ['#5992ED', '#2DB34A', '#C5D9FA', '#FFCD07', '#8FA3C2']
+: ['#1351B4', '#168821', '#6E9FE3', '#A87400', '#071D41'];
+const fmt = (v) => v.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+const raw = [
+['Mais de 23.850 Reais', 24303.39],
+['Mais de 14.310 a 23.850 Reais', 14487.53],
+['Mais de 9.540 a 14.310 Reais', 9389.06],
+['Mais de 5.724 a 9.540 Reais', 6326.94],
+['Mais de 2.862 a 5.724 Reais', 3583.07],
+];
+const max = raw[0][1];
+const classes = raw.map(([nome, v], i) => ({ n: String(i + 1), nome, valor: fmt(v), w: (v / max * 100).toFixed(1) + '%', cor: series[i] }));
+const grupos = [
+['2.1.1', 'Alimentação', 2309.27], ['2.1.2', 'Habitação', 5217.73], ['2.1.3', 'Vestuário', 674.24],
+['2.1.4', 'Transporte', 3815.2], ['2.1.5', 'Higiene e cuidados pessoais', 357.7], ['2.1.6', 'Assistência à saúde', 1711.72],
+['2.1.7', 'Educação', 1100.46], ['2.1.8', 'Recreação e cultura', 655.97], ['2.1.9', 'Fumo', 14.92],
+['2.1.10', 'Serviços pessoais', 210.71], ['2.1.11', 'Despesas diversas', 828.13],
+];
+const [hr, hg, hb] = c.heat;
+// Só a classe 1 tem valor na captura: ela é o maior da linha nesta prévia (as demais são marcação).
+const linhas = grupos.map(([cod, nome, v]) => ({
+cod, nome,
+cells: [0, 1, 2, 3, 4].map((i) => i === 0
+? { txt: fmt(v), peso: '900', cor: c.text, bg: `rgba(${hr},${hg},${hb},${c.heatMax})`, ph: 'none' }
+: { txt: '', peso: '700', cor: c.body, bg: 'transparent', ph: 'inline-block' }),
+}));
+const modos = [
+{ nome: 'Normal', regra: '340 px. Uma lista de categorias; cor ou raça › sexo; só sexo (pictograma).' },
+{ nome: 'Duas colunas', regra: '560 px. Mais de 10 categorias sem 2º nível.' },
+{ nome: 'Matriz', regra: 'Largo. Todas as categorias com os mesmos itens no 2º nível e mais de 14 linhas no total (até 12 colunas).' },
+{ nome: 'Estreito', regra: 'Sem espaço lateral: resumo em 2 colunas em cima, matriz embaixo.' },
+];
+return { c, classes, linhas, modos };
+}
+}
+</script>
+</body>
+</html>

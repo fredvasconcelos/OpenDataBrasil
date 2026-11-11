@@ -247,6 +247,9 @@ class MapOut(_Out):
     period: str
     unit: str
     additivity: str
+    # "total": o valor do KPI; "share": a participação de uma categoria no Total (%).
+    measure: Literal["total", "share"] = "total"
+    measure_label: str | None = None
     values: list[MapValueOut]
     provenance: Provenance
 

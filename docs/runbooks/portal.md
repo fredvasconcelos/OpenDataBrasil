@@ -20,13 +20,17 @@ A primeira vez exige uma Gold publicada (`odb gold build --activate`, ver o
 docker compose --profile web build portal && docker compose --profile web up -d portal
 ```
 
+Os links "Contato" e GitHub do cabeçalho e do rodapé (Design System v2.3) vêm de
+`NEXT_PUBLIC_CONTACT_URL` e `NEXT_PUBLIC_REPO_URL`. O Next embute essas variáveis no
+build, então mudar o valor exige `build portal` de novo. Sem valor, o link não aparece.
+
 ## Páginas
 
 | Página | Conteúdo |
 |---|---|
-| `/` | pesquisa de indicadores (ignora acentos) e os 20 temas do panorama, com a contagem de indicadores em preparação |
+| `/` | Início (Design System v2.3): números do catálogo, busca (nome, tema, subtema ou nº da tabela, sem acentos), etiquetas de tema com ícone e contagem, grade de temas, lista do tema com os itens em preparação e prévia do indicador com "Abrir no painel" |
 | `/dashboard` | painel: barra lateral (filtros e temas > subtemas > KPIs; temas recolhidos, KPIs planejados desativados "em preparação"), mapa, evolução temporal, tabela, exportações e metadados (layout do Design System v2: empilhado até 1599 px, tela cheia a partir de 1600 px) |
-| `/sobre` | release ativo, conjuntos de dados e licenças |
+| `/sobre` | Sobre os dados (v2.3): release ativo, licença e números; busca, filtro de situação (Todos, Publicados, Em preparação) e etiquetas de tema; uma linha por indicador com descrição, limitações e metadados |
 
 O estado do painel fica na URL e pode ser compartilhado:
 `/dashboard?kpi=populacao_residente&nivel=uf&periodo=2022&dim=c86,c2&territorio=uf:29`.
@@ -73,7 +77,7 @@ docker run --rm --network opendatabrasil_default --ipc=host --user 1000:1000 -e 
 
 Os testes cobrem:
 
-- pesquisa;
+- pesquisa no Início, prévia do indicador e "Abrir no painel";
 - página sem rolagem, sem `<title>` no mapa e hover no menu e no header;
 - recorte por duplo clique:
   - no Nordeste, 9 UFs coloridas e 4 regiões em cinza;
@@ -91,11 +95,21 @@ Os testes cobrem:
 - "Limpar filtros", fonte visível e exportação CSV;
 - mapa municipal e a página "Sobre";
 - panorama: 20 temas recolhidos (só o tema atual aberto), KPIs "em preparação"
-  sem ação, com a tabela SIDRA no `title` (tema Preços, ainda só mensal);
-- tooltip da evolução temporal ao passar o mouse sobre um ponto;
+  sem ação, com a tabela SIDRA no `title` (Serviços > Turismo e transportes, 8695);
+- tooltip da evolução temporal (v2.3): período mais próximo do ponteiro, inteiro
+  dentro do quadro, e navegação pelo teclado;
 - KPI de Total gerado do panorama (Nascidos vivos, tabela 2609): mapa por UF,
   fonte e notas oficiais no rodapé;
-- POF 6715 completa: classes de rendimento e despesas de consumo.
+- POF 6715 completa: classes de rendimento e despesas de consumo, com o tooltip do
+  mapa em matriz inteiro na janela;
+- cabeçalho e rodapé (v2.3): botão do GitHub quando há endereço, rodapé completo
+  no início e faixa de 44 px no Painel, sem rolagem da página;
+- série mensal do IPCA desde jan 1998, eixo de tempo e tooltip por teclado;
+- Início e Sobre (v2.3): números com "em preparação", etiqueta de tema, item em
+  preparação sem ação, busca pelo nº da tabela, filtro de situação e link da
+  tabela na fonte; Início no tema escuro;
+- mapa em % de uma categoria (Municípios com Plano Diretor, legenda
+  "% Com Plano Diretor").
 
 As capturas ficam em `apps/portal/test-results/`. Esses testes dependem dos
 dados reais e não rodam no CI.

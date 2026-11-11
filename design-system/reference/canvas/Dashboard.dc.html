@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ODBr — Painel de análise (claro)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#1351B4}a:hover{color:#071D41}
+aside nav a,aside nav button,header nav a,main button,tbody tr,.odbr-check,[role="img"]>div{transition:background-color .12s ease-out,color .12s ease-out,box-shadow .12s ease-out,border-color .12s ease-out}
+aside nav a:not([aria-current]):hover,aside nav button:hover{background:#F0F4FA !important;color:#1351B4 !important;cursor:pointer}
+aside nav a:not([aria-current]):active,aside nav button:active{background:#DCE7F8 !important}
+header nav a:not([aria-current]):hover{color:#1351B4 !important;box-shadow:inset 0 -3px 0 #C5D9F5}
+main button:not([disabled]):hover{background:#F0F4FA !important;border-color:#1351B4 !important;cursor:pointer}
+main button[disabled]{cursor:not-allowed}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:#F0F4FA}
+[role="img"]>div{cursor:pointer}
+[role="img"]>div:hover{box-shadow:0 0 0 2px #071D41}
+.odbr-check:hover{background:#F0F4FA}
+:focus-visible{outline:3px solid #1351B4;outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 1720px; background: #F4F6F9; font-family: Nunito, system-ui, sans-serif; color: #071D41; display: flex; flex-direction: column">
+
+<div style="height: 4px; display: flex">
+<div style="flex: 2; background: #1351B4"></div>
+<div style="flex: 1; background: #F2B600"></div>
+<div style="flex: 1; background: #168821"></div>
+</div>
+
+<header style="background: #FFFFFF; border-bottom: 1px solid #DDE3EC; padding: 0 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; min-height: 64px">
+<a href="#" style="display: flex; align-items: center; gap: 10px; text-decoration: none">
+<span style="font-size: 30px; font-weight: 900; line-height: 1; letter-spacing: -1.5px; display: flex"><span style="color: #1351B4">O</span><span style="color: #F2B600">D</span><span style="color: #168821">Br</span></span>
+<span style="width: 2px; height: 24px; background: #DDE3EC"></span>
+<span style="font-size: 15px; font-weight: 800; color: #071D41">Open Data Brasil</span>
+</a>
+<nav aria-label="Principal" style="display: flex; flex-wrap: wrap; gap: 4px; font-size: 14px; font-weight: 700">
+<a href="#" style="text-decoration: none; color: #555F6E; padding: 20px 12px">Início</a>
+<a href="#" aria-current="page" style="text-decoration: none; color: #1351B4; padding: 20px 12px 17px; border-bottom: 3px solid #1351B4">Painel de análise</a>
+<a href="#" style="text-decoration: none; color: #555F6E; padding: 20px 12px">Sobre os dados</a>
+</nav>
+<div style="margin-left: auto; display: flex; align-items: center; gap: 8px">
+<a href="#" style="display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid #C5D0DE; border-radius: 18px; background: #FFFFFF; color: #1351B4; font-size: 13px; font-weight: 800; text-decoration: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16v12H4zM4 7l8 6 8-6"></path></svg>Contato</a>
+<a href="#" aria-label="Repositório do projeto no GitHub" title="Repositório do projeto no GitHub" style="width: 38px; height: 38px; border: 1px solid #C5D0DE; border-radius: 19px; background: #FFFFFF; color: #071D41; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"></path></svg></a>
+<button type="button" aria-label="Ativar tema escuro" title="Ativar tema escuro" style="width: 38px; height: 38px; padding: 0; border: 1px solid #C5D0DE; border-radius: 19px; background: #FFFFFF; color: #071D41; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></button>
+</div>
+</header>
+
+<div role="status" style="background: #FFF6D6; border-bottom: 1px solid #F2D27A; color: #5C4300; font-size: 13px; font-weight: 600; padding: 10px 24px; display: flex; align-items: center; gap: 8px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L2.4 18a2 2 0 001.7 3h15.8a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"></path></svg>
+<span>Versão de desenvolvimento, só para uso interno: a licença de reutilização dos dados do IBGE ainda está em revisão.</span>
+</div>
+
+<div style="flex: 1; display: flex; flex-wrap: wrap; align-items: stretch">
+
+<aside style="flex: 1 1 240px; max-width: 100%; background: #FFFFFF; border-right: 1px solid #DDE3EC; padding: 24px 16px; box-sizing: border-box">
+<section aria-label="Filtros" style="border: 1px solid #DDE3EC; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px">
+<div style="font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #555F6E">Filtros</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<label for="nivel" style="font-size: 12px; font-weight: 800; color: #555F6E">Nível territorial</label>
+<select id="nivel" style="height: 40px; padding: 0 10px; border: 1px solid #9AA6B8; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700; color: #071D41"><option>Estado (UF)</option><option>Grande Região</option><option>Município</option></select>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<label for="periodo" style="font-size: 12px; font-weight: 800; color: #555F6E">Período</label>
+<select id="periodo" style="height: 40px; padding: 0 10px; border: 1px solid #9AA6B8; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700; color: #071D41"><option>2026</option><option>2025</option><option>2024</option></select>
+</div>
+<fieldset style="margin: 0; padding: 0; border: none; display: flex; flex-direction: column; gap: 2px">
+<legend style="padding: 0 0 4px; font-size: 12px; font-weight: 800; color: #555F6E">Detalhar por</legend>
+<label class="odbr-check" style="display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 8px; border-radius: 8px; font-size: 14px; font-weight: 800; color: #071D41; cursor: pointer"><input type="checkbox" checked style="width: 16px; height: 16px; margin: 0; accent-color: #1351B4">Cor ou raça</label>
+<label class="odbr-check" style="display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 8px; border-radius: 8px; font-size: 14px; font-weight: 700; color: #071D41; cursor: pointer"><input type="checkbox" style="width: 16px; height: 16px; margin: 0; accent-color: #1351B4">Sexo</label>
+</fieldset>
+<button type="button" style="align-self: flex-start; height: 36px; padding: 0 14px; border: 1px solid #C5D0DE; border-radius: 18px; background: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 800; color: #1351B4">Limpar filtros</button>
+</section>
+<div style="font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #555F6E; padding: 0 8px 12px">Temas e indicadores</div>
+<div role="search" style="position: relative; margin: 0 0 12px">
+<label for="dash-busca" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Buscar tema ou indicador</label>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555F6E" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 12px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input id="dash-busca" type="search" placeholder="Buscar tema ou indicador…" style="width: 100%; box-sizing: border-box; height: 40px; padding: 0 40px 0 36px; border: 1px solid #9AA6B8; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700; color: #071D41">
+<kbd style="position: absolute; right: 8px; top: 9px; padding: 1px 7px; border: 1px solid #C5D0DE; border-radius: 6px; background: #F4F6F9; font-family: inherit; font-size: 12px; font-weight: 800; color: #555F6E">/</kbd>
+</div>
+<nav aria-label="Temas e indicadores" style="display: flex; flex-direction: column; gap: 2px; font-size: 14px">
+<button type="button" aria-expanded="true" style="display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 8px; border: none; background: transparent; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 800; color: #071D41; text-align: left">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>Demografia</button>
+<button type="button" aria-expanded="true" style="display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 8px 0 28px; border: none; background: transparent; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 700; color: #071D41; text-align: left">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>População</button>
+<a href="#" style="display: flex; align-items: center; min-height: 40px; padding: 0 8px 0 50px; border-radius: 8px; text-decoration: none; color: #333E4F; font-weight: 600">População residente (Censo)</a>
+<a href="#" aria-current="page" style="display: flex; align-items: center; min-height: 40px; padding: 0 8px 0 50px; border-radius: 8px; text-decoration: none; background: #E8F0FC; color: #1351B4; font-weight: 800; box-shadow: inset 3px 0 0 #1351B4">População estimada</a>
+<button type="button" aria-expanded="false" style="display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 8px; border: none; background: transparent; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 800; color: #071D41; text-align: left">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>Território</button>
+<button type="button" aria-expanded="false" style="display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 8px; border: none; background: transparent; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 800; color: #071D41; text-align: left">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>Povos indígenas</button>
+<button type="button" aria-expanded="false" style="display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 8px; border: none; background: transparent; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 800; color: #071D41; text-align: left">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>Quilombolas</button>
+</nav>
+</aside>
+
+<main style="flex: 999 1 560px; min-width: 0; padding: 28px 32px 40px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<div style="font-size: 13px; font-weight: 700; color: #555F6E">Demografia › População</div>
+<h1 style="margin: 0; font-size: 30px; font-weight: 900; color: #071D41; letter-spacing: -0.5px">População estimada</h1>
+</div>
+<div role="group" aria-label="Imagem do mapa" style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: #555F6E">
+<span>Imagem do mapa</span>
+<button type="button" style="height: 36px; padding: 0 14px; border: 1px solid #C5D0DE; border-radius: 18px; background: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 800; color: #1351B4">SVG</button>
+<button type="button" style="height: 36px; padding: 0 14px; border: 1px solid #C5D0DE; border-radius: 18px; background: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 800; color: #1351B4">PNG</button>
+</div>
+</div>
+
+<section aria-label="Mapa" style="position: relative; background: #FFFFFF; border: 1px solid #DDE3EC; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800; color: #071D41">Distribuição por UF · 2026</h2>
+<div style="font-size: 13px; font-weight: 600; color: #555F6E">Duplo clique ou roda do mouse aproxima o recorte (Região → UF → Município); clique seleciona.</div>
+</div>
+<nav aria-label="Recorte do mapa" style="position: absolute; top: 72px; left: 24px; z-index: 1; background: rgba(255,255,255,0.92); border: 1px solid #DDE3EC; border-radius: 10px; padding: 4px 12px; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; color: #071D41"><span aria-current="location">Brasil</span><span style="font-weight: 700; color: #555F6E">· Estado (UF)</span></nav>
+<div role="group" aria-label="Zoom do mapa" style="position: absolute; top: 72px; right: 24px; z-index: 1; display: flex; flex-direction: column; gap: 4px">
+<button type="button" aria-label="Aproximar" title="Aproximar" style="width: 36px; height: 36px; padding: 0; border: 1px solid #C5D0DE; border-radius: 8px; background: #FFFFFF; color: #1351B4; font-family: inherit; font-size: 18px; font-weight: 800; box-shadow: 0 2px 8px rgba(7,29,65,0.10)">+</button>
+<button type="button" aria-label="Afastar (subir um nível)" title="Afastar (subir um nível)" style="width: 36px; height: 36px; padding: 0; border: 1px solid #C5D0DE; border-radius: 8px; background: #FFFFFF; color: #1351B4; font-family: inherit; font-size: 18px; font-weight: 800; box-shadow: 0 2px 8px rgba(7,29,65,0.10)">−</button>
+<button type="button" aria-label="Ver o Brasil inteiro" title="Ver o Brasil inteiro" style="width: 36px; height: 36px; padding: 0; border: 1px solid #C5D0DE; border-radius: 8px; background: #FFFFFF; color: #1351B4; font-family: inherit; font-size: 16px; font-weight: 800; box-shadow: 0 2px 8px rgba(7,29,65,0.10)">⤢</button>
+</div>
+<div style="display: flex; justify-content: center">
+<div role="img" aria-label="Mapa em grade das 27 UFs, colorido por população estimada; Tocantins selecionado" style="width: 100%; max-width: 460px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; font-size: 13px; font-weight: 800">
+<div style="grid-column: 2; grid-row: 1; aspect-ratio: 1; border-radius: 10px; background: #EAF1FC; color: #071D41; display: flex; align-items: center; justify-content: center">RR</div>
+<div style="grid-column: 3; grid-row: 1; aspect-ratio: 1; border-radius: 10px; background: #EAF1FC; color: #071D41; display: flex; align-items: center; justify-content: center">AP</div>
+<div style="grid-column: 2; grid-row: 2; aspect-ratio: 1; border-radius: 10px; background: #6E9FE3; color: #071D41; display: flex; align-items: center; justify-content: center">AM</div>
+<div style="grid-column: 3; grid-row: 2; aspect-ratio: 1; border-radius: 10px; background: #2F6ACB; color: #FFFFFF; display: flex; align-items: center; justify-content: center">PA</div>
+<div style="grid-column: 4; grid-row: 2; aspect-ratio: 1; border-radius: 10px; background: #2F6ACB; color: #FFFFFF; display: flex; align-items: center; justify-content: center">MA</div>
+<div style="grid-column: 5; grid-row: 2; aspect-ratio: 1; border-radius: 10px; background: #1351B4; color: #FFFFFF; display: flex; align-items: center; justify-content: center">CE</div>
+<div style="grid-column: 6; grid-row: 2; aspect-ratio: 1; border-radius: 10px; background: #9CBEEE; color: #071D41; display: flex; align-items: center; justify-content: center">RN</div>
+<div style="grid-column: 1; grid-row: 3; aspect-ratio: 1; border-radius: 10px; background: #EAF1FC; color: #071D41; display: flex; align-items: center; justify-content: center">AC</div>
+<div style="grid-column: 2; grid-row: 3; aspect-ratio: 1; border-radius: 10px; background: #C5D9F5; color: #071D41; display: flex; align-items: center; justify-content: center">RO</div>
+<div style="grid-column: 3; grid-row: 3; aspect-ratio: 1; border-radius: 10px; background: #9CBEEE; color: #071D41; display: flex; align-items: center; justify-content: center">MT</div>
+<div style="grid-column: 4; grid-row: 3; aspect-ratio: 1; border-radius: 10px; background: #EAF1FC; color: #071D41; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 6px #F2B600">TO</div>
+<div style="grid-column: 5; grid-row: 3; aspect-ratio: 1; border-radius: 10px; background: #9CBEEE; color: #071D41; display: flex; align-items: center; justify-content: center">PI</div>
+<div style="grid-column: 6; grid-row: 3; aspect-ratio: 1; border-radius: 10px; background: #1351B4; color: #FFFFFF; display: flex; align-items: center; justify-content: center">PE</div>
+<div style="grid-column: 7; grid-row: 3; aspect-ratio: 1; border-radius: 10px; background: #6E9FE3; color: #071D41; display: flex; align-items: center; justify-content: center">PB</div>
+<div style="grid-column: 3; grid-row: 4; aspect-ratio: 1; border-radius: 10px; background: #C5D9F5; color: #071D41; display: flex; align-items: center; justify-content: center">MS</div>
+<div style="grid-column: 4; grid-row: 4; aspect-ratio: 1; border-radius: 10px; background: #2F6ACB; color: #FFFFFF; display: flex; align-items: center; justify-content: center">GO</div>
+<div style="grid-column: 5; grid-row: 4; aspect-ratio: 1; border-radius: 10px; background: #C5D9F5; color: #071D41; display: flex; align-items: center; justify-content: center">DF</div>
+<div style="grid-column: 6; grid-row: 4; aspect-ratio: 1; border-radius: 10px; background: #0A3580; color: #FFFFFF; display: flex; align-items: center; justify-content: center">BA</div>
+<div style="grid-column: 7; grid-row: 4; aspect-ratio: 1; border-radius: 10px; background: #9CBEEE; color: #071D41; display: flex; align-items: center; justify-content: center">AL</div>
+<div style="grid-column: 3; grid-row: 5; aspect-ratio: 1; border-radius: 10px; background: #1351B4; color: #FFFFFF; display: flex; align-items: center; justify-content: center">PR</div>
+<div style="grid-column: 4; grid-row: 5; aspect-ratio: 1; border-radius: 10px; background: #0A3580; color: #FFFFFF; display: flex; align-items: center; justify-content: center">SP</div>
+<div style="grid-column: 5; grid-row: 5; aspect-ratio: 1; border-radius: 10px; background: #0A3580; color: #FFFFFF; display: flex; align-items: center; justify-content: center">MG</div>
+<div style="grid-column: 6; grid-row: 5; aspect-ratio: 1; border-radius: 10px; background: #6E9FE3; color: #071D41; display: flex; align-items: center; justify-content: center">ES</div>
+<div style="grid-column: 7; grid-row: 5; aspect-ratio: 1; border-radius: 10px; background: #C5D9F5; color: #071D41; display: flex; align-items: center; justify-content: center">SE</div>
+<div style="grid-column: 3; grid-row: 6; aspect-ratio: 1; border-radius: 10px; background: #2F6ACB; color: #FFFFFF; display: flex; align-items: center; justify-content: center">SC</div>
+<div style="grid-column: 5; grid-row: 6; aspect-ratio: 1; border-radius: 10px; background: #0A3580; color: #FFFFFF; display: flex; align-items: center; justify-content: center">RJ</div>
+<div style="grid-column: 3; grid-row: 7; aspect-ratio: 1; border-radius: 10px; background: #1351B4; color: #FFFFFF; display: flex; align-items: center; justify-content: center">RS</div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+<div style="font-size: 12px; font-weight: 800; color: #071D41">População</div>
+<div style="width: 100%; max-width: 640px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; font-size: 11px; font-weight: 700; color: #333E4F; text-align: center">
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="height: 12px; border-radius: 6px 0 0 6px; background: #EAF1FC; box-shadow: inset 0 0 0 1px #C5D9F5"></div>Até 1,5 mi</div>
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="height: 12px; background: #C5D9F5"></div>1,5 mi – 3 mi</div>
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="height: 12px; background: #9CBEEE"></div>3 mi – 4 mi</div>
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="height: 12px; background: #6E9FE3"></div>4 mi – 7 mi</div>
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="height: 12px; background: #2F6ACB"></div>7 mi – 9 mi</div>
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="height: 12px; background: #1351B4"></div>9 mi – 15 mi</div>
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="height: 12px; border-radius: 0 6px 6px 0; background: #0A3580"></div>Mais de 15 mi</div>
+</div>
+</div>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: #555F6E">
+<span style="margin-right: auto; font-size: 17px; font-weight: 900; color: #071D41">Gráfico e tabela</span>
+<span>Baixar dados</span>
+<button type="button" style="height: 36px; padding: 0 14px; border: 1px solid #C5D0DE; border-radius: 18px; background: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 800; color: #1351B4">CSV</button>
+<button type="button" style="height: 36px; padding: 0 14px; border: 1px solid #C5D0DE; border-radius: 18px; background: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 800; color: #1351B4">XLSX</button>
+<button type="button" style="height: 36px; padding: 0 14px; border: 1px solid #C5D0DE; border-radius: 18px; background: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 800; color: #1351B4">Parquet</button>
+<button type="button" style="height: 36px; padding: 0 14px; border: 1px solid #C5D0DE; border-radius: 18px; background: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 800; color: #1351B4">JSON</button>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch">
+
+<section aria-label="Evolução temporal" style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #DDE3EC; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800; color: #071D41">Evolução temporal · <span style="color: #1351B4">Tocantins</span></h2>
+<button type="button" style="height: 36px; padding: 0 14px; border: none; border-radius: 18px; background: #E8F0FC; font-family: inherit; font-size: 13px; font-weight: 800; color: #1351B4">Voltar para o Brasil</button>
+</div>
+<svg viewBox="0 0 620 280" width="100%" role="img" aria-label="Gráfico de linha da população estimada do Tocantins, 2001 a 2026, crescendo de cerca de 1,2 mi para 1,6 mi" style="font-family: Nunito, sans-serif">
+<g stroke="#E6EBF2" stroke-width="1">
+<line x1="56" x2="604" y1="178.9" y2="178.9"></line>
+<line x1="56" x2="604" y1="117.8" y2="117.8"></line>
+<line x1="56" x2="604" y1="56.7" y2="56.7"></line>
+</g>
+<line x1="56" x2="604" y1="240" y2="240" stroke="#9AA6B8" stroke-width="1"></line>
+<g fill="#555F6E" font-size="12" font-weight="700" text-anchor="end">
+<text x="46" y="244">0</text>
+<text x="46" y="183">500 mil</text>
+<text x="46" y="122">1 mi</text>
+<text x="46" y="61">1,5 mi</text>
+</g>
+<path d="M60,95.8 L85.2,92.1 L110.4,88.4 L135.6,83.6 L160.8,78.7 L186,76.2 L211.2,82.3 L236.4,81.1 L261.6,68.9 L286.8,66.4 L312,59.1 L337.2,56.7 L362.4,54.2 L387.6,51.8 L412.8,49.3 L438,48.1 L463.2,45.7 L488.4,43.2 L513.6,40.8 L538.8,45.7 L564,44.4 L589.2,43.2 L589.2,240 L60,240 Z" fill="#1351B4" fill-opacity="0.08"></path>
+<polyline points="60,95.8 85.2,92.1 110.4,88.4 135.6,83.6 160.8,78.7 186,76.2 211.2,82.3 236.4,81.1 261.6,68.9 286.8,66.4 312,59.1 337.2,56.7 362.4,54.2 387.6,51.8 412.8,49.3 438,48.1 463.2,45.7 488.4,43.2 513.6,40.8 538.8,45.7 564,44.4 589.2,43.2" fill="none" stroke="#1351B4" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+<g fill="#FFFFFF" stroke="#1351B4" stroke-width="2">
+<circle cx="60" cy="95.8" r="3.5"></circle><circle cx="85.2" cy="92.1" r="3.5"></circle><circle cx="110.4" cy="88.4" r="3.5"></circle><circle cx="135.6" cy="83.6" r="3.5"></circle><circle cx="160.8" cy="78.7" r="3.5"></circle><circle cx="186" cy="76.2" r="3.5"></circle><circle cx="211.2" cy="82.3" r="3.5"></circle><circle cx="236.4" cy="81.1" r="3.5"></circle><circle cx="261.6" cy="68.9" r="3.5"></circle><circle cx="286.8" cy="66.4" r="3.5"></circle><circle cx="312" cy="59.1" r="3.5"></circle><circle cx="337.2" cy="56.7" r="3.5"></circle><circle cx="362.4" cy="54.2" r="3.5"></circle><circle cx="387.6" cy="51.8" r="3.5"></circle><circle cx="412.8" cy="49.3" r="3.5"></circle><circle cx="438" cy="48.1" r="3.5"></circle><circle cx="463.2" cy="45.7" r="3.5"></circle><circle cx="488.4" cy="43.2" r="3.5"></circle><circle cx="513.6" cy="40.8" r="3.5"></circle><circle cx="538.8" cy="45.7" r="3.5"></circle><circle cx="564" cy="44.4" r="3.5"></circle>
+</g>
+<circle cx="589.2" cy="43.2" r="6" fill="#168821" stroke="#FFFFFF" stroke-width="2"></circle>
+<g fill="#555F6E" font-size="12" font-weight="700" text-anchor="middle">
+<text x="60" y="262">2001</text>
+<text x="186" y="262">2006</text>
+<text x="286.8" y="262">2012</text>
+<text x="387.6" y="262">2016</text>
+<text x="488.4" y="262">2020</text>
+<text x="589.2" y="262">2026</text>
+</g>
+</svg>
+<div style="display: flex; align-items: center; gap: 16px; font-size: 12px; font-weight: 700; color: #555F6E">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 16px; height: 3px; border-radius: 2px; background: #1351B4"></span>Total</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 50%; background: #168821"></span>Período selecionado</span>
+</div>
+</section>
+
+<section aria-label="Tabela de dados" style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #DDE3EC; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800; color: #071D41">Dados · Estado (UF) · 2026</h2>
+<div style="max-height: 340px; overflow-y: auto; border: 1px solid #EEF1F5; border-radius: 10px">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums">
+<thead>
+<tr style="background: #F4F6F9">
+<th scope="col" style="text-align: left; padding: 0 12px; height: 40px"><button type="button" style="border: none; background: transparent; font-family: inherit; font-size: 13px; font-weight: 800; color: #071D41; padding: 0">Território</button></th>
+<th scope="col" aria-sort="descending" style="text-align: right; padding: 0 12px; height: 40px"><button type="button" style="border: none; background: transparent; font-family: inherit; font-size: 13px; font-weight: 800; color: #1351B4; padding: 0">Total ↓</button></th>
+</tr>
+</thead>
+<tbody style="color: #333E4F; font-weight: 600">
+<tr style="border-top: 1px solid #EEF1F5"><td style="padding: 9px 12px">São Paulo (SP)</td><td style="padding: 9px 12px; text-align: right">46.179.008</td></tr>
+<tr style="border-top: 1px solid #EEF1F5"><td style="padding: 9px 12px">Minas Gerais (MG)</td><td style="padding: 9px 12px; text-align: right">21.460.311</td></tr>
+<tr style="border-top: 1px solid #EEF1F5"><td style="padding: 9px 12px">Rio de Janeiro (RJ)</td><td style="padding: 9px 12px; text-align: right">17.225.410</td></tr>
+<tr style="border-top: 1px solid #EEF1F5"><td style="padding: 9px 12px">Bahia (BA)</td><td style="padding: 9px 12px; text-align: right">14.889.472</td></tr>
+<tr style="border-top: 1px solid #EEF1F5"><td style="padding: 9px 12px">Paraná (PR)</td><td style="padding: 9px 12px; text-align: right">11.952.456</td></tr>
+<tr style="border-top: 1px solid #EEF1F5"><td style="padding: 9px 12px">Rio Grande do Sul (RS)</td><td style="padding: 9px 12px; text-align: right">11.233.317</td></tr>
+<tr style="border-top: 1px solid #EEF1F5"><td style="padding: 9px 12px">Pernambuco (PE)</td><td style="padding: 9px 12px; text-align: right">9.583.176</td></tr>
+<tr style="border-top: 1px solid #EEF1F5"><td style="padding: 9px 12px">Ceará (CE)</td><td style="padding: 9px 12px; text-align: right">9.302.211</td></tr>
+<tr style="border-top: 1px solid #EEF1F5"><td style="padding: 9px 12px">Pará (PA)</td><td style="padding: 9px 12px; text-align: right">8.756.324</td></tr>
+<tr style="border-top: 1px solid #EEF1F5"><td style="padding: 9px 12px">Santa Catarina (SC)</td><td style="padding: 9px 12px; text-align: right">8.312.759</td></tr>
+<tr style="border-top: 1px solid #EEF1F5"><td style="padding: 9px 12px">Goiás (GO)</td><td style="padding: 9px 12px; text-align: right">7.495.033</td></tr>
+</tbody>
+</table>
+</div>
+<div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #555F6E">
+<span>1–27 de 27</span>
+<button type="button" disabled style="height: 36px; padding: 0 14px; border: 1px solid #DDE3EC; border-radius: 18px; background: #F4F6F9; font-family: inherit; font-size: 13px; font-weight: 700; color: #6B7686">Anterior</button>
+<button type="button" disabled style="height: 36px; padding: 0 14px; border: 1px solid #DDE3EC; border-radius: 18px; background: #F4F6F9; font-family: inherit; font-size: 13px; font-weight: 700; color: #6B7686">Próxima</button>
+</div>
+</section>
+
+</div>
+
+<section aria-label="Sobre este indicador" style="background: #FFFFFF; border: 1px solid #DDE3EC; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800; color: #071D41">Sobre este indicador</h2>
+<p style="margin: 0; font-size: 15px; font-weight: 600; color: #333E4F; line-height: 1.5">Estimativa anual oficial da população residente, publicada pelo IBGE para o cálculo de cotas do Fundo de Participação dos Estados e Municípios.</p>
+<dl style="margin: 0; display: grid; grid-template-columns: minmax(140px, 200px) 1fr; gap: 8px 16px; font-size: 14px">
+<dt style="font-weight: 800; color: #555F6E">Fonte</dt><dd style="margin: 0; font-weight: 600; color: #333E4F">IBGE · Tabela SIDRA 6579, variável 9324 · <a href="#">Ver na fonte oficial</a></dd>
+<dt style="font-weight: 800; color: #555F6E">Unidade</dt><dd style="margin: 0; font-weight: 600; color: #333E4F">Pessoas</dd>
+<dt style="font-weight: 800; color: #555F6E">Períodos</dt><dd style="margin: 0; font-weight: 600; color: #333E4F">2001–2026 (22)</dd>
+<dt style="font-weight: 800; color: #555F6E">Licença</dt><dd style="margin: 0; font-weight: 600; color: #333E4F">ibge-reuso-com-citacao</dd>
+<dt style="font-weight: 800; color: #555F6E">Versão dos dados</dt><dd style="margin: 0; font-family: ui-monospace, Menlo, monospace; font-size: 13px; color: #333E4F; overflow-wrap: anywhere">81f68da1-6c5f-4686-9ea9-6818a24b8db4</dd>
+</dl>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 14px; font-weight: 800; color: #071D41">Limitações</div>
+<ul style="margin: 0; padding-left: 20px; font-size: 14px; font-weight: 600; color: #333E4F; line-height: 1.5">
+<li>Em 2004, 2008 e 2012 a soma dos municípios supera o total oficial: municípios com instalação prevista entram na estimativa sem sair do município de origem. Use os totais oficiais de UF, Grande Região e Brasil.</li>
+<li>Populações definidas por decisão judicial para o FPM não substituem o valor publicado.</li>
+</ul>
+</div>
+</section>
+
+</main>
+</div>
+
+<footer style="background: #071D41; color: #C5D4EB; padding: 28px 32px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="font-size: 26px; font-weight: 900; line-height: 1; letter-spacing: -1px; display: flex"><span style="color: #5992ED">O</span><span style="color: #FFCD07">D</span><span style="color: #2DB34A">Br</span></span>
+<span style="font-size: 14px; font-weight: 700; color: #FFFFFF">Open Data Brasil</span>
+</div>
+<nav aria-label="Rodapé" style="display: flex; flex-wrap: wrap; gap: 20px; font-size: 14px; font-weight: 700">
+<a href="#" style="color: #C5D4EB; text-decoration: none">Sobre os dados</a>
+<a href="#" style="color: #C5D4EB; text-decoration: none">API</a>
+<a href="#" style="color: #C5D4EB; text-decoration: none">Licenças</a>
+<a href="#" style="display: inline-flex; align-items: center; gap: 6px; color: #C5D4EB; text-decoration: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16v12H4zM4 7l8 6 8-6"></path></svg>Contato</a>
+<a href="#" style="display: inline-flex; align-items: center; gap: 6px; color: #C5D4EB; text-decoration: none"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"></path></svg>Código no GitHub</a>
+</nav>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1720}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

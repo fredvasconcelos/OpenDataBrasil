@@ -70,6 +70,11 @@ class PanoramaKpi(_Strict):
     dimensao: str | None = Field(default=None, pattern=r"^c\d{1,6}$")
     # Primeiro período mostrado no portal (a série completa fica na Silver).
     periodo_inicial: str | None = Field(default=None, pattern=r"^\d{4,6}$")
+    # Categoria de referência das classificações sem Total (cNNN → código da categoria):
+    # o KPI mostra essa categoria (ex.: rebanho bovino), já que as demais não se somam.
+    referencia: dict[str, str] = Field(default_factory=dict)
+    # Categoria cuja participação no Total colore o mapa (KPIs de categoria).
+    categoria_mapa: str | None = Field(default=None, pattern=r"^\d+$")
 
 
 class PanoramaSubtheme(_Strict):

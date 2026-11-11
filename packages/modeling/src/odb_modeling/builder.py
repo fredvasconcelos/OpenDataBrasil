@@ -346,17 +346,24 @@ class GoldBuilder:
         inputs = build.inputs
         datasets = self.datasets()
         mapping = model.indicator_map(self._catalog, datasets)
-        silver = (
+        # Memória (KI-007): só as colunas que a Gold usa e só as variáveis do
+        # catálogo são materializadas; os nomes municipais vêm num recorte à parte.
+        scan = (
             self._reader.scan(inputs["silver_uri"], int(inputs["silver_version"]))
             .filter(pl.col("table_id").is_in([d.table_id for d in datasets.values()]))
-            .collect()
+            .select(model.SILVER_COLUMNS)
         )
+        names = model.municipal_names(scan)
+        silver = scan.join(
+            mapping.lazy().select("table_id", "variable_id").unique(),
+            on=["table_id", "variable_id"],
+            how="semi",
+        ).collect()
         selected, fixed_problems = model.strip_fixed_categories(
             model.select_silver(silver, mapping, self._catalog), self._catalog
         )
-        pending, pending_report = model.resolve_pending_installation(
-            self._catalog, silver, datasets
-        )
+        del silver
+        pending, pending_report = model.resolve_pending_installation(self._catalog, names, datasets)
         build.checks = input_checks(
             selected, self._catalog, datasets, pending_report, fixed_problems
         )
@@ -393,7 +400,7 @@ class GoldBuilder:
                 dtb,
                 observed,
                 reference=f"{ref['dataset_id']} {year} (Silver v{ref['delta_version']})",
-                uf_abbreviations=model.uf_abbreviations(silver),
+                uf_abbreviations=model.uf_abbreviations(names),
             )
             bridge = build_ancestor_bridge(geography)
         except GeographyError as exc:

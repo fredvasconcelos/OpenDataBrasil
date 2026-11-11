@@ -238,6 +238,26 @@ def test_pending_installation_resolution() -> None:
     assert model.uf_abbreviations(silver) == {"22": "PI", "50": "MS", "51": "MT"}
 
 
+def test_municipal_names_keep_what_the_lookups_need() -> None:
+    """O recorte enxuto (KI-007) dá o mesmo resultado que as observações inteiras."""
+    rows = _silver_rows([("2299901", "Aroeiras do Itaim - PI"), ("5099902", "Figueirão - MS")])
+    observations = pl.concat(
+        [
+            rows.with_columns(pl.lit("93").alias("variable_id")),
+            rows.with_columns(pl.lit("1000").alias("variable_id")),  # mesma linha, outra variável
+            rows.with_columns(
+                pl.lit("93").alias("variable_id"),
+                pl.lit("3").alias("territorial_level"),
+                pl.lit("22").alias("territory_id"),
+            ),
+        ]
+    )
+    names = model.municipal_names(observations.lazy())
+    assert names.columns == list(model.MUNICIPAL_NAME_COLUMNS)
+    assert names.height == 2  # só municípios, sem repetição por variável
+    assert model.uf_abbreviations(names) == model.uf_abbreviations(observations)
+
+
 def _dtb(rows: list[tuple[str, str, str]]) -> pl.DataFrame:
     """(município, região imediata, região intermediária) na UF 29."""
     return pl.DataFrame(

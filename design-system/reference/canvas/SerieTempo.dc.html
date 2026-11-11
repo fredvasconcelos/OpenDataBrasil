@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ODBr — Série temporal · eixo e tooltip</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1280px; height: 860px; box-sizing: border-box; background: #F4F6F9; font-family: Nunito, system-ui, sans-serif; color: #071D41; padding: 40px; display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 40px; align-items: start; font-variant-numeric: tabular-nums">
+
+<div style="display: flex; flex-direction: column; gap: 18px">
+<div>
+<div style="font-size: 13px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #555F6E">Evolução temporal · v2.3</div>
+<div style="font-size: 26px; font-weight: 900; line-height: 1.15; margin-top: 6px">Eixo de tempo e tooltip que não corta</div>
+</div>
+<sc-for list="{{regras}}" as="r" hint-placeholder-count="5">
+<div style="display: flex; gap: 10px; font-size: 13px; font-weight: 600; color: #333E4F; line-height: 1.45"><span style="font-weight: 900; color: #1351B4; width: 18px; flex: none">{{r.n}}</span><span><b style="color: #071D41">{{r.t}}</b> {{r.d}}</span></div>
+</sc-for>
+<div style="background: #FFFFFF; border: 1px solid #DDE3EC; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #333E4F">
+<div style="font-size: 13px; font-weight: 900; color: #071D41">Códigos de período (lib/period.ts)</div>
+<sc-for list="{{codigos}}" as="k" hint-placeholder-count="5">
+<div style="display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 8px; padding-top: 6px; border-top: 1px solid #EEF1F5"><code style="font-family: ui-monospace, monospace; font-size: 12px; color: #071D41">{{k.c}}</code><span>{{k.r}}</span></div>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 20px">
+<div style="background: #FFFFFF; border: 1px solid #DDE3EC; border-radius: 14px; padding: 18px 20px 14px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px"><span style="font-size: 16px; font-weight: 900">Evolução temporal · Brasil</span><span style="font-size: 12px; font-weight: 700; color: #555F6E">Agora · passe o ponteiro no último ponto</span></div>
+<div style="position: relative; width: 800px; height: 340px">
+<svg width="800" height="340" viewBox="0 0 800 340" style="position: absolute; inset: 0">
+<sc-for list="{{grade}}" as="g" hint-placeholder-count="5"><line x1="52" x2="782" y1="{{g.y}}" y2="{{g.y}}" style="stroke: #E6EBF2"></line></sc-for>
+<line x1="52" x2="782" y1="312" y2="312" style="stroke: #9AA6B8"></line>
+<path d="{{area}}" style="fill: #1351B4; fill-opacity: 0.08"></path>
+<sc-for list="{{solidos}}" as="s" hint-placeholder-count="3"><path d="{{s.d}}" fill="none" stroke-linejoin="round" stroke-linecap="round" style="stroke: #1351B4; stroke-width: 2.5"></path></sc-for>
+<sc-for list="{{vaos}}" as="v" hint-placeholder-count="3"><line x1="{{v.x1}}" y1="{{v.y1}}" x2="{{v.x2}}" y2="{{v.y2}}" stroke-dasharray="2 4" stroke-linecap="round" style="stroke: #1351B4; stroke-width: 2.5; stroke-opacity: 0.7"></line></sc-for>
+<line x1="{{ultimo.x}}" x2="{{ultimo.x}}" y1="12" y2="312" stroke-dasharray="3 3" style="stroke: #9AA6B8"></line>
+<sc-for list="{{pontos}}" as="p" hint-placeholder-count="22"><circle cx="{{p.x}}" cy="{{p.y}}" r="{{p.r}}" style="fill: {{p.f}}; stroke: #1351B4; stroke-width: 2"></circle></sc-for>
+<sc-for list="{{ticks}}" as="t" hint-placeholder-count="6"><g><line x1="{{t.x}}" x2="{{t.x}}" y1="312" y2="316" style="stroke: #9AA6B8"></line><text x="{{t.x}}" y="332" text-anchor="{{t.a}}" font-size="12" font-weight="700" style="fill: #555F6E">{{t.l}}</text></g></sc-for>
+</svg>
+<div style="position: absolute; left: {{tip.left}}px; top: {{tip.top}}px; min-width: 120px; padding: 8px 10px; border-radius: 10px; border: 1px solid #DDE3EC; background: #FFFFFF; box-shadow: 0 12px 32px rgba(7,29,65,0.16); font-size: 13px">
+<div style="font-weight: 900; margin-bottom: 4px">2026</div>
+<div style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #1351B4"></span><span style="margin-left: auto; font-size: 16px; font-weight: 900">214.211.951</span></div>
+<div style="font-size: 11px; font-weight: 700; color: #555F6E">pessoas</div>
+</div>
+</div>
+<div style="display: flex; gap: 16px; margin-top: 8px; font-size: 12px; font-weight: 700; color: #555F6E">
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 16px; height: 3px; border-radius: 2px; background: #1351B4"></span>Brasil</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><svg width="16" height="4"><line x1="1" y1="2" x2="15" y2="2" stroke-dasharray="2 4" stroke-linecap="round" style="stroke: #555F6E; stroke-width: 2"></line></svg>Períodos sem publicação</span>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px">
+<sc-for list="{{posicoes}}" as="p" hint-placeholder-count="3">
+<div style="background: #FFFFFF; border: 1px solid #DDE3EC; border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+<div style="position: relative; height: 70px; border-radius: 8px; background: #F4F6F9; overflow: hidden">
+<span style="position: absolute; left: {{p.px}}; top: {{p.py}}; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 5px; background: #1351B4"></span>
+<span style="position: absolute; left: {{p.tx}}; top: {{p.ty}}; width: 64px; height: 26px; border-radius: 6px; background: #FFFFFF; border: 1px solid #DDE3EC; box-shadow: 0 4px 10px rgba(7,29,65,0.12)"></span>
+</div>
+<div style="font-size: 12px; font-weight: 800">{{p.t}}</div>
+<div style="font-size: 11px; font-weight: 600; color: #555F6E; line-height: 1.4">{{p.d}}</div>
+</div>
+</sc-for>
+</div>
+<div style="font-size: 11px; font-weight: 700; color: #555F6E">Esquema: só o valor de 2026 vem da captura enviada; a forma da linha é ilustrativa e o eixo Y foi omitido de propósito.</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":860}}'>
+class Component extends DCLogic {
+renderVals() {
+const years = [2001, 2002, 2003, 2004, 2005, 2006, 2008, 2009, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2024, 2025, 2026];
+const x0 = 64, x1 = 770, t0 = 2001, t1 = 2026;
+const X = (t) => x0 + (t - t0) / (t1 - t0) * (x1 - x0);
+const Y = (t) => 300 - (t - t0) / (t1 - t0) * 200 - Math.sin((t - t0) / 3) * 6;
+const pts = years.map((t) => ({ t, x: +X(t).toFixed(1), y: +Y(t).toFixed(1) }));
+const runs = []; let run = [pts[0]]; const vaos = [];
+for (let i = 1; i < pts.length; i++) {
+if (pts[i].t - pts[i - 1].t > 1.5) { runs.push(run); vaos.push({ x1: pts[i - 1].x, y1: pts[i - 1].y, x2: pts[i].x, y2: pts[i].y }); run = []; }
+run.push(pts[i]);
+}
+runs.push(run);
+const path = (r) => 'M' + r.map((p) => p.x + ',' + p.y).join('L');
+const solidos = runs.map((r) => ({ d: path(r) }));
+const area = runs.map((r) => path(r) + 'L' + r[r.length - 1].x + ',312L' + r[0].x + ',312Z').join('');
+const last = pts[pts.length - 1];
+const pontos = pts.map((p) => ({ x: p.x, y: p.y, r: p === last ? 5 : 3.5, f: p === last ? '#1351B4' : '#FFFFFF' }));
+const ticks = [
+{ t: 2001, l: '2001', a: 'start' }, { t: 2005, l: '2005', a: 'middle' }, { t: 2010, l: '2010', a: 'middle' },
+{ t: 2015, l: '2015', a: 'middle' }, { t: 2020, l: '2020', a: 'middle' }, { t: 2026, l: '2026', a: 'end' },
+].map((k) => ({ ...k, x: +X(k.t).toFixed(1) }));
+const grade = [62, 125, 187, 250].map((y) => ({ y }));
+// Tooltip: não cabe à direita do último ponto → vira para a esquerda; acima do ponto.
+const tipW = 132, tipH = 74;
+const tip = { left: Math.round(last.x - 12 - tipW), top: Math.max(4, Math.round(last.y - tipH - 12)) };
+const regras = [
+{ n: '1', t: 'Eixo de tempo.', d: 'X proporcional ao tempo: anos não publicados (2007, 2010, 2022, 2023) deixam vão em vez de serem colados aos vizinhos.' },
+{ n: '2', t: 'Rótulos redondos.', d: 'Passo de 1, 2, 5, 10… anos que caiba na largura; primeiro e último período sempre visíveis, ancorados por dentro; rótulo interno perto da ponta é descartado.' },
+{ n: '3', t: 'Vãos pontilhados.', d: 'Salto maior que 1,5× o passo típico vira traço 2/4 com 70% de opacidade e entra na legenda. Sigilo ou "…" continua interrompendo a linha.' },
+{ n: '4', t: 'Tooltip dentro do quadro.', d: 'HTML sobre o gráfico, medido antes de pintar: à direita do ponto, vira para a esquerda na borda; acima, vira para baixo no topo. Guia vertical tracejada e ponto ampliado.' },
+{ n: '5', t: 'Teclado.', d: 'Foco no gráfico; ← → percorrem os períodos, Home/End, Esc fecha. Leitura de tela anuncia período e valores.' },
+];
+const codigos = [
+{ c: '2020', r: '2020' }, { c: '202003 · 2020-03', r: 'mar 2020' }, { c: '2020T1 · 2020-Q1', r: '1º tri 2020' },
+{ c: '202001…202004', r: 'trimestre, se toda a série usa 01–04 em mais de um ano' }, { c: 'outro texto', r: 'eixo ordinal, mesma regra de rótulos' },
+];
+const posicoes = [
+{ t: 'Meio da série', d: '12 px à direita do ponto, acima dele.', px: '40%', py: '70%', tx: 'calc(40% + 12px)', ty: '12px' },
+{ t: 'Fim da série', d: 'Não cabe à direita: vira para a esquerda.', px: '92%', py: '60%', tx: 'calc(92% - 76px)', ty: '6px' },
+{ t: 'Ponto no topo', d: 'Não cabe acima: abre abaixo do ponto.', px: '60%', py: '12%', tx: 'calc(60% + 12px)', ty: 'calc(12% + 12px)' },
+];
+return { pontos, solidos, vaos, area, ticks, grade, ultimo: last, tip, regras, codigos, posicoes };
+}
+}
+</script>
+</body>
+</html>

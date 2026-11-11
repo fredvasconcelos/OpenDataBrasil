@@ -41,6 +41,16 @@ class KpiConfig(_Strict):
     label: str
     indicator: str = Field(pattern=_ID)
     dimensions: tuple[DimensionConfig, ...] = ()
+    # Categoria da primeira dimensão cuja participação no Total colore o mapa (em %).
+    # Para KPIs cujo Total é só o universo (ex.: % de municípios com Plano Diretor).
+    map_share: str | None = Field(default=None, pattern=r"^[0-9A-Za-z_\-]{1,32}$")
+
+    @model_validator(mode="after")
+    def _share(self) -> KpiConfig:
+        if self.map_share is not None and not self.dimensions:
+            msg = f"{self.id}: map_share exige ao menos uma dimensão"
+            raise ValueError(msg)
+        return self
 
 
 class SubthemeConfig(_Strict):

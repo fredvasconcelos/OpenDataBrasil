@@ -1,10 +1,85 @@
-# Open Data Brasil — Design System v2.1 (pacote de implementação)
+# Open Data Brasil — Design System v2.3 (pacote de implementação)
 
 Este pacote leva o Design System ODBr para o portal (`apps/portal`, Next.js 16 + React 19 + d3).
 **Os arquivos em `portal/` são uma cópia exata do portal no commit `d304ab0`** (v2 aplicada
 mais as revisões da beta) e mantêm todas as classes, rótulos e `aria-*` de que os testes dependem.
 
-## Estado atual (v2.1): o que o portal tem além da v2
+## Novidades da v2.3 (sobre a v2.1)
+
+> Versão do pacote: **2.3.0** (arquivo `VERSION`). Telas de referência em `reference/`.
+>
+> **O que a API ainda não fornece (não inventado):** o canvas mostra indicadores
+> "em preparação" e o filtro de situação; o contrato `/navigation` só traz indicadores
+> publicados, então as páginas mostram apenas esses. Para exibir os pendentes é preciso um
+> campo/endpoint no backend (decisão do projeto). O botão "Baixar dados (CSV)" da prévia
+> também ficou de fora: a exportação exige nível e período, que só existem no Painel.
+
+
+| Item | Arquivos | Regra |
+|---|---|---|
+| Eixo X de tempo na evolução temporal | `src/lib/period.ts` (novo) + `period.test.ts`, `SeriesChart.tsx` | Posição proporcional ao tempo; rótulos em passos redondos que cabem na largura; primeiro e último período sempre visíveis e ancorados por dentro; anos não publicados ligados por pontilhado ("Períodos sem publicação"); suporte a AAAAMM e trimestres; eixo ordinal para códigos desconhecidos |
+| Tooltip do gráfico que não corta | `SeriesChart.tsx`, `globals.css` (`.series-tip`) | HTML medido dentro de `.series-plot`: direita → esquerda na borda; acima → abaixo no topo; guia tracejada; teclado ← → Home End Esc |
+| Tooltip do mapa com muitas variáveis | `DetailTooltip.tsx`, `globals.css` (`.tooltip.matrix`, `.tooltip.columns`, `.tt-grid`…) | Forma **matriz** (resumo + tabela itens × categorias, largo e baixo) e **duas colunas**; mede largura e altura e fica inteiro na janela |
+| **Página Início** | `app/page.tsx`, `HomeCatalog.tsx`, `KpiPreview.tsx`, `ThemeIcon.tsx` (novos) | Busca (nome, tema, subtema, nº da tabela), etiquetas de tema com ícone e contagem (filtro), grade compacta de temas em "Todos", lista completa ao escolher tema ou buscar, prévia do indicador em diálogo (metadados, limitações, "Abrir no painel") |
+| **Página Sobre os dados** | `app/sobre/page.tsx`, `AboutCatalog.tsx` (novo) | Release ativo + números; busca e etiquetas; acordeão por tema, uma linha por indicador (tabela, situação, detalhar por, outras classificações) que abre com descrição, limitações e metadados |
+| **Busca na barra lateral** (proposta A) | `Sidebar.tsx` | Campo sob "Temas e indicadores": filtra a árvore, marca o termo, mostra trecho da descrição; "/" foca, Esc limpa |
+| Ícones e cores dos temas | `lib/themes.ts` (novo), `tokens.css` (`--odbr-theme-<família>-*`), `tokens.json` (`themeFamilies`) | 20 ícones; 8 famílias (azul, verde, ocre, petróleo, roxo, laranja, magenta, ardósia), claro e dark; tema reconhecido pelo rótulo (ou `THEME_BY_ID`) |
+| Catálogo | `lib/catalog.ts` (novo) + `catalog.test.ts`, `lib/fixtures.ts` (dados de teste) | Busca sem acentos, destaque, períodos ("2001–2026 (22)"), dimensão principal e demais |
+| Contato e GitHub no cabeçalho | `Header.tsx`, `ProjectLinks.tsx` (novo), `icons.tsx` (novo), `lib/links.ts` (novo) | Pílula "Contato" + botão redondo com o ícone oficial do GitHub (Bootstrap Icons, MIT); links por variável de ambiente |
+| Rodapé | `Footer.tsx` (novo), `app/layout.tsx` | Marinho nos dois temas, logo negativo, "Sobre os dados" · "Contato" · "Código no GitHub"; faixa fina de 44 px no Painel |
+| Mensagens | `messages/pt-BR.json` | `dashboard.gapNote`, `seriesKeys`, `seriesMore`, `relativeNote`; `nav.contact`, `nav.repo`, `nav.code`, `nav.footer` |
+| Testes | `components.test.tsx`, `lib/period.test.ts` | Matriz, forma normal preservada, pontilhado, tooltip por teclado, ticks sem sobreposição |
+
+**Variáveis de ambiente novas** (acrescente ao `.env.example` do portal, sem valores inventados):
+
+```
+NEXT_PUBLIC_CONTACT_URL=   # ex.: mailto: ou página de contato
+NEXT_PUBLIC_REPO_URL=      # URL do repositório no GitHub
+```
+
+> **Para o Claude Code (páginas):** `app/page.tsx` e `app/sobre/page.tsx` foram escritos
+> sobre o contrato atual (`api.navigation()`, `api.release()`, `api.datasets()`). Compare com
+> os arquivos do projeto antes de substituir e mantenha o que tiver mudado depois do commit
+> de referência. O `IndicatorSearch.tsx` antigo deixa de ser usado pelo Início (a busca está
+> no `HomeCatalog`); remova-o só se nada mais o importar.
+
+> **Para o Claude Code:** o tooltip simples do gráfico criado no Codex é **substituído**
+> pelo `SeriesChart.tsx` deste pacote (que já inclui tooltip). Compare com `diff` e mantenha
+> qualquer outra mudança do projeto. Retire o `<title>` nativo dos pontos, se ainda existir.
+
+## Como a v2.3 entrou no portal (adaptações do projeto)
+
+O pacote v2.3 foi aplicado em `apps/portal` por *merge* de três vias (v2.1 do espelho,
+v2.3 do pacote e o portal atual). Os arquivos de `portal/` deste diretório são cópias
+do portal em uso. Adaptações feitas na integração:
+
+- **Períodos da Gold:** `lib/period.ts` também lê o mês como a Gold grava (`AAAAMmm`,
+  ex.: `2026M09`). O `formatPeriod` de `lib/format.ts` passou a usar `lib/period`, então
+  filtro de período, trilha, tabela, tooltip do mapa e gráfico mostram o mesmo texto
+  ("set 2026", "2º tri 2026").
+- **SeriesChart:** substitui o tooltip simples anterior (`.chart-tip`, removido do CSS).
+  O alvo do ponteiro é o retângulo `.series-hit`.
+- **Rodapé no Painel:** a faixa de 44 px (`--footer-slim-h`) é descontada da altura do
+  painel, que continua sem rolagem da página.
+- **Links:** `NEXT_PUBLIC_CONTACT_URL` e `NEXT_PUBLIC_REPO_URL` entram no build da imagem
+  (`args` do serviço `portal` no Compose, `.env.example`). O repositório público já
+  vem preenchido no exemplo; o contato fica vazio até haver endereço oficial.
+- **Páginas Início e Sobre (pacote 2.3.0):** o contrato `/navigation` do projeto já traz
+  os indicadores em preparação (`planned` em cada subtema, com tabela SIDRA, pesquisa e nota).
+  Por isso o portal mostra o que o canvas desenha e o pacote deixou de fora:
+  - no Início, número "em preparação", resumo "N indicadores · X em preparação" e
+    itens sem ação com a etiqueta;
+  - no Sobre, filtro de situação (Todos, Publicados, Em preparação) e linha própria com a
+    tabela na fonte;
+  - na busca da barra lateral, os itens em preparação também aparecem.
+
+  Funções em `lib/catalog.ts` (`flattenPlanned`, `matchPlanned`). Sem busca, a barra lateral
+  mantém os temas recolhidos, com só o tema atual aberto. A fixture de teste ganhou um item
+  em preparação e os campos do contrato atual (`filters`, `planned`).
+- **Mensagens:** mantidas as chaves do portal (`plannedCount`, `planned`,
+  `plannedSource`, legenda "Pessoas") junto com as novas da v2.3.
+
+## Estado da v2.1: o que o portal tem além da v2
 
 Para o Claude Design: ao gerar a próxima versão, **parta destes arquivos** e preserve os
 itens abaixo. A v2 havia perdido os tokens do recorte; eles foram repostos aqui.
@@ -41,7 +116,10 @@ design-system/
 ├── tokens/
 │   ├── tokens.css            ← variáveis CSS (claro, dark, prefers-color-scheme)
 │   └── tokens.json           ← os mesmos valores em JSON (para outras ferramentas)
+├── VERSION                   ← 2.3.0
+├── reference/                ← telas do canvas (fontes) e capturas dos componentes
 ├── assets/brand/             ← logos em SVG (texto convertido em curvas) e ícones PNG
+├── assets/icons/             ← github.svg (Bootstrap Icons, MIT) + licença
 └── portal/                   ← arquivos prontos, nos mesmos caminhos de apps/portal/
     ├── messages/pt-BR.json
     └── src/

@@ -118,3 +118,28 @@ navegador automatizado ou credenciais pessoais.
 - **Impacto:** a lista de séries do portal não é usada como fonte automática do
   catálogo temático. A árvore temática é curada em
   `configs/indicators/demografia.toml`.
+
+## KI-007: o build da Gold carrega a Silver inteira na memória
+
+- **Estado:** mitigado (etapa 1 de 2 feita em 2026-11-11)
+- **Detectado em:** 2026-11-11, no release `57ecc864` (Parte B, 11 tabelas novas)
+- **Sintoma:** `odb gold build` com o limite padrão do worker (16 GB) foi
+  encerrado por falta de memória (código 137) duas vezes. Com
+  `ODB_WORKER_MEMORY=24g`, concluiu com pico medido de 22,5 GB.
+- **Causa:** `GoldBuilder._frames` faz `collect()` da Silver
+  `ibge/sidra_observation` filtrada só por `table_id`. São 6,36 milhões de linhas
+  com todas as 24 colunas, cerca de 440 bytes por linha (a 9971 sozinha tem 2,87
+  milhões). As etapas seguintes (seleção, categorias fixas, observações, fatos)
+  criam cópias desse quadro.
+- **Impacto:** cada onda nova do panorama aproxima o build do limite. Rodar o
+  build ao mesmo tempo que outra carga pesada pode esgotar a RAM (§20.6).
+- **Etapa 1 (feita):** o build lê só as 16 colunas usadas
+  (`model.SILVER_COLUMNS`) e só os pares tabela/variável do catálogo. Os nomes
+  municipais vêm num recorte à parte (`model.municipal_names`), e
+  `build_observations` é lazy. Com isso, o build volta a caber em 16 GB, mas o
+  pico medido foi de 15,97 GB (`docker stats`, que inclui cache de arquivos).
+- **Limite:** o padrão do worker passou para 24 GB, com aprovação do mantenedor
+  (máquina de 64 GB, dos quais o WSL usa 40 GB pelo `.wslconfig`).
+- **Etapa 2 (pendente):** construir a estrutura universal e os fatos por
+  dataset ou por fato, gravando cada um antes do próximo, em vez de manter o
+  quadro inteiro (§8.2, §8.4).

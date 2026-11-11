@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ODBr — Início</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#1351B4}a:hover{color:#071D41}
+.ini-kpi{display:block;width:100%;padding:5px 8px;margin-left:-8px;border:none;border-radius:8px;background:transparent;font:inherit;font-size:14px;font-weight:700;line-height:1.35;text-align:left;color:var(--link);cursor:pointer;transition:background-color .12s ease-out}
+.ini-kpi:hover{background:var(--hover);text-decoration:underline;text-underline-offset:2px}
+.ini-pend{display:flex;align-items:baseline;gap:6px;padding:5px 0;font-size:14px;font-weight:600;line-height:1.35;color:var(--muted)}
+.ini-chip{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 12px 0 6px;border-radius:18px;font:inherit;font-size:13px;font-weight:800;cursor:pointer;transition:background-color .12s ease-out,border-color .12s ease-out}
+.ini-chip:hover{border-color:var(--prim) !important}
+.ini-link{border:none;background:transparent;font:inherit;font-size:13px;font-weight:800;color:var(--link);padding:6px 10px;border-radius:8px;cursor:pointer;text-decoration:none}
+.ini-link:hover{background:var(--hover)}
+.ini-hd{transition:background-color .12s ease-out,border-color .12s ease-out}
+.ini-hd:hover{background:var(--hover) !important;border-color:var(--prim) !important}
+.sob-row{display:grid;grid-template-columns:minmax(0,2.4fr) 96px 140px minmax(0,1.4fr) minmax(0,1.6fr) 24px;gap:14px;align-items:center;width:100%;padding:10px 24px;border:none;border-top:1px solid var(--div);background:transparent;font:inherit;text-align:left;color:inherit;cursor:pointer;transition:background-color .12s ease-out}
+.sob-row:hover{background:var(--hover)}
+.sob-head{display:flex;align-items:center;gap:14px;width:100%;padding:14px 24px;border:none;font:inherit;text-align:left;color:inherit;cursor:pointer}
+.sob-head:hover{filter:brightness(0.98)}
+.ini-x{width:36px;height:36px;border:none;border-radius:18px;background:transparent;color:var(--text);font-size:20px;cursor:pointer}
+.ini-x:hover{background:var(--hover)}
+.ini-cols{columns:3 260px;column-gap:28px}
+.ini-cols > *{break-inside:avoid}
+:focus-visible{outline:3px solid var(--foco);outline-offset:2px}
+</style>
+</helmet>
+<div style="position: relative; width: 100%; min-height: 1200px; background: {{c.page}}; color: {{c.text}}; font-family: Nunito, system-ui, sans-serif; --link: {{c.link}}; --hover: {{c.hover}}; --prim: {{c.prim}}; --text: {{c.text}}; --muted: {{c.muted}}; --foco: {{c.foco}}; --div: {{c.div}}">
+
+<div style="height: 4px; display: flex"><div style="flex: 2; background: {{c.o}}"></div><div style="flex: 1; background: {{c.d}}"></div><div style="flex: 1; background: {{c.br}}"></div></div>
+<header style="height: 64px; background: {{c.header}}; border-bottom: 1px solid {{c.borda}}; padding: 0 24px; display: flex; align-items: center; gap: 24px">
+<a href="#" style="display: flex; align-items: center; gap: 10px; text-decoration: none"><span style="font-size: 30px; font-weight: 900; letter-spacing: -1.5px; display: flex"><span style="color: {{c.o}}">O</span><span style="color: {{c.d}}">D</span><span style="color: {{c.br}}">Br</span></span><span style="width: 2px; height: 24px; background: {{c.borda}}"></span><span style="font-size: 15px; font-weight: 800; color: {{c.text}}">Open Data Brasil</span></a>
+<nav aria-label="Principal" style="display: flex; height: 100%; font-size: 14px; font-weight: 700">
+<sc-for list="{{abas}}" as="a" hint-placeholder-count="3"><a href="#" aria-current="{{a.cur}}" style="display: flex; align-items: center; padding: 0 12px; text-decoration: none; color: {{a.cor}}; font-weight: {{a.peso}}; box-shadow: {{a.sh}}">{{a.t}}</a></sc-for>
+</nav>
+<div style="margin-left: auto; display: flex; align-items: center; gap: 8px">
+<a href="#" class="ini-hd" style="display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid {{c.chip}}; border-radius: 18px; background: {{c.surface}}; color: {{c.link}}; font-size: 13px; font-weight: 800; text-decoration: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16v12H4zM4 7l8 6 8-6"></path></svg>Contato</a>
+<a href="#" class="ini-hd" aria-label="Repositório do projeto no GitHub" title="Repositório do projeto no GitHub" style="width: 38px; height: 38px; border: 1px solid {{c.chip}}; border-radius: 19px; background: {{c.surface}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"></path></svg></a>
+<button type="button" class="ini-hd" aria-label="{{temaLabel}}" title="{{temaLabel}}" style="width: 38px; height: 38px; padding: 0; border: 1px solid {{c.chip}}; border-radius: 19px; background: {{c.surface}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{temaIcone}}"></path></svg></button>
+</div>
+</header>
+<p role="note" style="margin: 0; background: {{c.avisoBg}}; border-bottom: 1px solid {{c.avisoBd}}; color: {{c.aviso}}; font-size: 13px; font-weight: 700; padding: 9px 24px">Versão de desenvolvimento, só para uso interno: a licença de reutilização dos dados do IBGE ainda está em revisão.</p>
+
+<sc-if value="{{ehSobre}}" hint-placeholder-val="{{ false }}">
+<main style="max-width: 1200px; margin: 0 auto; padding: 44px 24px 56px; display: flex; flex-direction: column; gap: 24px">
+<section style="display: flex; flex-direction: column; gap: 12px">
+<h1 style="margin: 0; font-size: 40px; font-weight: 900; letter-spacing: -0.8px; line-height: 1.1">Sobre os dados</h1>
+<p style="margin: 0; max-width: 820px; font-size: 17px; font-weight: 600; color: {{c.body}}; line-height: 1.5">Todos os números vêm de um release publicado da camada Gold (Delta Lake), que registra a versão de cada tabela. A fonte oficial continua sendo a instituição que publicou os dados.</p>
+</section>
+<section aria-label="Release ativo" style="display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(4, minmax(0, 1fr)); gap: 12px">
+<div style="padding: 16px 18px; border: 1px solid {{c.borda}}; border-radius: 14px; background: {{c.surface}}; display: flex; flex-direction: column; gap: 6px">
+<h2 style="margin: 0; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: {{c.muted}}">Release ativo</h2>
+<code style="font-family: ui-monospace, Menlo, monospace; font-size: 13px; font-weight: 600; color: {{c.text}}; overflow-wrap: anywhere">81f68da1-6c5f-4686-9ea9-6818a24b8db4</code>
+<span style="font-size: 13px; font-weight: 700; color: {{c.muted}}">ativado em [DATA E HORA]</span>
+<span style="align-self: flex-start; padding: 2px 10px; border-radius: 10px; background: {{c.avisoBg}}; border: 1px solid {{c.avisoBd}}; color: {{c.aviso}}; font-size: 12px; font-weight: 800">Licença IBGE: em revisão (requires_review)</span>
+</div>
+<sc-for list="{{numSobre}}" as="n" hint-placeholder-count="4"><div style="padding: 16px 18px; border: 1px solid {{c.borda}}; border-radius: 14px; background: {{c.surface}}; display: flex; flex-direction: column; justify-content: center; gap: 2px"><span style="font-size: 30px; font-weight: 900; letter-spacing: -0.5px; color: {{n.cor}}">{{n.v}}</span><span style="font-size: 13px; font-weight: 700; color: {{c.muted}}">{{n.t}}</span></div></sc-for>
+</section>
+<section style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end">
+<div role="search" style="position: relative; flex: 1 1 420px">
+<label for="sob-busca" style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 800">Buscar indicador ou tabela</label>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{c.prim}}" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 14px; top: 38px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input id="sob-busca" type="search" value="{{q}}" onChange="{{onQ}}" placeholder="Ex.: IPCA, óbitos, 9606" style="width: 100%; box-sizing: border-box; height: 46px; padding: 0 16px 0 42px; border: 1px solid {{c.forte}}; border-radius: 23px; background: {{c.surface}}; font-family: inherit; font-size: 15px; font-weight: 700; color: {{c.text}}">
+</div>
+<div role="group" aria-label="Situação" style="display: flex; padding: 4px; border-radius: 12px; background: {{c.subtle}}; border: 1px solid {{c.borda}}">
+<sc-for list="{{situacoes}}" as="s" hint-placeholder-count="3"><button type="button" aria-pressed="{{s.on}}" onClick="{{s.pick}}" style="height: 36px; padding: 0 14px; border: none; border-radius: 9px; background: {{s.bg}}; box-shadow: {{s.sh}}; font-family: inherit; font-size: 13px; font-weight: 800; color: {{s.fg}}; cursor: pointer">{{s.t}}</button></sc-for>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{chips}}" as="ch" hint-placeholder-count="21"><button type="button" class="ini-chip" aria-pressed="{{ch.on}}" onClick="{{ch.pick}}" style="border: 1px solid {{ch.bd}}; background: {{ch.bg}}; color: {{ch.fg}}"><span style="width: 26px; height: 26px; border-radius: 13px; background: {{ch.ib}}; color: {{ch.ic}}; display: flex; align-items: center; justify-content: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ch.icone}}"></path></svg></span>{{ch.nome}}<span style="opacity: 0.75">{{ch.n}}</span></button></sc-for>
+</div>
+</section>
+
+<sc-for list="{{sobreTemas}}" as="t" hint-placeholder-count="20">
+<section aria-label="{{t.nome}}" style="background: {{c.surface}}; border: 1px solid {{t.bd}}; border-radius: 16px; overflow: hidden">
+<button type="button" class="sob-head" aria-expanded="{{t.exp}}" onClick="{{t.toggle}}" style="background: {{t.band}}">
+<span style="width: 40px; height: 40px; flex: none; border-radius: 10px; background: {{t.ib}}; color: {{t.ic}}; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.icone}}"></path></svg></span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 17px; font-weight: 900; color: {{c.text}}">{{t.nome}}</span><span style="font-size: 12px; font-weight: 700; color: {{c.muted}}">{{t.resumo}}</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{c.muted}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-left: auto; transform: {{t.rot}}"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+<sc-if value="{{t.aberto}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: minmax(0,2.4fr) 96px 140px minmax(0,1.4fr) minmax(0,1.6fr) 24px; gap: 14px; padding: 10px 24px; border-top: 1px solid {{t.bd}}; background: {{c.subtle}}; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: {{c.muted}}"><span>Indicador</span><span>Tabela</span><span>Situação</span><span>Detalhar por</span><span>Outras classificações</span><span></span></div>
+<sc-for list="{{t.linhas}}" as="l" hint-placeholder-count="6">
+<div>
+<button type="button" class="sob-row" aria-expanded="{{l.exp}}" onClick="{{l.toggle}}" style="background: {{l.bg}}">
+<span style="display: flex; flex-direction: column; gap: 1px; min-width: 0"><span style="font-size: 14px; font-weight: 800; color: {{c.text}}">{{l.nome}}</span><span style="font-size: 12px; font-weight: 600; color: {{c.muted}}">{{l.sub}}</span></span>
+<span style="font-size: 13px; font-weight: 800; color: {{c.link}}; font-variant-numeric: tabular-nums">{{l.tabela}}</span>
+<span><span style="padding: 2px 10px; border-radius: 10px; background: {{l.stBg}}; color: {{l.stFg}}; border: 1px solid {{l.stBd}}; font-size: 12px; font-weight: 800; white-space: nowrap">{{l.situacao}}</span></span>
+<span style="font-size: 13px; font-weight: 600; color: {{c.body}}">{{l.dim}}</span>
+<span style="font-size: 13px; font-weight: 600; color: {{c.body}}">{{l.outras}}</span>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{c.muted}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: {{l.rot}}"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+<sc-if value="{{l.aberta}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 4px 24px 22px 24px; background: {{l.bg}}; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<p style="margin: 0; font-size: 14px; font-weight: 600; color: {{c.body}}; line-height: 1.55">{{l.desc}}</p>
+<sc-if value="{{l.temLim}}" hint-placeholder-val="{{ false }}"><div><div style="font-size: 13px; font-weight: 900; margin-bottom: 2px">Limitações</div><ul style="margin: 0; padding-left: 18px; font-size: 13px; font-weight: 600; color: {{c.body}}; line-height: 1.5"><sc-for list="{{l.lim}}" as="x" hint-placeholder-count="2"><li>{{x}}</li></sc-for></ul></div></sc-if>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<button type="button" style="height: 38px; padding: 0 18px; border: none; border-radius: 19px; background: {{c.prim}}; color: {{c.onPrim}}; font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer">Abrir no painel</button>
+<a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1px solid {{c.chip}}; border-radius: 18px; color: {{c.link}}; font-size: 13px; font-weight: 800; text-decoration: none">Tabela {{l.tabela}} no SIDRA ↗</a>
+</div>
+</div>
+<dl style="margin: 0; display: grid; grid-template-columns: 130px 1fr; gap: 6px 12px; align-content: start; font-size: 13px; padding: 12px 14px; border-radius: 12px; background: {{c.subtle}}">
+<dt style="font-weight: 800; color: {{c.muted}}">Unidade</dt><dd style="margin: 0; font-weight: 700; color: {{c.body}}">{{l.unidade}}</dd>
+<dt style="font-weight: 800; color: {{c.muted}}">Períodos</dt><dd style="margin: 0; font-weight: 700; color: {{c.body}}">{{l.periodos}}</dd>
+<dt style="font-weight: 800; color: {{c.muted}}">Níveis com mapa</dt><dd style="margin: 0; font-weight: 700; color: {{c.body}}">{{l.niveis}}</dd>
+<dt style="font-weight: 800; color: {{c.muted}}">Licença</dt><dd style="margin: 0; font-weight: 700; color: {{c.body}}">{{l.licenca}}</dd>
+<dt style="font-weight: 800; color: {{c.muted}}">Versão</dt><dd style="margin: 0; font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: {{c.body}}">81f68da1</dd>
+</dl>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</sc-if>
+</section>
+</sc-for>
+<sc-if value="{{vazioSobre}}" hint-placeholder-val="{{ false }}"><div style="padding: 32px; text-align: center; border: 1px dashed {{c.forte}}; border-radius: 16px; font-size: 15px; font-weight: 700; color: {{c.muted}}">Nenhum indicador com esses filtros.</div></sc-if>
+</main>
+</sc-if>
+
+<sc-if value="{{ehInicio}}" hint-placeholder-val="{{ true }}">
+<main style="max-width: 1200px; margin: 0 auto; padding: 44px 24px 56px; display: flex; flex-direction: column; gap: 26px">
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h1 style="margin: 0; font-size: 40px; font-weight: 900; letter-spacing: -0.8px; line-height: 1.1">Dados oficiais do Brasil, prontos para consultar</h1>
+<p style="margin: 0; max-width: 760px; font-size: 17px; font-weight: 600; color: {{c.body}}; line-height: 1.5">Explore indicadores do IBGE por território e período, veja a fonte de cada número e exporte os dados.</p>
+<div style="display: flex; gap: 10px; flex-wrap: wrap"><sc-for list="{{numeros}}" as="n" hint-placeholder-count="3"><span style="padding: 4px 12px; border-radius: 14px; background: {{c.surface}}; border: 1px solid {{c.borda}}; font-size: 13px; font-weight: 800; color: {{c.body}}"><strong style="color: {{c.text}}; font-weight: 900">{{n.v}}</strong> {{n.t}}</span></sc-for></div>
+<div role="search" style="position: relative; max-width: 760px; margin-top: 6px">
+<label for="ini-busca" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 800">Buscar indicador</label>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{c.prim}}" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 18px; top: 45px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input id="ini-busca" type="search" value="{{q}}" onChange="{{onQ}}" placeholder="Ex.: IPCA, desocupação, quilombolas, tabela 6579" style="width: 100%; box-sizing: border-box; height: 56px; padding: 0 20px 0 50px; border: 2px solid {{c.forte}}; border-radius: 28px; background: {{c.surface}}; font-family: inherit; font-size: 17px; font-weight: 700; color: {{c.text}}">
+<div aria-live="polite" style="margin-top: 8px; font-size: 13px; font-weight: 700; color: {{c.muted}}">{{resumo}}</div>
+</div>
+</section>
+
+<section aria-label="Filtrar por tema" style="display: flex; flex-direction: column; gap: 10px">
+<div style="font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: {{c.muted}}">Temas</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{chips}}" as="ch" hint-placeholder-count="21"><button type="button" class="ini-chip" aria-pressed="{{ch.on}}" onClick="{{ch.pick}}" style="border: 1px solid {{ch.bd}}; background: {{ch.bg}}; color: {{ch.fg}}"><span style="width: 26px; height: 26px; border-radius: 13px; background: {{ch.ib}}; color: {{ch.ic}}; display: flex; align-items: center; justify-content: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ch.icone}}"></path></svg></span>{{ch.nome}}<span style="opacity: 0.75">{{ch.n}}</span></button></sc-for>
+</div>
+</section>
+
+<sc-if value="{{grade}}" hint-placeholder-val="{{ true }}">
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="20">
+<section aria-label="{{t.nome}}" style="background: {{c.surface}}; border: 1px solid {{t.bd}}; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column">
+<div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: {{t.band}}; border-bottom: 1px solid {{t.bd}}">
+<span style="width: 40px; height: 40px; flex: none; border-radius: 10px; background: {{t.ib}}; color: {{t.ic}}; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.icone}}"></path></svg></span>
+<div style="display: flex; flex-direction: column; min-width: 0"><h2 style="margin: 0; font-size: 16px; font-weight: 900; color: {{c.text}}; line-height: 1.25">{{t.nome}}</h2><span style="font-size: 12px; font-weight: 700; color: {{c.muted}}">{{t.resumo}}</span></div>
+</div>
+<ul style="list-style: none; margin: 0; padding: 12px 16px 4px 24px; flex: 1">
+<sc-for list="{{t.amostra}}" as="k" hint-placeholder-count="4"><li><button type="button" class="ini-kpi" aria-haspopup="dialog" onClick="{{k.abrir}}">{{k.nome}}</button></li></sc-for>
+</ul>
+<div style="padding: 4px 8px 12px"><button type="button" class="ini-link" onClick="{{t.ver}}">{{t.verTxt}}</button></div>
+</section>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{lista}}" hint-placeholder-val="{{ false }}">
+<sc-for list="{{temas}}" as="t" hint-placeholder-count="1">
+<section aria-label="{{t.nome}}" style="background: {{c.surface}}; border: 1px solid {{t.bd}}; border-radius: 18px; overflow: hidden">
+<div style="display: flex; align-items: center; gap: 14px; padding: 16px 24px; background: {{t.band}}; border-bottom: 1px solid {{t.bd}}">
+<span style="width: 46px; height: 46px; flex: none; border-radius: 12px; background: {{t.ib}}; color: {{t.ic}}; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.icone}}"></path></svg></span>
+<div style="display: flex; flex-direction: column; gap: 2px"><h2 style="margin: 0; font-size: 19px; font-weight: 900; color: {{c.text}}">{{t.nome}}</h2><span style="font-size: 13px; font-weight: 700; color: {{c.muted}}">{{t.resumo}}</span></div>
+<a href="#" class="ini-link" style="margin-left: auto">Abrir no painel →</a>
+</div>
+<div class="ini-cols" style="padding: 18px 24px 20px">
+<sc-for list="{{t.subs}}" as="s" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; gap: 4px; padding-bottom: 16px">
+<sc-if value="{{s.temNome}}" hint-placeholder-val="{{ true }}"><h3 style="margin: 0 0 2px; font-size: 15px; font-weight: 900; color: {{c.text}}; line-height: 1.3">{{s.nome}}</h3></sc-if>
+<ul style="list-style: none; margin: 0; padding: 0 0 0 8px; display: flex; flex-direction: column">
+<sc-for list="{{s.kpis}}" as="k" hint-placeholder-count="3"><li>
+<sc-if value="{{k.pub}}" hint-placeholder-val="{{ true }}"><button type="button" class="ini-kpi" aria-haspopup="dialog" onClick="{{k.abrir}}">{{k.nome}}</button></sc-if>
+<sc-if value="{{k.pend}}" hint-placeholder-val="{{ false }}"><span class="ini-pend">{{k.nome}} <span style="flex: none; padding: 0 7px; border-radius: 9px; background: {{c.subtle}}; border: 1px solid {{c.borda}}; font-size: 11px; font-weight: 800">em preparação</span></span></sc-if>
+</li></sc-for>
+</ul>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-for>
+</sc-if>
+
+<sc-if value="{{vazio}}" hint-placeholder-val="{{ false }}"><div style="padding: 32px; text-align: center; border: 1px dashed {{c.forte}}; border-radius: 16px; font-size: 15px; font-weight: 700; color: {{c.muted}}">Nenhum indicador encontrado. A busca ignora acentos e maiúsculas e também procura pelo número da tabela.</div></sc-if>
+</main>
+</sc-if>
+
+<footer style="background: {{c.rodape}}; padding: 28px 32px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="font-size: 26px; font-weight: 900; letter-spacing: -1px; display: flex"><span style="color: #5992ED">O</span><span style="color: #FFCD07">D</span><span style="color: #2DB34A">Br</span></span><span style="font-size: 14px; font-weight: 700; color: #FFFFFF">Open Data Brasil</span></span>
+<nav aria-label="Rodapé" style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; font-size: 14px; font-weight: 700"><a href="#" style="color: #C5D4EB; text-decoration: none">Sobre os dados</a><a href="#" style="color: #C5D4EB; text-decoration: none">API</a><a href="#" style="color: #C5D4EB; text-decoration: none">Licenças</a><a href="#" style="display: inline-flex; align-items: center; gap: 6px; color: #C5D4EB; text-decoration: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16v12H4zM4 7l8 6 8-6"></path></svg>Contato</a><a href="#" style="display: inline-flex; align-items: center; gap: 6px; color: #C5D4EB; text-decoration: none"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"></path></svg>Código no GitHub</a></nav>
+</footer>
+
+<sc-if value="{{temPrevia}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{fechar}}" style="position: absolute; inset: 0; background: {{c.veu}}"></div>
+<div role="dialog" aria-modal="true" aria-labelledby="previa-titulo" style="position: absolute; top: 280px; left: 50%; transform: translateX(-50%); width: 760px; background: {{c.surface}}; border: 1px solid {{c.borda}}; border-radius: 20px; box-shadow: 0 24px 64px rgba(7,29,65,0.35); overflow: hidden">
+<div style="display: flex; align-items: center; gap: 14px; padding: 14px 18px 14px 24px; background: {{p.band}}; border-bottom: 1px solid {{p.bd}}">
+<span style="width: 40px; height: 40px; flex: none; border-radius: 10px; background: {{p.ib}}; color: {{p.ic}}; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{p.icone}}"></path></svg></span>
+<span style="font-size: 13px; font-weight: 700; color: {{c.muted}}">{{p.caminho}}</span>
+<span style="padding: 2px 10px; border-radius: 10px; background: {{p.stBg}}; color: {{p.stFg}}; font-size: 12px; font-weight: 800">{{p.situacao}}</span>
+<button type="button" class="ini-x" aria-label="Fechar" onClick="{{fechar}}" style="margin-left: auto">×</button>
+</div>
+<div style="padding: 22px 24px 24px; display: flex; flex-direction: column; gap: 14px">
+<h2 id="previa-titulo" style="margin: 0; font-size: 26px; font-weight: 900; letter-spacing: -0.3px">{{p.nome}}</h2>
+<p style="margin: 0; font-size: 15px; font-weight: 600; color: {{c.body}}; line-height: 1.55">{{p.desc}}</p>
+<dl style="margin: 0; display: grid; grid-template-columns: 170px 1fr; gap: 8px 16px; font-size: 14px; padding: 14px 16px; border-radius: 12px; background: {{c.subtle}}">
+<dt style="font-weight: 800; color: {{c.muted}}">Fonte</dt><dd style="margin: 0; font-weight: 700; color: {{c.body}}">IBGE · Tabela SIDRA {{p.tabela}} · <a href="#">Ver na fonte oficial</a></dd>
+<dt style="font-weight: 800; color: {{c.muted}}">Detalhar por</dt><dd style="margin: 0; font-weight: 700; color: {{c.body}}">{{p.dim}}</dd>
+<dt style="font-weight: 800; color: {{c.muted}}">Outras classificações</dt><dd style="margin: 0; font-weight: 700; color: {{c.body}}">{{p.outras}}</dd>
+<dt style="font-weight: 800; color: {{c.muted}}">Unidade</dt><dd style="margin: 0; font-weight: 700; color: {{c.body}}">{{p.unidade}}</dd>
+<dt style="font-weight: 800; color: {{c.muted}}">Períodos</dt><dd style="margin: 0; font-weight: 700; color: {{c.body}}">{{p.periodos}}</dd>
+<dt style="font-weight: 800; color: {{c.muted}}">Níveis com mapa</dt><dd style="margin: 0; display: flex; flex-wrap: wrap; gap: 4px"><sc-for list="{{p.niveis}}" as="n" hint-placeholder-count="2"><span style="padding: 1px 10px; border-radius: 10px; background: {{c.sel}}; color: {{c.ativo}}; font-size: 12px; font-weight: 800">{{n}}</span></sc-for></dd>
+<dt style="font-weight: 800; color: {{c.muted}}">Licença</dt><dd style="margin: 0; font-weight: 700; color: {{c.body}}">{{p.licenca}}</dd>
+<dt style="font-weight: 800; color: {{c.muted}}">Versão dos dados</dt><dd style="margin: 0; font-family: ui-monospace, Menlo, monospace; font-size: 13px; color: {{c.body}}">81f68da1-6c5f-4686-9ea9-6818a24b8db4</dd>
+</dl>
+<sc-if value="{{p.temLim}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="font-size: 14px; font-weight: 900">Limitações</div>
+<ul style="margin: 0; padding-left: 20px; font-size: 13px; font-weight: 600; color: {{c.body}}; line-height: 1.5"><sc-for list="{{p.lim}}" as="l" hint-placeholder-count="2"><li>{{l}}</li></sc-for></ul></div>
+</sc-if>
+<div style="display: flex; gap: 10px; align-items: center; margin-top: 4px">
+<button type="button" style="height: 44px; padding: 0 22px; border: none; border-radius: 22px; background: {{c.prim}}; color: {{c.onPrim}}; font-family: inherit; font-size: 15px; font-weight: 800; cursor: pointer">Abrir no painel</button>
+<button type="button" style="height: 44px; padding: 0 18px; border: 1px solid {{c.chip}}; border-radius: 22px; background: {{c.surface}}; color: {{c.link}}; font-family: inherit; font-size: 14px; font-weight: 800; cursor: pointer">Baixar dados (CSV)</button>
+<span style="margin-left: auto; font-size: 12px; font-weight: 700; color: {{c.muted}}">Esc fecha</span>
+</div>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"previa":{"editor":"text","default":""},"tema":{"editor":"text","default":"todos"},"pagina":{"editor":"enum","options":["inicio","sobre"],"default":"inicio"},"$preview":{"width":1440,"height":2700}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { q: '', tema: props.tema || 'todos', aberto: props.previa || '', sobreAberto: 'pop', linha: 'População estimada', sit: 'todos' };
+}
+renderVals() {
+const dark = this.props.dark ?? false;
+const c = dark ? {
+page: '#071D41', surface: '#0B2852', header: '#0C326F', borda: '#234476', text: '#FFFFFF', body: '#DCE6F5', muted: '#C5D4EB', link: '#8DB6F4', hover: '#12376F', sel: '#163D7A', ativo: '#FFFFFF', ind: '#FFCD07', prim: '#5992ED', onPrim: '#071D41', foco: '#FFCD07', forte: '#5992ED', chip: '#2A4A80', subtle: '#0C326F', avisoBg: '#2E2A12', avisoBd: '#5C4E14', aviso: '#FFE38A', rodape: '#04122A', veu: 'rgba(0,0,0,0.6)', o: '#5992ED', d: '#FFCD07', br: '#2DB34A', okBg: '#0F3A24', okFg: '#2DB34A', okBd: '#1E5A3A', div: '#1B3A6B', linhaAb: '#0E2E5C'
+} : {
+page: '#F4F6F9', surface: '#FFFFFF', header: '#FFFFFF', borda: '#DDE3EC', text: '#071D41', body: '#333E4F', muted: '#555F6E', link: '#1351B4', hover: '#F0F4FA', sel: '#E8F0FC', ativo: '#1351B4', ind: '#1351B4', prim: '#1351B4', onPrim: '#FFFFFF', foco: '#1351B4', forte: '#9AA6B8', chip: '#C5D0DE', subtle: '#F4F6F9', avisoBg: '#FFF6D6', avisoBd: '#F2D27A', aviso: '#5C4300', rodape: '#071D41', veu: 'rgba(7,29,65,0.45)', o: '#1351B4', d: '#F2B600', br: '#168821', okBg: '#E3F5E1', okFg: '#168821', okBd: '#CDE6C9', div: '#EEF1F5', linhaAb: '#F7F9FC'
+};
+// Família de cor de cada tema: faixa do cabeçalho (tinta suave), quadro do ícone e borda.
+const PAL = dark ? {
+azul: { band: '#0F3166', ib: '#1A4485', ic: '#8DB6F4', bd: '#2A4A80' },
+verde: { band: '#0E3330', ib: '#145030', ic: '#2DB34A', bd: '#1E5A3A' },
+ocre: { band: '#2B2C1E', ib: '#4A3F12', ic: '#FFCD07', bd: '#5C4E14' },
+petroleo: { band: '#0E3340', ib: '#12505C', ic: '#2EC4C9', bd: '#1D5966' },
+roxo: { band: '#22264F', ib: '#3A2E6E', ic: '#B98AF0', bd: '#433A7A' },
+laranja: { band: '#2E2430', ib: '#4E2E22', ic: '#FF8A4C', bd: '#5E3A2C' },
+magenta: { band: '#2C2142', ib: '#4D2244', ic: '#F06292', bd: '#5A2D52' },
+ardosia: { band: '#16304F', ib: '#2A3F5E', ic: '#A3B1C6', bd: '#33496B' }
+} : {
+azul: { band: '#EEF4FD', ib: '#D6E4FA', ic: '#1351B4', bd: '#D3E0F5' },
+verde: { band: '#EEF8EC', ib: '#D3EED0', ic: '#168821', bd: '#CDE6C9' },
+ocre: { band: '#FFF8E1', ib: '#FCEAB0', ic: '#8A5F00', bd: '#F0DFA6' },
+petroleo: { band: '#EAF6F7', ib: '#CDEBEE', ic: '#0E7C86', bd: '#C6E3E6' },
+roxo: { band: '#F4EEFA', ib: '#E6D9F5', ic: '#7A3BA8', bd: '#E0D2F0' },
+laranja: { band: '#FFF1EA', ib: '#FCDCCB', ic: '#B23C08', bd: '#F5D3C2' },
+magenta: { band: '#FCEEF4', ib: '#F7D6E4', ic: '#A8164E', bd: '#F0CFDD' },
+ardosia: { band: '#F1F3F6', ib: '#DFE4EB', ic: '#4A5568', bd: '#DCE1E8' }
+};
+const I = {
+pessoas: 'M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20M10 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M20 20v-1.5a3.5 3.5 0 0 0-2.5-3.35M15 4.15a3.5 3.5 0 0 1 0 6.7',
+registro: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4',
+casa: 'M3 11l9-7 9 7M5.5 9.5V20h13V9.5M10 20v-5.5h4V20',
+gota: 'M12 3.5s6 6.4 6 10.8a6 6 0 0 1-12 0c0-4.4 6-10.8 6-10.8zM9.5 15a2.5 2.5 0 0 0 2.5 2.5',
+educacao: 'M2 9l10-5 10 5-10 5zM6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5M22 9v6',
+trabalho: 'M3 8h18v11H3zM9 8V5h6v3M3 13h18',
+saude: 'M12 20s-7.5-4.6-9-9.2C2 7.6 4.2 5 7 5c2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 2.8 0 5 2.6 4 5.8C19.5 15.4 12 20 12 20zM12 10v5M9.5 12.5h5',
+consumo: 'M3 4h2l2.4 10.5a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1L21 8H6.2M10 20h.01M17 20h.01',
+tecnologia: 'M8 3h8a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM11 18h2',
+seguranca: 'M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6zM9 12l2 2 4-4',
+agro: 'M12 21V11M12 11C12 7 9 4 4 4c0 4 3 7 8 7zM12 14c0-3.5 2.6-6 7-6 0 3.5-2.6 6-7 6z',
+industria: 'M3 21V10l6 4V10l6 4V5h4l2 16zM3 21h18M7 17h2M13 17h2',
+construcao: 'M3 18h18M5 18v-3a7 7 0 0 1 14 0v3M10 8V5h4v3',
+comercio: 'M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9a3 3 0 0 0 6 0 3 3 0 0 0 4 0 3 3 0 0 0 6 0M10 20v-5h4v5',
+servicos: 'M4 17h16M12 7a7 7 0 0 1 7 7v3H5v-3a7 7 0 0 1 7-7zM12 4v3M2 20h20',
+empresas: 'M4 21V4h11v17M15 9h5v12M2 21h20M8 8h3M8 12h3M8 16h3',
+precos: 'M3 12V4h8l10 10-8 8zM7.5 8.5h.01',
+contas: 'M3 20h18M5 16l5-5 4 3 6-7M15 7h5v5',
+ambiente: 'M12 21v-5M12 3l6 8h-3l4 5H5l4-5H6z',
+gestao: 'M3 9l9-5 9 5M5 10v8M9 10v8M15 10v8M19 10v8M3 20h18'
+};
+const K = (n, t, s, d, o) => ({ n: n, t: t, pub: s === 'p', d: d || 'Não se aplica (só o Total)', o: o || '—' });
+const S = (nome, kpis) => ({ nome: nome, kpis: kpis });
+const T = (id, nome, cor, icone, subs) => ({ id: id, nome: nome, cor: cor, icone: icone, subs: subs });
+const SX = 'Sexo', SD = 'Situação do domicílio';
+const base = [
+T('pop', 'População e demografia', 'azul', I.pessoas, [
+S('Tamanho e crescimento', [K('População estimada', '6579', 'p'), K('População residente (Censo)', '9606', 'p', 'Cor ou raça', 'Sexo; Idade'), K('Área territorial', '4714', 'p'), K('Densidade demográfica', '4714', 'p'), K('Taxa de crescimento da população', '4709', 'p'), K('População nos Censos (série histórica)', '1286', 'p')]),
+S('Sexo, idade e cor ou raça', [K('Índice de envelhecimento, idade mediana e razão de sexo', '9515', 'p'), K('População por sexo e idade', '9514', 'p', SX, 'Idade; Forma de declaração da idade'), K('População por cor ou raça (2010 e 2022)', '9605', 'p', 'Cor ou raça')]),
+S('Povos indígenas', [K('Pessoas indígenas', '9971', 'p', SX, 'Grupo de idade; Localização do domicílio; Situação do domicílio'), K('Percentual de pessoas indígenas', '9718', 'p', 'Quesito de declaração indígena', 'Localização do domicílio'), K('Pessoas indígenas em terras indígenas', '9954', 'p', SX, 'Idade; Situação do domicílio'), K('Pessoas residentes em terras indígenas', '9954', 'p', SX, 'Idade; Situação do domicílio')]),
+S('Quilombolas', [K('Pessoas quilombolas', '8176', 'p', 'Idade', 'Sexo; Localização do domicílio'), K('Percentual de pessoas quilombolas', '9578', 'p', 'Localização do domicílio'), K('Pessoas quilombolas em territórios quilombolas', '9765', 'p', 'Idade', SX), K('Pessoas residentes em territórios quilombolas', '9765', 'p', 'Idade', SX)]),
+S('Fecundidade, mortalidade e esperança de vida', [K('Taxa de fecundidade total', '3727', 'p'), K('Esperança de vida ao nascer e mortalidade infantil', '7362', 'x', 'Ano', SX)]),
+S('Migração', [K('Pessoas que não residiam na UF cinco anos antes', '10159', 'p', 'Lugar de residência 5 anos antes')])
+]),
+T('reg', 'Registro civil', 'verde', I.registro, [
+S('Nascimentos e óbitos', [K('Nascidos vivos', '2609', 'p', 'Ano de nascimento', 'Idade da mãe no parto; Sexo'), K('Óbitos', '2654', 'p', 'Natureza do óbito', 'Mês de ocorrência; Sexo; Idade; Local de ocorrência')]),
+S('Casamentos e divórcios', [K('Casamentos', '4412', 'p', 'Estado civil do primeiro cônjuge', 'Mês; Estado civil e idade dos cônjuges'), K('Divórcios', '1695', 'p', 'Tempo entre o casamento e a sentença', 'Idade do marido e da mulher; Regime de bens')])
+]),
+T('dom', 'Domicílios e famílias', 'ocre', I.casa, [
+S('Domicílios e moradores', [K('Domicílios ocupados e média de moradores', '4712', 'p'), K('Domicílios por tipo de arranjo (unidade doméstica)', '6788', 'x', 'Sexo do responsável', 'Espécie de unidade doméstica')]),
+S('Condições de moradia', [K('Domicílios próprios, alugados e cedidos', '6821', 'x', 'Condição de ocupação'), K('Domicílios por material das paredes', '6822', 'x', 'Material predominante nas paredes'), K('Domicílios por posse de bens', '6677', 'x', 'Posse de bens')]),
+S('Favelas e comunidades urbanas', [K('População, área e densidade em favelas', '9888', 'p'), K('Número de favelas e comunidades urbanas', '9883', 'p')])
+]),
+T('san', 'Saneamento básico', 'petroleo', I.gota, [
+S('Abastecimento de água', [K('Domicílios ligados à rede geral de água (Censo)', '6803', 'x', 'Ligação à rede geral'), K('Principal fonte de abastecimento de água', '6731', 'x', 'Principal fonte de abastecimento', SD), K('Municípios com serviço de abastecimento por rede geral', '7460', 'p', 'Condição de funcionamento do serviço')]),
+S('Esgotamento sanitário', [K('Domicílios por tipo de esgotamento sanitário (Censo)', '6805', 'x', 'Tipo de esgotamento sanitário'), K('Domicílios por tipo de esgotamento sanitário', '7192', 'x', 'Tipo de esgotamento sanitário', SD), K('Municípios com rede coletora de esgoto', '7461', 'p', 'Condição de funcionamento do serviço')]),
+S('Coleta de lixo', [K('Domicílios por destino do lixo (Censo)', '6892', 'x', 'Destino do lixo'), K('Domicílios por destino do lixo', '6736', 'x', 'Destino do lixo', SD)])
+]),
+T('edu', 'Educação', 'roxo', I.educacao, [S('', [K('Taxa de alfabetização (15 anos ou mais, Censo)', '9543', 'p', SX, 'Cor ou raça; Idade'), K('Taxa de analfabetismo (15 anos ou mais)', '7113', 'x', SX, 'Grupo de idade'), K('Taxa de escolarização', '7138', 'p', SX, 'Grupo de idade'), K('Taxa ajustada de frequência escolar líquida', '7141', 'x', 'Faixa etária ideal por curso', SX), K('Pessoas de 25 anos ou mais por nível de instrução', '7189', 'x', 'Nível de instrução', SX), K('Média de anos de estudo (15 anos ou mais)', '7126', 'x', SX, 'Grupo de idade'), K('Nível de instrução (18 anos ou mais, Censo)', '10061', 'x', 'Nível de instrução', 'Grupo de idade; Sexo; Cor ou raça')])]),
+T('trab', 'Trabalho e rendimento', 'laranja', I.trabalho, [S('', [K('Força de trabalho, ocupação e desocupação', '4093', 'p', SX), K('Taxas de desocupação e de subutilização', '4099', 'p'), K('Taxa de informalidade', '4708', 'p'), K('Rendimento médio real do trabalho', '5436', 'p', SX), K('Massa de rendimento real do trabalho', '5606', 'p'), K('Índice de Gini do rendimento domiciliar per capita', '7435', 'p'), K('Rendimento domiciliar per capita (Censo)', '10295', 'p', SX, 'Cor ou raça; Grupo de idade'), K('Proporção da população abaixo da linha de pobreza nacional', '5877', 'p'), K('Pessoas de 5 a 17 anos em trabalho infantil', '9836', 'p', 'Grupo de idade'), K('Horas dedicadas a afazeres domésticos e cuidados', '7015', 'p', SX)])]),
+T('saude', 'Saúde', 'magenta', I.saude, [S('', [K('Avaliação do próprio estado de saúde', '7666', 'x', 'Avaliação do estado de saúde', SX), K('Pessoas com pelo menos uma doença crônica', '7972', 'p', SX, SD), K('Diagnóstico de hipertensão arterial', '4418', 'p', SX, SD), K('Diagnóstico de diabetes', '4487', 'p', SX, SD), K('Fumantes atuais de tabaco', '4173', 'p', SX, SD), K('Consumo abusivo de álcool', '7726', 'p', SX, SD), K('Pessoas insuficientemente ativas', '7740', 'p', SX, SD), K('Excesso de peso ou obesidade', '8476', 'p', SX, SD), K('Pessoas com plano de saúde', '4938', 'p', SX, SD), K('Consultaram médico nos últimos 12 meses', '5055', 'p', SX, SD), K('Estabelecimentos de saúde', '211', 'p'), K('Mulheres que realizaram pré-natal', '8289', 'p', 'Cor ou raça', SD), K('Aleitamento materno exclusivo (menos de 6 meses)', '5905', 'p', SD), K('Razão de mortalidade materna', '6694', 'p'), K('Taxa de mortalidade em menores de 5 anos', '6695', 'p'), K('Mortalidade por doenças crônicas não transmissíveis', '4277', 'x', SX, 'Grupo de idade'), K('Escolares de 13 a 17 anos que fumaram nos últimos 30 dias', '6356', 'p', 'Dependência administrativa da escola', 'Sexo; Grupo de idade'), K('Escolares de 13 a 17 anos que consumiram bebida alcoólica', '6358', 'p', 'Dependência administrativa da escola', 'Sexo; Grupo de idade'), K('Escolares de 13 a 17 anos com excesso de peso', '6378', 'p', 'Dependência administrativa da escola', 'Sexo; Grupo de idade'), K('Vacinados contra a COVID-19', '9730', 'p', SX, 'Grupo de idade'), K('Pessoas que tiveram ou consideram que tiveram COVID-19', '9373', 'p', SD, SX)])]),
+T('cons', 'Consumo e orçamentos familiares', 'ocre', I.consumo, [S('', [K('Despesa média mensal familiar', '6715', 'p', 'Classes de rendimento familiar', 'Tipos de despesa'), K('Rendimento médio mensal familiar', '6974', 'p', 'Classes de rendimento familiar', 'Origem dos rendimentos'), K('Aquisição alimentar domiciliar per capita', '417', 'x', 'Grupos de produtos', 'Classes de recebimento familiar'), K('Domicílios por situação de segurança alimentar', '9552', 'x', 'Situação de segurança alimentar', SD)])]),
+T('tec', 'Tecnologia e comunicação', 'azul', I.tecnologia, [S('', [K('Domicílios com utilização da internet', '7307', 'x', 'Utilização da internet no domicílio', SD), K('Pessoas que utilizaram a internet', '7325', 'x', 'Utilização da internet', SX), K('Pessoas com celular para uso pessoal', '7373', 'x', 'Posse de celular', SX), K('Domicílios com televisão', '7167', 'x', 'Existência de televisão', SD)])]),
+T('seg', 'Segurança e vitimização', 'ardosia', I.seguranca, [S('', [K('Pessoas que se sentem seguras ao andar sozinhas perto de casa', '8713', 'p', SX), K('Vítimas de roubo nos últimos 12 meses', '8503', 'p', SX), K('Pessoas que sofreram violência nos últimos 12 meses', '8022', 'p', SX, SD), K('Vítimas de homicídio por 100 mil habitantes', '6606', 'p')])]),
+T('agro', 'Agropecuária', 'verde', I.agro, [S('', [K('Área, produção e valor das lavouras', '5457', 'p', 'Produto das lavouras'), K('Estimativa da safra (área, produção e rendimento)', '6588', 'p', 'Produto das lavouras'), K('Efetivo dos rebanhos', '3939', 'x', 'Tipo de rebanho'), K('Produção de origem animal', '74', 'x', 'Tipo de produto de origem animal'), K('Abate de bovinos', '1092', 'p', 'Tipo de rebanho bovino', 'Referência temporal; Tipo de inspeção'), K('Leite adquirido e industrializado', '1086', 'p', 'Referência temporal', 'Tipo de inspeção'), K('Produção de ovos de galinha', '7524', 'p', 'Finalidade da produção', 'Referência temporal'), K('Produção da extração vegetal', '289', 'x', 'Tipo de produto extrativo'), K('Produção da silvicultura', '291', 'x', 'Tipo de produto da silvicultura'), K('Área de silvicultura por espécie florestal', '5930', 'p', 'Espécie florestal'), K('Número e área dos estabelecimentos agropecuários', '6878', 'p', 'Tipologia', 'Atividade econômica; Sexo e idade do produtor; Condição em relação às terras'), K('Estabelecimentos agropecuários (série histórica 1920–2006)', '1030', 'p'), K('Comercialização de agrotóxicos', '5802', 'p', 'Classe de uso'), K('Fertilizantes entregues ao consumidor final', '770', 'p', 'Tipo de nutriente')])]),
+T('ind', 'Indústria', 'ardosia', I.industria, [S('', [K('Produção física industrial', '8888', 'x', 'Seções e atividades industriais (CNAE 2.0)'), K('Unidades locais industriais, pessoal ocupado e salários', '10457', 'p', 'CNAE 2.0'), K('Valor adicionado da indústria em proporção do PIB', '6587', 'p'), K('Emprego na indústria em proporção do emprego total', '6608', 'p')])]),
+T('const', 'Construção', 'laranja', I.construcao, [S('', [K('Empresas de construção: pessoal, salários e valor das obras', '10442', 'p'), K('Vendas de materiais de construção', '8757', 'x', 'Tipos de índice'), K('Custo médio do metro quadrado da construção', '2296', 'p'), K('Produção de insumos típicos da construção civil', '8886', 'p')])]),
+T('com', 'Comércio', 'roxo', I.comercio, [S('', [K('Volume e receita de vendas no varejo', '8880', 'x', 'Tipos de índice'), K('Volume e receita de vendas no varejo ampliado', '8881', 'x', 'Tipos de índice'), K('Resultados das empresas comerciais', '10646', 'p', 'Divisão de comércio'), K('Exportações, importações e saldo comercial', '5945', 'p')])]),
+T('serv', 'Serviços', 'petroleo', I.servicos, [S('', [K('Volume e receita de serviços', '5906', 'x', 'Tipos de índice'), K('Resultados dos serviços empresariais não financeiros', '2581', 'p', 'Atividades'), K('Volume e receita das atividades turísticas', '8694', 'x', 'Tipos de índice'), K('Volume e receita do transporte de passageiros e cargas', '8695', 'x', 'Tipos de índice', 'Atividades de serviços'), K('Viagens realizadas pelos moradores', '7204', 'p', 'Finalidade da viagem')])]),
+T('emp', 'Empresas e organizações', 'azul', I.empresas, [S('', [K('Empresas, pessoal ocupado e salários', '9509', 'p'), K('Microempreendedores individuais (MEI)', '9597', 'p', 'Grandes grupamentos (CNAE 2.0)'), K('Nascimentos de empresas e taxa de sobrevivência', '9949', 'p', 'CNAE 2.0', 'Faixas de pessoal ocupado'), K('Empresas que implementaram inovações', '5453', 'p', 'Atividades da indústria e serviços'), K('Dispêndio em P&D em proporção do PIB', '6610', 'p')])]),
+T('prec', 'Preços', 'magenta', I.precos, [S('', [K('IPCA', '1737', 'p'), K('INPC', '1736', 'p'), K('IPCA-15', '3065', 'p'), K('Índice de Preços ao Produtor', '6904', 'p', 'Grandes categorias econômicas')])]),
+T('pib', 'Contas nacionais e regionais', 'roxo', I.contas, [S('', [K('PIB e PIB per capita', '6784', 'p'), K('PIB trimestral a preços correntes', '1846', 'x', 'Setores e subsetores'), K('Taxa de variação do PIB trimestral', '5932', 'x', 'Setores e subsetores'), K('PIB dos municípios e valor adicionado por atividade', '5938', 'p'), K('Taxa de investimento', '6727', 'p'), K('Taxa de poupança', '6726', 'p')])]),
+T('amb', 'Meio ambiente', 'verde', I.ambiente, [S('', [K('Área dos biomas', '3926', 'x'), K('Unidades de conservação terrestres', '5619', 'p'), K('Área florestal em proporção do território', '6843', 'p'), K('Focos de calor por bioma', '5805', 'p'), K('Desflorestamento na Amazônia Legal', '896', 'p'), K('Emissões de gases de efeito estufa', '5911', 'x', 'Setores de emissão', 'Tipo de gás'), K('Energias renováveis na oferta interna de energia', '6592', 'p'), K('Nível de estresse hídrico', '7077', 'p'), K('Águas residuais domésticas tratadas de forma segura', '8916', 'p')])]),
+T('gest', 'Gestão pública municipal', 'petroleo', I.gestao, [S('', [K('Municípios com Plano Diretor', '5882', 'x', 'Existência de Plano Diretor', 'Classe de tamanho do município'), K('Municípios com legislação ambiental', '5608', 'p'), K('Municípios atingidos por enchentes ou deslizamentos', '8536', 'x', 'Ano do desastre de maior impacto', 'Classe de tamanho do município; edificações, desabrigados e óbitos'), K('Municípios atingidos pela seca e com plano de contingência', '8530', 'x', 'Ocorrência de seca nos últimos 4 anos', 'Classe de tamanho do município; Plano de contingência'), K('Municípios com planos municipais nas áreas sociais', '9985', 'x', 'Existência de Plano Municipal', 'Classe de tamanho do município'), K('Municípios com conselhos municipais nas áreas sociais', '9987', 'x', 'Existência de Conselho Municipal', 'Classe de tamanho do município')])])
+];
+const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const nq = norm(this.state.q.trim());
+const todos = this.state.tema === 'todos';
+const abrir = (nome) => () => this.setState({ aberto: nome });
+const all = (t) => t.subs.reduce((a, s) => a.concat(s.kpis), []);
+const resumoDe = (t) => {
+const k = all(t);
+const p = k.filter((x) => x.pub).length;
+const x = k.length - p;
+return p + (p === 1 ? ' indicador' : ' indicadores') + (x ? ' · ' + x + ' em preparação' : '');
+};
+let total = 0;
+const temas = [];
+base.forEach((t) => {
+if (!todos && this.state.tema !== t.id) return;
+const pal = PAL[t.cor];
+const hitTema = nq && norm(t.nome).includes(nq);
+const subs = [];
+t.subs.forEach((s) => {
+const hitSub = nq && s.nome && norm(s.nome).includes(nq);
+const kpis = s.kpis.filter((k) => !nq || hitTema || hitSub || norm(k.n).includes(nq) || k.t === nq.replace(/\D/g, '') && nq.replace(/\D/g, '').length > 1).map((k) => ({ nome: k.n, pub: k.pub, pend: !k.pub, abrir: abrir(k.n) }));
+if (kpis.length) { subs.push({ nome: s.nome, temNome: Boolean(s.nome), kpis: kpis }); total += kpis.filter((k) => k.pub).length; }
+});
+if (!subs.length) return;
+const pubs = all(t).filter((k) => k.pub);
+temas.push(Object.assign({ nome: t.nome, icone: t.icone, resumo: resumoDe(t), subs: subs,
+amostra: pubs.slice(0, 4).map((k) => ({ nome: k.n, abrir: abrir(k.n) })),
+verTxt: pubs.length > 4 ? 'Ver todos os ' + all(t).length + ' →' : 'Ver o tema →',
+ver: () => this.setState({ tema: t.id }) }, pal));
+});
+const grade = todos && !nq;
+const nPub = base.reduce((a, t) => a + all(t).filter((k) => k.pub).length, 0);
+const nPend = base.reduce((a, t) => a + all(t).filter((k) => !k.pub).length, 0);
+const chip = (id, nome, icone, cor, n) => {
+const on = this.state.tema === id;
+const p = cor ? PAL[cor] : { ib: c.sel, ic: c.ativo };
+return { nome: nome, icone: icone, n: n, on: on ? 'true' : 'false', bg: on ? c.prim : c.surface, fg: on ? c.onPrim : c.text, bd: on ? c.prim : c.chip, ib: on ? 'rgba(255,255,255,0.22)' : p.ib, ic: on ? c.onPrim : p.ic, pick: () => this.setState({ tema: id }) };
+};
+const chips = [chip('todos', 'Todos', 'M4 6h16M4 12h16M4 18h10', null, String(nPub))].concat(base.map((t) => chip(t.id, t.nome, t.icone, t.cor, String(all(t).filter((k) => k.pub).length))));
+const aberto = this.state.aberto;
+let tAb = base[0], sAb = base[0].subs[0], kAb = base[0].subs[0].kpis[0];
+base.forEach((t) => t.subs.forEach((s) => s.kpis.forEach((k) => { if (k.n === aberto) { tAb = t; sAb = s; kAb = k; } })));
+const real = aberto === 'População estimada';
+const p = Object.assign({}, PAL[tAb.cor], {
+icone: tAb.icone, caminho: tAb.nome + (sAb.nome ? ' › ' + sAb.nome : ''), nome: aberto || '',
+situacao: kAb.pub ? 'Publicado' : 'Em preparação', stBg: kAb.pub ? c.okBg : c.subtle, stFg: kAb.pub ? c.okFg : c.muted,
+tabela: kAb.t, dim: kAb.d, outras: kAb.o,
+desc: real ? 'Estimativa anual oficial da população residente, publicada pelo IBGE para o cálculo de cotas do Fundo de Participação dos Estados e Municípios.' : '[DESCRIÇÃO DO INDICADOR]',
+unidade: real ? 'Pessoas' : '[UNIDADE]', periodos: real ? '2001–2026 (22)' : '[PERÍODOS]',
+niveis: real ? ['Estado (UF)', '[DEMAIS NÍVEIS]'] : ['[NÍVEIS]'], licenca: real ? 'ibge-reuso-com-citacao' : '[LICENÇA]', temLim: real,
+lim: ['Em 2004, 2008 e 2012 a soma dos municípios supera o total oficial: municípios com instalação prevista entram na estimativa sem sair do município de origem.', 'Populações definidas por decisão judicial para o FPM não substituem o valor publicado.']
+});
+// Página "Sobre os dados": um acordeão por tema, uma linha por indicador.
+const pagina = this.props.pagina || 'inicio';
+const ehSobre = pagina === 'sobre';
+const sit = this.state.sit;
+const digits = nq.replace(/\D/g, '');
+let nSobre = 0;
+const sobreTemas = [];
+base.forEach((t) => {
+if (!todos && this.state.tema !== t.id) return;
+const hitTema = nq && norm(t.nome).includes(nq);
+const linhas = [];
+t.subs.forEach((s) => s.kpis.forEach((k) => {
+if (sit === 'pub' && !k.pub) return;
+if (sit === 'pend' && k.pub) return;
+if (nq && !hitTema && !norm(k.n).includes(nq) && !(digits.length > 1 && k.t === digits)) return;
+const ab = this.state.linha === k.n;
+const realK = k.n === 'População estimada';
+linhas.push({ nome: k.n, sub: s.nome || t.nome, tabela: k.t, dim: k.d, outras: k.o,
+situacao: k.pub ? 'Publicado' : 'Em preparação', stBg: k.pub ? c.okBg : c.subtle, stFg: k.pub ? c.okFg : c.muted, stBd: k.pub ? c.okBd : c.borda,
+exp: ab ? 'true' : 'false', aberta: ab, rot: ab ? 'rotate(180deg)' : 'none', bg: ab ? c.linhaAb : 'transparent',
+toggle: () => this.setState({ linha: ab ? '' : k.n }),
+desc: realK ? 'Estimativa anual oficial da população residente, publicada pelo IBGE para o cálculo de cotas do Fundo de Participação dos Estados e Municípios.' : '[DESCRIÇÃO DO INDICADOR]',
+unidade: realK ? 'Pessoas' : '[UNIDADE]', periodos: realK ? '2001–2026 (22)' : '[PERÍODOS]', niveis: realK ? 'Estado (UF) · [DEMAIS NÍVEIS]' : '[NÍVEIS]', licenca: realK ? 'ibge-reuso-com-citacao' : '[LICENÇA]', temLim: realK,
+lim: ['Em 2004, 2008 e 2012 a soma dos municípios supera o total oficial: municípios com instalação prevista entram na estimativa sem sair do município de origem.', 'Populações definidas por decisão judicial para o FPM não substituem o valor publicado.'] });
+}));
+if (!linhas.length) return;
+nSobre += linhas.length;
+const aberto = !todos || Boolean(nq) || this.state.sobreAberto === t.id;
+sobreTemas.push(Object.assign({ nome: t.nome, icone: t.icone, resumo: resumoDe(t), linhas: linhas, aberto: aberto, exp: aberto ? 'true' : 'false', rot: aberto ? 'rotate(180deg)' : 'none',
+toggle: () => this.setState({ sobreAberto: this.state.sobreAberto === t.id ? '' : t.id }) }, PAL[t.cor]));
+});
+const tabelas = new Set();
+base.forEach((t) => all(t).forEach((k) => tabelas.add(k.t)));
+const sitBtn = (id, t) => ({ t: t, on: sit === id ? 'true' : 'false', bg: sit === id ? c.surface : 'transparent', sh: sit === id ? '0 1px 3px rgba(7,29,65,0.15)' : 'none', fg: sit === id ? c.ativo : c.muted, pick: () => this.setState({ sit: id }) });
+const aba = (id, t) => ({ t: t, cur: pagina === id ? 'page' : 'false', cor: pagina === id ? c.ativo : c.muted, peso: pagina === id ? 800 : 700, sh: pagina === id ? 'inset 0 -3px 0 ' + c.ind : 'none' });
+return {
+abas: [aba('inicio', 'Início'), aba('painel', 'Painel de análise'), aba('sobre', 'Sobre os dados')],
+temaLabel: dark ? 'Ativar tema claro' : 'Ativar tema escuro',
+temaIcone: dark ? 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4' : 'M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z',
+ehSobre: ehSobre, ehInicio: !ehSobre, sobreTemas: sobreTemas, vazioSobre: ehSobre && nSobre === 0,
+situacoes: [sitBtn('todos', 'Todos'), sitBtn('pub', 'Publicados'), sitBtn('pend', 'Em preparação')],
+numSobre: [{ v: String(nPub), t: 'indicadores publicados', cor: c.okFg }, { v: String(nPend), t: 'em preparação', cor: c.muted }, { v: String(base.length), t: 'temas', cor: c.text }, { v: String(tabelas.size), t: 'tabelas SIDRA', cor: c.link }],
+c: c, chips: chips, temas: temas, q: this.state.q, p: p, temPrevia: Boolean(aberto) && !ehSobre,
+grade: grade, lista: !grade && temas.length > 0, vazio: temas.length === 0,
+numeros: [{ v: String(nPub), t: 'indicadores publicados' }, { v: String(nPend), t: 'em preparação' }, { v: String(base.length), t: 'temas' }],
+resumo: nq ? (total === 1 ? '1 indicador publicado encontrado' : total + ' indicadores publicados encontrados') : 'Busca no nome do indicador, no tema, no subtema e pelo número da tabela SIDRA · ignora acentos',
+onQ: (e) => this.setState({ q: e.target.value }),
+fechar: () => this.setState({ aberto: '' })
+};
+}
+}
+</script>
+</body>
+</html>

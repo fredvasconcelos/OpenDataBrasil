@@ -25,7 +25,7 @@ def test_validar_reports_counts() -> None:
     )
     assert result.exit_code == 0, result.output
     # 12 curados com `kpi`, a 9605 e a 6715 pelo id do item, 92 KPIs de Total gerados.
-    assert "20 temas, 64 subtemas, 150 KPIs (130 publicados, 20 planejados)" in result.output
+    assert "20 temas, 64 subtemas, 150 KPIs (141 publicados, 9 planejados)" in result.output
 
 
 def test_render_catalog_flags_coverage() -> None:

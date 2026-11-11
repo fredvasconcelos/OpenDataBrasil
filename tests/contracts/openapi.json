@@ -2730,6 +2730,26 @@
             "type": "string",
             "title": "Additivity"
           },
+          "measure": {
+            "type": "string",
+            "enum": [
+              "total",
+              "share"
+            ],
+            "title": "Measure",
+            "default": "total"
+          },
+          "measure_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measure Label"
+          },
           "values": {
             "items": {
               "$ref": "#/components/schemas/MapValueOut"

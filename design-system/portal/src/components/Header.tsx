@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { Logo } from "@/components/Logo";
+import { ProjectLinks } from "@/components/ProjectLinks";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Header() {
@@ -41,6 +42,7 @@ export function Header() {
           ))}
         </nav>
         <div className="header-end">
+          <ProjectLinks variant="header" />
           <ThemeToggle />
         </div>
       </header>

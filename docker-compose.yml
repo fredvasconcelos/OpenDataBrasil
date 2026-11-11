@@ -106,7 +106,7 @@ services:
     restart: "no"
     deploy:
       resources:
-        limits: { memory: "${ODB_WORKER_MEMORY:-16g}", cpus: "${ODB_WORKER_CPUS:-8}" }
+        limits: { memory: "${ODB_WORKER_MEMORY:-24g}", cpus: "${ODB_WORKER_CPUS:-8}" }
 
   # API de consulta (Fase 5, ADR-0009). Só lê: papel odb_reader e Gold montada
   # somente leitura. Bronze e Silver não são montadas (§23.4).
@@ -158,6 +158,9 @@ services:
       context: .
       dockerfile: infrastructure/docker/portal/Dockerfile
       target: runtime
+      args:
+        NEXT_PUBLIC_CONTACT_URL: ${NEXT_PUBLIC_CONTACT_URL:-}
+        NEXT_PUBLIC_REPO_URL: ${NEXT_PUBLIC_REPO_URL:-}
     profiles: [web]
     environment:
       ODB_API_INTERNAL_URL: http://api:8000

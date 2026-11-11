@@ -400,13 +400,16 @@ class KpiService:
         period: str | None,
         within: str | None,
     ) -> MapOut:
-        """Total do KPI em cada território do nível."""
+        """Valor do KPI em cada território do nível: o Total ou, com ``map_share``, o %
+        de uma categoria no Total (KPIs cujo Total é só o universo)."""
         kpi = self.kpi(ctx, kpi_id)
         chosen = self._period(ctx, kpi, period)
+        meta = self._gold.indicators(ctx)[kpi.indicator]
+        if kpi.map_share is not None:
+            return self._share_map(ctx, kpi, level=level, period=chosen, within=within)
         obs, prov = self._observations(
             ctx, kpi, level=level, within=within, periods=(chosen,), dims=(), max_rows=50_000
         )
-        meta = self._gold.indicators(ctx)[kpi.indicator]
         return MapOut(
             kpi_id=kpi.id,
             indicator_id=kpi.indicator,
@@ -423,6 +426,49 @@ class KpiService:
                 )
                 for o in obs
             ],
+            provenance=prov,
+        )
+
+    def _share_map(
+        self, ctx: ReleaseContext, kpi: KpiConfig, *, level: str, period: str, within: str | None
+    ) -> MapOut:
+        """Participação (%) da categoria ``map_share`` no Total da primeira dimensão."""
+        dim = kpi.dimensions[0].classification
+        total_key = self._gold.total_category(ctx, dim)["category_key"]
+        share_key = f"{dim}:{kpi.map_share}"
+        if share_key not in self._gold.categories(ctx):
+            msg = f"{kpi.id}: categoria {kpi.map_share} inexistente em {dim}"
+            raise PortalConfigError(msg)
+        obs, prov = self._observations(
+            ctx, kpi, level=level, within=within, periods=(period,), dims=(dim,), max_rows=200_000
+        )
+        totals = {o.geography_key: o for o in obs if o.combo == (total_key,)}
+        parts = {o.geography_key: o for o in obs if o.combo == (share_key,)}
+        values = []
+        for key, total in totals.items():
+            part = parts.get(key)
+            share: float | None = None
+            status = total.status
+            if part is None:
+                status = "absent"
+            elif part.value is not None and total.value:
+                share = round(float(part.value) / float(total.value) * 100, 2)
+            else:
+                status = part.status if part.value is None else total.status
+            values.append(
+                MapValueOut(geography_key=key, name=total.name, value=share, status=status)
+            )
+        name = self._gold.categories(ctx)[share_key]["name"]
+        return MapOut(
+            kpi_id=kpi.id,
+            indicator_id=kpi.indicator,
+            level=level,
+            period=period,
+            unit="%",
+            additivity="non_additive",
+            measure="share",
+            measure_label=f"% {name}",
+            values=values,
             provenance=prov,
         )
 

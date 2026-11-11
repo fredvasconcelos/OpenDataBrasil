@@ -334,3 +334,41 @@ vira `first_period` no indicador. A Silver guarda a série desde 1979, e a
 Gold publica a partir de 1998. O corte usa o código do SIDRA
 ("199712" < "1998" <= "199801"), então vale para séries anuais, mensais e
 trimestrais.
+
+### 15. Parte B: categoria de referência nas classificações sem Total
+
+Decisão do mantenedor (2026-11-11): usar as categorias sugeridas.
+`referencia = { cNNN = "<categoria>" }` no panorama fixa o KPI nessa
+categoria. O portal mostra o valor dela, e o rótulo e as ressalvas avisam que
+a classificação não tem Total:
+
+| KPI | Tabela | Referência |
+|---|---|---|
+| Volume de vendas no varejo e no varejo ampliado | 8880 e 8881 | índice de volume |
+| Volume de vendas de materiais de construção | 8757 | índice de volume |
+| Volume de serviços e das atividades turísticas | 5906 e 8694 | índice de volume |
+| PIB trimestral e taxa de variação | 1846 e 5932 | PIB a preços de mercado (90707) |
+| Produção física industrial | 8888 | 1 Indústria geral |
+| Efetivo de bovinos | 3939 | Bovino |
+| Esperança de vida ao nascer | 7362 | projeção para 2026 |
+| Frequência escolar líquida | 7141 | 6 a 14 anos no ensino fundamental |
+
+No PIB trimestral, a proposta inicial era mostrar os três grandes setores. O
+descritor revelou a categoria "PIB a preços de mercado", que é o próprio PIB.
+
+Ficam pendentes 8695 (passageiros e cargas sem Total), 5911 (gases não se
+somam) e 8536 (ano do desastre). Uma referência única exigiria um valor
+derivado.
+
+### 16. Mapa pelo percentual da categoria nos KPIs cujo Total é o universo
+
+Decisão do mantenedor (2026-11-11). Nos KPIs `requer_categoria` (por exemplo,
+"Municípios com Plano Diretor"), o Total é só o universo da tabela. Por isso:
+
+- o mapa pinta pela participação de uma categoria no Total, em % (por exemplo,
+  "% Com Plano Diretor");
+- o KPI do portal ganha `map_share`. A API devolve `measure = "share"` e
+  `measure_label`, e o portal usa o rótulo na legenda;
+- a categoria é a primeira filha do Total na hierarquia oficial;
+  `categoria_mapa` no panorama a substitui;
+- a tabela e o detalhamento continuam com o Total e as categorias.

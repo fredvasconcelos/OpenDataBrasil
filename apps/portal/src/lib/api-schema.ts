@@ -715,6 +715,14 @@ export interface components {
             unit: string;
             /** Additivity */
             additivity: string;
+            /**
+             * Measure
+             * @default total
+             * @enum {string}
+             */
+            measure: "total" | "share";
+            /** Measure Label */
+            measure_label?: string | null;
             /** Values */
             values: components["schemas"]["MapValueOut"][];
             provenance: components["schemas"]["Provenance"];

@@ -3,11 +3,17 @@ import { NextIntlClientProvider } from "next-intl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import messages from "../../messages/pt-BR.json";
-import type { Detail, DetailNode, GeoCollection, Kpi, Table } from "../lib/types";
+import type { Detail, DetailNode, GeoCollection, Kpi, Navigation, Series, Table } from "../lib/types";
 import { DataTable } from "./DataTable";
 import { DetailTooltip } from "./DetailTooltip";
+import { navFixture } from "../lib/fixtures";
+import { AboutCatalog } from "./AboutCatalog";
+import { HomeCatalog } from "./HomeCatalog";
 import { KpiInfo } from "./KpiInfo";
 import { MapView } from "./MapView";
+import { ProjectLinks } from "./ProjectLinks";
+import { SeriesChart } from "./SeriesChart";
+import { Sidebar } from "./Sidebar";
 
 afterEach(cleanup);
 
@@ -79,9 +85,71 @@ describe("DetailTooltip", () => {
     expect(tip.textContent).toContain("Cada figura");
   });
 
+  it("abre a forma matriz (larga e baixa) quando as categorias têm os mesmos filhos", () => {
+    const groups = ["2.1.1 Alimentação", "2.1.2 Habitação", "2.1.3 Vestuário", "2.1.4 Transporte"];
+    const cls = (label: string, value: number) =>
+      node(label, value, null, groups.map((g, i) => node(g, value / (i + 2), null)));
+    const d = {
+      ...base(node("Total", 3166.07, null, [cls("Até 1.908 Reais", 1500), cls("Mais de 23.850 Reais", 24303.39), cls("Mais de 9.540 a 14.310 Reais", 9389.06), cls("Mais de 2.862 a 5.724 Reais", 3583.07)])),
+      unit: "Reais",
+      additivity: "non_additive",
+    };
+    wrap(<DetailTooltip name="Nordeste" detail={d} loading={false} x={10} y={10} />);
+    const tip = screen.getByRole("tooltip");
+    expect(tip.className).toContain("matrix");
+    const labels = Array.from(tip.querySelectorAll(".tt-summary .tt-label")).map((el) => el.textContent);
+    expect(labels[0]).toBe("Mais de 23.850 Reais");
+    const rows = Array.from(tip.querySelectorAll(".tt-grid tbody th")).map((el) => el.textContent);
+    expect(rows).toEqual(["2.1.1Alimentação", "2.1.2Habitação", "2.1.3Vestuário", "2.1.4Transporte"]);
+    expect(tip.querySelectorAll(".tt-grid tbody td")).toHaveLength(16);
+    expect(tip.textContent).toContain("proporcionais ao maior valor");
+  });
+
+  it("mantém a forma normal para cor ou raça › sexo", () => {
+    wrap(<DetailTooltip name="Bahia" detail={detail} loading={false} x={10} y={10} />);
+    expect(screen.getByRole("tooltip").className).toBe("tooltip");
+  });
+
   it("mostra carregando enquanto o detalhe não chega", () => {
     wrap(<DetailTooltip name="Acre" detail={null} loading x={0} y={0} />);
     expect(screen.getByRole("tooltip").textContent).toContain("Carregando");
+  });
+});
+
+describe("SeriesChart", () => {
+  class RO {
+    observe() {}
+    disconnect() {}
+  }
+  vi.stubGlobal("ResizeObserver", RO);
+  const pts = (years: number[]) => years.map((y, i) => ({ period: String(y), value: 1000 + i * 10, status: "valid" }));
+  const series = (years: number[]): Series =>
+    ({
+      kpi_id: "k",
+      indicator_id: "i",
+      geography: { geography_key: "pais:1", name: "Brasil", level_id: "brasil" },
+      unit: "Pessoas",
+      series: [{ key: "total", label: "Brasil", categories: {}, points: pts(years) }],
+      provenance: { release_id: "r", tables: [], derived: false, truncated: false },
+    }) as unknown as Series;
+
+  it("liga anos não publicados com traço pontilhado e avisa na legenda", () => {
+    const { container } = wrap(<SeriesChart data={series([2001, 2002, 2003, 2005, 2006])} />);
+    expect(container.querySelectorAll(".series-gap")).toHaveLength(1);
+    expect(container.textContent).toContain("Períodos sem publicação");
+  });
+
+  it("mostra o tooltip do período sob o ponteiro e navega pelo teclado", () => {
+    const { container } = wrap(<SeriesChart data={series([2019, 2020, 2021])} />);
+    const svg = container.querySelector("svg") as SVGSVGElement;
+    expect(container.querySelector("title")).toBeNull();
+    fireEvent.keyDown(svg, { key: "End" });
+    expect(screen.getByRole("tooltip").textContent).toContain("2021");
+    expect(screen.getByRole("tooltip").textContent).toContain("1.020");
+    fireEvent.keyDown(svg, { key: "ArrowLeft" });
+    expect(screen.getByRole("tooltip").textContent).toContain("2020");
+    fireEvent.keyDown(svg, { key: "Escape" });
+    expect(screen.queryByRole("tooltip")).toBeNull();
   });
 });
 
@@ -225,6 +293,96 @@ describe("MapView com recorte", () => {
   });
 });
 
+describe("HomeCatalog", () => {
+  it("mostra a grade de temas, filtra por etiqueta e busca pelo número da tabela", () => {
+    wrap(<HomeCatalog nav={navFixture} releaseId="r1" />);
+    expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toContain("População e demografia");
+    fireEvent.click(screen.getByRole("button", { name: /Saúde/ }));
+    expect(screen.getByRole("button", { name: /Saúde/ }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.queryByText("População estimada")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /Todos/ }));
+    fireEvent.change(screen.getByLabelText("Buscar indicador"), { target: { value: "9606" } });
+    expect(screen.getByText("População residente (Censo)")).toBeTruthy();
+    expect(screen.queryByText("População estimada")).toBeNull();
+    expect(screen.getByText("1 indicador encontrado")).toBeTruthy();
+  });
+
+  it("abre a prévia com os metadados e fecha com Esc", () => {
+    wrap(<HomeCatalog nav={navFixture} releaseId="r1" />);
+    fireEvent.click(screen.getByRole("button", { name: "População estimada" }));
+    const dialog = screen.getByRole("dialog");
+    expect(within(dialog).getByText("2001–2026 (3)")).toBeTruthy();
+    expect(within(dialog).getByText("ibge-reuso-com-citacao")).toBeTruthy();
+    expect(within(dialog).getByText("Limitação de teste.")).toBeTruthy();
+    expect(within(dialog).getByRole("link", { name: "Abrir no painel" }).getAttribute("href")).toBe("/dashboard?kpi=populacao_estimada");
+    expect(document.activeElement?.getAttribute("aria-label")).toBe("Fechar");
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+});
+
+describe("AboutCatalog", () => {
+  it("lista por tema e abre a linha com todos os metadados", () => {
+    wrap(<AboutCatalog nav={navFixture} releaseId="81f68da1-6c5f" activated={null} licenseReview="requires_review" />);
+    expect(screen.getByText("Licença: requires_review")).toBeTruthy();
+    const row = screen.getByRole("button", { name: /População residente \(Censo\)/ });
+    expect(row.textContent).toContain("9606");
+    expect(row.textContent).toContain("Cor ou raça");
+    fireEvent.click(row);
+    expect(row.getAttribute("aria-expanded")).toBe("true");
+    expect(screen.getByRole("link", { name: "Abrir no painel" })).toBeTruthy();
+  });
+});
+
+describe("Sidebar · busca", () => {
+  const props = {
+    nav: navFixture,
+    kpi: null,
+    dimensions: [],
+    onKpi: vi.fn(),
+    onDimensions: vi.fn(),
+    level: "uf",
+    period: "2022",
+    onLevel: vi.fn(),
+    onPeriod: vi.fn(),
+    onClear: vi.fn(),
+    canClear: false,
+  };
+
+  it("filtra a árvore, marca o termo e mostra o trecho da descrição", () => {
+    const { container } = wrap(<Sidebar {...props} />);
+    fireEvent.change(screen.getByLabelText("Buscar tema ou indicador"), { target: { value: "fundo de participacao" } });
+    expect(screen.getByText("1 indicador em 1 tema")).toBeTruthy();
+    expect(container.querySelector(".tree-snippet mark")?.textContent).toBe("Fundo de Participação");
+    expect(screen.queryByText("Pessoas com pelo menos uma doença crônica")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Limpar" }));
+    expect(screen.getByText("Todos os temas")).toBeTruthy();
+  });
+
+  it("avisa quando não há resultado", () => {
+    wrap(<Sidebar {...props} />);
+    fireEvent.change(screen.getByLabelText("Buscar tema ou indicador"), { target: { value: "xyzw" } });
+    expect(screen.getByText("Nenhum indicador para “xyzw”")).toBeTruthy();
+  });
+});
+
+describe("ProjectLinks", () => {
+  it("mostra Contato e o botão do GitHub com rótulo acessível no cabeçalho", () => {
+    const { container } = wrap(<ProjectLinks variant="header" contactUrl="mailto:contato@exemplo.org" repoUrl="https://github.com/org/repo" />);
+    expect(screen.getByText("Contato").closest("a")?.getAttribute("href")).toBe("mailto:contato@exemplo.org");
+    const repo = screen.getByRole("link", { name: "Repositório do projeto no GitHub" });
+    expect(repo.getAttribute("target")).toBe("_blank");
+    expect(repo.getAttribute("rel")).toContain("noopener");
+    expect(container.querySelector("svg[viewBox='0 0 16 16']")).toBeTruthy();
+  });
+
+  it("escreve 'Código no GitHub' no rodapé e esconde o que não foi configurado", () => {
+    wrap(<ProjectLinks variant="footer" contactUrl={null} repoUrl="https://github.com/org/repo" />);
+    expect(screen.getByRole("link", { name: "Código no GitHub" })).toBeTruthy();
+    expect(screen.queryByText("Contato")).toBeNull();
+  });
+});
+
 describe("KpiInfo", () => {
   // jsdom não tem matchMedia: simula a janela estreita (< 1600 px), com o bloco aberto.
   globalThis.matchMedia ??= ((query: string) => ({
@@ -253,5 +411,140 @@ describe("KpiInfo", () => {
     expect(more.textContent).toContain("Pessoas residentes.");
     expect(more.textContent).toContain("Nota A");
     expect(more.textContent).toContain("2010–2022");
+  });
+});
+
+describe("SeriesChart com períodos da Gold", () => {
+  class RO {
+    observe() {}
+    disconnect() {}
+  }
+  vi.stubGlobal("ResizeObserver", RO);
+  const monthly = {
+    kpi_id: "ipca",
+    indicator_id: "ipca",
+    geography: { geography_key: "brasil:1", name: "Brasil", level_id: "brasil" },
+    unit: "%",
+    series: [
+      {
+        key: "total",
+        label: "Brasil",
+        categories: {},
+        points: ["1998M01", "1998M02", "1998M03"].map((period, i) => ({ period, value: 0.5 + i / 10, status: "valid" })),
+      },
+    ],
+    provenance: { release_id: "r", tables: [], derived: false, truncated: false },
+  } as unknown as Series;
+
+  it("lê os meses AAAAMmm no eixo de tempo e mostra o mês por extenso", () => {
+    const { container } = wrap(<SeriesChart data={monthly} />);
+    const svg = container.querySelector("svg") as SVGSVGElement;
+    expect(container.textContent).toContain("jan 1998");
+    expect(container.querySelectorAll(".series-gap")).toHaveLength(0);
+    fireEvent.keyDown(svg, { key: "End" });
+    expect(screen.getByRole("tooltip").textContent).toContain("mar 1998");
+  });
+});
+
+describe("Sidebar", () => {
+  const live = { kpi_id: "populacao_estimada", label: "População estimada", levels: [], map_levels: [], periods: [], dimensions: [] } as unknown as Kpi;
+  const nav: Navigation = {
+    release_id: "r",
+    scope: "demografia",
+    dimension_order: [],
+    themes: [
+      {
+        theme_id: "populacao",
+        label: "População e demografia",
+        filters: [{ filter_id: "sexo", label: "Sexo" }],
+        subthemes: [
+          {
+            subtheme_id: "tamanho",
+            label: "Tamanho e crescimento",
+            kpis: [live],
+            planned: [{ kpi_id: "crescimento", label: "Taxa de crescimento", source_table_id: "4709", survey: "Censo Demográfico", filters: [], note: null }],
+          },
+        ],
+      },
+      {
+        theme_id: "agropecuaria",
+        label: "Agropecuária",
+        filters: [{ filter_id: "produto", label: "Produto" }],
+        subthemes: [
+          {
+            subtheme_id: "lavouras",
+            label: "Lavouras",
+            kpis: [],
+            planned: [{ kpi_id: "pam", label: "Produção das lavouras", source_table_id: "5457", survey: "PAM", filters: ["produto"], note: null }],
+          },
+        ],
+      },
+    ],
+  };
+  const props = { dimensions: [], onDimensions: vi.fn(), level: "", period: "", onLevel: vi.fn(), onPeriod: vi.fn(), onClear: vi.fn(), canClear: false };
+
+  it("abre só o tema do indicador atual e mostra os planejados sem ação", () => {
+    const onKpi = vi.fn();
+    const { container } = wrap(<Sidebar nav={nav} kpi={live} onKpi={onKpi} {...props} />);
+    const themes = container.querySelectorAll<HTMLDetailsElement>("nav.themes > details");
+    expect([...themes].map((d) => d.open)).toEqual([true, false]);
+    // Tema sem dados publicados: marcado "em preparação".
+    expect(themes[1]?.querySelector("summary")?.textContent).toContain("em preparação");
+    const planned = container.querySelector("li.planned") as HTMLElement;
+    expect(planned.textContent).toContain("Taxa de crescimento");
+    expect(planned.getAttribute("title")).toBe("Em preparação · tabela SIDRA 4709 (Censo Demográfico)");
+    expect(planned.querySelector("button")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "População estimada" }));
+    expect(onKpi).toHaveBeenCalledWith("populacao_estimada");
+  });
+});
+
+describe("Indicadores em preparação (panorama) no catálogo", () => {
+  it("Início: conta, lista sem ação e acha pela tabela prevista", () => {
+    const { container } = wrap(<HomeCatalog nav={navFixture} releaseId="r1" />);
+    expect(container.querySelector(".home-stats")?.textContent).toContain("1 em preparação");
+    fireEvent.click(screen.getByRole("button", { name: /População e demografia/ }));
+    const item = screen.getByText("Indicador de teste em preparação").closest(".kpi-pending") as HTMLElement;
+    expect(item.textContent).toContain("em preparação");
+    expect(item.getAttribute("title")).toContain("tabela SIDRA 9999");
+    expect(within(item).queryByRole("button")).toBeNull();
+    fireEvent.change(screen.getByLabelText("Buscar indicador"), { target: { value: "9999" } });
+    expect(screen.getByText("Indicador de teste em preparação")).toBeTruthy();
+    expect(screen.queryByText("População estimada")).toBeNull();
+  });
+
+  it("Sobre: filtro de situação e linha própria com a tabela na fonte", () => {
+    wrap(<AboutCatalog nav={navFixture} releaseId="r1" activated={null} licenseReview={null} />);
+    const group = screen.getByRole("group", { name: "Situação" });
+    fireEvent.click(within(group).getByRole("button", { name: "Em preparação" }));
+    expect(screen.queryByText("População estimada")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /Indicador de teste em preparação/ }));
+    expect(screen.getByRole("link", { name: /9999/ }).getAttribute("href")).toBe("https://sidra.ibge.gov.br/tabela/9999");
+    fireEvent.click(within(group).getByRole("button", { name: "Publicados" }));
+    expect(screen.queryByText("Indicador de teste em preparação")).toBeNull();
+  });
+
+  it("Barra lateral: a busca também encontra itens em preparação, sem ação", () => {
+    const { container } = wrap(
+      <Sidebar
+        nav={navFixture}
+        kpi={null}
+        dimensions={[]}
+        onKpi={vi.fn()}
+        onDimensions={vi.fn()}
+        level="uf"
+        period="2022"
+        onLevel={vi.fn()}
+        onPeriod={vi.fn()}
+        onClear={vi.fn()}
+        canClear={false}
+      />,
+    );
+    fireEvent.change(screen.getByLabelText("Buscar tema ou indicador"), { target: { value: "teste em prep" } });
+    expect(container.querySelector(".tree-status")?.textContent).toContain("1 indicador em preparação");
+    expect(container.querySelector(".tree-empty")).toBeNull();
+    const li = container.querySelector("li.planned") as HTMLElement;
+    expect(li.querySelector("mark")?.textContent?.toLowerCase()).toBe("teste em prep");
+    expect(li.querySelector("button")).toBeNull();
   });
 });

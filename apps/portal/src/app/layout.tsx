@@ -3,6 +3,7 @@ import { Nunito } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
+import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { THEME_STORAGE_KEY } from "@/lib/theme";
 
@@ -43,6 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <NextIntlClientProvider messages={messages} locale={locale}>
           <Header />
           <div id="conteudo">{children}</div>
+          <Footer />
         </NextIntlClientProvider>
       </body>
     </html>

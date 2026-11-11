@@ -1,4 +1,5 @@
 // Formatação de números e unidades em pt-BR. Valor ausente nunca vira zero.
+import { formatPeriod as formatParsedPeriod, parsePeriod } from "@/lib/period";
 
 const integer = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
 const decimal = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
@@ -50,13 +51,12 @@ export function unitSuffix(unit: string): string {
   return unit.toLowerCase();
 }
 
-const MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-
-/** Período da Gold para exibição: "2022", "2026M09" → "set/2026", "2026T2" → "2º tri/2026". */
+/**
+ * Período da Gold para exibição, no mesmo formato do eixo e do tooltip da série
+ * (lib/period): "2022", "2026M09" → "set 2026", "2026T2" → "2º tri 2026".
+ * Código não reconhecido volta como veio.
+ */
 export function formatPeriod(period: string): string {
-  const month = /^(\d{4})M(0[1-9]|1[0-2])$/.exec(period);
-  if (month) return `${MONTHS[Number(month[2]) - 1]}/${month[1]}`;
-  const quarter = /^(\d{4})T([1-4])$/.exec(period);
-  if (quarter) return `${quarter[2]}º tri/${quarter[1]}`;
-  return period;
+  const parsed = parsePeriod(period);
+  return parsed ? formatParsedPeriod(parsed) : period;
 }

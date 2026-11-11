@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ODBr — Tooltip do mapa (claro)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#1351B4}a:hover{color:#071D41}
+</style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; background: #F4F6F9; font-family: Nunito, system-ui, sans-serif; color: #071D41; padding: 40px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; align-items: start; font-variant-numeric: tabular-nums">
+
+<div style="display: flex; flex-direction: column; gap: 14px">
+<div><div style="font-size: 15px; font-weight: 900">Cor ou raça › Sexo</div><div style="font-size: 13px; font-weight: 600; color: #555F6E">Os dois níveis selecionados</div></div>
+<div role="tooltip" style="width: 340px; background: #FFFFFF; border: 1px solid #DDE3EC; border-radius: 14px; box-shadow: 0 12px 32px rgba(7,29,65,0.16); overflow: hidden">
+<div style="height: 4px; display: flex"><div style="flex: 2; background: #1351B4"></div><div style="flex: 1; background: #F2B600"></div><div style="flex: 1; background: #168821"></div></div>
+<div style="padding: 16px 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 18px; font-weight: 900">Amazonas</span><span style="font-size: 12px; font-weight: 800; padding: 2px 10px; border-radius: 10px; background: #E8F0FC; color: #1351B4">2022</span></div>
+<div style="font-size: 12px; font-weight: 700; color: #555F6E">População residente por cor ou raça e sexo</div>
+</div>
+<div style="display: flex; align-items: baseline; gap: 6px"><span style="font-size: 28px; font-weight: 900; letter-spacing: -0.5px">3.941.613</span><span style="font-size: 13px; font-weight: 700; color: #555F6E">pessoas</span></div>
+<div style="display: flex; gap: 2px; height: 10px; border-radius: 5px; overflow: hidden">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="5"><div style="width: {{c.w}}; min-width: 3px; background: {{c.cor}}"></div></sc-for>
+</div>
+<div style="display: flex; gap: 14px; font-size: 11px; font-weight: 700; color: #555F6E">
+<span style="display: flex; align-items: center; gap: 4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="4" r="2.6"></circle><path d="M8.6 8.2h6.8a1.6 1.6 0 011.6 1.6V15h-2.3v7h-6.4v-7H7V9.8a1.6 1.6 0 011.6-1.6z"></path></svg>Homens (tom cheio)</span>
+<span style="display: flex; align-items: center; gap: 4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="4" r="2.6"></circle><path d="M9.6 8.2h4.8l3.4 8.6h-3.1V22h-5.4v-5.2H6.2z"></path></svg>Mulheres (tom claro)</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 5px">
+<div style="display: flex; align-items: center; gap: 8px; font-size: 13px">
+<span style="width: 10px; height: 10px; border-radius: 3px; background: {{c.cor}}"></span>
+<span style="flex: 1; font-weight: 800">{{c.nome}}</span>
+<span style="font-weight: 700; color: #333E4F">{{c.valor}}</span>
+<span style="width: 46px; text-align: right; font-weight: 900">{{c.pct}}</span>
+</div>
+<div style="height: 6px; border-radius: 3px; background: #EEF1F5"><div style="width: {{c.w}}; min-width: 3px; height: 6px; border-radius: 3px; background: {{c.cor}}"></div></div>
+<div style="display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #555F6E">
+<span style="display: flex; align-items: center; gap: 2px; width: 50px"><svg width="13" height="13" viewBox="0 0 24 24" fill="#071D41" aria-hidden="true"><circle cx="12" cy="4" r="2.6"></circle><path d="M8.6 8.2h6.8a1.6 1.6 0 011.6 1.6V15h-2.3v7h-6.4v-7H7V9.8a1.6 1.6 0 011.6-1.6z"></path></svg>{{c.h}}</span>
+<div style="flex: 1; height: 4px; display: flex; gap: 2px"><div style="width: {{c.hw}}; border-radius: 2px; background: {{c.cor}}"></div><div style="flex: 1; border-radius: 2px; background: {{c.cor}}; opacity: 0.35"></div></div>
+<span style="display: flex; align-items: center; justify-content: flex-end; gap: 2px; width: 50px">{{c.m}}<svg width="13" height="13" viewBox="0 0 24 24" fill="#071D41" aria-hidden="true"><circle cx="12" cy="4" r="2.6"></circle><path d="M9.6 8.2h4.8l3.4 8.6h-3.1V22h-5.4v-5.2H6.2z"></path></svg></span>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="border-top: 1px solid #EEF1F5; padding-top: 10px; font-size: 11px; font-weight: 600; color: #555F6E; line-height: 1.45">Pessoas · Percentuais calculados pela plataforma a partir dos valores publicados. Clique para fixar.</div>
+</div>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 14px">
+<div><div style="font-size: 15px; font-weight: 900">Somente Cor ou raça</div><div style="font-size: 13px; font-weight: 600; color: #555F6E">Primeiro nível, sem detalhar sexo</div></div>
+<div role="tooltip" style="width: 340px; background: #FFFFFF; border: 1px solid #DDE3EC; border-radius: 14px; box-shadow: 0 12px 32px rgba(7,29,65,0.16); overflow: hidden">
+<div style="height: 4px; display: flex"><div style="flex: 2; background: #1351B4"></div><div style="flex: 1; background: #F2B600"></div><div style="flex: 1; background: #168821"></div></div>
+<div style="padding: 16px 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 18px; font-weight: 900">Amazonas</span><span style="font-size: 12px; font-weight: 800; padding: 2px 10px; border-radius: 10px; background: #E8F0FC; color: #1351B4">2022</span></div>
+<div style="font-size: 12px; font-weight: 700; color: #555F6E">População residente por cor ou raça</div>
+</div>
+<div style="display: flex; align-items: baseline; gap: 6px"><span style="font-size: 28px; font-weight: 900; letter-spacing: -0.5px">3.941.613</span><span style="font-size: 13px; font-weight: 700; color: #555F6E">pessoas</span></div>
+<div style="display: flex; gap: 2px; height: 10px; border-radius: 5px; overflow: hidden">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="5"><div style="width: {{c.w}}; min-width: 3px; background: {{c.cor}}"></div></sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 5px">
+<div style="display: flex; align-items: center; gap: 8px; font-size: 13px">
+<span style="width: 10px; height: 10px; border-radius: 3px; background: {{c.cor}}"></span>
+<span style="flex: 1; font-weight: 800">{{c.nome}}</span>
+<span style="font-weight: 700; color: #333E4F">{{c.valor}}</span>
+<span style="width: 46px; text-align: right; font-weight: 900">{{c.pct}}</span>
+</div>
+<div style="height: 6px; border-radius: 3px; background: #EEF1F5"><div style="width: {{c.w}}; min-width: 3px; height: 6px; border-radius: 3px; background: {{c.cor}}"></div></div>
+</div>
+</sc-for>
+</div>
+<div style="border-top: 1px solid #EEF1F5; padding-top: 10px; font-size: 11px; font-weight: 600; color: #555F6E; line-height: 1.45">Pessoas · Percentuais calculados pela plataforma a partir dos valores publicados. Clique para fixar.</div>
+</div>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 14px">
+<div><div style="font-size: 15px; font-weight: 900">Somente Sexo</div><div style="font-size: 13px; font-weight: 600; color: #555F6E">Pictograma: cada figura ≈ 10% da população</div></div>
+<div role="tooltip" style="width: 340px; background: #FFFFFF; border: 1px solid #DDE3EC; border-radius: 14px; box-shadow: 0 12px 32px rgba(7,29,65,0.16); overflow: hidden">
+<div style="height: 4px; display: flex"><div style="flex: 2; background: #1351B4"></div><div style="flex: 1; background: #F2B600"></div><div style="flex: 1; background: #168821"></div></div>
+<div style="padding: 16px 18px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 18px; font-weight: 900">Amazonas</span><span style="font-size: 12px; font-weight: 800; padding: 2px 10px; border-radius: 10px; background: #E8F0FC; color: #1351B4">2022</span></div>
+<div style="font-size: 12px; font-weight: 700; color: #555F6E">População residente por sexo</div>
+</div>
+<div style="display: flex; align-items: baseline; gap: 6px"><span style="font-size: 28px; font-weight: 900; letter-spacing: -0.5px">3.941.613</span><span style="font-size: 13px; font-weight: 700; color: #555F6E">pessoas</span></div>
+<div role="img" aria-label="10 figuras: 5 homens e 5 mulheres" style="display: flex; justify-content: space-between">
+<sc-for list="{{figurasH}}" as="f" hint-placeholder-count="5"><svg width="26" height="26" viewBox="0 0 24 24" fill="#1351B4" aria-hidden="true"><circle cx="12" cy="4" r="2.6"></circle><path d="M8.6 8.2h6.8a1.6 1.6 0 011.6 1.6V15h-2.3v7h-6.4v-7H7V9.8a1.6 1.6 0 011.6-1.6z"></path></svg></sc-for>
+<sc-for list="{{figurasM}}" as="f" hint-placeholder-count="5"><svg width="26" height="26" viewBox="0 0 24 24" fill="#168821" aria-hidden="true"><circle cx="12" cy="4" r="2.6"></circle><path d="M9.6 8.2h4.8l3.4 8.6h-3.1V22h-5.4v-5.2H6.2z"></path></svg></sc-for>
+</div>
+<div style="display: flex; gap: 2px; height: 10px"><div style="width: 49.9%; border-radius: 5px 0 0 5px; background: #1351B4"></div><div style="flex: 1; border-radius: 0 5px 5px 0; background: #168821"></div></div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 800"><span style="width: 10px; height: 10px; border-radius: 3px; background: #1351B4"></span>Homens</div>
+<div style="font-size: 24px; font-weight: 900; color: #1351B4">49,9%</div>
+<div style="font-size: 13px; font-weight: 700; color: #333E4F">1.965.757</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px; align-items: flex-end; text-align: right">
+<div style="display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 800">Mulheres<span style="width: 10px; height: 10px; border-radius: 3px; background: #168821"></span></div>
+<div style="font-size: 24px; font-weight: 900; color: #168821">50,1%</div>
+<div style="font-size: 13px; font-weight: 700; color: #333E4F">1.975.741</div>
+</div>
+</div>
+<div style="border-top: 1px solid #EEF1F5; padding-top: 10px; font-size: 11px; font-weight: 600; color: #555F6E; line-height: 1.45">Pessoas · Percentuais calculados pela plataforma a partir dos valores publicados. Clique para fixar.</div>
+</div>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+renderVals() {
+const cats = [
+{ nome: 'Parda', cor: '#1351B4', valor: '2.711.618', pct: '68,8%', w: '68.8%', h: '49,8%', m: '50,2%', hw: '49.8%' },
+{ nome: 'Branca', cor: '#168821', valor: '725.007', pct: '18,4%', w: '18.4%', h: '47,6%', m: '52,4%', hw: '47.6%' },
+{ nome: 'Indígena', cor: '#6E9FE3', valor: '305.243', pct: '7,7%', w: '7.7%', h: '50,8%', m: '49,2%', hw: '50.8%' },
+{ nome: 'Preta', cor: '#A87400', valor: '193.667', pct: '4,9%', w: '4.9%', h: '57,7%', m: '42,3%', hw: '57.7%' },
+{ nome: 'Amarela', cor: '#071D41', valor: '5.963', pct: '0,2%', w: '0.2%', h: '48,0%', m: '52,0%', hw: '48%' }
+];
+return { cats: cats, figurasH: [1, 2, 3, 4, 5], figurasM: [1, 2, 3, 4, 5] };
+}
+}
+</script>
+</body>
+</html>

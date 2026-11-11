@@ -73,6 +73,7 @@ class Generated:
     # Partições novas em classificações curadas: cid → {pid: partição}.
     extensions: dict[str, dict[str, dict[str, Any]]] = field(default_factory=dict)
     dimensions: dict[str, dict[str, str]] = field(default_factory=dict)
+    map_share: dict[str, str] = field(default_factory=dict)  # KPI → categoria do mapa (%)
     total_only: list[tuple[str, str, str]] = field(default_factory=list)
 
 
@@ -227,7 +228,7 @@ def _tree(categories: list[Mapping[str, Any]]) -> dict[str, list[str]]:
     return edges
 
 
-def plan_detail(
+def plan_detail(  # noqa: PLR0911 - um retorno por motivo de ficar só com o Total
     kpi: PanoramaKpi,
     info: Mapping[str, Any],
     descriptor: Mapping[str, Any] | None,
@@ -257,6 +258,9 @@ def plan_detail(
         total = str(top[0]["Id"])  # agregado único da tabela (ex.: "15 anos ou mais")
     else:
         cname = f"c{main['Id']} {main['Nome']}"
+        reference = kpi.referencia.get(f"c{main['Id']}")
+        if reference is not None:
+            return None, f"{cname} sem Total: valor de referência {reference}"
         return None, f"{cname} sem categoria Total (requer categoria de referência)"
     observed = {c["label"]: c["categories"][0]["id"] for c in info.get("classifications") or []}
     if observed.get(str(main["Nome"])) not in (total, None, "0"):
@@ -276,10 +280,19 @@ def plan_detail(
     )
 
 
+def _class_id(descriptor: Mapping[str, Any] | None, label: str) -> str:
+    """Código da classificação (sem o "c") pelo nome, no descritor."""
+    for c in (descriptor or {}).get("Classificacoes") or []:
+        if c.get("Nome") == label:
+            return str(c["Id"])
+    return ""
+
+
 def fixed_categories(
     info: Mapping[str, Any],
     descriptor: Mapping[str, Any] | None,
     exclude: str | None,
+    references: Mapping[str, str] | None = None,
 ) -> tuple[dict[str, str], dict[str, str], list[str]]:
     """Categoria fixa de cada classificação (exceto a dimensão principal).
 
@@ -301,6 +314,14 @@ def fixed_categories(
             continue
         desc = by_name.get(label)
         cats: list[Mapping[str, Any]] = (desc or {}).get("Categorias") or []
+        reference = (references or {}).get(f"c{desc['Id']}") if desc else None
+        if reference is not None:
+            if reference not in {str(c["Id"]) for c in cats}:
+                missing.append(f"{label} (referência {reference} inexistente)")
+                continue
+            fixed[label] = reference
+            params[f"c{desc['Id']}"] = reference  # type: ignore[index]
+            continue
         level0 = min((int(c.get("NivelIdentacao") or 0) for c in cats), default=0)
         top = [c for c in cats if int(c.get("NivelIdentacao") or 0) == level0]
         single = [c for c in top if c.get("Nome") == "Total"] or (top if len(top) == 1 else [])
@@ -456,7 +477,7 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
         dataset_id = f"ibge-sidra-{kpi.tabela}"
         fact_id = f"fact_sidra_{kpi.tabela}"
         fixed, fixed_params, missing = fixed_categories(
-            info, descriptor, detail.name if detail else None
+            info, descriptor, detail.name if detail else None, kpi.referencia
         )
         if missing:
             where = ", ".join(missing)
@@ -494,7 +515,9 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
             if conflict:
                 why_total, detail = conflict, None
                 # Sem a dimensão, ela também fica fixa no Total.
-                fixed, fixed_params, missing = fixed_categories(info, descriptor, None)
+                fixed, fixed_params, missing = fixed_categories(
+                    info, descriptor, None, kpi.referencia
+                )
                 if missing:
                     where = ", ".join(missing)
                     reason = f"sem categoria Total em: {where} ({why_total})"
@@ -524,9 +547,19 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 out.total_only.append((kpi.id, kpi.tabela, why_total))
         title = titles[kpi.tabela]
         fonte = (descriptor or {}).get("Fonte")
+        names = {
+            str(c["Nome"]): {str(x["Id"]): str(x["Nome"]) for x in c.get("Categorias") or []}
+            for c in (descriptor or {}).get("Classificacoes") or []
+        }
         at = "; ".join(
-            f"{c['label']}: {c['categories'][0]['name']}" for c in info.get("classifications") or []
+            f"{label}: {names.get(label, {}).get(cat, cat)}" for label, cat in fixed.items()
         )
+        reference_notes = [
+            f"Valor de referência em {label}: {names.get(label, {}).get(cat, cat)} "
+            "(a classificação não tem Total; as categorias não se somam)."
+            for label, cat in fixed.items()
+            if f"c{_class_id(descriptor, label)}" in kpi.referencia
+        ]
         out.datasets.append(
             {
                 "id": dataset_id,
@@ -583,7 +616,7 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
             fact["classifications"] = {detail.cid: f"{detail.cid}_category_key"}
         fact["fixed_categories"] = fixed
         out.facts.append(fact)
-        caveats = _caveats(kpi, info, levels, descriptor)
+        caveats = [*reference_notes, *_caveats(kpi, info, levels, descriptor)]
         if detail is not None and detail.levels:
             shown = ", ".join(LEVEL_LABELS[lv] for lv in detail.levels)
             caveats.insert(
@@ -603,13 +636,16 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 "partition": detail.partition,
                 "label": detail.name,
             }
+            if kpi.requer_categoria:
+                # O Total é só o universo: o mapa mostra o % da categoria principal.
+                out.map_share[kpi.id] = kpi.categoria_mapa or detail.edges[detail.total][0]
         out.indicators.append(
             {
                 "id": kpi.id,
                 "name": variable["name"],
                 "description": (
                     f"{variable['name']} ({kpi.pesquisa}, tabela SIDRA {kpi.tabela}). "
-                    + (f"Valores no Total: {at}." if at else "Tabela sem classificações.")
+                    + (f"Recorte: {at}." if at else "Tabela sem classificações.")
                     + (f" Fonte: {fonte}." if fonte else "")
                 ),
                 "dataset": dataset_id,
@@ -743,6 +779,8 @@ def render_portal(gen: Generated, scope: str) -> str:
         dim = gen.dimensions.get(kpi.id)
         if dim:
             lines.append(f"dimensions = [{_value(dim)}]")
+        if kpi.id in gen.map_share:
+            lines.append(f"map_share = {_value(gen.map_share[kpi.id])}")
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
