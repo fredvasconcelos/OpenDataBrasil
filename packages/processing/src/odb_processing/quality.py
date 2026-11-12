@@ -456,8 +456,9 @@ def sim_checks(
 
     ``counts``: ano → ``{"states": registros nas UFs, "national": registros no DOBR}``. O
     DOBR não entra na Silver; uma diferença aponta um arquivo revisado de um lado só.
-    ``other_uf``: arquivo → {código da UF de residência: registros}. Esses óbitos contam só
-    na UF do arquivo, não no município (a linha repetiria a do arquivo da outra UF).
+    ``other_uf``: arquivo → {UF de residência: registros}. Esses óbitos contam na UF de
+    residência (código do município), não na UF do arquivo. Sem o DOBR, ou com contagem
+    diferente, o ano fica sem o nível Brasil.
     """
     both = {
         y: c
@@ -472,8 +473,12 @@ def sim_checks(
             "sim.national_file",
             CheckStatus.WARN if differ or missing else CheckStatus.PASS,
             f"{len(both)} anos conferidos com o arquivo nacional DOBR"
-            + (f"; {len(differ)} com contagem diferente" if differ else "; contagens iguais")
-            + (f"; anos sem um dos lados: {missing}" if missing else ""),
+            + (
+                f"; {len(differ)} com contagem diferente (sem nível Brasil)"
+                if differ
+                else "; contagens iguais"
+            )
+            + (f"; anos sem um dos lados (sem nível Brasil): {missing}" if missing else ""),
             observed=len(differ),
             expected=0,
             details={"differ": differ, "missing": missing},
@@ -483,7 +488,7 @@ def sim_checks(
             CheckStatus.WARN if other_uf else CheckStatus.PASS,
             (
                 f"{moved} óbitos em {len(other_uf)} arquivos com residência em outra UF: "
-                "contados só na UF do arquivo, fora do nível municipal"
+                "contados na UF de residência (código do município)"
                 if other_uf
                 else "todos os registros residem na UF do arquivo"
             ),

@@ -451,3 +451,18 @@ test("trechos da busca lateral sem HTML da fonte (entidades e marcas)", async ({
   await page.getByLabel("Buscar tema ou indicador").fill("Mortalidade (SIM). Instituto");
   await expect(snippets.first()).toContainText("Mortalidade (SIM). Instituto");
 });
+
+test("óbitos por residência (SIM, Ministério da Saúde): mapa por UF, série desde 1996 e fonte", async ({ page }) => {
+  await page.goto("/dashboard?kpi=sim_obitos_residencia&nivel=uf");
+  await expect(page.getByRole("heading", { level: 1, name: "Óbitos por residência (SIM)" })).toBeVisible();
+  const map = page.getByRole("img", { name: /Óbitos por residência/ });
+  await expect(map.locator("path.territory")).toHaveCount(27);
+  await expect(page.locator(".meta-source")).toContainText("MS · SIM-DORES");
+  await expect(page.locator(".meta-source")).not.toContainText("SIDRA");
+  const plot = page.locator(".series-plot svg");
+  await plot.scrollIntoViewIfNeeded();
+  await plot.focus();
+  await page.keyboard.press("Home");
+  await expect(page.locator(".series-tip")).toContainText("1996");
+  await page.screenshot({ path: "test-results/sim-obitos-uf.png", fullPage: false });
+});

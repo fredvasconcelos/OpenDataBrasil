@@ -118,6 +118,10 @@ docker compose --profile data run --rm worker odb fontes comparar-obitos
   baixa arquivos novos ou revisados.
 - **Nomes:** na Bronze, minúsculos e com sufixo de hash. O nome original fica
   em `partition_key` e em `source_url`.
+- **Mudança de regra:** a impressão digital da Silver considera a Bronze e as
+  configurações, não o código. Depois de mudar uma regra de transformação (por exemplo,
+  a UF de residência do SIM), reconstrua com `odb silver build <dataset> --force`; sem
+  isso, o build é pulado (`skipped`).
 - **Privacidade:** os microdados (`.dbc`) ficam só na Bronze, com
   `access_classification = "restricted"`. A Silver do SIM guarda óbitos por
   município de residência e por UF: o Total e cada dimensão separadamente

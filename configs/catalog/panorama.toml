@@ -358,6 +358,11 @@ kpis = [
   { id = "mortalidade_menores_5", label = "Taxa de mortalidade em menores de 5 anos", tabela = "6695", pesquisa = "Objetivos de Desenvolvimento Sustentável" },
   { id = "mortalidade_doencas_cronicas", label = "Mortalidade por doenças crônicas não transmissíveis", tabela = "4277", pesquisa = "Objetivos de Desenvolvimento Sustentável" },
 ]
+# Declarações de óbito do SIM (Ministério da Saúde), curadas à mão (ADR-0011). Não são a
+# mesma série dos óbitos do Registro Civil (tabela 2654): KPI próprio.
+externos = [
+  { id = "sim_obitos_residencia", label = "Óbitos por residência (SIM)", fonte = "datasus-sim-cid10-dores", tabela = "SIM-DORES", kpi = "sim_obitos_residencia" },
+]
 
 [[temas.subtemas]]
 id = "saude_escolar"

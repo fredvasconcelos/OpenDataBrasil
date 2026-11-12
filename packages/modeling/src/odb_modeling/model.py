@@ -96,6 +96,9 @@ class DatasetInfo:
     # Série de datasets (ex.: Sinesp VDE, um dataset por ano): as tabelas Silver de cada
     # membro. Vazio para um dataset único (a tabela é ``table_id``).
     table_ids: tuple[str, ...] = ()
+    # Silver no desenho "Total e cada dimensão, as demais no Total" (Sinesp VDE, SIM): o
+    # scan da Gold só lê as linhas que os fatos usam (``GoldBuilder._silver_scan``).
+    marginals: bool = False
 
     @property
     def source_tables(self) -> tuple[str, ...]:
@@ -218,7 +221,8 @@ def municipal_names(silver: pl.LazyFrame) -> pl.DataFrame:
         silver.filter(pl.col("territorial_level") == "6")
         .select(MUNICIPAL_NAME_COLUMNS)
         .unique()
-        .collect()
+        # Streaming: o scan passa por todas as Silvers, e o resultado é pequeno.
+        .collect(engine="streaming")
     )
 
 
@@ -598,27 +602,32 @@ def build_dim_breakdown(
     return _conform(pl.DataFrame(rows, schema=DIM_BREAKDOWN.frame_schema()), DIM_BREAKDOWN)
 
 
+def indicator_stats(observations: pl.DataFrame) -> pl.DataFrame:
+    """Níveis, períodos e número de observações de cada indicador."""
+    return observations.group_by("indicator_id").agg(
+        pl.col("level_id").unique().alias("levels"),
+        pl.col("period").unique().sort().alias("periods"),
+        pl.len().alias("n"),
+    )
+
+
 def build_dim_indicator(
     catalog: SemanticCatalog,
-    observations: pl.DataFrame,
-    selected: pl.DataFrame,
+    stats: pl.DataFrame,
+    variable_names: pl.DataFrame,
     datasets: Mapping[str, DatasetInfo],
     node_keys: Mapping[str, str],
 ) -> pl.DataFrame:
-    """Catálogo de indicadores no release, com disponibilidade calculada dos dados."""
-    stats = {
-        r["indicator_id"]: r
-        for r in observations.group_by("indicator_id")
-        .agg(
-            pl.col("level_id").unique().alias("levels"),
-            pl.col("period").unique().sort().alias("periods"),
-            pl.len().alias("n"),
-        )
-        .iter_rows(named=True)
-    }
+    """Catálogo de indicadores no release, com disponibilidade calculada dos dados.
+
+    ``stats`` vem de ``indicator_stats``; ``variable_names`` traz ``indicator_id``,
+    ``period`` e ``variable_name`` (vale o nome do período mais recente). Os dois podem
+    ser resumos de vários lotes, com indicadores distintos em cada um.
+    """
+    by_indicator = {r["indicator_id"]: r for r in stats.iter_rows(named=True)}
     names = {
         r["indicator_id"]: r["variable_name"]
-        for r in selected.sort("period", descending=True)
+        for r in variable_names.sort("period", descending=True)
         .unique("indicator_id", keep="first")
         .iter_rows(named=True)
     }
@@ -629,7 +638,7 @@ def build_dim_indicator(
         incompatible[b].append({"indicator": a, "reason": reason})
     rows = []
     for ind in catalog.indicators:
-        st = stats.get(ind.id, {"levels": [], "periods": [], "n": 0})
+        st = by_indicator.get(ind.id, {"levels": [], "periods": [], "n": 0})
         ds = datasets[ind.dataset]
         rows.append(
             {

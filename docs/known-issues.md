@@ -121,7 +121,7 @@ navegador automatizado ou credenciais pessoais.
 
 ## KI-007: o build da Gold carrega a Silver inteira na memória
 
-- **Estado:** mitigado (etapa 1 de 2 feita em 2026-11-11)
+- **Estado:** resolvido (etapa 1 em 2026-11-11, etapa 2 em 2026-11-12)
 - **Detectado em:** 2026-11-11, no release `57ecc864` (Parte B, 11 tabelas novas)
 - **Sintoma:** `odb gold build` com o limite padrão do worker (16 GB) foi
   encerrado por falta de memória (código 137) duas vezes. Com
@@ -143,6 +143,28 @@ navegador automatizado ou credenciais pessoais.
 - **Com o Sinesp (2026-11-12):** o build lê também a Silver do MJSP (só o Total dos
   6 KPIs, filtrado no scan) e o pico medido foi de 22,1 GB no limite de 24 GB. Isso está
   perto do limite e bloqueia o detalhe por sexo dos KPIs do Sinesp.
-- **Etapa 2 (pendente):** construir a estrutura universal e os fatos por
-  dataset ou por fato, gravando cada um antes do próximo, em vez de manter o
-  quadro inteiro (§8.2, §8.4).
+- **Etapa 2 (feita em 2026-11-12):** o build processa um dataset por vez
+  (`GoldBuilder._build_in_batches`). Cada lote lê da Silver só as tabelas e
+  variáveis do dataset, monta as observações e os fatos, grava e libera a memória.
+  Do lote ficam só resumos pequenos (períodos, territórios, categorias, chaves e
+  estatísticas por indicador), com que as dimensões e as verificações finais são
+  montadas.
+  - A `indicator_observation` é gravada em blocos de até 2 milhões de linhas: o
+    primeiro bloco substitui a tabela e os demais acrescentam.
+  - A unicidade da chave é conferida por lote; como cada indicador pertence a um só
+    dataset, ela vale para a tabela inteira.
+  - As Silvers no desenho "Total e cada dimensão" (Sinesp VDE e SIM) só entram com
+    as linhas que algum fato usa (`_marginal_filter`).
+  - **Mudança de garantia:** como as tabelas são gravadas durante o build, uma falha
+    nas verificações finais pode deixar versões Delta gravadas, mas sem release. A
+    consulta continua nas versões fixadas no release ativo (§10.9, §17.4); o teste
+    de integração confere isso.
+- **Medição (158 indicadores, 8,9 milhões de observações, com o Sinesp e o SIM):**
+  - release `a6155ebc`: pico do contêiner no `docker stats`, que inclui cache de
+    arquivos, de 16,0 GiB (antes da etapa 2, 22,1 GB com a mesma medida); cerca de
+    1 min 45 s;
+  - release `af0367e2`, já com os nomes municipais lidos em streaming: pico de
+    memória do processo (`ru_maxrss`) de 9,4 GiB.
+
+  O maior lote é a tabela 9971 (2,87 milhões de observações). O limite do worker
+  continua em 24 GB.

@@ -56,13 +56,15 @@ from odb_modeling.contracts import (
 from odb_modeling.geography import GeographyError, build_ancestor_bridge, build_dim_geography
 from odb_modeling.geometry import GeometryError, build_dim_geometry
 from odb_modeling.quality import (
+    BatchedTableChecks,
     category_reconciliation,
     consistency_checks,
+    fidelity_diff,
+    fidelity_result,
     foreign_key,
     geography_checks,
     geometry_checks,
     input_checks,
-    silver_fidelity,
     table_checks,
 )
 from odb_processing.contracts import SIDRA_OBSERVATION, Contract, SchemaChange, compare_schema
@@ -71,6 +73,9 @@ from odb_processing.silver import PreviousRun
 from odb_semantics import SemanticCatalog
 
 logger = logging.getLogger(__name__)
+
+# Categoria Total das Silvers marginais (Sinesp VDE e SIM).
+MARGINAL_TOTAL = "T"
 
 # Versão das regras de modelagem. Sobe quando a transformação muda sem mudar
 # contratos nem catálogo, para forçar a reconstrução.
@@ -208,8 +213,20 @@ class GoldBuilder:
                 out[dataset_id] = self._series_info(dataset_id, members)
                 continue
             dataset = self._sources.dataset(dataset_id)
-            if dataset.silver.get("transformer") != "sidra_observation":
-                msg = f"{dataset_id}: a Gold desta versão aceita apenas datasets SIDRA"
+            transformer = dataset.silver.get("transformer")
+            if transformer == "datasus_sim_do":
+                # SIM: óbitos por residência, um arquivo por UF e ano numa tabela Silver.
+                out[dataset_id] = model.DatasetInfo(
+                    dataset_id=dataset_id,
+                    table_id=str(dataset.silver.get("table_id", "SIM-DORES")),
+                    reference_url=dataset.reference_url,
+                    license_id=dataset.license,
+                    period_type="ano",
+                    marginals=True,
+                )
+                continue
+            if transformer != "sidra_observation":
+                msg = f"{dataset_id}: a Gold desta versão aceita SIDRA, Sinesp VDE e SIM"
                 raise GoldBuildError(msg)
             params = SidraConnector.params(dataset)
             out[dataset_id] = model.DatasetInfo(
@@ -238,6 +255,7 @@ class GoldBuilder:
             license_id=configs[0].license,
             period_type="mes",
             table_ids=tuple(f"{base}-{c.params['reference_period']}" for c in configs),
+            marginals=True,
         )
 
     def reference_dataset(self) -> str:
@@ -288,6 +306,8 @@ class GoldBuilder:
             except Exception as exc:
                 build.status = "failed"
                 build.error = f"{type(exc).__name__}: {exc}"
+                # Lotes já gravados ficam em versões Delta sem release: não servem a nada.
+                build.tables = {}
                 logger.exception("gold build failed")
             finally:
                 if build.checks:
@@ -375,79 +395,130 @@ class GoldBuilder:
             build.tables = dict(previous.tables)
             logger.info("gold unchanged", extra={"previous_build": previous.build_id})
             return
-        frames = self._frames(build)
+        self._build_in_batches(build)
         failures = blocking(build.checks)
         if failures:
             msg = "verificações bloqueantes falharam: " + ", ".join(c.check_id for c in failures)
             raise GoldBuildError(msg)
-        self._write(build, frames)
         build.status = "succeeded"
 
-    def _frames(self, build: GoldBuild) -> dict[str, pl.DataFrame]:
+    def _build_in_batches(self, build: GoldBuild) -> None:
+        """Constrói e grava a Gold um dataset por vez (KI-007, etapa 2; §8.2, §8.4).
+
+        Cada lote lê da Silver só as tabelas e variáveis de um dataset, monta as
+        observações e os fatos dele, grava e libera a memória. Do lote ficam só
+        resumos pequenos (períodos, territórios, categorias, chaves), com que as
+        dimensões e as verificações finais são montadas.
+
+        As tabelas são gravadas durante o build, mas escrita não é publicação
+        (§10.9): o release só é criado se todas as verificações passarem, e a
+        consulta continua nas versões Delta fixadas no release ativo.
+        """
         inputs = build.inputs
         datasets = self.datasets()
         mapping = model.indicator_map(self._catalog, datasets)
-        # Memória (KI-007): só as colunas que a Gold usa e só as variáveis do
-        # catálogo são materializadas; os nomes municipais vêm num recorte à parte.
+        contracts = self.contracts()
+        evolve = self._schema_plan(contracts)
         scan = self._silver_scan(inputs, datasets)
         names = model.municipal_names(scan)
-        silver = scan.join(
-            mapping.lazy().select("table_id", "variable_id").unique(),
-            on=["table_id", "variable_id"],
-            how="semi",
-        ).collect()
-        selected, fixed_problems = model.strip_fixed_categories(
-            model.select_silver(silver, mapping, self._catalog), self._catalog
-        )
-        del silver
         pending, pending_report = model.resolve_pending_installation(self._catalog, names, datasets)
-        build.checks = input_checks(
-            selected, self._catalog, datasets, pending_report, fixed_problems
-        )
-        if blocking(build.checks):
-            return {}
+        versions = self._silver_versions(inputs, datasets)
+        period_types = {d.dataset_id: d.period_type for d in datasets.values()}
+        consistency_ids = {
+            i for pair in self._catalog.consistency for i in (pair.indicator, pair.reference)
+        }
+        summary = _Summary()
+        observations_out = _BatchedTable(self, build, contracts[INDICATOR_OBSERVATION.name], evolve)
+        table_results: list[CheckResult] = []
+        for dataset_id in sorted(datasets):
+            info = datasets[dataset_id]
+            part = mapping.filter(pl.col("dataset_id") == dataset_id)
+            silver = (
+                scan.filter(pl.col("table_id").is_in(list(info.source_tables)))
+                .join(
+                    part.lazy().select("table_id", "variable_id").unique(),
+                    on=["table_id", "variable_id"],
+                    how="semi",
+                )
+                .collect(engine="streaming")
+            )
+            selected, fixed_problems = model.strip_fixed_categories(
+                model.select_silver(silver, part, self._catalog), self._catalog
+            )
+            del silver
+            observations = model.build_observations(
+                selected,
+                self._catalog,
+                silver_version=versions,
+                build_id=build.build_id,
+                pending=pending,
+                period_types=period_types,
+            )
+            summary.add(selected, observations, fixed_problems)
+            indicators = set(part["indicator_id"].to_list())
+            summary.reconciliation.extend(
+                category_reconciliation(observations, self._catalog, indicators)
+            )
+            if consistency_ids & indicators:
+                summary.consistency.append(
+                    observations.filter(pl.col("indicator_id").is_in(list(consistency_ids)))
+                )
+            for fact in self._catalog.facts:
+                if fact.dataset != dataset_id:
+                    continue
+                frame = model.build_fact(observations, self._catalog, fact, contracts[fact.id])
+                table_results.extend(table_checks(fact.id, frame, contracts[fact.id]))
+                summary.add_fact_categories(fact.id, frame, fact.classifications.values())
+                self._write_table(build, fact.id, frame, contracts[fact.id], evolve)
+            observations_out.add(observations)
+            logger.info(
+                "gold batch written",
+                extra={"dataset_id": dataset_id, "observations": observations.height},
+            )
+            del selected, observations
+        observations_out.close()
+        summary.municipal_names = names
+        summary.pending_report = pending_report
+        entry, rest = self._finish(build, summary, datasets, contracts, evolve)
+        build.checks = [*entry, *observations_out.checks.results(), *table_results, *rest]
 
+    def _finish(
+        self,
+        build: GoldBuild,
+        summary: _Summary,
+        datasets: Mapping[str, model.DatasetInfo],
+        contracts: Mapping[str, Contract],
+        evolve: Mapping[str, bool],
+    ) -> tuple[list[CheckResult], list[CheckResult]]:
+        """Dimensões a partir dos resumos, verificações de conjunto e gravação das dimensões.
+
+        Devolve as verificações de entrada (catálogo contra a Silver) e as demais.
+        """
+        inputs = build.inputs
+        selected = summary.selected()
+        observed = summary.observed()
         ref = inputs["reference"]
         dtb_all = self._reader.scan(ref["uri"], int(ref["delta_version"])).collect()
         year = str(dtb_all["reference_year"].max())
         dtb = dtb_all.filter(pl.col("reference_year") == year)
-
-        observations = model.build_observations(
-            selected,
-            self._catalog,
-            silver_version=self._silver_versions(inputs, datasets),
-            build_id=build.build_id,
-            pending=pending,
-            period_types={d.dataset_id: d.period_type for d in datasets.values()},
-        )
-        # Territórios observados, com o nome do período mais recente.
-        observed = (
-            selected.sort("period", descending=True)
-            .select(
-                pl.col("territorial_level")
-                .replace_strict(model.SIDRA_LEVELS, default=None)
-                .alias("level_id"),
-                pl.col("territory_id").alias("code"),
-                pl.col("territory_name").alias("name"),
-            )
-            .unique(["level_id", "code"], keep="first")
-        )
         try:
             geography = build_dim_geography(
                 dtb,
                 observed,
                 reference=f"{ref['dataset_id']} {year} (Silver v{ref['delta_version']})",
-                uf_abbreviations=model.uf_abbreviations(names),
+                uf_abbreviations=model.uf_abbreviations(summary.municipal_names),
             )
             bridge = build_ancestor_bridge(geography)
         except GeographyError as exc:
             raise GoldBuildError(str(exc)) from exc
 
         used = sorted({cid for f in self._catalog.facts for cid in f.classifications})
-        category_names = model.category_names(selected, self._catalog)
-        categories = model.build_dim_category(self._catalog, used, category_names)
+        categories = model.build_dim_category(
+            self._catalog, used, model.category_names(summary.categories(), self._catalog)
+        )
+        keys = summary.keys()
+        frames: dict[str, pl.DataFrame] = {}
         geometry_results: list[CheckResult] = []
-        extra: dict[str, pl.DataFrame] = {}
         if self._catalog.geometry:
             mesh_in = inputs["geometry"]
             mesh = (
@@ -465,36 +536,109 @@ class GoldBuilder:
                 )
             except GeometryError as exc:
                 raise GoldBuildError(str(exc)) from exc
-            extra[DIM_GEOMETRY.name] = geometry
+            frames[DIM_GEOMETRY.name] = geometry
             geometry_results = geometry_checks(geometry, report)
-        frames: dict[str, pl.DataFrame] = {
-            **extra,
+        frames |= {
             DIM_GEOGRAPHY.name: geography,
             BRIDGE_GEOGRAPHY_ANCESTOR.name: bridge,
-            DIM_PERIOD.name: model.build_dim_period(observations),
+            DIM_PERIOD.name: model.build_dim_period(keys["period"]),
             DIM_CLASSIFICATION.name: model.build_dim_classification(self._catalog, used),
             DIM_CATEGORY.name: categories,
-            DIM_BREAKDOWN.name: model.build_dim_breakdown(observations, categories, self._catalog),
+            DIM_BREAKDOWN.name: model.build_dim_breakdown(
+                keys["breakdown_key"], categories, self._catalog
+            ),
             DIM_INDICATOR.name: model.build_dim_indicator(
                 self._catalog,
-                observations,
-                selected,
+                summary.stats(),
+                summary.variable_names(),
                 datasets,
                 model.indicator_node_keys(self._catalog),
             ),
             DIM_INDICATOR_NODE.name: model.build_dim_indicator_node(
-                self._catalog, observations, categories
+                self._catalog, summary.indicator_breakdowns(), categories
             ),
-            INDICATOR_OBSERVATION.name: observations,
         }
-        contracts = self.contracts()
-        for fact in self._catalog.facts:
-            frames[fact.id] = model.build_fact(
-                observations, self._catalog, fact, contracts[fact.id]
+        entry = input_checks(
+            selected, self._catalog, datasets, summary.pending_report, summary.fixed_problems
+        )
+        results: list[CheckResult] = []
+        for name, frame in frames.items():
+            results.extend(table_checks(name, frame, contracts[name]))
+        results.extend(self._key_checks(frames, keys, summary))
+        results.extend(geography_checks(geography, bridge))
+        results.append(fidelity_result(summary.fidelity, summary.rows))
+        results.extend(summary.reconciliation)
+        results.extend(consistency_checks(summary.consistency_frame(), self._catalog))
+        results.extend(geometry_results)
+        for name, frame in frames.items():
+            self._write_table(build, name, frame, contracts[name], evolve)
+        return entry, results
+
+    def _key_checks(
+        self,
+        frames: Mapping[str, pl.DataFrame],
+        keys: Mapping[str, pl.DataFrame],
+        summary: _Summary,
+    ) -> list[CheckResult]:
+        """Integridade referencial, com as chaves das observações resumidas por lote."""
+        geo = frames[DIM_GEOGRAPHY.name]
+        cats = frames[DIM_CATEGORY.name]
+        nodes = frames[DIM_INDICATOR_NODE.name]
+        breakdown = frames[DIM_BREAKDOWN.name]
+        results = [
+            foreign_key(
+                "fk.observation.geography",
+                keys["geography_key"],
+                "geography_key",
+                geo,
+                "geography_key",
+            ),
+            foreign_key(
+                "fk.observation.breakdown",
+                keys["breakdown_key"],
+                "breakdown_key",
+                breakdown,
+                "breakdown_key",
+            ),
+            foreign_key(
+                "fk.observation.period", keys["period"], "period", frames[DIM_PERIOD.name], "period"
+            ),
+            foreign_key(
+                "fk.observation.indicator",
+                keys["indicator_id"],
+                "indicator_id",
+                frames[DIM_INDICATOR.name],
+                "indicator_id",
+            ),
+            foreign_key("fk.breakdown.category", breakdown, "category_keys", cats, "category_key"),
+            foreign_key(
+                "fk.indicator.node", frames[DIM_INDICATOR.name], "node_key", nodes, "node_key"
+            ),
+            foreign_key("fk.node.parent", nodes, "parent_key", nodes, "node_key"),
+            foreign_key("fk.geography.parent", geo, "parent_key", geo, "geography_key"),
+        ]
+        if DIM_GEOMETRY.name in frames:
+            results.append(
+                foreign_key(
+                    "fk.geometry.geography",
+                    frames[DIM_GEOMETRY.name],
+                    "geography_key",
+                    geo,
+                    "geography_key",
+                )
             )
-        build.checks.extend(self._checks(frames, selected, contracts))
-        build.checks.extend(geometry_results)
-        return frames
+        for fact in self._catalog.facts:
+            for column in fact.classifications.values():
+                values = summary.fact_categories.get((fact.id, column))
+                child = (
+                    values
+                    if values is not None
+                    else pl.DataFrame({column: []}, schema={column: pl.String})
+                )
+                results.append(
+                    foreign_key(f"fk.{fact.id}.{column}", child, column, cats, "category_key")
+                )
+        return results
 
     def _silver_scan(
         self, inputs: Mapping[str, Any], datasets: Mapping[str, model.DatasetInfo]
@@ -518,33 +662,45 @@ class GoldBuilder:
                 .select(model.SILVER_COLUMNS)
             )
         scan = pl.concat(scans, how="vertical_relaxed")
-        fixed = self._series_fixed_tables(datasets)
-        if not fixed:
-            return scan
-        keep = ~pl.col("table_id").is_in([t for tables_ in fixed.values() for t in tables_])
-        for codes, table_list in fixed.items():
-            keep = keep | (
-                pl.col("table_id").is_in(list(table_list))
-                & pl.col("classifications")
-                .list.eval(pl.element().struct.field("category_id").is_in(list(codes)))
-                .list.all()
-            )
-        return scan.filter(keep)
+        keep = self._marginal_filter(datasets)
+        return scan if keep is None else scan.filter(keep)
 
-    def _series_fixed_tables(
-        self, datasets: Mapping[str, model.DatasetInfo]
-    ) -> dict[frozenset[str], list[str]]:
-        """Categorias fixas → tabelas das séries cujos fatos só fixam categorias."""
-        out: dict[frozenset[str], list[str]] = {}
+    def _marginal_filter(self, datasets: Mapping[str, model.DatasetInfo]) -> pl.Expr | None:
+        """Linhas das Silvers marginais (Sinesp VDE, SIM) que algum fato usa.
+
+        Nelas cada linha traz o Total ou a distribuição de uma dimensão, com as demais no
+        Total (``T``). Um fato usa a linha quando cada dimensão está na categoria fixa do
+        fato, no Total, ou é uma classificação do fato. Sem isso, o build carregaria todas
+        as distribuições (o Sinesp tem ~34 milhões de linhas) para usar só o Total.
+        """
+        tables: list[str] = []
+        used: pl.Expr = pl.lit(value=False)
         for info in datasets.values():
-            if not info.table_ids:
+            if not info.marginals:
                 continue
-            facts = [f for f in self._catalog.facts if f.dataset == info.dataset_id]
-            if not facts or any(f.classifications for f in facts):
-                continue
-            codes = frozenset(c for f in facts for c in f.fixed_categories.values())
-            out.setdefault(codes, []).extend(info.table_ids)
-        return out
+            tables.extend(info.source_tables)
+            for fact in self._catalog.facts:
+                if fact.dataset != info.dataset_id:
+                    continue
+                dim = pl.element().struct.field("dimension")
+                expected = (
+                    dim.replace_strict(dict(fact.fixed_categories), default=pl.lit(MARGINAL_TOTAL))
+                    if fact.fixed_categories
+                    else pl.lit(MARGINAL_TOTAL)
+                )
+                allowed = pl.element().struct.field("category_id") == expected
+                classified = [
+                    self._catalog.classification(c).silver_dimension for c in fact.classifications
+                ]
+                if classified:
+                    allowed = allowed | dim.is_in(classified)
+                used = used | (
+                    pl.col("table_id").is_in(list(info.source_tables))
+                    & pl.col("classifications").list.eval(allowed).list.all()
+                )
+        if not tables:
+            return None
+        return ~pl.col("table_id").is_in(tables) | used
 
     def _silver_versions(
         self, inputs: Mapping[str, Any], datasets: Mapping[str, model.DatasetInfo]
@@ -557,104 +713,228 @@ class GoldBuilder:
             out[dataset_id] = versions[str(inputs["datasets"][member]["uri"])]
         return out
 
-    def _checks(
-        self,
-        frames: Mapping[str, pl.DataFrame],
-        selected: pl.DataFrame,
-        contracts: Mapping[str, Contract],
-    ) -> list[CheckResult]:
-        results: list[CheckResult] = []
-        for name, frame in frames.items():
-            results.extend(table_checks(name, frame, contracts[name]))
-        obs = frames[INDICATOR_OBSERVATION.name]
-        geo = frames[DIM_GEOGRAPHY.name]
-        cats = frames[DIM_CATEGORY.name]
-        nodes = frames[DIM_INDICATOR_NODE.name]
-        results.extend(
-            [
-                foreign_key("fk.observation.geography", obs, "geography_key", geo, "geography_key"),
-                foreign_key(
-                    "fk.observation.breakdown",
-                    obs,
-                    "breakdown_key",
-                    frames[DIM_BREAKDOWN.name],
-                    "breakdown_key",
-                ),
-                foreign_key(
-                    "fk.observation.period", obs, "period", frames[DIM_PERIOD.name], "period"
-                ),
-                foreign_key(
-                    "fk.observation.indicator",
-                    obs,
-                    "indicator_id",
-                    frames[DIM_INDICATOR.name],
-                    "indicator_id",
-                ),
-                foreign_key(
-                    "fk.breakdown.category",
-                    frames[DIM_BREAKDOWN.name],
-                    "category_keys",
-                    cats,
-                    "category_key",
-                ),
-                foreign_key(
-                    "fk.indicator.node", frames[DIM_INDICATOR.name], "node_key", nodes, "node_key"
-                ),
-                foreign_key("fk.node.parent", nodes, "parent_key", nodes, "node_key"),
-                foreign_key("fk.geography.parent", geo, "parent_key", geo, "geography_key"),
-            ]
-        )
-        if DIM_GEOMETRY.name in frames:
-            results.append(
-                foreign_key(
-                    "fk.geometry.geography",
-                    frames[DIM_GEOMETRY.name],
-                    "geography_key",
-                    geo,
-                    "geography_key",
-                )
-            )
-        for fact in self._catalog.facts:
-            for column in fact.classifications.values():
-                results.append(
-                    foreign_key(
-                        f"fk.{fact.id}.{column}", frames[fact.id], column, cats, "category_key"
-                    )
-                )
-        results.extend(geography_checks(geo, frames[BRIDGE_GEOGRAPHY_ANCESTOR.name]))
-        results.append(silver_fidelity(selected, obs))
-        results.extend(category_reconciliation(obs, self._catalog))
-        results.extend(consistency_checks(obs, self._catalog))
-        return results
+    def _schema_plan(self, contracts: Mapping[str, Contract]) -> dict[str, bool]:
+        """Confere o schema de todas as tabelas antes da primeira escrita.
 
-    def _write(self, build: GoldBuild, frames: Mapping[str, pl.DataFrame]) -> None:
-        contracts = self.contracts()
+        Devolve, por tabela, se a escrita deve acrescentar colunas (evolução compatível).
+        """
         evolve: dict[str, bool] = {}
-        # Todos os schemas são conferidos antes da primeira escrita.
-        for name in frames:
+        for name, contract in contracts.items():
             uri = self.table_uri(name)
             evolve[name] = False
             if DeltaTable.is_deltatable(uri):
                 existing = pl.scan_delta(uri).collect_schema()
-                comparison = compare_schema(existing, contracts[name])
+                comparison = compare_schema(existing, contract)
                 if comparison.change is SchemaChange.INCOMPATIBLE:
                     msg = f"{name}: mudança de schema incompatível: {list(comparison.details)}"
                     raise GoldBuildError(msg)
                 evolve[name] = comparison.change is SchemaChange.COMPATIBLE_ADDITION
-        for name, frame in frames.items():
-            contract = contracts[name]
-            result = self._writer.write(
-                self.table_uri(name),
-                frame,
-                run_id=build.build_id,
-                mode="overwrite",
-                partition_by=list(contract.partition_by),
-                evolve_schema=evolve[name],
+        return evolve
+
+    def _write_table(
+        self,
+        build: GoldBuild,
+        name: str,
+        frame: pl.DataFrame,
+        contract: Contract,
+        evolve: Mapping[str, bool],
+        *,
+        mode: Literal["overwrite", "append"] = "overwrite",
+        rows: int | None = None,
+    ) -> None:
+        """Grava uma tabela (ou um lote dela) e registra a versão Delta resultante."""
+        result = self._writer.write(
+            self.table_uri(name),
+            frame,
+            run_id=build.build_id,
+            mode=mode,
+            partition_by=list(contract.partition_by),
+            evolve_schema=evolve[name],
+        )
+        build.tables[name] = GoldTable(
+            table_id=name,
+            storage_uri=result.table_uri,
+            delta_version=result.version,
+            contract_version=contract.version,
+            rows=frame.height if rows is None else rows,
+        )
+
+
+# Linhas de observação acumuladas antes de cada gravação: poucos arquivos por partição
+# sem guardar a tabela inteira na memória (cerca de 0,5 GB por lote gravado).
+OBSERVATION_FLUSH_ROWS = 2_000_000
+
+
+class _BatchedTable:
+    """``indicator_observation`` gravada em lotes: o primeiro substitui a tabela."""
+
+    def __init__(
+        self,
+        builder: GoldBuilder,
+        build: GoldBuild,
+        contract: Contract,
+        evolve: Mapping[str, bool],
+    ) -> None:
+        self._builder = builder
+        self._build = build
+        self._contract = contract
+        self._evolve = evolve
+        self._buffer: list[pl.DataFrame] = []
+        self._buffered = 0
+        self._written = 0
+        self._writes = 0
+        self.checks = BatchedTableChecks(contract.name, contract)
+
+    def add(self, frame: pl.DataFrame) -> None:
+        """Confere o lote e grava quando o acúmulo passa do limite."""
+        self.checks.add(frame)
+        self._buffer.append(frame)
+        self._buffered += frame.height
+        if self._buffered >= OBSERVATION_FLUSH_ROWS:
+            self._flush()
+
+    def close(self) -> None:
+        """Grava o restante (ou a tabela vazia, se nada foi gravado)."""
+        if self._buffer or not self._writes:
+            self._flush()
+
+    def _flush(self) -> None:
+        frame = (
+            pl.concat(self._buffer)
+            if self._buffer
+            else pl.DataFrame(schema=self._contract.frame_schema())
+        )
+        self._written += frame.height
+        self._builder._write_table(
+            self._build,
+            self._contract.name,
+            frame,
+            self._contract,
+            self._evolve,
+            mode="append" if self._writes else "overwrite",
+            rows=self._written,
+        )
+        self._writes += 1
+        self._buffer, self._buffered = [], 0
+
+
+# Colunas da Silver que as verificações de entrada usam (``input_checks``): o resumo
+# de cada lote guarda só as combinações distintas delas, sem território nem período.
+_INPUT_KEYS = (
+    "table_id",
+    "variable_id",
+    "unit_name",
+    "value_status",
+    "territorial_level",
+    "indicator_id",
+    "fact_table",
+    "classification_key",
+)
+_OBSERVATION_KEYS = ("geography_key", "breakdown_key", "period", "indicator_id")
+
+
+class _Summary:
+    """O que cada lote deixa para as dimensões e as verificações finais (KI-007)."""
+
+    def __init__(self) -> None:
+        self._selected: list[pl.DataFrame] = []
+        self._categories: list[pl.DataFrame] = []
+        self._observed: list[pl.DataFrame] = []
+        self._names: list[pl.DataFrame] = []
+        self._stats: list[pl.DataFrame] = []
+        self._breakdowns: list[pl.DataFrame] = []
+        self._keys: dict[str, list[pl.DataFrame]] = {k: [] for k in _OBSERVATION_KEYS}
+        self.fixed_problems: dict[str, dict[str, list[str]]] = {}
+        self.fidelity: dict[str, Any] = {}
+        self.rows = 0
+        self.reconciliation: list[CheckResult] = []
+        self.consistency: list[pl.DataFrame] = []
+        self.fact_categories: dict[tuple[str, str], pl.DataFrame] = {}
+        # Preenchidos pelo build depois dos lotes.
+        self.municipal_names = pl.DataFrame()
+        self.pending_report: Sequence[Mapping[str, object]] = ()
+
+    def add(
+        self,
+        selected: pl.DataFrame,
+        observations: pl.DataFrame,
+        fixed_problems: Mapping[str, Mapping[str, list[str]]],
+    ) -> None:
+        """Resumo de um lote."""
+        self._selected.append(
+            selected.unique(list(_INPUT_KEYS)).select(*_INPUT_KEYS, "classifications")
+        )
+        self._categories.append(
+            selected.select("period", "classification_key", "classifications").unique(
+                ["period", "classification_key"]
             )
-            build.tables[name] = GoldTable(
-                table_id=name,
-                storage_uri=result.table_uri,
-                delta_version=result.version,
-                contract_version=contract.version,
-                rows=frame.height,
+        )
+        self._observed.append(
+            selected.sort("period", descending=True)
+            .select(
+                "period",
+                pl.col("territorial_level")
+                .replace_strict(model.SIDRA_LEVELS, default=None)
+                .alias("level_id"),
+                pl.col("territory_id").alias("code"),
+                pl.col("territory_name").alias("name"),
             )
+            .unique(["level_id", "code"], keep="first")
+        )
+        self._names.append(
+            selected.sort("period", descending=True)
+            .unique("indicator_id", keep="first")
+            .select("indicator_id", "period", "variable_name")
+        )
+        self._stats.append(model.indicator_stats(observations))
+        self._breakdowns.append(observations.select("indicator_id", "breakdown_key").unique())
+        for key in _OBSERVATION_KEYS:
+            self._keys[key].append(observations.select(key).unique())
+        for fact_id, dims in fixed_problems.items():
+            self.fixed_problems.setdefault(fact_id, {}).update(dims)
+        self.fidelity.update(fidelity_diff(selected, observations))
+        self.rows += observations.height
+
+    def add_fact_categories(self, fact_id: str, frame: pl.DataFrame, columns: Any) -> None:
+        """Categorias usadas por um fato (para a integridade com ``dim_category``)."""
+        for column in columns:
+            self.fact_categories[(fact_id, column)] = frame.select(column).unique()
+
+    def selected(self) -> pl.DataFrame:
+        """Combinações distintas da Silver selecionada, para ``input_checks``."""
+        return pl.concat(self._selected) if self._selected else pl.DataFrame()
+
+    def categories(self) -> pl.DataFrame:
+        """Categorias observadas por período, para ``category_names``."""
+        return pl.concat(self._categories)
+
+    def observed(self) -> pl.DataFrame:
+        """Territórios observados, com o nome do período mais recente."""
+        return (
+            pl.concat(self._observed)
+            .sort("period", descending=True)
+            .unique(["level_id", "code"], keep="first")
+            .drop("period")
+        )
+
+    def variable_names(self) -> pl.DataFrame:
+        """Nome publicado da variável de cada indicador (período mais recente)."""
+        return pl.concat(self._names)
+
+    def stats(self) -> pl.DataFrame:
+        """Níveis, períodos e contagem por indicador."""
+        return pl.concat(self._stats)
+
+    def indicator_breakdowns(self) -> pl.DataFrame:
+        """Pares indicador e desagregação observados."""
+        return pl.concat(self._breakdowns)
+
+    def keys(self) -> dict[str, pl.DataFrame]:
+        """Valores distintos das chaves das observações."""
+        return {k: pl.concat(v).unique() for k, v in self._keys.items()}
+
+    def consistency_frame(self) -> pl.DataFrame:
+        """Observações dos indicadores comparados em ``[[consistency]]``."""
+        if not self.consistency:
+            return pl.DataFrame(schema=INDICATOR_OBSERVATION.frame_schema())
+        return pl.concat(self.consistency)

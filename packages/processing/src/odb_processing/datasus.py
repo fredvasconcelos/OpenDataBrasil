@@ -228,11 +228,22 @@ def _marginals(frame: pl.DataFrame, level: str, keys: list[str]) -> pl.DataFrame
     )
 
 
-def other_uf_residents(records: pl.DataFrame, uf: str) -> dict[str, int]:
-    """Registros cujo município de residência é de outra UF: prefixo do código → quantidade."""
+def residence_uf(records: pl.DataFrame, file_uf: str) -> pl.DataFrame:
+    """Acrescenta ``res_uf``: a UF de residência pelo código do município (``CODMUNRES``).
+
+    Vale o prefixo do código quando é de uma UF; sem código válido, fica a UF do arquivo.
+    Assim, o residente de Tocantins registrado no arquivo de Goiás (DOGO1999, DOGO2001)
+    conta em Tocantins: o estado existe desde a Constituição de 1988 e o SIM CID-10
+    começa em 1996.
+    """
+    if file_uf not in UF_CODES:
+        msg = f"UF desconhecida no nome do arquivo: {file_uf}"
+        raise ParseError(msg)
     prefix = pl.col("CODMUNRES").str.slice(0, 2)
-    other = records.filter(prefix.is_in(list(UF_CODES.values())) & (prefix != UF_CODES[uf]))
-    return dict(other.group_by(prefix.alias("uf")).len().sort("uf").iter_rows())
+    by_code = {code: uf for uf, code in UF_CODES.items()}
+    return records.with_columns(
+        prefix.replace_strict(by_code, default=None).fill_null(file_uf).alias("res_uf")
+    )
 
 
 def sim_deaths(
@@ -244,12 +255,15 @@ def sim_deaths(
     table_id: str,
     lineage: Lineage,
 ) -> pl.DataFrame:
-    """Óbitos de um arquivo do SIM por município e na UF: Total e cada dimensão (observação).
+    """Óbitos de residentes de uma UF por município e na UF: Total e cada dimensão.
 
+    ``records``: os registros de residentes da UF (``residence_uf``), de qualquer arquivo.
+    Com ``uf="BR"``, todos os registros do ano, só no nível Brasil.
     ``municipalities``: código de 6 dígitos → código IBGE de 7 dígitos (DTB).
     """
-    if uf not in UF_CODES:
-        msg = f"UF desconhecida no nome do arquivo: {uf}"
+    national = uf == "BR"
+    if not national and uf not in UF_CODES:
+        msg = f"UF desconhecida: {uf}"
         raise ParseError(msg)
     coded = records.select(
         pl.col("CODMUNRES").str.slice(0, 6).alias("mun6"),
@@ -263,16 +277,20 @@ def sim_deaths(
         pl.col("mun6").replace_strict(municipalities, default=None).alias("mun7"),
     )
     keys = [d[0] for d in DIMENSIONS]
-    # Município só quando o código é da UF do arquivo: um registro de residente de outra UF
-    # (raro: DOGO1999 e DOGO2001, 24 óbitos de Tocantins) também sairia no arquivo daquela UF
-    # e repetiria a linha do município. Ele conta só na UF do arquivo, como os sem código.
-    located = coded.filter(pl.col("mun6").str.slice(0, 2) == UF_CODES[uf]).drop_nulls("mun7")
-    frames = [
-        _marginals(located.rename({"mun7": "territory_id"}), "6", keys),
-        _marginals(coded.with_columns(pl.lit(UF_CODES[uf]).alias("territory_id")), "3", keys),
-    ]
-    frame = pl.concat(frames)
-    expected = {"6": located.height, "3": records.height}
+    if national:
+        frame = _marginals(coded.with_columns(pl.lit("1").alias("territory_id")), "1", keys)
+        expected = {"1": records.height}
+    else:
+        located = coded.drop_nulls("mun7")
+        frame = pl.concat(
+            [
+                _marginals(located.rename({"mun7": "territory_id"}), "6", keys),
+                _marginals(
+                    coded.with_columns(pl.lit(UF_CODES[uf]).alias("territory_id")), "3", keys
+                ),
+            ]
+        )
+        expected = {"6": located.height, "3": records.height}
     for level, dim, total in (
         frame.group_by("territorial_level", "dim").agg(pl.col("len").sum()).iter_rows()
     ):
@@ -301,7 +319,9 @@ def sim_deaths(
         pl.col("territorial_level"),
         pl.when(pl.col("territorial_level") == "6")
         .then(pl.lit("Município"))
-        .otherwise(pl.lit("Unidade da Federação"))
+        .when(pl.col("territorial_level") == "3")
+        .then(pl.lit("Unidade da Federação"))
+        .otherwise(pl.lit("Brasil"))
         .alias("territorial_level_name"),
         pl.col("territory_id"),
         pl.lit(None, dtype=pl.String).alias("territory_name"),

@@ -9,7 +9,7 @@ from pathlib import Path
 import polars as pl
 import pytest
 
-from odb_processing.datasus import SIM_FIELDS, dbf_record_count, other_uf_residents, sim_deaths
+from odb_processing.datasus import SIM_FIELDS, dbf_record_count, residence_uf, sim_deaths
 from odb_processing.parsers import Lineage, ParseError
 from odb_processing.quality import CheckStatus, sim_checks
 
@@ -141,17 +141,29 @@ def test_sim_checks() -> None:
     assert (moved.status, moved.observed) == (CheckStatus.WARN, 10)
 
 
-def test_resident_of_another_state_counts_only_in_the_file_state() -> None:
-    # Arquivo do Acre com um residente do Amazonas (130260 → Manaus).
-    records = pl.concat([RECORDS, _records([("06012023", "130260", "1", "450", "1", "I10", "1")])])
-    assert other_uf_residents(records, "AC") == {"13": 1}
+def test_residence_state_comes_from_the_municipality_code() -> None:
+    # Arquivo de Goiás com um residente de Tocantins (1721000 → Palmas) e um sem código.
+    records = _records(
+        [
+            ("01011999", "520870", "1", "450", "1", "I10", "1"),  # Goiânia
+            ("02011999", "172100", "2", "460", "1", "I10", "1"),  # Palmas (TO)
+            ("03011999", None, "9", None, "9", None, "9"),  # sem município: UF do arquivo
+        ]
+    )
+    assert residence_uf(records, "GO")["res_uf"].to_list() == ["GO", "TO", "GO"]
+    with pytest.raises(ParseError, match="UF desconhecida"):
+        residence_uf(records, "XX")
+
+
+def test_national_level() -> None:
     frame = sim_deaths(
-        records,
-        uf="AC",
+        RECORDS,
+        uf="BR",
         year="2023",
-        municipalities=MUNICIPALITIES | {"130260": "1302603"},
+        municipalities=MUNICIPALITIES,
         table_id="SIM-DORES",
         lineage=LINEAGE,
     )
-    assert _value(frame, "3", "12") == 6
-    assert frame.filter(pl.col("territory_id") == "1302603").is_empty()
+    assert set(frame["territorial_level"]) == {"1"}
+    assert set(frame["territorial_level_name"]) == {"Brasil"}
+    assert _value(frame, "1", "1") == RECORDS.height

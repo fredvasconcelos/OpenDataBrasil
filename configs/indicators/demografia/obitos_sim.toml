@@ -1,0 +1,38 @@
+# Óbitos por residência do SIM (Ministério da Saúde, DATASUS), ADR-0011.
+#
+# KPI novo, separado dos óbitos do Registro Civil (IBGE, tabela 2654): a comparação
+# por UF e ano mostrou cobertura diferente (docs/data_catalog/
+# comparacao-obitos-sim-registro-civil.md), e pela decisão 5 da ADR-0011 o SIM não
+# completa a série do IBGE. Criação aprovada pelo mantenedor em 2026-11-12.
+#
+# A Silver (`datasus_sim_do`) traz o Total e cada dimensão (sexo, faixa etária, cor ou
+# raça, capítulo da CID-10, local de ocorrência), com as demais no Total. Esta versão
+# leva à Gold só o Total: as cinco dimensões ficam fixas em "T".
+
+config_version = "1.0.0"
+scope = "demografia"
+
+[[facts]]
+id = "fact_sim_deaths"
+dataset = "datasus-sim-cid10-dores"
+grain = "território (Brasil, UF, município de residência) x ano"
+description = "Óbitos das declarações de óbito do SIM por local de residência, de 1996 em diante (CID-10)."
+fixed_categories = { "Sexo" = "T", "Faixa etária" = "T", "Cor ou raça" = "T", "Capítulo CID-10" = "T", "Local de ocorrência" = "T" }
+
+[[indicators]]
+id = "sim_obitos_residencia"
+name = "Óbitos por residência (SIM)"
+description = "Óbitos registrados em declarações de óbito no Sistema de Informações sobre Mortalidade (SIM, Ministério da Saúde), por município e ano, no local de residência da pessoa falecida."
+dataset = "datasus-sim-cid10-dores"
+variable = "obitos"
+fact = "fact_sim_deaths"
+column = "deaths"
+unit = "Óbitos"
+additivity = "additive"
+concept = "obitos_declaracao_obito_residencia"
+path = ["Saúde", "Mortalidade"]
+caveats = [
+  "Declarações de óbito do SIM; não é a mesma série dos óbitos do Registro Civil (IBGE, tabela 2654). No Brasil, o SIM conta de 1% a 3% mais óbitos; em UFs do Norte e do Nordeste, onde há sub-registro em cartório, até 28% mais.",
+  "Óbitos com município de residência ignorado contam só na UF. O total do Brasil é a soma de todos os registros do ano e confere com o arquivo nacional do DATASUS.",
+  "A UF de residência vem do código do município: os residentes de Tocantins registrados nos arquivos de Goiás (1999 e 2001) contam em Tocantins.",
+]

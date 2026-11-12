@@ -159,8 +159,10 @@ metodológicas dos gestores.
   "não disponível" se qualquer parcela faltar; a fonte não publica o total nacional.
 - **Primeira versão:** a Gold leva o Total de cada evento.
   - O scan lazy descarta as linhas fora das categorias fixas dos fatos.
-  - O detalhe por sexo fica para depois da etapa 2 do KI-007, pelo volume municipal ×
-    mensal.
+  - O detalhe por sexo ficou para depois da etapa 2 do KI-007 (volume municipal ×
+    mensal). A etapa 2 foi feita em 2026-11-12: o volume deixou de ser o obstáculo.
+    Falta resolver um nome: a dimensão "Sexo" da Silver do Sinesp tem o mesmo nome da
+    classificação c2 do IBGE, e o catálogo liga a dimensão à classificação pelo nome.
 
 ### 8. KPIs no portal
 
@@ -191,9 +193,8 @@ São seis KPIs no subtema "Vitimização e violência" do tema "Segurança e vit
 - **Silver:** passa a ter segurança pública por município e mês (`mjsp/sidra_observation`),
   com cerca de 2,85 milhões de observações por ano completo, 93% delas zeros informados.
 - **Gold:** publicada no release `2f89b1f9`, com 659 verificações aprovadas e os mesmos
-  13 avisos anteriores. Para o detalhe por sexo, falta a etapa 2 do KI-007, porque o pico
-  do build está em 22 GB com o limite de 24 GB.
-- **Gold com várias Silvers:** feita (decisão 7). O processamento por dataset do KI-007
-  (etapa 2) passa a ser o próximo passo, pelo volume.
+  13 avisos anteriores.
+- **Gold com várias Silvers:** feita (decisão 7). O processamento por dataset (KI-007,
+  etapa 2) foi feito em 2026-11-12: pico do processo de 9,4 GiB, com o Sinesp e o SIM.
 - **Atualização:** a planilha de 2026 é do ano corrente e muda ao longo do ano. A
   ingestão detecta a mudança pelo checksum e guarda a versão nova sem apagar a anterior.

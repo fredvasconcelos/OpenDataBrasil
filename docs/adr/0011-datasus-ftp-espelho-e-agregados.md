@@ -79,7 +79,7 @@ observação da Silver (o mesmo do SIDRA, `table_id = "SIM-DORES"`):
 
 - **Nível 6 (município de residência):** o código de 6 dígitos do DATASUS é
   convertido no código IBGE de 7 dígitos pela DTB.
-- **Nível 3 (UF):** todos os óbitos do arquivo, inclusive os de município
+- **Nível 3 (UF):** todos os óbitos de residentes da UF, inclusive os de município
   ignorado ou sem correspondência na DTB.
 - **Dimensões:**
   - sexo;
@@ -99,12 +99,18 @@ observação da Silver (o mesmo do SIDRA, `table_id = "SIM-DORES"`):
   Brasil com os mesmos registros. Ele não entra na soma, porque contaria cada óbito
   duas vezes. Só o número de registros dele é lido, pelo cabeçalho do DBF, e
   comparado à soma das UFs no ano (verificação `sim.national_file`, aviso).
-- **Residente de outra UF no arquivo de uma UF:** raro (24 óbitos em 1996–2024, todos de
-  residentes de Tocantins em `DOGO1999.dbc` e `DOGO2001.dbc`). Esse óbito conta no total da UF do arquivo, como
-  os de município ignorado, e fica fora do nível municipal: lá ele repetiria a linha do
-  município que vem do arquivo da outra UF, e cada linha da Silver aponta para um único
-  arquivo da Bronze. A verificação `sim.other_uf_residents` (aviso) lista arquivos e
-  quantidades.
+- **UF de residência pelo código do município (decisão do mantenedor, 2026-11-12):**
+  vale o prefixo do código de residência, não o arquivo em que o registro veio. Tocantins
+  existe desde a Constituição de 1988 e o SIM CID-10 começa em 1996, então todo residente
+  de Tocantins conta em Tocantins. Isso afeta 24 óbitos, registrados em `DOGO1999.dbc` e
+  `DOGO2001.dbc`: eles saem de Goiás e entram nos municípios e no total de Tocantins.
+  - A Silver monta os 27 arquivos de cada ano antes de agregar. Sem código válido,
+    fica a UF do arquivo.
+  - A linha de cada UF aponta para o arquivo da própria UF. Os registros vindos de
+    outro arquivo ficam listados na verificação `sim.other_uf_residents` (aviso).
+- **Nível 1 (Brasil):** soma de todos os registros do ano. Só é gerado quando a
+  contagem do `DOBR<ano>.dbc` confere com a soma das UFs, e as linhas apontam para esse
+  arquivo. Hoje isso vale para os 29 anos.
 
 ### 5. Complementar ou novo KPI (decisão do mantenedor)
 
@@ -127,8 +133,18 @@ gerado da Silver do SIM (1996–2024) e da tabela 2654 (2003–2024).
   onde o sub-registro em cartório é conhecido. Sul, Sudeste e Centro-Oeste ficam perto
   de 100%.
 - **Conclusão:** cobertura não compatível. Pela regra acima, o SIM entra como **KPI
-  novo** ("Óbitos por residência, SIM"), não como complemento da série do IBGE. A criação
-  do KPI na Gold aguarda a aprovação do mantenedor.
+  novo**, não como complemento da série do IBGE.
+- **KPI criado (aprovado pelo mantenedor em 2026-11-12):** "Óbitos por residência
+  (SIM)" (`sim_obitos_residencia`), no tema Saúde, subtema Mortalidade (item `externos`
+  do panorama).
+  - Configuração: `configs/indicators/demografia/obitos_sim.toml` e
+    `configs/portal/demografia/obitos_sim.toml`.
+  - Níveis: município, UF e Brasil. Série anual desde 1996.
+  - Esta versão leva o Total. As cinco dimensões da Silver ficam fixas em "T" no fato.
+  - O detalhe por sexo e por faixa etária exige nomes de dimensão próprios na Silver,
+    porque "Sexo" já é a dimensão da classificação c2 do IBGE.
+  - O dataset aponta para a pasta `CID10/DORES` (`restricted`, por causa dos
+    microdados da Bronze). A Gold só publica as contagens agregadas.
 
 ### 6. Licença
 

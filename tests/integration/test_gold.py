@@ -180,7 +180,8 @@ def test_gold_publish_query_and_preserve_on_failure(  # noqa: PLR0915 - cenário
     assert again["release"]["release_id"] == release_id
     assert _q(engine, "SELECT count(*) FROM publication.release")[0][0] == 1
 
-    # Falha: catálogo com unidade divergente da publicada. Nada é escrito nem publicado.
+    # Falha: catálogo com unidade divergente da publicada. Nada é publicado (lotes já
+    # gravados ficam em versões Delta sem release, KI-007).
     broken = tmp_path / "indicators"
     broken.mkdir()
     shutil.copy(REPO_INDICATORS / "demografia.toml", broken / "demografia.toml")

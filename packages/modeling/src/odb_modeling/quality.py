@@ -13,7 +13,7 @@ Severidade, como na Silver:
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Collection, Mapping, Sequence
 from decimal import Decimal
 from typing import Any
 
@@ -228,6 +228,71 @@ def table_checks(name: str, frame: pl.DataFrame, contract: Contract) -> list[Che
     return results
 
 
+class BatchedTableChecks:
+    """``table_checks`` de uma tabela gravada em lotes (KI-007, etapa 2).
+
+    Os lotes precisam ser disjuntos na chave (a ``indicator_observation`` é gravada por
+    dataset, e cada indicador pertence a um dataset): a chave única em cada lote é
+    única na tabela. O resultado tem os mesmos identificadores de ``table_checks``.
+    """
+
+    def __init__(self, name: str, contract: Contract) -> None:
+        """Tabela e contrato; os lotes entram por ``add``."""
+        self._name = name
+        self._contract = contract
+        self._rows = 0
+        self._contract_failure: CheckResult | None = None
+        self._nulls: dict[str, int] = {}
+        self._duplicated = 0
+
+    def add(self, frame: pl.DataFrame) -> None:
+        """Confere um lote."""
+        self._rows += frame.height
+        result = check_contract(frame, self._contract)
+        if result.status is CheckStatus.FAIL:
+            self._contract_failure = self._contract_failure or result
+            return
+        for column in self._contract.required:
+            if n := frame[column].null_count():
+                self._nulls[column] = self._nulls.get(column, 0) + n
+        self._duplicated += int(frame.select(self._contract.key).is_duplicated().sum())
+
+    def results(self) -> list[CheckResult]:
+        """Resultados da tabela inteira."""
+        name, contract = self._name, self._contract
+        if self._contract_failure is not None:
+            failure = self._contract_failure
+            return [
+                CheckResult(
+                    f"{name}.{failure.check_id}",
+                    failure.status,
+                    failure.message,
+                    details=failure.details,
+                )
+            ]
+        return [
+            CheckResult(
+                f"{name}.schema.contract", CheckStatus.PASS, f"{contract.name} {contract.version}"
+            ),
+            CheckResult(
+                f"{name}.not_null.required",
+                CheckStatus.FAIL if self._nulls else CheckStatus.PASS,
+                (
+                    "nulos em colunas obrigatórias"
+                    if self._nulls
+                    else f"{len(contract.required)} colunas"
+                ),
+                observed=dict(self._nulls) or None,
+            ),
+            _result(
+                f"{name}.unique.key",
+                self._duplicated,
+                f"chave {list(contract.key)} única ({self._rows} linhas)",
+                f"{self._duplicated} linhas com chave duplicada",
+            ),
+        ]
+
+
 def foreign_key(
     check_id: str, child: pl.DataFrame, column: str, parent: pl.DataFrame, parent_column: str
 ) -> CheckResult:
@@ -281,8 +346,8 @@ def geography_checks(geography: pl.DataFrame, bridge: pl.DataFrame) -> list[Chec
     return results
 
 
-def silver_fidelity(selected: pl.DataFrame, observations: pl.DataFrame) -> CheckResult:
-    """A Gold reproduz exatamente as observações Silver (contagem e soma por indicador)."""
+def fidelity_diff(selected: pl.DataFrame, observations: pl.DataFrame) -> dict[str, Any]:
+    """Indicadores cuja contagem ou soma na Gold difere da Silver."""
 
     def summary(frame: pl.DataFrame) -> dict[str, tuple[int, Decimal | None]]:
         return {
@@ -293,24 +358,35 @@ def silver_fidelity(selected: pl.DataFrame, observations: pl.DataFrame) -> Check
         }
 
     silver, gold = summary(selected), summary(observations)
-    diff = {
+    return {
         k: {"silver": str(silver.get(k)), "gold": str(gold.get(k))}
         for k in set(silver) | set(gold)
         if silver.get(k) != gold.get(k)
     }
+
+
+def fidelity_result(diff: Mapping[str, Any], rows: int) -> CheckResult:
+    """``reconciliation.silver`` a partir das diferenças de todos os lotes."""
     return _result(
         "reconciliation.silver",
-        diff,
-        f"{observations.height} observações idênticas às da Silver",
+        dict(diff),
+        f"{rows} observações idênticas às da Silver",
         "Gold diverge da Silver",
     )
+
+
+def silver_fidelity(selected: pl.DataFrame, observations: pl.DataFrame) -> CheckResult:
+    """A Gold reproduz exatamente as observações Silver (contagem e soma por indicador)."""
+    return fidelity_result(fidelity_diff(selected, observations), observations.height)
 
 
 # ------------------------------------------------------------------ reconciliação por categoria
 
 
 def category_reconciliation(
-    observations: pl.DataFrame, catalog: SemanticCatalog
+    observations: pl.DataFrame,
+    catalog: SemanticCatalog,
+    indicators: Collection[str] | None = None,
 ) -> list[CheckResult]:
     """Soma das categorias de cada partição contra o Total publicado.
 
@@ -326,7 +402,7 @@ def category_reconciliation(
     """
     results: list[CheckResult] = []
     for ind in catalog.indicators:
-        if ind.additivity != "additive":
+        if ind.additivity != "additive" or (indicators is not None and ind.id not in indicators):
             continue
         rows = observations.filter(pl.col("indicator_id") == ind.id)
         for cid in catalog.fact(ind.fact).classifications:

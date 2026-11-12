@@ -1,0 +1,18 @@
+# KPI do SIM (Ministério da Saúde, ADR-0011) no tema "Saúde", subtema "Mortalidade"
+# do panorama (item `externos`). Série anual desde 1996; mapa por município.
+
+config_version = "1.0.0"
+scope = "demografia"
+
+[[themes]]
+id = "saude"
+label = "Saúde"
+
+[[themes.subthemes]]
+id = "mortalidade"
+label = "Mortalidade"
+
+[[themes.subthemes.kpis]]
+id = "sim_obitos_residencia"
+label = "Óbitos por residência (SIM)"
+indicator = "sim_obitos_residencia"

@@ -50,8 +50,8 @@ from odb_processing.datasus import (
     SIM_FIELDS,
     UF_CODES,
     dbc_record_count,
-    other_uf_residents,
     read_dbc,
+    residence_uf,
     sim_deaths,
 )
 from odb_processing.parsers import (
@@ -433,46 +433,80 @@ class SilverBuilder:
         processed_at: datetime,
         reference_ids: set[str] | None,
     ) -> tuple[pl.DataFrame, dict[str, str], SimReport]:
-        """Arquivos ``DO<UF><ano>.dbc`` do SIM → óbitos por município e UF (marginais).
+        """Arquivos ``DO<UF><ano>.dbc`` do SIM → óbitos por município, UF e Brasil (marginais).
 
-        A pasta também traz ``DOBR<ano>.dbc``, o arquivo nacional: ele repete os
-        registros das UFs, então não entra na soma (contaria cada óbito duas vezes). Só
-        o número de registros dele é lido, para conferir a soma das UFs no ano.
+        Cada ano é montado inteiro antes de agregar, porque a UF de residência vem do
+        código do município, não do arquivo (``residence_uf``): o residente de Tocantins
+        registrado no arquivo de Goiás conta em Tocantins. A linha de cada UF aponta para
+        o arquivo da própria UF; os registros vindos de outro arquivo ficam na verificação
+        ``sim.other_uf_residents``.
+
+        A pasta também traz ``DOBR<ano>.dbc``, o arquivo nacional: ele repete os registros
+        das UFs e não entra na soma. A contagem dele confere a soma das UFs; quando confere,
+        o nível Brasil (soma de todos os registros do ano) aponta para ele.
         """
         if not reference_ids:
             msg = f"{dataset.id}: o SIM exige a DTB na Silver (códigos de 6 para 7 dígitos)"
             raise SilverBuildError(msg)
         municipalities = {code[:6]: code for code in reference_ids}
         table_id = str(dataset.silver.get("table_id", "SIM-DORES"))
-        frames = []
-        states: dict[str, int] = {}
-        national: dict[str, int] = {}
-        other_uf: dict[str, dict[str, int]] = {}
+        by_year: dict[str, dict[str, SilverInput]] = {}
         for item in inputs:
             m = _SIM_FILE.fullmatch(item.partition_key)
             if m is None:
                 msg = f"arquivo fora do padrão DO<UF><ano>.dbc: {item.partition_key}"
                 raise SilverBuildError(msg)
-            path = Path(uri_to_local_path(item.storage_uri))
-            if m["uf"].upper() == "BR":
-                national[m["year"]] = dbc_record_count(path)
-                continue
-            records = read_dbc(path, SIM_FIELDS)
-            states[m["year"]] = states.get(m["year"], 0) + records.height
-            if found := other_uf_residents(records, m["uf"].upper()):
-                other_uf[item.partition_key] = found
-            frames.append(
-                sim_deaths(
-                    records,
-                    uf=m["uf"].upper(),
-                    year=m["year"],
-                    municipalities=municipalities,
-                    table_id=table_id,
-                    lineage=self._lineage(item, run, processed_at),
+            by_year.setdefault(m["year"], {})[m["uf"].upper()] = item
+
+        frames = []
+        counts: dict[str, dict[str, int | None]] = {}
+        other_uf: dict[str, dict[str, int]] = {}
+        for year, files in sorted(by_year.items()):
+            national_item = files.pop("BR", None)
+            parts = []
+            for uf, item in sorted(files.items()):
+                records = residence_uf(
+                    read_dbc(Path(uri_to_local_path(item.storage_uri)), SIM_FIELDS), uf
                 )
+                moved = records.filter(pl.col("res_uf") != uf)
+                if moved.height:
+                    other_uf[item.partition_key] = dict(
+                        moved.group_by("res_uf").len().sort("res_uf").iter_rows()
+                    )
+                parts.append(records)
+            records = pl.concat(parts)
+            for key, group in records.partition_by("res_uf", as_dict=True).items():
+                res = str(key[0])
+                if res not in files:
+                    msg = f"{year}: residentes de {res} sem o arquivo DO{res}{year}.dbc"
+                    raise SilverBuildError(msg)
+                frames.append(
+                    sim_deaths(
+                        group.drop("res_uf"),
+                        uf=res,
+                        year=year,
+                        municipalities=municipalities,
+                        table_id=table_id,
+                        lineage=self._lineage(files[res], run, processed_at),
+                    )
+                )
+            national = (
+                None
+                if national_item is None
+                else dbc_record_count(Path(uri_to_local_path(national_item.storage_uri)))
             )
-        years = sorted(states.keys() | national.keys())
-        counts = {y: {"states": states.get(y), "national": national.get(y)} for y in years}
+            counts[year] = {"states": records.height, "national": national}
+            if national_item is not None and national == records.height:
+                frames.append(
+                    sim_deaths(
+                        records.drop("res_uf"),
+                        uf="BR",
+                        year=year,
+                        municipalities=municipalities,
+                        table_id=table_id,
+                        lineage=self._lineage(national_item, run, processed_at),
+                    )
+                )
         return pl.concat(frames), {"table_id": table_id}, SimReport(counts, other_uf)
 
     def _sinesp_frame(

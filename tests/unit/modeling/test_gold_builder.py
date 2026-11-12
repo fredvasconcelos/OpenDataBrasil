@@ -180,8 +180,9 @@ def test_undeclared_category_blocks_everything(env: GoldEnv, tmp_path: Path) -> 
     assert "semantics.category_hierarchy" in (build.error or "")
     failed = {c.check_id: c for c in build.checks}["semantics.category_hierarchy"]
     assert failed.observed == {"c86": ["2780"]}
+    # Com a gravação por lote (KI-007, etapa 2), lotes podem ter sido gravados antes da
+    # verificação final; o build falho não registra tabelas e não gera release.
     assert not build.tables
-    assert not DeltaTable.is_deltatable(env.gold.table_uri("indicator_observation"))
 
 
 def test_missing_silver_fails_before_reading(tmp_path: Path) -> None:
