@@ -7,6 +7,8 @@ license = "MIT"
 dependencies = [
     "odb-common",
     "odb-catalog",
+    # Configuração das fontes: instituição e sistema de cada dataset (rodapé "Fonte").
+    "odb-ingestion",
     "odb-query-engine",
     "odb-semantics",
     "fastapi==0.161.1",
@@ -21,6 +23,7 @@ dependencies = [
 [tool.uv.sources]
 odb-common = { workspace = true }
 odb-catalog = { workspace = true }
+odb-ingestion = { workspace = true }
 odb-query-engine = { workspace = true }
 odb-semantics = { workspace = true }
 

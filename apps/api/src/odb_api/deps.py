@@ -16,6 +16,7 @@ from odb_catalog.db import make_engine
 from odb_catalog.publication import PublicationService
 from odb_common.settings import Settings
 from odb_common.storage import LakehouseLayout, Layer
+from odb_ingestion.config import SourceCatalog, load_sources
 from odb_query_engine import DuckDBConfig, DuckDBReadEngine, ReadEngine
 from odb_semantics import load_panorama
 
@@ -49,6 +50,16 @@ class ApiDeps:
                 item.close()
 
 
+def provenance(sources: SourceCatalog) -> dict[str, tuple[str, str | None]]:
+    """Dataset → (sigla da instituição, sistema): "SIDRA" para o conector do SIDRA."""
+    out: dict[str, tuple[str, str | None]] = {}
+    for dataset_id, dataset in sources.datasets.items():
+        institution = sources.institutions[sources.source_institution[dataset.source]]
+        connector = sources.sources[dataset.source].connector
+        out[dataset_id] = (institution.acronym, "SIDRA" if connector == "sidra" else None)
+    return out
+
+
 def build_deps(settings: Settings | None = None, api: ApiSettings | None = None) -> ApiDeps:
     """Componentes reais: PostgreSQL (``odb_reader``) e DuckDB restrito à Gold."""
     settings = settings or Settings()
@@ -60,11 +71,14 @@ def build_deps(settings: Settings | None = None, api: ApiSettings | None = None)
     gold = GoldGateway(duck, geometry_cache_size=api.geometry_cache_size)
     portal = load_portal(api.portal_config_dir, api.scope)
     panorama = load_panorama(api.panorama_path) if api.panorama_path else None
+    sources = load_sources(settings.sources_config_dir)
     return ApiDeps(
         settings=api,
         resolver=ReleaseResolver(lambda: publication.active(api.scope), ttl_s=api.release_ttl_s),
         gold=gold,
-        kpis=KpiService(gold, portal, page_max=api.page_max, panorama=panorama),
+        kpis=KpiService(
+            gold, portal, page_max=api.page_max, panorama=panorama, provenance=provenance(sources)
+        ),
         catalog=CatalogRepository(pg),
         engine=duck,
         closers=[duck, pg],

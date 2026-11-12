@@ -184,10 +184,29 @@ class GoldBuilder:
         """URI de uma tabela Gold do escopo."""
         return self._layout.table_uri(Layer.GOLD, self._catalog.scope, table_id)
 
+    def series_members(self, dataset_id: str) -> list[str]:
+        """Datasets de uma série (``silver.series``), ordenados; vazio se não for série.
+
+        Uma série reúne datasets que publicam a mesma tabela em arquivos separados (o
+        Sinesp VDE tem um dataset por ano): o catálogo semântico aponta para a série.
+        """
+        return sorted(
+            d
+            for d in self._sources.datasets
+            if self._sources.dataset(d).silver.get("series") == dataset_id
+        )
+
+    def _member_datasets(self, dataset_id: str) -> list[str]:
+        return self.series_members(dataset_id) or [dataset_id]
+
     def datasets(self) -> dict[str, model.DatasetInfo]:
         """Datasets do catálogo, com tabela de origem, URL e licença."""
         out: dict[str, model.DatasetInfo] = {}
         for dataset_id in self._catalog.datasets():
+            members = self.series_members(dataset_id)
+            if members:
+                out[dataset_id] = self._series_info(dataset_id, members)
+                continue
             dataset = self._sources.dataset(dataset_id)
             if dataset.silver.get("transformer") != "sidra_observation":
                 msg = f"{dataset_id}: a Gold desta versão aceita apenas datasets SIDRA"
@@ -202,11 +221,31 @@ class GoldBuilder:
             )
         return out
 
+    def _series_info(self, series_id: str, members: list[str]) -> model.DatasetInfo:
+        """Série de planilhas anuais do Sinesp VDE (uma tabela Silver por ano)."""
+        configs = [self._sources.dataset(m) for m in members]
+        if {c.silver.get("transformer") for c in configs} != {"sinesp_vde"}:
+            msg = f"{series_id}: a Gold desta versão aceita séries só do Sinesp VDE"
+            raise GoldBuildError(msg)
+        if len({c.license for c in configs}) != 1:
+            msg = f"{series_id}: membros da série com licenças diferentes"
+            raise GoldBuildError(msg)
+        base = str(configs[0].silver.get("table_id", "SINESP-VDE"))
+        return model.DatasetInfo(
+            dataset_id=series_id,
+            table_id=base,
+            reference_url=configs[0].reference_url,
+            license_id=configs[0].license,
+            period_type="mes",
+            table_ids=tuple(f"{base}-{c.params['reference_period']}" for c in configs),
+        )
+
     def reference_dataset(self) -> str:
         """Referência territorial comum dos datasets (DTB)."""
         refs = {
-            str(self._sources.dataset(d).silver.get("territorial_reference"))
+            str(self._sources.dataset(m).silver.get("territorial_reference"))
             for d in self._catalog.datasets()
+            for m in self._member_datasets(d)
         }
         if len(refs) != 1 or "None" in refs:
             msg = f"os datasets precisam de uma única referência territorial: {sorted(refs)}"
@@ -264,11 +303,14 @@ class GoldBuilder:
         return run
 
     def _resolve_inputs(self) -> dict[str, Any]:
-        runs = {d: self._silver(d) for d in self._catalog.datasets()}
-        uris = {r.target_uri for r in runs.values()}
-        if len(uris) != 1:
-            msg = f"datasets em tabelas Silver diferentes: {sorted(uris)}"
-            raise GoldBuildError(msg)
+        runs = {
+            m: self._silver(m) for d in self._catalog.datasets() for m in self._member_datasets(d)
+        }
+        # Uma ou mais tabelas Silver (IBGE, MJSP...), cada uma na versão mais recente
+        # entre os seus datasets: cada build Silver substitui só a própria partição.
+        silver: dict[str, int] = {}
+        for run in runs.values():
+            silver[run.target_uri] = max(silver.get(run.target_uri, 0), int(run.delta_version or 0))
         reference = self.reference_dataset()
         ref_run = self._silver(reference)
         geometry: dict[str, Any] = {}
@@ -290,10 +332,9 @@ class GoldBuilder:
         # mais recente contém o estado vigente de todos.
         return {
             "geometry": geometry,
-            "silver_uri": uris.pop(),
-            "silver_version": max(int(r.delta_version or 0) for r in runs.values()),
+            "silver": dict(sorted(silver.items())),
             "datasets": {
-                d: {"run_id": r.run_id, "delta_version": r.delta_version}
+                d: {"run_id": r.run_id, "delta_version": r.delta_version, "uri": r.target_uri}
                 for d, r in sorted(runs.items())
             },
             "reference": {
@@ -348,11 +389,7 @@ class GoldBuilder:
         mapping = model.indicator_map(self._catalog, datasets)
         # Memória (KI-007): só as colunas que a Gold usa e só as variáveis do
         # catálogo são materializadas; os nomes municipais vêm num recorte à parte.
-        scan = (
-            self._reader.scan(inputs["silver_uri"], int(inputs["silver_version"]))
-            .filter(pl.col("table_id").is_in([d.table_id for d in datasets.values()]))
-            .select(model.SILVER_COLUMNS)
-        )
+        scan = self._silver_scan(inputs, datasets)
         names = model.municipal_names(scan)
         silver = scan.join(
             mapping.lazy().select("table_id", "variable_id").unique(),
@@ -378,7 +415,7 @@ class GoldBuilder:
         observations = model.build_observations(
             selected,
             self._catalog,
-            silver_version=int(inputs["silver_version"]),
+            silver_version=self._silver_versions(inputs, datasets),
             build_id=build.build_id,
             pending=pending,
             period_types={d.dataset_id: d.period_type for d in datasets.values()},
@@ -458,6 +495,67 @@ class GoldBuilder:
         build.checks.extend(self._checks(frames, selected, contracts))
         build.checks.extend(geometry_results)
         return frames
+
+    def _silver_scan(
+        self, inputs: Mapping[str, Any], datasets: Mapping[str, model.DatasetInfo]
+    ) -> pl.LazyFrame:
+        """Silvers de entrada (uma por fonte), projetadas e filtradas, ainda lazy.
+
+        Nas séries (Sinesp), só entram as linhas nas categorias fixas dos fatos: a
+        Silver traz o Total e cada dimensão, e a Gold desta versão usa só o Total.
+        """
+        uri_of = {m: str(info["uri"]) for m, info in inputs["datasets"].items()}
+        tables: dict[str, list[str]] = {}
+        for info in datasets.values():
+            members = self.series_members(info.dataset_id) or [info.dataset_id]
+            for member, table in zip(members, info.source_tables, strict=True):
+                tables.setdefault(uri_of[member], []).append(table)
+        scans = []
+        for uri, version in inputs["silver"].items():
+            scans.append(
+                self._reader.scan(uri, int(version))
+                .filter(pl.col("table_id").is_in(tables.get(uri, [])))
+                .select(model.SILVER_COLUMNS)
+            )
+        scan = pl.concat(scans, how="vertical_relaxed")
+        fixed = self._series_fixed_tables(datasets)
+        if not fixed:
+            return scan
+        keep = ~pl.col("table_id").is_in([t for tables_ in fixed.values() for t in tables_])
+        for codes, table_list in fixed.items():
+            keep = keep | (
+                pl.col("table_id").is_in(list(table_list))
+                & pl.col("classifications")
+                .list.eval(pl.element().struct.field("category_id").is_in(list(codes)))
+                .list.all()
+            )
+        return scan.filter(keep)
+
+    def _series_fixed_tables(
+        self, datasets: Mapping[str, model.DatasetInfo]
+    ) -> dict[frozenset[str], list[str]]:
+        """Categorias fixas → tabelas das séries cujos fatos só fixam categorias."""
+        out: dict[frozenset[str], list[str]] = {}
+        for info in datasets.values():
+            if not info.table_ids:
+                continue
+            facts = [f for f in self._catalog.facts if f.dataset == info.dataset_id]
+            if not facts or any(f.classifications for f in facts):
+                continue
+            codes = frozenset(c for f in facts for c in f.fixed_categories.values())
+            out.setdefault(codes, []).extend(info.table_ids)
+        return out
+
+    def _silver_versions(
+        self, inputs: Mapping[str, Any], datasets: Mapping[str, model.DatasetInfo]
+    ) -> dict[str, int]:
+        """Versão da tabela Silver de cada dataset do catálogo (para a linhagem)."""
+        versions = {str(uri): int(v) for uri, v in inputs["silver"].items()}
+        out = {}
+        for dataset_id in datasets:
+            member = (self.series_members(dataset_id) or [dataset_id])[0]
+            out[dataset_id] = versions[str(inputs["datasets"][member]["uri"])]
+        return out
 
     def _checks(
         self,

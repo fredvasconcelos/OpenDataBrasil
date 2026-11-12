@@ -412,6 +412,31 @@ describe("KpiInfo", () => {
     expect(more.textContent).toContain("Nota A");
     expect(more.textContent).toContain("2010–2022");
   });
+
+  it("fonte fora do SIDRA mostra a instituição e a tabela de origem (ex.: Sinesp)", () => {
+    const kpi = {
+      kpi_id: "k",
+      label: "Homicídios",
+      description: "",
+      unit: "Vítimas",
+      periods: ["2015M01"],
+      caveats: [],
+      source: {
+        dataset_id: "mjsp-sinesp-vde",
+        source_table_id: "SINESP-VDE",
+        source_variable_id: "homicidio-doloso",
+        source_variable_name: null,
+        reference_url: null,
+        license_id: "mjsp-dados-abertos",
+        institution: "MJSP",
+        system: null,
+      },
+    } as unknown as Kpi;
+    const { container } = wrap(<KpiInfo kpi={kpi} releaseId="2f89b1f9-1dca" />);
+    const source = container.querySelector(".meta-source")?.textContent ?? "";
+    expect(source).toContain("MJSP · SINESP-VDE, variável homicidio-doloso");
+    expect(source).not.toContain("SIDRA");
+  });
 });
 
 describe("SeriesChart com períodos da Gold", () => {

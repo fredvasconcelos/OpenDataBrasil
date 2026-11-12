@@ -101,6 +101,7 @@ class KpiService:
         *,
         page_max: int,
         panorama: Panorama | None = None,
+        provenance: Mapping[str, tuple[str, str | None]] | None = None,
     ) -> None:
         """Recebe o acesso à Gold, a configuração do portal e, opcionalmente, o panorama.
 
@@ -116,6 +117,8 @@ class KpiService:
         self._portal = portal
         self._panorama = panorama
         self._page_max = page_max
+        # dataset → (sigla da instituição, sistema), das fontes configuradas.
+        self._provenance = dict(provenance or {})
         self._checked: set[str] = set()
 
     # ------------------------------------------------------------- configuração
@@ -213,6 +216,8 @@ class KpiService:
                 source_variable_name=meta.get("source_variable_name"),
                 reference_url=meta.get("reference_url"),
                 license_id=meta.get("license_id"),
+                institution=self._provenance.get(meta["dataset_id"], (None, None))[0],
+                system=self._provenance.get(meta["dataset_id"], (None, None))[1],
             ),
         )
 
@@ -256,6 +261,11 @@ class KpiService:
                 for item in sub.kpis:
                     link = self._links.get(item.id)
                     kpi = self._portal.kpi(link) if link else None
+                    if kpi is not None:
+                        published.append(self.describe(ctx, kpi, theme.id, sub.id))
+                # KPIs curados de outras fontes (itens `externos`, ex.: Sinesp), após os do SIDRA.
+                for external in sub.externos:
+                    kpi = self._portal.kpi(external.kpi)
                     if kpi is not None:
                         published.append(self.describe(ctx, kpi, theme.id, sub.id))
                 planned = [

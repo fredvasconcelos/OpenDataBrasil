@@ -83,3 +83,32 @@ def test_first_period_cuts_gold_not_silver(tmp_path: Path) -> None:
             }
         ),
     )["period"].to_list() == ["199801", "202609"]
+
+
+def test_indicator_map_expands_dataset_series() -> None:
+    """Série (Sinesp VDE, um dataset por ano): uma linha por tabela anual."""
+    from odb_semantics.config import load_catalog  # noqa: PLC0415
+
+    catalog = load_catalog(
+        Path(__file__).parents[3]
+        / "configs"
+        / "indicators"
+        / "demografia"
+        / "seguranca_sinesp.toml"
+    )
+    series = model.DatasetInfo(
+        "mjsp-sinesp-vde",
+        "SINESP-VDE",
+        None,
+        "mjsp-dados-abertos",
+        period_type="mes",
+        table_ids=("SINESP-VDE-2015", "SINESP-VDE-2016"),
+    )
+    assert series.source_tables == ("SINESP-VDE-2015", "SINESP-VDE-2016")
+    mapping = model.indicator_map(catalog, {"mjsp-sinesp-vde": series})
+    homicide = mapping.filter(pl.col("indicator_id") == "sinesp_homicidio_doloso")
+    assert sorted(homicide["table_id"]) == ["SINESP-VDE-2015", "SINESP-VDE-2016"]
+    assert set(mapping["dataset_id"]) == {"mjsp-sinesp-vde"}
+    # Dataset único continua com a própria tabela.
+    single = model.DatasetInfo("ibge-sidra-6579", "6579", None, "x")
+    assert single.source_tables == ("6579",)

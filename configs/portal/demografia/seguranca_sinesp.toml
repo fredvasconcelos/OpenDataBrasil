@@ -1,0 +1,44 @@
+# KPIs do Sinesp VDE (MJSP, ADR-0012) no tema "Segurança e vitimização", subtema
+# "Vitimização e violência" do panorama (itens `externos`). Série mensal; mapa por
+# município (homicídio doloso, feminicídio, latrocínio) ou por UF (os demais).
+
+config_version = "1.0.0"
+scope = "demografia"
+
+[[themes]]
+id = "seguranca"
+label = "Segurança e vitimização"
+
+[[themes.subthemes]]
+id = "vitimizacao"
+label = "Vitimização e violência"
+
+[[themes.subthemes.kpis]]
+id = "sinesp_homicidio_doloso"
+label = "Vítimas de homicídio doloso (registros policiais)"
+indicator = "sinesp_homicidio_doloso"
+
+[[themes.subthemes.kpis]]
+id = "sinesp_feminicidio"
+label = "Vítimas de feminicídio (registros policiais)"
+indicator = "sinesp_feminicidio"
+
+[[themes.subthemes.kpis]]
+id = "sinesp_latrocinio"
+label = "Vítimas de latrocínio (roubo seguido de morte)"
+indicator = "sinesp_latrocinio"
+
+[[themes.subthemes.kpis]]
+id = "sinesp_estupro"
+label = "Vítimas de estupro (registros policiais)"
+indicator = "sinesp_estupro"
+
+[[themes.subthemes.kpis]]
+id = "sinesp_morte_intervencao"
+label = "Mortes por intervenção de agente do Estado"
+indicator = "sinesp_morte_intervencao"
+
+[[themes.subthemes.kpis]]
+id = "sinesp_roubo_veiculo"
+label = "Roubos de veículo (registros policiais)"
+indicator = "sinesp_roubo_veiculo"

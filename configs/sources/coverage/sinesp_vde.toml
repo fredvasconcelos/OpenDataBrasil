@@ -1,0 +1,133 @@
+# Cobertura do Sinesp VDE: períodos que os gestores estaduais declaram INDISPONÍVEIS.
+#
+# Aprovada pelo mantenedor em 2026-11-12 (ADR-0012, decisão 6). A planilha oficial publica
+# 0 nesses meses, mas as notas metodológicas dizem que o dado não existe (sistema antigo
+# sem a natureza, migração de sistema, base criada depois). A Silver marca esses meses
+# como "não disponível" nas linhas estaduais; a parte federal (PF/PRF), quando houver,
+# não muda. O valor publicado continua preservado na Bronze.
+#
+# Fonte: página "Base de Dados e Notas Metodológicas dos Gestores Estaduais - Sinesp VDE"
+# (Bronze: mjsp-sinesp-vde), lida em 2026-11-12. Só entram períodos declarados
+# indisponíveis; coberturas parciais (região metropolitana, capital) e mudanças de
+# metodologia ficam como notas dos KPIs, não aqui.
+#
+# Campos: uf (sigla), events (nomes exatos da planilha), start e end (AAAAMM, inclusive).
+
+config_version = "1.0.0"
+
+[[unavailable]]
+uf = "TO"
+events = [
+  "Arma de Fogo Apreendida", "Feminicídio", "Mandado de prisão cumprido",
+  "Morte de Agente do Estado", "Morte por intervenção de Agente do Estado",
+  "Pessoa Desaparecida", "Pessoa Localizada",
+]
+start = "201501"
+end = "201812"
+source = "TO, item 1: migração do GERPOL para o Sinesp/PPE, concluída em 2018"
+
+[[unavailable]]
+uf = "TO"
+events = ["Tentativa de feminicídio", "Estupro de vulnerável"]
+start = "201501"
+end = "201912"
+source = "TO, item 2: registros agregados a tentativa de homicídio e a estupro"
+
+[[unavailable]]
+uf = "TO"
+events = [
+  "Atendimento pré-hospitalar", "Realização de vistorias", "Busca e salvamento",
+  "Combate a incêndios", "Emissão de Alvarás de licença",
+]
+start = "201501"
+end = "202212"
+source = "TO, item 3: bases do Corpo de Bombeiros criadas em 2023"
+
+[[unavailable]]
+uf = "TO"
+events = ["Apreensão de Maconha", "Apreensão de Cocaína"]
+start = "201501"
+# O título do item diz "janeiro de 2015 a março de 2024"; o texto diz "a abril de 2024".
+# Usado o título (mais conservador para os dados publicados de abril).
+end = "202403"
+source = "TO, item 4: Polícia Científica sem bases históricas consolidadas"
+
+[[unavailable]]
+uf = "MT"
+events = ["Feminicídio", "Tentativa de feminicídio", "Morte por intervenção de Agente do Estado"]
+start = "201501"
+end = "201812"
+source = "MT, itens 1, 2 e 5: contados junto com homicídio doloso e tentativa de homicídio até 2018"
+
+[[unavailable]]
+uf = "BA"
+events = ["Feminicídio"]
+start = "201501"
+end = "201612"
+source = "BA: feminicídio disponível a partir de 2017"
+
+[[unavailable]]
+uf = "BA"
+events = ["Morte por intervenção de Agente do Estado"]
+start = "201501"
+end = "201912"
+source = "BA: morte por intervenção de agente disponível a partir de 2020"
+
+[[unavailable]]
+uf = "BA"
+events = ["Tentativa de feminicídio"]
+start = "201501"
+end = "202112"
+source = "BA: tentativa de feminicídio disponível a partir de 2022"
+
+[[unavailable]]
+uf = "BA"
+events = [
+  "Atendimento pré-hospitalar", "Busca e salvamento", "Combate a incêndios",
+  "Emissão de Alvarás de licença", "Realização de vistorias",
+]
+start = "201501"
+end = "201712"
+source = "BA: ocorrências bombeirísticas disponíveis a partir de 2018"
+
+[[unavailable]]
+uf = "CE"
+events = ["Feminicídio", "Tentativa de feminicídio"]
+start = "201501"
+end = "201712"
+source = "CE: feminicídio e tentativa disponíveis a partir de 2018 (naturezas do SIP3W)"
+
+[[unavailable]]
+uf = "CE"
+events = ["Mandado de prisão cumprido"]
+start = "201501"
+end = "202012"
+source = "CE: mandados de prisão cumpridos disponíveis a partir de 2021"
+
+[[unavailable]]
+uf = "CE"
+events = ["Atendimento pré-hospitalar"]
+start = "201501"
+end = "201812"
+source = "CE: atendimentos pré-hospitalares disponíveis a partir de 2019"
+
+[[unavailable]]
+uf = "AL"
+events = ["Tentativa de feminicídio"]
+start = "201501"
+end = "201804"
+source = "AL, conclusão 4.1: SISPOL sem a tipificação até abril de 2018"
+
+[[unavailable]]
+uf = "RS"
+events = ["Mandado de prisão cumprido"]
+start = "201501"
+end = "201512"
+source = "RS, item 1: dados da Polícia Civil de 2015 perdidos (temporal de 16/01/2024)"
+
+[[unavailable]]
+uf = "RS"
+events = ["Atendimento pré-hospitalar", "Busca e salvamento", "Combate a incêndios"]
+start = "201501"
+end = "201712"
+source = "RS, item 2: e-193 do CBMRS a partir de 2018; registros anteriores da Brigada Militar não migrados"

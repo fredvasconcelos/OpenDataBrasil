@@ -14,6 +14,7 @@ from __future__ import annotations
 import fnmatch
 import time
 import zipfile
+from pathlib import Path
 from typing import ClassVar, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -41,7 +42,7 @@ class HttpFileParams(BaseModel):
     url: str = Field(pattern=r"^https://")
     artifact_name: str
     reference_period: str | None = None
-    format: Literal["zip", "binary"] = "binary"
+    format: Literal["zip", "xlsx", "pdf", "binary"] = "binary"
     expected_members: tuple[str, ...] = ()
     min_bytes: int = Field(default=1, ge=1)
     max_bytes: int = Field(default=200 * 1024**2, ge=1)
@@ -108,6 +109,10 @@ class HttpFileConnector(BaseConnector):
         stats: dict[str, object] = {"size_bytes": result.size_bytes}
         if result.size_bytes < params.min_bytes:
             errors.append(f"{result.size_bytes} bytes, mínimo esperado {params.min_bytes}")
+        if params.format == "xlsx":
+            return _validate_xlsx(result.path, errors, warnings, stats)
+        if params.format == "pdf":
+            return _validate_pdf(result.path, errors, warnings, stats)
         if params.format == "zip":
             if not zipfile.is_zipfile(result.path):
                 return ValidationResult(
@@ -136,3 +141,31 @@ class HttpFileConnector(BaseConnector):
             return HealthStatus(ok=False, detail=str(exc))
         latency = round((time.perf_counter() - started) * 1000, 1)
         return HealthStatus(ok=True, detail=f"{self.source.base_url} acessível", latency_ms=latency)
+
+
+def _validate_xlsx(
+    path: Path, errors: list[str], warnings: list[str], stats: dict[str, object]
+) -> ValidationResult:
+    """XLSX é um ZIP com a pasta de trabalho: HTML de erro ou download truncado falham."""
+    if not zipfile.is_zipfile(path):
+        return ValidationResult(
+            errors=(*errors, "conteúdo não é uma planilha XLSX (ZIP inválido)"), stats=stats
+        )
+    with zipfile.ZipFile(path) as archive:
+        corrupted = archive.testzip()
+        names = archive.namelist()
+    if corrupted is not None:
+        errors.append(f"membro corrompido no XLSX: {corrupted}")
+    if "xl/workbook.xml" not in names:
+        errors.append("XLSX sem xl/workbook.xml")
+    return ValidationResult(errors=tuple(errors), warnings=tuple(warnings), stats=stats)
+
+
+def _validate_pdf(
+    path: Path, errors: list[str], warnings: list[str], stats: dict[str, object]
+) -> ValidationResult:
+    """PDF começa com a assinatura ``%PDF-``."""
+    with path.open("rb") as handle:
+        if handle.read(5) != b"%PDF-":
+            errors.append("conteúdo não começa com %PDF- (não é um PDF)")
+    return ValidationResult(errors=tuple(errors), warnings=tuple(warnings), stats=stats)

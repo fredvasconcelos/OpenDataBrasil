@@ -46,7 +46,7 @@ from odb_processing.contracts import (
     SchemaChange,
     compare_schema,
 )
-from odb_processing.datasus import SIM_FIELDS, read_dbc, sim_deaths
+from odb_processing.datasus import SIM_FIELDS, UF_CODES, read_dbc, sim_deaths
 from odb_processing.parsers import (
     Lineage,
     MeshSpec,
@@ -61,6 +61,15 @@ from odb_processing.quality import (
     dtb_checks,
     mesh_checks,
     sidra_checks,
+    sinesp_checks,
+)
+from odb_processing.sinesp import (
+    Unavailable,
+    VdeReport,
+    load_coverage,
+    normalize_name,
+    read_vde,
+    sinesp_observations,
 )
 
 logger = logging.getLogger(__name__)
@@ -72,6 +81,8 @@ CONTRACT_BY_TRANSFORMER = {
     "sidra_observation": SIDRA_OBSERVATION,
     # Agregados do SIM por município, no mesmo contrato de observação do SIDRA.
     "datasus_sim_do": SIDRA_OBSERVATION,
+    # SINESP VDE (MJSP): município x evento x mês, no mesmo contrato (ADR-0012).
+    "sinesp_vde": SIDRA_OBSERVATION,
     "dtb_municipality": DTB_MUNICIPALITY,
     "territorial_mesh": TERRITORIAL_MESH,
 }
@@ -167,13 +178,19 @@ class SilverBuilder:
         registry: SilverRegistry,
         *,
         code_version: str = "unknown",
+        config_dir: Path | None = None,
     ) -> None:
-        """Recebe o catálogo de fontes, o lakehouse, o escritor Delta e o registro."""
+        """Recebe o catálogo de fontes, o lakehouse, o escritor Delta e o registro.
+
+        ``config_dir`` é o diretório das fontes (``configs/sources``), base dos arquivos
+        auxiliares citados na configuração Silver (ex.: ``coverage_file``).
+        """
         self._catalog = catalog
         self._layout = layout
         self._writer = writer
         self._registry = registry
         self._code_version = code_version
+        self._config_dir = config_dir
         self._reader = DeltaReader()
 
     # ------------------------------------------------------------- configuração
@@ -256,6 +273,8 @@ class SilverBuilder:
             "contract": f"{contract.name}:{contract.version}",
             "silver": dataset.silver,
             "inputs": [(i.partition_key, i.checksum_sha256) for i in inputs],
+            # Arquivo auxiliar (tabela de cobertura): mudar o conteúdo refaz a Silver.
+            "coverage": self._coverage(dataset)[1],
         }
         return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
@@ -304,6 +323,14 @@ class SilverBuilder:
             frame, partition = self._sim_frame(dataset, inputs, run, processed_at, reference_ids)
             # Sem reconciliação entre níveis: a UF inclui óbitos de município ignorado.
             run.checks = sidra_checks(frame, contract, {}, reference_ids, reference_label)
+        elif transformer == "sinesp_vde":
+            reference_ids, reference_label = self._reference(dataset)
+            frame, partition, report = self._sinesp_frame(dataset, inputs, run, processed_at)
+            # Sem reconciliação entre níveis: a UF inclui linhas sem município.
+            run.checks = [
+                *sidra_checks(frame, contract, {}, reference_ids, reference_label),
+                *sinesp_checks(report),
+            ]
         elif transformer == "territorial_mesh":
             frame, partition = self._mesh_frame(dataset, inputs, run, processed_at)
             reference_ids, reference_label = self._reference(dataset)
@@ -409,6 +436,86 @@ class SilverBuilder:
                 )
             )
         return pl.concat(frames), {"table_id": table_id}
+
+    def _sinesp_frame(
+        self,
+        dataset: DatasetConfig,
+        inputs: Sequence[SilverInput],
+        run: SilverRun,
+        processed_at: datetime,
+    ) -> tuple[pl.DataFrame, dict[str, str], VdeReport]:
+        """Planilha anual do SINESP VDE → observações por município e UF (marginais)."""
+        if len(inputs) != 1:
+            msg = f"SINESP VDE espera 1 planilha vigente, encontradas {len(inputs)}"
+            raise SilverBuildError(msg)
+        item = inputs[0]
+        year = item.reference_period
+        if not year:
+            msg = f"{dataset.id}: planilha do SINESP VDE sem período de referência"
+            raise SilverBuildError(msg)
+        names = self._municipality_names(dataset)
+        # Uma partição por ano: os datasets são anuais e a escrita substitui a partição.
+        table_id = f"{dataset.silver.get('table_id', 'SINESP-VDE')}-{year}"
+        frame, report = sinesp_observations(
+            read_vde(Path(uri_to_local_path(item.storage_uri))),
+            year=year,
+            uf_codes=UF_CODES,
+            municipalities=names,
+            table_id=table_id,
+            lineage=self._lineage(item, run, processed_at),
+            unavailable=self._coverage(dataset)[0],
+        )
+        return frame, {"table_id": table_id}, report
+
+    def _coverage(self, dataset: DatasetConfig) -> tuple[list[Unavailable], str | None]:
+        """Tabela de cobertura do dataset (``coverage_file``), se houver, e o seu SHA-256."""
+        name = dataset.silver.get("coverage_file")
+        if not name:
+            return [], None
+        if self._config_dir is None:
+            msg = f"{dataset.id}: coverage_file exige o diretório de configuração das fontes"
+            raise SilverBuildError(msg)
+        path = self._config_dir / str(name)
+        if not path.is_file():
+            msg = f"{dataset.id}: tabela de cobertura não encontrada: {path}"
+            raise SilverBuildError(msg)
+        return load_coverage(path)
+
+    def _municipality_names(self, dataset: DatasetConfig) -> dict[tuple[str, str], str]:
+        """(sigla da UF, nome normalizado) → código IBGE, da DTB vigente na Silver.
+
+        Inclui ``aliases`` da configuração Silver (grafias antigas publicadas pela fonte),
+        sempre apontando para um código que existe na DTB.
+        """
+        ref_id = dataset.silver.get("territorial_reference")
+        if not ref_id:
+            msg = f"{dataset.id}: o SINESP VDE exige a DTB (casamento por nome)"
+            raise SilverBuildError(msg)
+        ref = self._catalog.dataset(str(ref_id))
+        previous = self._registry.last_success(ref.id)
+        if previous is None or previous.delta_version is None:
+            msg = f"{dataset.id}: DTB sem Silver vigente; construa {ref.id} antes"
+            raise SilverBuildError(msg)
+        dtb = (
+            self._reader.scan(self.target_uri(ref), previous.delta_version)
+            .select("reference_year", "uf_id", "municipality_id", "municipality_name")
+            .collect()
+        )
+        dtb = dtb.filter(pl.col("reference_year") == dtb["reference_year"].max())
+        sigla = {code: uf for uf, code in UF_CODES.items()}
+        names: dict[tuple[str, str], str] = {}
+        for row in dtb.iter_rows(named=True):
+            names[(sigla[str(row["uf_id"])], normalize_name(str(row["municipality_name"])))] = str(
+                row["municipality_id"]
+            )
+        codes = set(names.values())
+        for alias, code in dict(dataset.silver.get("aliases", {})).items():
+            uf, _, name = str(alias).partition("/")
+            if str(code) not in codes:
+                msg = f"{dataset.id}: alias {alias} aponta para código fora da DTB: {code}"
+                raise SilverBuildError(msg)
+            names[(uf, normalize_name(name))] = str(code)
+        return names
 
     def _dtb_frame(
         self,

@@ -77,12 +77,27 @@ class PanoramaKpi(_Strict):
     categoria_mapa: str | None = Field(default=None, pattern=r"^\d+$")
 
 
+class PanoramaExternal(_Strict):
+    """KPI curado de outra fonte (fora do SIDRA) no mesmo subtema (ex.: Sinesp, ADR-0012).
+
+    Não passa pelo gerador nem pela conferência no acervo do SIDRA: o KPI e o indicador
+    são curados à mão. Só a ligação com o portal é conferida.
+    """
+
+    id: str = Field(pattern=PANORAMA_ID)
+    label: str = Field(min_length=1)
+    fonte: str = Field(min_length=1)  # dataset ou série de origem (configs/sources)
+    tabela: str = Field(min_length=1)  # identificador da tabela na fonte
+    kpi: str = Field(pattern=PANORAMA_ID)
+
+
 class PanoramaSubtheme(_Strict):
     """Subtema."""
 
     id: str = Field(pattern=PANORAMA_ID)
     label: str = Field(min_length=1)
     kpis: tuple[PanoramaKpi, ...] = Field(min_length=1)
+    externos: tuple[PanoramaExternal, ...] = ()
 
 
 class PanoramaTheme(_Strict):
@@ -202,8 +217,9 @@ def resolve_links(panorama: Panorama, portal_kpis: Iterable[str]) -> dict[str, s
 def check_against_portal(panorama: Panorama, portal_kpis: Mapping[str, object]) -> None:
     """Cada KPI do portal aparece em exatamente um item do panorama, e vice-versa."""
     links = resolve_links(panorama, portal_kpis)
-    explicit = {k.kpi for _, _, k in panorama.items() if k.kpi}
-    linked = [v for v in links.values() if v is not None]
+    external = [e.kpi for t in panorama.temas for s in t.subtemas for e in s.externos]
+    explicit = {k.kpi for _, _, k in panorama.items() if k.kpi} | set(external)
+    linked = [v for v in links.values() if v is not None] + external
     problems: list[str] = []
     unknown = sorted(explicit - set(portal_kpis))
     if unknown:

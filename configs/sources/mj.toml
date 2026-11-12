@@ -1,0 +1,814 @@
+# Fontes do Ministério da Justiça e Segurança Pública (MJSP): estatísticas de segurança pública.
+#
+# Avaliação e decisões: ADR-0012 e docs/data_catalog/seguranca-publica-avaliacao.md.
+# Páginas de origem (verificadas em 2026-11-12):
+#   * Sinesp VDE, base de dados e notas metodológicas dos gestores estaduais (2015-2026);
+#   * Pesquisa Perfil das Instituições de Segurança Pública (bases de pesquisas anteriores;
+#     os links "Base de dados" e "Relatório 2022" da página principal respondem 404);
+#   * Mapa da Segurança Pública (publicações em PDF, sem base estruturada).
+#
+# Tudo vai para a Bronze (preservação). Só o Sinesp VDE tem Silver: os PDFs e as bases
+# da Pesquisa Perfil ficam como documentação e insumo de avaliação futura.
+# Licenças (ADR-0012, decisão 4, revista em 2026-11-12 com o mantenedor):
+#   * dados do Sinesp VDE: dados abertos da Política de Dados Abertos (Decreto 8.777/2016,
+#     IN nº 47/2025) e do Plano de Dados Abertos do MJSP 2024-2026 (Portaria MJSP nº 842/2025):
+#     uso livre, exigindo no máximo o crédito da fonte (`mjsp-dados-abertos`, aprovada);
+#   * publicações e páginas (Mapa em PDF, notas): conteúdo do portal, CC BY-ND 3.0;
+#   * Pesquisa Perfil: não consta do PDA; segue em revisão.
+#
+# O servidor recusa HEAD (403), mas responde ao GET normal: o conector usa só GET.
+
+config_version = "1.0.0"
+
+[institution]
+id = "mjsp"
+name = "Ministério da Justiça e Segurança Pública"
+acronym = "MJSP"
+url = "https://www.gov.br/mj"
+
+[[licenses]]
+id = "mjsp-dados-abertos"
+name = "Dados abertos do MJSP (Política de Dados Abertos do Poder Executivo Federal)"
+url = "https://www.gov.br/mj/pt-br/acesso-a-informacao/dados-abertos/legislacao-1"
+conditions = "Uso, reúso e redistribuição livres por qualquer pessoa; exige-se no máximo creditar a autoria ou a fonte (MJSP/Senasp, Sinesp)."
+review_status = "approved"
+notes = "Aprovada pelo mantenedor em 2026-11-12. Base legal: Decreto nº 8.777/2016 (Política de Dados Abertos); IN nº 47/2025 (INDA), art. com as definições de 'dados abertos' e 'licença aberta' ('sujeito, no máximo, a exigência de creditar a sua autoria ou fonte'); Portaria MJSP nº 842/2025 (DOU 16/01/2025), que aprova o Plano de Dados Abertos 2024-2026. O PDA lista 'Dados Ocorrências Criminais – Sinesp' (Senasp) entre as bases abertas (p. 27) e no inventário (item 76, abertura 'não se aplica': já aberta). O PDF do PDA está preservado na Bronze (mjsp-pda-2024-2026)."
+
+[[licenses]]
+id = "mjsp-portal-cc-by-nd"
+name = "Creative Commons Atribuição-SemDerivações 3.0 Não Adaptada (rodapé do portal gov.br/mj)"
+url = "https://creativecommons.org/licenses/by-nd/3.0/deed.pt_BR"
+conditions = "Reuso com atribuição ao MJSP; a cláusula SemDerivações proíbe obras derivadas, se valer para os dados."
+review_status = "requires_review"
+notes = "Vale para o conteúdo editorial do portal (publicações em PDF, páginas). Para os dados do Sinesp VDE, ver mjsp-dados-abertos. Rodapé 'Todo o conteúdo deste site está publicado sob a licença Creative Commons Atribuição-SemDerivações 3.0 Não Adaptada'. Não há termo específico para as bases do Sinesp; o portal de dados do MJ (dados.mj.gov.br) não resolve mais. Confirmar com o MJSP (ou no dados.gov.br) se os dados estatísticos têm licença aberta própria antes de qualquer publicação ou agregação pública (ADR-0012)."
+
+[[sources]]
+id = "mjsp-estatistica"
+name = "MJSP: estatísticas de segurança pública (downloads do portal gov.br)"
+connector = "http_file"
+base_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica"
+documentation_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+
+[sources.http]
+min_interval_s = 3.0
+timeout_s = 300.0
+max_attempts = 5
+backoff_initial_s = 5.0
+
+# ------------------------------------------------------------------ Sinesp VDE
+
+[[datasets]]
+id = "mjsp-sinesp-vde-2015"
+source = "mjsp-estatistica"
+official_id = "bancovde-2015"
+title = "Sinesp VDE: base de dados 2015"
+description = "Ocorrências, vítimas e apreensões por UF, município, evento e mês (2015), informadas pelos gestores estaduais e pelas polícias federais no Validador de Dados Estatísticos."
+license = "mjsp-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "mensal, publicada por ano, com revisões"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/dnsp-base-de-dados/bancovde-2015.xlsx/@@download/file"
+artifact_name = "bancovde-2015.xlsx"
+reference_period = "2015"
+format = "xlsx"
+min_bytes = 1000000
+max_bytes = 157286400
+
+[datasets.silver]
+# Município x evento x mês: Total e cada dimensão, sem cruzamento (ADR-0012).
+transformer = "sinesp_vde"
+territorial_reference = "ibge-dtb"
+table_id = "SINESP-VDE"
+# Membro da série lida pela Gold (configs/indicators/demografia/seguranca_sinesp.toml).
+series = "mjsp-sinesp-vde"
+# Períodos declarados indisponíveis pelos gestores (ADR-0012, decisão 6), relativo a configs/sources.
+coverage_file = "coverage/sinesp_vde.toml"
+
+[datasets.silver.aliases]
+# Grafias da fonte → código da DTB (correspondência única conferida na DTB 2025, 2026-11-12).
+"MG/BARÃO DE MONTE ALTO" = "3105509"       # Barão do Monte Alto
+"MT/SANTO ANTÔNIO DO LEVERGER" = "5107800" # Santo Antônio de Leverger
+"RN/ARÊS" = "2401206"                      # Arez
+"RN/AÇU" = "2400208"                       # Assú
+"RR/SÃO LUIZ" = "1400605"                  # São Luiz do Anauá (nome anterior)
+"SE/GRACHO CARDOSO" = "2802601"            # Graccho Cardoso
+
+[[datasets]]
+id = "mjsp-sinesp-vde-2016"
+source = "mjsp-estatistica"
+official_id = "bancovde-2016"
+title = "Sinesp VDE: base de dados 2016"
+description = "Ocorrências, vítimas e apreensões por UF, município, evento e mês (2016), informadas pelos gestores estaduais e pelas polícias federais no Validador de Dados Estatísticos."
+license = "mjsp-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "mensal, publicada por ano, com revisões"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/dnsp-base-de-dados/bancovde-2016.xlsx/@@download/file"
+artifact_name = "bancovde-2016.xlsx"
+reference_period = "2016"
+format = "xlsx"
+min_bytes = 1000000
+max_bytes = 157286400
+
+[datasets.silver]
+# Município x evento x mês: Total e cada dimensão, sem cruzamento (ADR-0012).
+transformer = "sinesp_vde"
+territorial_reference = "ibge-dtb"
+table_id = "SINESP-VDE"
+# Membro da série lida pela Gold (configs/indicators/demografia/seguranca_sinesp.toml).
+series = "mjsp-sinesp-vde"
+# Períodos declarados indisponíveis pelos gestores (ADR-0012, decisão 6), relativo a configs/sources.
+coverage_file = "coverage/sinesp_vde.toml"
+
+[datasets.silver.aliases]
+# Grafias da fonte → código da DTB (correspondência única conferida na DTB 2025, 2026-11-12).
+"MG/BARÃO DE MONTE ALTO" = "3105509"       # Barão do Monte Alto
+"MT/SANTO ANTÔNIO DO LEVERGER" = "5107800" # Santo Antônio de Leverger
+"RN/ARÊS" = "2401206"                      # Arez
+"RN/AÇU" = "2400208"                       # Assú
+"RR/SÃO LUIZ" = "1400605"                  # São Luiz do Anauá (nome anterior)
+"SE/GRACHO CARDOSO" = "2802601"            # Graccho Cardoso
+
+[[datasets]]
+id = "mjsp-sinesp-vde-2017"
+source = "mjsp-estatistica"
+official_id = "bancovde-2017"
+title = "Sinesp VDE: base de dados 2017"
+description = "Ocorrências, vítimas e apreensões por UF, município, evento e mês (2017), informadas pelos gestores estaduais e pelas polícias federais no Validador de Dados Estatísticos."
+license = "mjsp-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "mensal, publicada por ano, com revisões"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/dnsp-base-de-dados/bancovde-2017.xlsx/@@download/file"
+artifact_name = "bancovde-2017.xlsx"
+reference_period = "2017"
+format = "xlsx"
+min_bytes = 1000000
+max_bytes = 157286400
+
+[datasets.silver]
+# Município x evento x mês: Total e cada dimensão, sem cruzamento (ADR-0012).
+transformer = "sinesp_vde"
+territorial_reference = "ibge-dtb"
+table_id = "SINESP-VDE"
+# Membro da série lida pela Gold (configs/indicators/demografia/seguranca_sinesp.toml).
+series = "mjsp-sinesp-vde"
+# Períodos declarados indisponíveis pelos gestores (ADR-0012, decisão 6), relativo a configs/sources.
+coverage_file = "coverage/sinesp_vde.toml"
+
+[datasets.silver.aliases]
+# Grafias da fonte → código da DTB (correspondência única conferida na DTB 2025, 2026-11-12).
+"MG/BARÃO DE MONTE ALTO" = "3105509"       # Barão do Monte Alto
+"MT/SANTO ANTÔNIO DO LEVERGER" = "5107800" # Santo Antônio de Leverger
+"RN/ARÊS" = "2401206"                      # Arez
+"RN/AÇU" = "2400208"                       # Assú
+"RR/SÃO LUIZ" = "1400605"                  # São Luiz do Anauá (nome anterior)
+"SE/GRACHO CARDOSO" = "2802601"            # Graccho Cardoso
+
+[[datasets]]
+id = "mjsp-sinesp-vde-2018"
+source = "mjsp-estatistica"
+official_id = "bancovde-2018"
+title = "Sinesp VDE: base de dados 2018"
+description = "Ocorrências, vítimas e apreensões por UF, município, evento e mês (2018), informadas pelos gestores estaduais e pelas polícias federais no Validador de Dados Estatísticos."
+license = "mjsp-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "mensal, publicada por ano, com revisões"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/dnsp-base-de-dados/bancovde-2018.xlsx/@@download/file"
+artifact_name = "bancovde-2018.xlsx"
+reference_period = "2018"
+format = "xlsx"
+min_bytes = 1000000
+max_bytes = 157286400
+
+[datasets.silver]
+# Município x evento x mês: Total e cada dimensão, sem cruzamento (ADR-0012).
+transformer = "sinesp_vde"
+territorial_reference = "ibge-dtb"
+table_id = "SINESP-VDE"
+# Membro da série lida pela Gold (configs/indicators/demografia/seguranca_sinesp.toml).
+series = "mjsp-sinesp-vde"
+# Períodos declarados indisponíveis pelos gestores (ADR-0012, decisão 6), relativo a configs/sources.
+coverage_file = "coverage/sinesp_vde.toml"
+
+[datasets.silver.aliases]
+# Grafias da fonte → código da DTB (correspondência única conferida na DTB 2025, 2026-11-12).
+"MG/BARÃO DE MONTE ALTO" = "3105509"       # Barão do Monte Alto
+"MT/SANTO ANTÔNIO DO LEVERGER" = "5107800" # Santo Antônio de Leverger
+"RN/ARÊS" = "2401206"                      # Arez
+"RN/AÇU" = "2400208"                       # Assú
+"RR/SÃO LUIZ" = "1400605"                  # São Luiz do Anauá (nome anterior)
+"SE/GRACHO CARDOSO" = "2802601"            # Graccho Cardoso
+
+[[datasets]]
+id = "mjsp-sinesp-vde-2019"
+source = "mjsp-estatistica"
+official_id = "bancovde-2019"
+title = "Sinesp VDE: base de dados 2019"
+description = "Ocorrências, vítimas e apreensões por UF, município, evento e mês (2019), informadas pelos gestores estaduais e pelas polícias federais no Validador de Dados Estatísticos."
+license = "mjsp-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "mensal, publicada por ano, com revisões"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/dnsp-base-de-dados/bancovde-2019.xlsx/@@download/file"
+artifact_name = "bancovde-2019.xlsx"
+reference_period = "2019"
+format = "xlsx"
+min_bytes = 1000000
+max_bytes = 157286400
+
+[datasets.silver]
+# Município x evento x mês: Total e cada dimensão, sem cruzamento (ADR-0012).
+transformer = "sinesp_vde"
+territorial_reference = "ibge-dtb"
+table_id = "SINESP-VDE"
+# Membro da série lida pela Gold (configs/indicators/demografia/seguranca_sinesp.toml).
+series = "mjsp-sinesp-vde"
+# Períodos declarados indisponíveis pelos gestores (ADR-0012, decisão 6), relativo a configs/sources.
+coverage_file = "coverage/sinesp_vde.toml"
+
+[datasets.silver.aliases]
+# Grafias da fonte → código da DTB (correspondência única conferida na DTB 2025, 2026-11-12).
+"MG/BARÃO DE MONTE ALTO" = "3105509"       # Barão do Monte Alto
+"MT/SANTO ANTÔNIO DO LEVERGER" = "5107800" # Santo Antônio de Leverger
+"RN/ARÊS" = "2401206"                      # Arez
+"RN/AÇU" = "2400208"                       # Assú
+"RR/SÃO LUIZ" = "1400605"                  # São Luiz do Anauá (nome anterior)
+"SE/GRACHO CARDOSO" = "2802601"            # Graccho Cardoso
+
+[[datasets]]
+id = "mjsp-sinesp-vde-2020"
+source = "mjsp-estatistica"
+official_id = "bancovde-2020"
+title = "Sinesp VDE: base de dados 2020"
+description = "Ocorrências, vítimas e apreensões por UF, município, evento e mês (2020), informadas pelos gestores estaduais e pelas polícias federais no Validador de Dados Estatísticos."
+license = "mjsp-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "mensal, publicada por ano, com revisões"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/dnsp-base-de-dados/bancovde-2020.xlsx/@@download/file"
+artifact_name = "bancovde-2020.xlsx"
+reference_period = "2020"
+format = "xlsx"
+min_bytes = 1000000
+max_bytes = 157286400
+
+[datasets.silver]
+# Município x evento x mês: Total e cada dimensão, sem cruzamento (ADR-0012).
+transformer = "sinesp_vde"
+territorial_reference = "ibge-dtb"
+table_id = "SINESP-VDE"
+# Membro da série lida pela Gold (configs/indicators/demografia/seguranca_sinesp.toml).
+series = "mjsp-sinesp-vde"
+# Períodos declarados indisponíveis pelos gestores (ADR-0012, decisão 6), relativo a configs/sources.
+coverage_file = "coverage/sinesp_vde.toml"
+
+[datasets.silver.aliases]
+# Grafias da fonte → código da DTB (correspondência única conferida na DTB 2025, 2026-11-12).
+"MG/BARÃO DE MONTE ALTO" = "3105509"       # Barão do Monte Alto
+"MT/SANTO ANTÔNIO DO LEVERGER" = "5107800" # Santo Antônio de Leverger
+"RN/ARÊS" = "2401206"                      # Arez
+"RN/AÇU" = "2400208"                       # Assú
+"RR/SÃO LUIZ" = "1400605"                  # São Luiz do Anauá (nome anterior)
+"SE/GRACHO CARDOSO" = "2802601"            # Graccho Cardoso
+
+[[datasets]]
+id = "mjsp-sinesp-vde-2021"
+source = "mjsp-estatistica"
+official_id = "bancovde-2021"
+title = "Sinesp VDE: base de dados 2021"
+description = "Ocorrências, vítimas e apreensões por UF, município, evento e mês (2021), informadas pelos gestores estaduais e pelas polícias federais no Validador de Dados Estatísticos."
+license = "mjsp-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "mensal, publicada por ano, com revisões"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/dnsp-base-de-dados/bancovde-2021.xlsx/@@download/file"
+artifact_name = "bancovde-2021.xlsx"
+reference_period = "2021"
+format = "xlsx"
+min_bytes = 1000000
+max_bytes = 157286400
+
+[datasets.silver]
+# Município x evento x mês: Total e cada dimensão, sem cruzamento (ADR-0012).
+transformer = "sinesp_vde"
+territorial_reference = "ibge-dtb"
+table_id = "SINESP-VDE"
+# Membro da série lida pela Gold (configs/indicators/demografia/seguranca_sinesp.toml).
+series = "mjsp-sinesp-vde"
+# Períodos declarados indisponíveis pelos gestores (ADR-0012, decisão 6), relativo a configs/sources.
+coverage_file = "coverage/sinesp_vde.toml"
+
+[datasets.silver.aliases]
+# Grafias da fonte → código da DTB (correspondência única conferida na DTB 2025, 2026-11-12).
+"MG/BARÃO DE MONTE ALTO" = "3105509"       # Barão do Monte Alto
+"MT/SANTO ANTÔNIO DO LEVERGER" = "5107800" # Santo Antônio de Leverger
+"RN/ARÊS" = "2401206"                      # Arez
+"RN/AÇU" = "2400208"                       # Assú
+"RR/SÃO LUIZ" = "1400605"                  # São Luiz do Anauá (nome anterior)
+"SE/GRACHO CARDOSO" = "2802601"            # Graccho Cardoso
+
+[[datasets]]
+id = "mjsp-sinesp-vde-2022"
+source = "mjsp-estatistica"
+official_id = "bancovde-2022"
+title = "Sinesp VDE: base de dados 2022"
+description = "Ocorrências, vítimas e apreensões por UF, município, evento e mês (2022), informadas pelos gestores estaduais e pelas polícias federais no Validador de Dados Estatísticos."
+license = "mjsp-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "mensal, publicada por ano, com revisões"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/dnsp-base-de-dados/bancovde-2022.xlsx/@@download/file"
+artifact_name = "bancovde-2022.xlsx"
+reference_period = "2022"
+format = "xlsx"
+min_bytes = 1000000
+max_bytes = 157286400
+
+[datasets.silver]
+# Município x evento x mês: Total e cada dimensão, sem cruzamento (ADR-0012).
+transformer = "sinesp_vde"
+territorial_reference = "ibge-dtb"
+table_id = "SINESP-VDE"
+# Membro da série lida pela Gold (configs/indicators/demografia/seguranca_sinesp.toml).
+series = "mjsp-sinesp-vde"
+# Períodos declarados indisponíveis pelos gestores (ADR-0012, decisão 6), relativo a configs/sources.
+coverage_file = "coverage/sinesp_vde.toml"
+
+[datasets.silver.aliases]
+# Grafias da fonte → código da DTB (correspondência única conferida na DTB 2025, 2026-11-12).
+"MG/BARÃO DE MONTE ALTO" = "3105509"       # Barão do Monte Alto
+"MT/SANTO ANTÔNIO DO LEVERGER" = "5107800" # Santo Antônio de Leverger
+"RN/ARÊS" = "2401206"                      # Arez
+"RN/AÇU" = "2400208"                       # Assú
+"RR/SÃO LUIZ" = "1400605"                  # São Luiz do Anauá (nome anterior)
+"SE/GRACHO CARDOSO" = "2802601"            # Graccho Cardoso
+
+[[datasets]]
+id = "mjsp-sinesp-vde-2023"
+source = "mjsp-estatistica"
+official_id = "bancovde-2023"
+title = "Sinesp VDE: base de dados 2023"
+description = "Ocorrências, vítimas e apreensões por UF, município, evento e mês (2023), informadas pelos gestores estaduais e pelas polícias federais no Validador de Dados Estatísticos."
+license = "mjsp-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "mensal, publicada por ano, com revisões"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/dnsp-base-de-dados/bancovde-2023.xlsx/@@download/file"
+artifact_name = "bancovde-2023.xlsx"
+reference_period = "2023"
+format = "xlsx"
+min_bytes = 1000000
+max_bytes = 157286400
+
+[datasets.silver]
+# Município x evento x mês: Total e cada dimensão, sem cruzamento (ADR-0012).
+transformer = "sinesp_vde"
+territorial_reference = "ibge-dtb"
+table_id = "SINESP-VDE"
+# Membro da série lida pela Gold (configs/indicators/demografia/seguranca_sinesp.toml).
+series = "mjsp-sinesp-vde"
+# Períodos declarados indisponíveis pelos gestores (ADR-0012, decisão 6), relativo a configs/sources.
+coverage_file = "coverage/sinesp_vde.toml"
+
+[datasets.silver.aliases]
+# Grafias da fonte → código da DTB (correspondência única conferida na DTB 2025, 2026-11-12).
+"MG/BARÃO DE MONTE ALTO" = "3105509"       # Barão do Monte Alto
+"MT/SANTO ANTÔNIO DO LEVERGER" = "5107800" # Santo Antônio de Leverger
+"RN/ARÊS" = "2401206"                      # Arez
+"RN/AÇU" = "2400208"                       # Assú
+"RR/SÃO LUIZ" = "1400605"                  # São Luiz do Anauá (nome anterior)
+"SE/GRACHO CARDOSO" = "2802601"            # Graccho Cardoso
+
+[[datasets]]
+id = "mjsp-sinesp-vde-2024"
+source = "mjsp-estatistica"
+official_id = "bancovde-2024"
+title = "Sinesp VDE: base de dados 2024"
+description = "Ocorrências, vítimas e apreensões por UF, município, evento e mês (2024), informadas pelos gestores estaduais e pelas polícias federais no Validador de Dados Estatísticos."
+license = "mjsp-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "mensal, publicada por ano, com revisões"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/dnsp-base-de-dados/bancovde-2024.xlsx/@@download/file"
+artifact_name = "bancovde-2024.xlsx"
+reference_period = "2024"
+format = "xlsx"
+min_bytes = 1000000
+max_bytes = 157286400
+
+[datasets.silver]
+# Município x evento x mês: Total e cada dimensão, sem cruzamento (ADR-0012).
+transformer = "sinesp_vde"
+territorial_reference = "ibge-dtb"
+table_id = "SINESP-VDE"
+# Membro da série lida pela Gold (configs/indicators/demografia/seguranca_sinesp.toml).
+series = "mjsp-sinesp-vde"
+# Períodos declarados indisponíveis pelos gestores (ADR-0012, decisão 6), relativo a configs/sources.
+coverage_file = "coverage/sinesp_vde.toml"
+
+[datasets.silver.aliases]
+# Grafias da fonte → código da DTB (correspondência única conferida na DTB 2025, 2026-11-12).
+"MG/BARÃO DE MONTE ALTO" = "3105509"       # Barão do Monte Alto
+"MT/SANTO ANTÔNIO DO LEVERGER" = "5107800" # Santo Antônio de Leverger
+"RN/ARÊS" = "2401206"                      # Arez
+"RN/AÇU" = "2400208"                       # Assú
+"RR/SÃO LUIZ" = "1400605"                  # São Luiz do Anauá (nome anterior)
+"SE/GRACHO CARDOSO" = "2802601"            # Graccho Cardoso
+
+[[datasets]]
+id = "mjsp-sinesp-vde-2025"
+source = "mjsp-estatistica"
+official_id = "bancovde-2025"
+title = "Sinesp VDE: base de dados 2025"
+description = "Ocorrências, vítimas e apreensões por UF, município, evento e mês (2025), informadas pelos gestores estaduais e pelas polícias federais no Validador de Dados Estatísticos."
+license = "mjsp-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "mensal, publicada por ano, com revisões"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/dnsp-base-de-dados/bancovde-2025.xlsx/@@download/file"
+artifact_name = "bancovde-2025.xlsx"
+reference_period = "2025"
+format = "xlsx"
+min_bytes = 1000000
+max_bytes = 157286400
+
+[datasets.silver]
+# Município x evento x mês: Total e cada dimensão, sem cruzamento (ADR-0012).
+transformer = "sinesp_vde"
+territorial_reference = "ibge-dtb"
+table_id = "SINESP-VDE"
+# Membro da série lida pela Gold (configs/indicators/demografia/seguranca_sinesp.toml).
+series = "mjsp-sinesp-vde"
+# Períodos declarados indisponíveis pelos gestores (ADR-0012, decisão 6), relativo a configs/sources.
+coverage_file = "coverage/sinesp_vde.toml"
+
+[datasets.silver.aliases]
+# Grafias da fonte → código da DTB (correspondência única conferida na DTB 2025, 2026-11-12).
+"MG/BARÃO DE MONTE ALTO" = "3105509"       # Barão do Monte Alto
+"MT/SANTO ANTÔNIO DO LEVERGER" = "5107800" # Santo Antônio de Leverger
+"RN/ARÊS" = "2401206"                      # Arez
+"RN/AÇU" = "2400208"                       # Assú
+"RR/SÃO LUIZ" = "1400605"                  # São Luiz do Anauá (nome anterior)
+"SE/GRACHO CARDOSO" = "2802601"            # Graccho Cardoso
+
+[[datasets]]
+id = "mjsp-sinesp-vde-2026"
+source = "mjsp-estatistica"
+official_id = "bancovde-2026"
+title = "Sinesp VDE: base de dados 2026"
+description = "Ocorrências, vítimas e apreensões por UF, município, evento e mês (2026), informadas pelos gestores estaduais e pelas polícias federais no Validador de Dados Estatísticos. Ano corrente: a fonte atualiza a planilha ao longo do ano."
+license = "mjsp-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "mensal, publicada por ano, com revisões"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/dnsp-base-de-dados/bancovde-2026.xlsx/@@download/file"
+artifact_name = "bancovde-2026.xlsx"
+reference_period = "2026"
+format = "xlsx"
+min_bytes = 1000000
+max_bytes = 157286400
+
+[datasets.silver]
+# Município x evento x mês: Total e cada dimensão, sem cruzamento (ADR-0012).
+transformer = "sinesp_vde"
+territorial_reference = "ibge-dtb"
+table_id = "SINESP-VDE"
+# Membro da série lida pela Gold (configs/indicators/demografia/seguranca_sinesp.toml).
+series = "mjsp-sinesp-vde"
+# Períodos declarados indisponíveis pelos gestores (ADR-0012, decisão 6), relativo a configs/sources.
+coverage_file = "coverage/sinesp_vde.toml"
+
+[datasets.silver.aliases]
+# Grafias da fonte → código da DTB (correspondência única conferida na DTB 2025, 2026-11-12).
+"MG/BARÃO DE MONTE ALTO" = "3105509"       # Barão do Monte Alto
+"MT/SANTO ANTÔNIO DO LEVERGER" = "5107800" # Santo Antônio de Leverger
+"RN/ARÊS" = "2401206"                      # Arez
+"RN/AÇU" = "2400208"                       # Assú
+"RR/SÃO LUIZ" = "1400605"                  # São Luiz do Anauá (nome anterior)
+"SE/GRACHO CARDOSO" = "2802601"            # Graccho Cardoso
+
+[[datasets]]
+# Registro da série: os indicadores da Gold apontam para este id (catalog.dataset).
+id = "mjsp-sinesp-vde"
+source = "mjsp-estatistica"
+official_id = "notas-metodologicas-vde"
+title = "Sinesp VDE: série de dados e notas metodológicas dos gestores estaduais"
+description = "Série Sinesp VDE (2015 em diante): página oficial com os links das bases anuais (datasets mjsp-sinesp-vde-AAAA, membros da série) e as notas metodológicas por UF (cobertura, mudanças de registro e ausências). É o dataset ao qual os indicadores da Gold se referem (ADR-0012)."
+license = "mjsp-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "atualizada com as bases"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/base-de-dados-e-notas-metodologicas-dos-gestores-estaduais-sinesp-vde-2022-e-2023"
+artifact_name = "pagina-notas-metodologicas.html"
+min_bytes = 50000
+
+# ------------------------------------------------------------------ Mapa da Segurança Pública (PDF)
+
+[[datasets]]
+id = "mjsp-mapa-2026"
+source = "mjsp-estatistica"
+official_id = "mapa-2026"
+title = "Mapa da Segurança Pública 2026 (publicação)"
+description = "Publicação em PDF (documentação e referência para reconciliação; sem base estruturada)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "anual"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/MAPA-2026/"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/mapa-de-seguranca-publica-2026.pdf/@@download/file"
+artifact_name = "mapa-2026.pdf"
+reference_period = "2026"
+format = "pdf"
+min_bytes = 100000
+
+[[datasets]]
+id = "mjsp-mapa-2026-infograficos"
+source = "mjsp-estatistica"
+official_id = "mapa-2026-infograficos"
+title = "Mapa da Segurança Pública 2026 (infográficos)"
+description = "Publicação em PDF (documentação e referência para reconciliação; sem base estruturada)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "anual"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/MAPA-2026/"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/infograficos-mapa-2026.pdf/@@download/file"
+artifact_name = "mapa-2026-infograficos.pdf"
+reference_period = "2026"
+format = "pdf"
+min_bytes = 100000
+
+[[datasets]]
+id = "mjsp-mapa-2024"
+source = "mjsp-estatistica"
+official_id = "mapa-2024"
+title = "Mapa da Segurança Pública 2024 (publicação)"
+description = "Publicação em PDF (documentação e referência para reconciliação; sem base estruturada)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "anual"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/MAPA-2026/"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/dados-nacionais-de-seguranca-publica-mapa/mapa-de-seguranca-publica-2024.pdf/@@download/file"
+artifact_name = "mapa-2024.pdf"
+reference_period = "2024"
+format = "pdf"
+min_bytes = 100000
+
+[[datasets]]
+id = "mjsp-mapa-2023-s1"
+source = "mjsp-estatistica"
+official_id = "mapa-2023-s1"
+title = "Mapa da Segurança Pública: primeiro semestre de 2023"
+description = "Publicação em PDF (documentação e referência para reconciliação; sem base estruturada)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "anual"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/dados-nacionais-1/MAPA-2026/"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/dnsp-base-de-dados/mapa-da-seguranca-publica-primeiro-semestre-de-2023.pdf"
+artifact_name = "mapa-2023-s1.pdf"
+reference_period = "2023"
+format = "pdf"
+min_bytes = 100000
+
+# ------------------------------------------------------------------ Pesquisa Perfil (bases anteriores)
+
+[[datasets]]
+id = "mjsp-perfil-academias-pc"
+source = "mjsp-estatistica"
+official_id = "perfil/academia-de-policia-civil"
+title = "Pesquisa Perfil: Academias de Polícia Civil"
+description = "Base de dados de pesquisa anterior da Pesquisa Perfil das Instituições de Segurança Pública (ZIP oficial, sem alteração)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "não periódica"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/pesquisaperfil/base-de-dados-de-pesquisa-anteriores"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/pesquisa-perfil/base-de-dados-de-pesquisa-anteriores/academia-de-policia-civil.zip/@@download/file"
+artifact_name = "perfil-academias-pc.zip"
+format = "zip"
+min_bytes = 1000
+
+[[datasets]]
+id = "mjsp-perfil-academias-pm-cbm"
+source = "mjsp-estatistica"
+official_id = "perfil/academia-da-policia-militar-e-corpo-de-bombeiros-militar"
+title = "Pesquisa Perfil: Academias da Polícia Militar e do Corpo de Bombeiros Militar"
+description = "Base de dados de pesquisa anterior da Pesquisa Perfil das Instituições de Segurança Pública (ZIP oficial, sem alteração)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "não periódica"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/pesquisaperfil/base-de-dados-de-pesquisa-anteriores"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/pesquisa-perfil/base-de-dados-de-pesquisa-anteriores/academia-da-policia-militar-e-corpo-de-bombeiros-militar.zip/@@download/file"
+artifact_name = "perfil-academias-pm-cbm.zip"
+format = "zip"
+min_bytes = 1000
+
+[[datasets]]
+id = "mjsp-perfil-atendimento-pcd"
+source = "mjsp-estatistica"
+official_id = "perfil/atendimento-a-pessoas-com-deficiencia"
+title = "Pesquisa Perfil: Atendimento a pessoas com deficiência"
+description = "Base de dados de pesquisa anterior da Pesquisa Perfil das Instituições de Segurança Pública (ZIP oficial, sem alteração)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "não periódica"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/pesquisaperfil/base-de-dados-de-pesquisa-anteriores"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/pesquisa-perfil/base-de-dados-de-pesquisa-anteriores/atendimento-a-pessoas-com-deficiencia.zip/@@download/file"
+artifact_name = "perfil-atendimento-pcd.zip"
+format = "zip"
+min_bytes = 1000
+
+[[datasets]]
+id = "mjsp-perfil-formacao-pracas"
+source = "mjsp-estatistica"
+official_id = "perfil/centros-de-formacao-de-pracas"
+title = "Pesquisa Perfil: Centros de formação de praças"
+description = "Base de dados de pesquisa anterior da Pesquisa Perfil das Instituições de Segurança Pública (ZIP oficial, sem alteração)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "não periódica"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/pesquisaperfil/base-de-dados-de-pesquisa-anteriores"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/pesquisa-perfil/base-de-dados-de-pesquisa-anteriores/centros-de-formacao-de-pracas.zip/@@download/file"
+artifact_name = "perfil-formacao-pracas.zip"
+format = "zip"
+min_bytes = 1000
+
+[[datasets]]
+id = "mjsp-perfil-corregedorias"
+source = "mjsp-estatistica"
+official_id = "perfil/corregedoria"
+title = "Pesquisa Perfil: Corregedorias"
+description = "Base de dados de pesquisa anterior da Pesquisa Perfil das Instituições de Segurança Pública (ZIP oficial, sem alteração)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "não periódica"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/pesquisaperfil/base-de-dados-de-pesquisa-anteriores"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/pesquisa-perfil/base-de-dados-de-pesquisa-anteriores/corregedoria.zip/@@download/file"
+artifact_name = "perfil-corregedorias.zip"
+format = "zip"
+min_bytes = 1000
+
+[[datasets]]
+id = "mjsp-perfil-delegacias-crianca-adolescente"
+source = "mjsp-estatistica"
+official_id = "perfil/delegacias-especializadas-no-atendimento-da-crianca-e-do-adolescente"
+title = "Pesquisa Perfil: Delegacias especializadas no atendimento da criança e do adolescente"
+description = "Base de dados de pesquisa anterior da Pesquisa Perfil das Instituições de Segurança Pública (ZIP oficial, sem alteração)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "não periódica"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/pesquisaperfil/base-de-dados-de-pesquisa-anteriores"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/pesquisa-perfil/base-de-dados-de-pesquisa-anteriores/delegacias-especializadas-no-atendimento-da-crianca-e-do-adolescente.zip/@@download/file"
+artifact_name = "perfil-delegacias-crianca-adolescente.zip"
+format = "zip"
+min_bytes = 1000
+
+[[datasets]]
+id = "mjsp-perfil-guardas-municipais"
+source = "mjsp-estatistica"
+official_id = "perfil/guarda-municipal"
+title = "Pesquisa Perfil: Guardas municipais"
+description = "Base de dados de pesquisa anterior da Pesquisa Perfil das Instituições de Segurança Pública (ZIP oficial, sem alteração)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "não periódica"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/pesquisaperfil/base-de-dados-de-pesquisa-anteriores"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/pesquisa-perfil/base-de-dados-de-pesquisa-anteriores/guarda-municipal.zip/@@download/file"
+artifact_name = "perfil-guardas-municipais.zip"
+format = "zip"
+min_bytes = 1000
+
+[[datasets]]
+id = "mjsp-perfil-iml"
+source = "mjsp-estatistica"
+official_id = "perfil/institutos-de-medicina-legal"
+title = "Pesquisa Perfil: Institutos de medicina legal"
+description = "Base de dados de pesquisa anterior da Pesquisa Perfil das Instituições de Segurança Pública (ZIP oficial, sem alteração)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "não periódica"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/pesquisaperfil/base-de-dados-de-pesquisa-anteriores"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/pesquisa-perfil/base-de-dados-de-pesquisa-anteriores/institutos-de-medicina-legal.zip/@@download/file"
+artifact_name = "perfil-iml.zip"
+format = "zip"
+min_bytes = 1000
+
+[[datasets]]
+id = "mjsp-perfil-crimes-ambientais"
+source = "mjsp-estatistica"
+official_id = "perfil/unidades-policiais-especializadas-em-crimes-ambientais"
+title = "Pesquisa Perfil: Unidades policiais especializadas em crimes ambientais"
+description = "Base de dados de pesquisa anterior da Pesquisa Perfil das Instituições de Segurança Pública (ZIP oficial, sem alteração)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "não periódica"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/pesquisaperfil/base-de-dados-de-pesquisa-anteriores"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/pesquisa-perfil/base-de-dados-de-pesquisa-anteriores/unidades-policiais-especializadas-em-crimes-ambientais.zip/@@download/file"
+artifact_name = "perfil-crimes-ambientais.zip"
+format = "zip"
+min_bytes = 1000
+
+[[datasets]]
+id = "mjsp-perfil-deam"
+source = "mjsp-estatistica"
+official_id = "perfil/unidades-de-policia-civil-especializadas-no-atendimento-as-mulheres"
+title = "Pesquisa Perfil: Unidades de Polícia Civil especializadas no atendimento às mulheres"
+description = "Base de dados de pesquisa anterior da Pesquisa Perfil das Instituições de Segurança Pública (ZIP oficial, sem alteração)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "não periódica"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/pesquisaperfil/base-de-dados-de-pesquisa-anteriores"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/pesquisa-perfil/base-de-dados-de-pesquisa-anteriores/unidades-de-policia-civil-especializadas-no-atendimento-as-mulheres.zip/@@download/file"
+artifact_name = "perfil-deam.zip"
+format = "zip"
+min_bytes = 1000
+
+[[datasets]]
+id = "mjsp-perfil-narcoticos"
+source = "mjsp-estatistica"
+official_id = "perfil/unidades-de-policia-civil-especializadas-na-investigacao-de-narcoticos"
+title = "Pesquisa Perfil: Unidades de Polícia Civil especializadas na investigação de narcóticos"
+description = "Base de dados de pesquisa anterior da Pesquisa Perfil das Instituições de Segurança Pública (ZIP oficial, sem alteração)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "requires_review"
+periodicity = "não periódica"
+reference_url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/pesquisaperfil/base-de-dados-de-pesquisa-anteriores"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica/download/pesquisa-perfil/base-de-dados-de-pesquisa-anteriores/unidades-de-policia-civil-especializadas-na-investigacao-de-narcoticos.zip/@@download/file"
+artifact_name = "perfil-narcoticos.zip"
+format = "zip"
+min_bytes = 1000
+
+# ------------------------------------------------------------------ Base legal (evidência)
+
+[[datasets]]
+id = "mjsp-pda-2024-2026"
+source = "mjsp-estatistica"
+official_id = "pda-2024-2026"
+title = "Plano de Dados Abertos do MJSP 2024-2026"
+description = "PDF oficial do PDA aprovado pela Portaria MJSP nº 842/2025: lista o Sinesp entre as bases abertas (evidência da licença mjsp-dados-abertos)."
+license = "mjsp-portal-cc-by-nd"
+access_classification = "public_conditional"
+periodicity = "bienal"
+reference_url = "https://www.gov.br/mj/pt-br/acesso-a-informacao/dados-abertos/plano-de-dados-abertos-2024_2026"
+
+[datasets.params]
+url = "https://www.gov.br/mj/pt-br/acesso-a-informacao/dados-abertos/plano-de-dados-abertos-2024_2026/pda-2024-2026.pdf/@@download/file"
+artifact_name = "pda-2024-2026.pdf"
+reference_period = "2024"
+format = "pdf"
+min_bytes = 100000

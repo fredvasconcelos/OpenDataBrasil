@@ -3,6 +3,7 @@
 import dataclasses
 import io
 import json
+import re
 import shutil
 import tempfile
 import zipfile
@@ -35,7 +36,16 @@ REPO = Path(__file__).resolve().parents[3]
 # gerados do panorama dependem da Gold real (conferidos em test_panorama_gen).
 PORTAL_DIR = Path(tempfile.mkdtemp(prefix="odb-portal-"))
 shutil.copy(REPO / "configs" / "portal" / "demografia.toml", PORTAL_DIR)
-PANORAMA = REPO / "configs" / "catalog" / "panorama.toml"
+PANORAMA_REPO = REPO / "configs" / "catalog" / "panorama.toml"
+# Os itens `externos` (Sinesp, ADR-0012) apontam para KPIs de outra Silver, ausente da
+# Gold de teste: o panorama de teste não os traz (conferidos em test_external_kpis...).
+PANORAMA = Path(tempfile.mkdtemp(prefix="odb-panorama-")) / "panorama.toml"
+PANORAMA.write_text(
+    re.sub(
+        r"\nexternos = \[.*?\n\]\n", "\n", PANORAMA_REPO.read_text(encoding="utf-8"), flags=re.S
+    ),
+    encoding="utf-8",
+)
 
 
 class FakeCatalog:
@@ -570,3 +580,30 @@ def test_map_share_of_a_category(tmp_path: Path, stack: dict[str, Any]) -> None:
     (tmp_path / "demografia.toml").write_text(bad, encoding="utf-8")
     with pytest.raises(PortalConfigError, match="map_share exige"):
         load_portal(tmp_path, "demografia")
+
+
+def test_external_kpis_follow_the_panorama(tmp_path: Path, stack: dict[str, Any]) -> None:
+    """Itens `externos` do panorama: precisam existir no portal e entram na navegação."""
+    from odb_semantics.panorama import check_against_portal  # noqa: PLC0415
+
+    panorama = load_panorama(PANORAMA_REPO)
+    external = [e.kpi for t in panorama.temas for s in t.subtemas for e in s.externos]
+    assert "sinesp_homicidio_doloso" in external
+    portal = load_portal(REPO / "configs" / "portal", "demografia")
+    portal_kpis = {k.id: k for k in portal.kpis()}
+    check_against_portal(panorama, portal_kpis)  # todos ligados, nenhum órfão
+    with pytest.raises(PanoramaConfigError, match="inexistentes no portal"):
+        check_against_portal(
+            panorama, {k: v for k, v in portal_kpis.items() if k != "sinesp_estupro"}
+        )
+
+
+def test_provenance_from_source_configuration() -> None:
+    """Rodapé "Fonte": instituição e sistema de cada dataset, das fontes configuradas."""
+    from odb_api.deps import provenance  # noqa: PLC0415
+    from odb_ingestion.config import load_sources  # noqa: PLC0415
+
+    out = provenance(load_sources(REPO / "configs" / "sources"))
+    assert out["ibge-sidra-6579"] == ("IBGE", "SIDRA")
+    assert out["mjsp-sinesp-vde"] == ("MJSP", None)
+    assert out["datasus-sim-cid10-dores"] == ("MS", None)

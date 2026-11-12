@@ -441,6 +441,16 @@ kpis = [
   { id = "violencia", label = "Pessoas que sofreram violência nos últimos 12 meses", tabela = "8022", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
   { id = "homicidios", label = "Vítimas de homicídio por 100 mil habitantes", tabela = "6606", pesquisa = "Objetivos de Desenvolvimento Sustentável", variavel = "13532" },
 ]
+# Registros policiais do Sinesp VDE (MJSP), curados à mão (ADR-0012). Não são a mesma
+# série das declarações de óbito (SIM, tabela 6606 acima): KPIs próprios.
+externos = [
+  { id = "sinesp_homicidio_doloso", label = "Vítimas de homicídio doloso (registros policiais)", fonte = "mjsp-sinesp-vde", tabela = "SINESP-VDE", kpi = "sinesp_homicidio_doloso" },
+  { id = "sinesp_feminicidio", label = "Vítimas de feminicídio (registros policiais)", fonte = "mjsp-sinesp-vde", tabela = "SINESP-VDE", kpi = "sinesp_feminicidio" },
+  { id = "sinesp_latrocinio", label = "Vítimas de latrocínio (roubo seguido de morte)", fonte = "mjsp-sinesp-vde", tabela = "SINESP-VDE", kpi = "sinesp_latrocinio" },
+  { id = "sinesp_estupro", label = "Vítimas de estupro (registros policiais)", fonte = "mjsp-sinesp-vde", tabela = "SINESP-VDE", kpi = "sinesp_estupro" },
+  { id = "sinesp_morte_intervencao", label = "Mortes por intervenção de agente do Estado", fonte = "mjsp-sinesp-vde", tabela = "SINESP-VDE", kpi = "sinesp_morte_intervencao" },
+  { id = "sinesp_roubo_veiculo", label = "Roubos de veículo (registros policiais)", fonte = "mjsp-sinesp-vde", tabela = "SINESP-VDE", kpi = "sinesp_roubo_veiculo" },
+]
 
 # ======================================================================= 11
 [[temas]]

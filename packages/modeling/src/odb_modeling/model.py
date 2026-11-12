@@ -93,6 +93,14 @@ class DatasetInfo:
     reference_url: str | None
     license_id: str
     period_type: str = "ano"
+    # Série de datasets (ex.: Sinesp VDE, um dataset por ano): as tabelas Silver de cada
+    # membro. Vazio para um dataset único (a tabela é ``table_id``).
+    table_ids: tuple[str, ...] = ()
+
+    @property
+    def source_tables(self) -> tuple[str, ...]:
+        """Tabelas Silver do dataset (uma, ou uma por membro da série)."""
+        return self.table_ids or (self.table_id,)
 
 
 def slug(text: str) -> str:
@@ -109,11 +117,11 @@ def _conform(frame: pl.DataFrame, contract: Contract) -> pl.DataFrame:
 
 
 def indicator_map(catalog: SemanticCatalog, datasets: Mapping[str, DatasetInfo]) -> pl.DataFrame:
-    """(tabela, variável) → indicador."""
+    """(tabela, variável) → indicador; uma linha por tabela da série, se houver."""
     return pl.DataFrame(
         [
             {
-                "table_id": datasets[i.dataset].table_id,
+                "table_id": table,
                 "variable_id": i.variable,
                 "indicator_id": i.id,
                 "dataset_id": i.dataset,
@@ -121,6 +129,7 @@ def indicator_map(catalog: SemanticCatalog, datasets: Mapping[str, DatasetInfo])
                 "fact_column": i.column,
             }
             for i in catalog.indicators
+            for table in datasets[i.dataset].source_tables
         ]
     )
 
@@ -286,7 +295,7 @@ def build_observations(
     selected: pl.DataFrame,
     catalog: SemanticCatalog,
     *,
-    silver_version: int,
+    silver_version: int | Mapping[str, int],
     build_id: str,
     pending: Mapping[tuple[str, str], set[str]],
     period_types: Mapping[str, str] | None = None,
@@ -332,7 +341,12 @@ def build_observations(
             pl.col("table_id").alias("source_table_id"),
             pl.col("variable_id").alias("source_variable_id"),
             pl.col("unit_name").alias("unit"),
-            pl.lit(silver_version, dtype=pl.Int64).alias("silver_table_version"),
+            (
+                pl.lit(silver_version, dtype=pl.Int64)
+                if isinstance(silver_version, int)
+                # Várias Silvers (IBGE, MJSP...): a versão da tabela de cada dataset.
+                else pl.col("dataset_id").replace_strict(silver_version, return_dtype=pl.Int64)
+            ).alias("silver_table_version"),
             pl.lit(build_id).alias("gold_build_id"),
         )
         .join(pending_keys.lazy(), on=["dataset_id", "period", "geography_key"], how="left")

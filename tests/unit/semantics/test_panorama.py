@@ -51,8 +51,21 @@ def test_repository_panorama_matches_acervo_snapshot() -> None:
 
 
 def test_repository_panorama_covers_portal() -> None:
-    portal = tomllib.loads((REPO / "configs" / "portal" / "demografia.toml").read_text("utf-8"))
-    kpis = {k["id"]: k for t in portal["themes"] for s in t["subthemes"] for k in s["kpis"]}
+    # Portal curado: o arquivo principal e os fragmentos à mão (POF, Sinesp). O fragmento
+    # gerado (panorama.toml) depende da Gold real e é conferido em test_panorama_gen.
+    files = [REPO / "configs" / "portal" / "demografia.toml"] + [
+        f
+        for f in sorted((REPO / "configs" / "portal" / "demografia").glob("*.toml"))
+        if f.name != "panorama.toml"
+    ]
+    kpis = {
+        k["id"]: k
+        for f in files
+        for t in tomllib.loads(f.read_text("utf-8"))["themes"]
+        for s in t["subthemes"]
+        for k in s.get("kpis", [])
+    }
+    assert "sinesp_homicidio_doloso" in kpis
     check_against_portal(load_panorama(PANORAMA), kpis)
     with pytest.raises(PanoramaConfigError, match="fora do panorama"):
         check_against_portal(load_panorama(PANORAMA), {**kpis, "novo": {}})

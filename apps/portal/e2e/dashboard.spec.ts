@@ -371,3 +371,28 @@ test("Início e Sobre (DS v2.3): etiquetas de tema, itens em preparação e filt
   await expect(page.locator(".theme-grid")).toBeVisible();
   await page.screenshot({ path: "test-results/inicio-escuro.png", fullPage: false });
 });
+
+test("segurança pública (Sinesp VDE, MJSP): mapa municipal, série mensal e fonte", async ({ page }) => {
+  await page.goto("/dashboard?kpi=sinesp_homicidio_doloso&nivel=uf");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Vítimas de homicídio doloso (registros policiais)" }),
+  ).toBeVisible();
+  const map = page.getByRole("img", { name: /homicídio doloso/ });
+  await expect(map.locator("path.territory")).toHaveCount(27);
+  // Fonte e licença de dados abertos do MJSP no rodapé do KPI.
+  await expect(page.locator(".meta-source")).toContainText("MJSP · SINESP-VDE");
+  await expect(page.locator(".meta-source")).not.toContainText("SIDRA");
+  await expect(page.getByText(/mjsp-dados-abertos/).first()).toBeAttached();
+  await page.screenshot({ path: "test-results/sinesp-homicidio-uf.png", fullPage: false });
+  // Feminicídio: no Brasil, indisponível até 2018 (estados sem a tipificação).
+  await page.goto("/dashboard?kpi=sinesp_feminicidio");
+  const plot = page.locator(".series-plot svg");
+  await plot.scrollIntoViewIfNeeded();
+  await plot.focus();
+  await page.keyboard.press("Home");
+  await expect(page.locator(".series-tip")).toContainText("jan 2015");
+  await expect(page.locator(".series-tip")).toContainText("…");
+  await page.keyboard.press("End");
+  await expect(page.locator(".series-tip")).toContainText(/\d/);
+  await page.screenshot({ path: "test-results/sinesp-feminicidio-serie.png", fullPage: false });
+});

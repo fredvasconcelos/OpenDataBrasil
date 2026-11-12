@@ -122,3 +122,32 @@ docker compose --profile data run --rm worker odb fontes comparar-obitos
   `access_classification = "restricted"`. A Silver do SIM guarda óbitos por
   município de residência e por UF: o Total e cada dimensão separadamente
   (sexo, faixa etária, cor ou raça, capítulo da CID-10, local de ocorrência).
+
+## MJSP: segurança pública (`mjsp-estatistica`)
+
+A fonte usa downloads diretos do portal gov.br, com um arquivo por dataset (`http_file`).
+Avaliação e pendências: `docs/data_catalog/seguranca-publica-avaliacao.md`; decisões: ADR-0012.
+
+```bash
+# Bronze: 12 bases anuais do Sinesp VDE, notas, PDFs do Mapa e bases da Pesquisa Perfil
+docker compose --profile data run --rm worker odb ingest run \
+  $(grep -o '^id = "mjsp-[a-z0-9-]*"' configs/sources/mj.toml | cut -d'"' -f2 \
+    | grep -v -x -e mjsp-estatistica -e mjsp-portal-cc-by-nd)
+
+# Silver do Sinesp VDE (um dataset por ano; a DTB precisa estar na Silver)
+docker compose --profile data run --rm worker odb silver build \
+  $(for y in $(seq 2015 2026); do printf "mjsp-sinesp-vde-%s " $y; done)
+```
+
+- **Rodar mensalmente:** a planilha do ano corrente muda ao longo do ano, e a fonte revisa
+  anos anteriores. Arquivo igual é reaproveitado pelo checksum; arquivo diferente vira
+  versão nova.
+- **HEAD 403:** o servidor recusa HEAD, mas responde ao GET normal. O conector só usa GET.
+- **Quarentena esperada:** o link do Mapa 2024 devolve HTML, e a validação de PDF o
+  rejeita. Isso é registrado e não interrompe os outros datasets.
+- **Município sem correspondência:** a verificação `sinesp.municipality_names` lista os
+  nomes. Para cada um, procure o código na DTB (correspondência única) e acrescente em
+  `[datasets.silver.aliases]` dos 12 datasets em `configs/sources/mj.toml`. Depois,
+  reconstrua a imagem do worker, porque a configuração vai embutida nela, e a Silver.
+- **Uso interno:** a licença está em `requires_review` (CC BY-ND do portal). Nada vai para
+  a Gold até a confirmação.

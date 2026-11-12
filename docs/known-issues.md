@@ -140,6 +140,9 @@ navegador automatizado ou credenciais pessoais.
   pico medido foi de 15,97 GB (`docker stats`, que inclui cache de arquivos).
 - **Limite:** o padrão do worker passou para 24 GB, com aprovação do mantenedor
   (máquina de 64 GB, dos quais o WSL usa 40 GB pelo `.wslconfig`).
+- **Com o Sinesp (2026-11-12):** o build lê também a Silver do MJSP (só o Total dos
+  6 KPIs, filtrado no scan) e o pico medido foi de 22,1 GB no limite de 24 GB. Isso está
+  perto do limite e bloqueia o detalhe por sexo dos KPIs do Sinesp.
 - **Etapa 2 (pendente):** construir a estrutura universal e os fatos por
   dataset ou por fato, gravando cada um antes do próximo, em vez de manter o
   quadro inteiro (§8.2, §8.4).

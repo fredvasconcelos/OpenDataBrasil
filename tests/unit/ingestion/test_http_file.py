@@ -91,3 +91,41 @@ def test_healthcheck(connector: HttpFileConnector) -> None:
     assert connector.healthcheck(http).ok
     fake.overrides["/"] = lambda _r: httpx.Response(404)
     assert not connector.healthcheck(http).ok
+
+
+def test_xlsx_and_pdf_validation(tmp_path: Path) -> None:
+    """Formatos do MJSP: XLSX precisa da pasta de trabalho; PDF, da assinatura %PDF-."""
+    import io  # noqa: PLC0415
+    import zipfile  # noqa: PLC0415
+
+    from odb_ingestion.config import load_sources as load  # noqa: PLC0415
+    from odb_ingestion.contract import ExtractionRequest  # noqa: PLC0415
+
+    catalog = load(Path(__file__).parents[3] / "configs" / "sources")
+    conn = HttpFileConnector(
+        catalog.sources["mjsp-estatistica"], catalog.datasets_of("mjsp-estatistica")
+    )
+    req = ExtractionRequest("file", "u", "a.xlsx", "2023", {})
+    book = io.BytesIO()
+    with zipfile.ZipFile(book, "w") as archive:
+        archive.writestr("xl/workbook.xml", "<workbook/>")
+    # Estrutura válida: o único erro é o tamanho (a planilha real tem mais de 1 MB).
+    small = conn.validate_raw("mjsp-sinesp-vde-2023", req, _result(tmp_path, book.getvalue()))
+    assert len(small.errors) == 1
+    assert "mínimo esperado 1000000" in small.errors[0]
+    other = io.BytesIO()
+    with zipfile.ZipFile(other, "w") as archive:
+        archive.writestr("x.txt", "x")
+    no_book = conn.validate_raw("mjsp-sinesp-vde-2023", req, _result(tmp_path, other.getvalue()))
+    assert "XLSX sem xl/workbook.xml" in no_book.errors
+    html = conn.validate_raw("mjsp-sinesp-vde-2023", req, _result(tmp_path, b"<html>erro</html>"))
+    assert any("não é uma planilha XLSX" in e for e in html.errors)
+    pdf_req = ExtractionRequest("file", "u", "a.pdf", "2026", {})
+    pdf = conn.validate_raw(
+        "mjsp-mapa-2026", pdf_req, _result(tmp_path, b"%PDF-1.7" + b"x" * 200000)
+    )
+    assert pdf.valid, pdf.errors
+    not_pdf = conn.validate_raw(
+        "mjsp-mapa-2026", pdf_req, _result(tmp_path, b"<html>" + b"x" * 200000)
+    )
+    assert any("%PDF-" in e for e in not_pdf.errors)

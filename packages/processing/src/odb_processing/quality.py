@@ -446,3 +446,73 @@ def mesh_checks(
             )
         )
     return results
+
+
+def sinesp_checks(report: Any) -> list[CheckResult]:
+    """Avisos da conversão do SINESP VDE (ADR-0012): não bloqueiam a escrita.
+
+    ``report`` é o ``VdeReport`` de ``odb_processing.sinesp`` (tipado como ``Any`` para
+    não criar dependência circular entre os módulos).
+    """
+    unmatched = dict(report.unmatched)
+    lines = sum(unmatched.values())
+    return [
+        CheckResult(
+            "sinesp.municipality_names",
+            CheckStatus.WARN if unmatched else CheckStatus.PASS,
+            (
+                f"{len(unmatched)} nomes de município sem correspondência na DTB "
+                f"({lines} linhas, contadas só na UF)"
+                if unmatched
+                else "todos os municípios casam com a DTB"
+            ),
+            observed=len(unmatched),
+            expected=0,
+            details={"unmatched": dict(list(unmatched.items())[:200])},
+        ),
+        CheckResult(
+            "sinesp.duplicated_keys",
+            CheckStatus.WARN if report.duplicated_keys else CheckStatus.PASS,
+            (
+                f"{report.duplicated_keys} chaves com mais de uma linha (somadas, "
+                "conforme a nota da página de download)"
+            ),
+            observed=report.duplicated_keys,
+            expected=0,
+        ),
+        CheckResult(
+            "sinesp.federal_empty",
+            CheckStatus.PASS,
+            (
+                f"{len(report.federal_empty)} eventos com série federal (PF/PRF) vazia no ano "
+                "em alguma UF: tratada como não se aplica, fora da soma"
+            ),
+            observed=len(report.federal_empty),
+            details={"federal_empty": dict(report.federal_empty)},
+        ),
+        CheckResult(
+            "sinesp.coverage",
+            CheckStatus.WARN if report.coverage_unknown_events else CheckStatus.PASS,
+            (
+                f"tabela de cobertura: {sum(report.coverage_applied.values())} linhas estaduais "
+                f"marcadas indisponíveis em {len(report.coverage_applied)} entradas"
+                + (
+                    f"; eventos ausentes na planilha: {report.coverage_unknown_events}"
+                    if report.coverage_unknown_events
+                    else ""
+                )
+            ),
+            observed=sum(report.coverage_applied.values()),
+            details={
+                "applied": dict(report.coverage_applied),
+                "unknown_events": list(report.coverage_unknown_events),
+            },
+        ),
+        CheckResult(
+            "sinesp.events",
+            CheckStatus.PASS,
+            f"{len(report.events)} eventos e a medida usada em cada um",
+            observed=len(report.events),
+            details={"events": dict(report.events)},
+        ),
+    ]

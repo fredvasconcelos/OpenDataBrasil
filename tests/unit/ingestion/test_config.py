@@ -34,12 +34,30 @@ def test_repository_sources_are_valid() -> None:
     assert len(datasus) == 32  # espelho do SIM e do SINASC, uma pasta do FTP por dataset
     assert catalog.source_institution["datasus-ftp"] == "ms"
     assert {catalog.datasets[d].access_classification for d in datasus} == {"restricted"}
-    generated = set(catalog.datasets) - curated - datasus
+    # MJSP (ADR-0012): Sinesp VDE 2015-2026, notas, Mapa (PDF) e Pesquisa Perfil (ZIP).
+    mjsp = {d for d in catalog.datasets if d.startswith("mjsp-")}
+    assert len(mjsp) == 29
+    assert {d for d in mjsp if catalog.datasets[d].silver} == {
+        f"mjsp-sinesp-vde-{y}" for y in range(2015, 2027)
+    }
+    assert catalog.source_institution["mjsp-estatistica"] == "mjsp"
+    assert catalog.licenses["mjsp-portal-cc-by-nd"].review_status == "requires_review"
+    # Sinesp VDE: dados abertos do PDA do MJSP (licença aprovada pelo mantenedor).
+    assert catalog.licenses["mjsp-dados-abertos"].review_status == "approved"
+    assert {catalog.datasets[f"mjsp-sinesp-vde-{y}"].license for y in range(2015, 2027)} == {
+        "mjsp-dados-abertos"
+    }
+    generated = set(catalog.datasets) - curated - datasus - mjsp
     assert generated
     assert all(d.startswith("ibge-sidra-") for d in generated)
     assert catalog.source_institution["ibge-sidra"] == "ibge"
     assert catalog.licenses["ibge-reuso-com-citacao"].review_status == "requires_review"
-    assert set(build_connectors(catalog)) == {"ibge-sidra", "ibge-geoftp", "datasus-ftp"}
+    assert set(build_connectors(catalog)) == {
+        "ibge-sidra",
+        "ibge-geoftp",
+        "datasus-ftp",
+        "mjsp-estatistica",
+    }
     assert [d.id for d in catalog.datasets_of("ibge-geoftp")] == [
         "ibge-dtb",
         "ibge-malha-uf-2022",

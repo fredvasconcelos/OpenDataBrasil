@@ -1,0 +1,139 @@
+# Segurança pública: registros do Sinesp VDE (MJSP), ADR-0012.
+#
+# O dataset é a série "mjsp-sinesp-vde": uma planilha por ano (2015 em diante), cada
+# uma um dataset com `silver.series = "mjsp-sinesp-vde"` em configs/sources/mj.toml.
+# Licença: dados abertos do PDA do MJSP (mjsp-dados-abertos), com crédito da fonte.
+#
+# Esta primeira versão leva à Gold só o Total de cada evento (sexo e abrangência no
+# Total). O detalhe por sexo fica para depois da etapa 2 do KI-007 (processamento por
+# dataset), por causa do volume municipal x mensal.
+#
+# Conceito: registro policial informado pelos gestores estaduais, por local da
+# ocorrência. Não é a mesma série das declarações de óbito (SIM, SIDRA 6606): KPIs
+# novos, com fonte própria (ADR-0011, decisão 5).
+
+config_version = "1.0.0"
+scope = "demografia"
+
+[[facts]]
+id = "fact_public_security_victims"
+dataset = "mjsp-sinesp-vde"
+grain = "território (Brasil, UF, município) x mês"
+description = "Vítimas registradas pelos gestores estaduais no Sinesp VDE: homicídio doloso, feminicídio, latrocínio (município, UF e Brasil) e estupro (UF e Brasil)."
+fixed_categories = { "Sexo" = "T" }
+
+[[facts]]
+id = "fact_public_security_state_deaths"
+dataset = "mjsp-sinesp-vde"
+grain = "território (Brasil, UF) x mês"
+description = "Mortes por intervenção de agente do Estado registradas no Sinesp VDE (polícias estaduais, PF e PRF)."
+fixed_categories = { "Sexo" = "T", "Abrangência" = "T" }
+
+[[facts]]
+id = "fact_public_security_vehicle_theft"
+dataset = "mjsp-sinesp-vde"
+grain = "território (Brasil, UF) x mês"
+description = "Ocorrências de roubo de veículo registradas pelos gestores estaduais no Sinesp VDE."
+
+[[indicators]]
+id = "sinesp_homicidio_doloso"
+name = "Vítimas de homicídio doloso (registros policiais)"
+description = "Vítimas de homicídio doloso registradas pelas polícias estaduais, por município e mês da ocorrência (Sinesp VDE, MJSP)."
+dataset = "mjsp-sinesp-vde"
+variable = "homicidio-doloso"
+fact = "fact_public_security_victims"
+column = "homicide_victims"
+unit = "Vítimas"
+additivity = "additive"
+concept = "vitimas_homicidio_doloso_registro_policial"
+path = ["Segurança e vitimização", "Registros policiais"]
+caveats = [
+  "Registro policial por local da ocorrência, informado pelos gestores estaduais; não é a mesma série das declarações de óbito (SIM).",
+  "Mato Grosso: até 2018, os feminicídios estão incluídos em homicídio doloso (nota do gestor).",
+  "O total do Brasil é a soma das UFs e fica indisponível no mês em que alguma UF não informa.",
+]
+
+[[indicators]]
+id = "sinesp_feminicidio"
+name = "Vítimas de feminicídio (registros policiais)"
+description = "Vítimas de feminicídio registradas pelas polícias estaduais, por município e mês da ocorrência (Sinesp VDE, MJSP)."
+dataset = "mjsp-sinesp-vde"
+variable = "feminicidio"
+fact = "fact_public_security_victims"
+column = "femicide_victims"
+unit = "Vítimas"
+additivity = "additive"
+concept = "vitimas_feminicidio_registro_policial"
+path = ["Segurança e vitimização", "Registros policiais"]
+caveats = [
+  "Indisponível onde o estado ainda não separava o feminicídio: TO e MT até 2018, BA até 2016, CE até 2017 (notas dos gestores).",
+  "O aumento no início da série reflete em parte a adoção da tipificação pelos estados.",
+  "Ceará: mantém casos classificados como feminicídio pela unidade informante mesmo quando a vítima atingida é homem (art. 73 do Código Penal).",
+]
+
+[[indicators]]
+id = "sinesp_latrocinio"
+name = "Vítimas de latrocínio (roubo seguido de morte)"
+description = "Vítimas de roubo seguido de morte registradas pelas polícias estaduais, por município e mês da ocorrência (Sinesp VDE, MJSP)."
+dataset = "mjsp-sinesp-vde"
+variable = "roubo-seguido-de-morte-latrocinio"
+fact = "fact_public_security_victims"
+column = "robbery_death_victims"
+unit = "Vítimas"
+additivity = "additive"
+concept = "vitimas_latrocinio_registro_policial"
+path = ["Segurança e vitimização", "Registros policiais"]
+caveats = [
+  "Registro policial por local da ocorrência, informado pelos gestores estaduais.",
+]
+
+[[indicators]]
+id = "sinesp_estupro"
+name = "Vítimas de estupro (registros policiais)"
+description = "Vítimas de estupro registradas pelas polícias estaduais, por UF e mês (Sinesp VDE, MJSP). Não inclui estupro de vulnerável, publicado à parte."
+dataset = "mjsp-sinesp-vde"
+variable = "estupro"
+fact = "fact_public_security_victims"
+column = "rape_victims"
+unit = "Vítimas"
+additivity = "additive"
+concept = "vitimas_estupro_registro_policial"
+path = ["Segurança e vitimização", "Registros policiais"]
+caveats = [
+  "Publicado só por UF.",
+  "Tocantins: até 2019, estupro de vulnerável estava agregado a estupro (nota do gestor).",
+  "Crime com alta subnotificação: o registro policial não mede a ocorrência total.",
+]
+
+[[indicators]]
+id = "sinesp_morte_intervencao"
+name = "Mortes por intervenção de agente do Estado"
+description = "Vítimas de mortes por intervenção de agente do Estado registradas no Sinesp VDE (polícias estaduais, PF e PRF), por UF e mês."
+dataset = "mjsp-sinesp-vde"
+variable = "morte-por-intervencao-de-agente-do-estado"
+fact = "fact_public_security_state_deaths"
+column = "state_intervention_deaths"
+unit = "Vítimas"
+additivity = "additive"
+concept = "mortes_intervencao_agente_estado"
+path = ["Segurança e vitimização", "Registros policiais"]
+caveats = [
+  "Publicado só por UF.",
+  "Indisponível onde o estado ainda não separava o indicador: MT até 2018 e BA até 2019 (notas dos gestores).",
+]
+
+[[indicators]]
+id = "sinesp_roubo_veiculo"
+name = "Roubos de veículo (registros policiais)"
+description = "Ocorrências de roubo de veículo registradas pelas polícias estaduais, por UF e mês (Sinesp VDE, MJSP)."
+dataset = "mjsp-sinesp-vde"
+variable = "roubo-de-veiculo"
+fact = "fact_public_security_vehicle_theft"
+column = "vehicle_robberies"
+unit = "Ocorrências"
+additivity = "additive"
+concept = "roubos_veiculo_registro_policial"
+path = ["Segurança e vitimização", "Registros policiais"]
+caveats = [
+  "Publicado só por UF; conta o veículo subtraído inteiro (não roubo de peças ou de passageiros).",
+]

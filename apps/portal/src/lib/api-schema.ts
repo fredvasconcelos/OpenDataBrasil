@@ -681,6 +681,10 @@ export interface components {
             reference_url: string | null;
             /** License Id */
             license_id: string | null;
+            /** Institution */
+            institution?: string | null;
+            /** System */
+            system?: string | null;
         };
         /**
          * LicenseOut

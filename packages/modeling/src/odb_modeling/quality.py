@@ -84,11 +84,17 @@ def input_checks(
     missing = []
     unit_problems = {}
     for ind in catalog.indicators:
-        row = present.get((datasets[ind.dataset].table_id, ind.variable))
-        if row is None:
+        found = [
+            r
+            for t in datasets[ind.dataset].source_tables
+            if (r := present.get((t, ind.variable))) is not None
+        ]
+        if not found:
             missing.append(ind.id)
-        elif row["units"] != [ind.unit]:
-            unit_problems[ind.id] = {"published": row["units"], "declared": ind.unit}
+            continue
+        units = sorted({u for r in found for u in r["units"]})
+        if units != [ind.unit]:
+            unit_problems[ind.id] = {"published": units, "declared": ind.unit}
     results.append(
         _result(
             "semantics.variables_present",

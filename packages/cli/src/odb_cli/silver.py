@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Annotated, Any
 
 import typer
@@ -64,7 +65,12 @@ def silver_build(
         disk_block_percent=settings.disk_block_percent,
     )
     builder = SilverBuilder(
-        catalog, layout, writer, PostgresSilverRegistry(engine), code_version=settings.code_version
+        catalog,
+        layout,
+        writer,
+        PostgresSilverRegistry(engine),
+        code_version=settings.code_version,
+        config_dir=Path(settings.sources_config_dir),
     )
     # Datasets precisam existir no catálogo (FK de transformation_run), mesmo sem ingestão.
     PostgresIngestionRegistry(engine).sync_catalog(catalog)

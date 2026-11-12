@@ -24,7 +24,12 @@ export function KpiInfo({ kpi, releaseId }: { kpi: Kpi; releaseId: string }) {
         {t("title")}
       </h2>
       <p className="meta-source">
-        <strong>{t("source")}:</strong> IBGE · {t("table", { table: kpi.source.source_table_id, variable: kpi.source.source_variable_id })}
+        <strong>{t("source")}:</strong> {kpi.source.institution ?? "IBGE"} ·{" "}
+        {/* SIDRA: "Tabela SIDRA N"; outras fontes (ex.: Sinesp VDE): o identificador da tabela. */}
+        {t(kpi.source.system === "SIDRA" || !kpi.source.institution ? "table" : "tableOther", {
+          table: kpi.source.source_table_id,
+          variable: kpi.source.source_variable_id,
+        })}
         {kpi.source.reference_url ? (
           <>
             {" · "}

@@ -123,6 +123,7 @@
     "title": "Sobre este indicador",
     "source": "Fonte",
     "table": "Tabela SIDRA {table}, variável {variable}",
+    "tableOther": "{table}, variável {variable}",
     "unit": "Unidade",
     "periods": "Períodos",
     "license": "Licença",

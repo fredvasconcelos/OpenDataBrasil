@@ -162,6 +162,9 @@ class KpiSourceOut(_Out):
     source_variable_name: str | None
     reference_url: str | None
     license_id: str | None
+    # Quem publica e por qual sistema (ex.: "IBGE" e "SIDRA"; "MJSP" e None para o Sinesp).
+    institution: str | None = None
+    system: str | None = None
 
 
 class KpiOut(_Out):
