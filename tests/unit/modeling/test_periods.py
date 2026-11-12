@@ -46,6 +46,33 @@ def test_calendar_of_each_period_type() -> None:
         model.period_row("202609")  # código SIDRA cru não é chave da Gold
 
 
+def test_dim_period_brings_the_larger_periods_and_the_bridge() -> None:
+    """Um mês observado traz trimestre, semestre e ano, com rótulos (ADR-0013)."""
+    observed = pl.DataFrame({"period": ["2024M05", "2024M06", "2022"]})
+    dim = model.build_dim_period(observed)
+    rows = {r["period"]: r for r in dim.iter_rows(named=True)}
+    assert set(rows) == {"2024M05", "2024M06", "2024T2", "2024S1", "2024", "2022"}
+    assert (rows["2024M05"]["month"], rows["2024M05"]["quarter"]) == (5, 2)
+    assert (rows["2024T2"]["label"], rows["2024T2"]["short_label"]) == (
+        "2º trimestre de 2024",
+        "T2 2024",
+    )
+    assert rows["2024S1"]["semester"] == 1
+    assert rows["2022"]["month"] is None
+    bridge = model.build_bridge_period_ancestor(observed)
+    may = {
+        r["ancestor_type"]: r
+        for r in bridge.filter(pl.col("period") == "2024M05").iter_rows(named=True)
+    }
+    assert {t: (r["ancestor_period"], r["parts"]) for t, r in may.items()} == {
+        "trimestre": ("2024T2", 3),
+        "semestre": ("2024S1", 6),
+        "ano": ("2024", 12),
+    }
+    # O ano publicado não tem período maior.
+    assert bridge.filter(pl.col("period") == "2022").is_empty()
+
+
 def test_first_period_cuts_gold_not_silver(tmp_path: Path) -> None:
     from odb_semantics import load_catalog  # noqa: PLC0415
     from tests.gold_support import REPO_INDICATORS  # noqa: PLC0415

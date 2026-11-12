@@ -1121,6 +1121,30 @@
               "title": "Within"
             },
             "description": "Recorte, ex.: uf:29."
+          },
+          {
+            "name": "grain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "mes",
+                    "trimestre",
+                    "semestre",
+                    "ano"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos).",
+              "title": "Grain"
+            },
+            "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos)."
           }
         ],
         "responses": {
@@ -1238,6 +1262,30 @@
             "description": "Padrão: o mais recente."
           },
           {
+            "name": "grain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "mes",
+                    "trimestre",
+                    "semestre",
+                    "ano"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos).",
+              "title": "Grain"
+            },
+            "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos)."
+          },
+          {
             "name": "dimensions",
             "in": "query",
             "required": false,
@@ -1329,7 +1377,7 @@
           "portal"
         ],
         "summary": "Série temporal",
-        "description": "Todos os períodos publicados de um território.",
+        "description": "Todos os períodos publicados de um território (ou somados no grão pedido).",
         "operationId": "kpi_series_api_v1_kpis__kpi_id__series_get",
         "parameters": [
           {
@@ -1353,6 +1401,30 @@
               "title": "Geography"
             },
             "description": "Território, ex.: uf:29."
+          },
+          {
+            "name": "grain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "mes",
+                    "trimestre",
+                    "semestre",
+                    "ano"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos).",
+              "title": "Grain"
+            },
+            "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos)."
           },
           {
             "name": "dimensions",
@@ -1536,6 +1608,30 @@
               "default": "desc",
               "title": "Order"
             }
+          },
+          {
+            "name": "grain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "mes",
+                    "trimestre",
+                    "semestre",
+                    "ano"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos).",
+              "title": "Grain"
+            },
+            "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos)."
           },
           {
             "name": "offset",
@@ -2092,6 +2188,17 @@
             "type": "string",
             "title": "Period"
           },
+          "grain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grain"
+          },
           "unit": {
             "type": "string",
             "title": "Unit"
@@ -2245,6 +2352,23 @@
             "type": "array",
             "maxItems": 6,
             "title": "Dimensions"
+          },
+          "grain": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "mes",
+                  "trimestre",
+                  "semestre",
+                  "ano"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grain"
           },
           "format": {
             "type": "string",
@@ -2578,6 +2702,14 @@
             "type": "array",
             "title": "Caveats"
           },
+          "time_grains": {
+            "items": {
+              "$ref": "#/components/schemas/TimeGrainOut"
+            },
+            "type": "array",
+            "title": "Time Grains",
+            "default": []
+          },
           "source": {
             "$ref": "#/components/schemas/KpiSourceOut"
           }
@@ -2743,6 +2875,17 @@
           "period": {
             "type": "string",
             "title": "Period"
+          },
+          "grain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grain"
           },
           "unit": {
             "type": "string",
@@ -3277,6 +3420,17 @@
             "type": "string",
             "title": "Unit"
           },
+          "grain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grain"
+          },
           "series": {
             "items": {
               "$ref": "#/components/schemas/SeriesItemOut"
@@ -3399,6 +3553,17 @@
           "period": {
             "type": "string",
             "title": "Period"
+          },
+          "grain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grain"
           },
           "unit": {
             "type": "string",
@@ -3544,6 +3709,41 @@
         ],
         "title": "ThemeOut",
         "description": "Tema da navegação."
+      },
+      "TimeGrainOut": {
+        "properties": {
+          "grain": {
+            "type": "string",
+            "title": "Grain"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "periods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Periods"
+          },
+          "complete_periods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Complete Periods"
+          }
+        },
+        "type": "object",
+        "required": [
+          "grain",
+          "label",
+          "periods",
+          "complete_periods"
+        ],
+        "title": "TimeGrainOut",
+        "description": "Grão de tempo de um KPI (ADR-0013): o publicado e os somados a partir dele."
       },
       "TreeNodeOut": {
         "properties": {

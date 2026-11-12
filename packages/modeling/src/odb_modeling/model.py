@@ -14,11 +14,11 @@ import re
 import unicodedata
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from datetime import date, timedelta
 
 import polars as pl
 
 from odb_modeling.contracts import (
+    BRIDGE_PERIOD_ANCESTOR,
     DIM_BREAKDOWN,
     DIM_CATEGORY,
     DIM_CLASSIFICATION,
@@ -28,7 +28,8 @@ from odb_modeling.contracts import (
     INDICATOR_OBSERVATION,
 )
 from odb_processing.contracts import Contract
-from odb_semantics import LEVELS, FactConfig, SemanticCatalog
+from odb_semantics import LEVELS, FactConfig, IndicatorConfig, SemanticCatalog
+from odb_semantics.periods import ancestor, coarser_grains, parse_period, parts
 
 # Níveis territoriais do SIDRA (coluna NC) → níveis internos. Conferidos pelos
 # rótulos NN das respostas: 1 Brasil, 2 Grande Região, 3 Unidade da Federação,
@@ -434,48 +435,81 @@ def build_fact(
 # ------------------------------------------------------------------ dimensões
 
 
-_YEAR = re.compile(r"^(\d{4})$")
-_MONTH = re.compile(r"^(\d{4})M(0[1-9]|1[0-2])$")
-_QUARTER = re.compile(r"^(\d{4})T([1-4])$")
-
-
 def period_row(period: str) -> dict[str, object]:
-    """Tipo, ano e intervalo de datas de uma chave de período da Gold."""
-    if m := _YEAR.match(period):
-        year = int(m[1])
-        return {
-            "period_type": "ano",
-            "year": year,
-            "start": date(year, 1, 1),
-            "end": date(year, 12, 31),
-        }
-    if m := _MONTH.match(period):
-        year, month = int(m[1]), int(m[2])
-        end = date(year + month // 12, month % 12 + 1, 1) - timedelta(days=1)
-        return {"period_type": "mes", "year": year, "start": date(year, month, 1), "end": end}
-    if m := _QUARTER.match(period):
-        year, quarter = int(m[1]), int(m[2])
-        first = 3 * quarter - 2
-        end = date(year + (first + 2) // 12, (first + 2) % 12 + 1, 1) - timedelta(days=1)
-        return {"period_type": "trimestre", "year": year, "start": date(year, first, 1), "end": end}
-    msg = f"período fora dos formatos AAAA, AAAAMmm e AAAATt: {period!r}"
-    raise ValueError(msg)
+    """Tipo, ano, intervalo de datas, posição na hierarquia e rótulos de um período."""
+    p = parse_period(period)
+    return {
+        "period_type": p.grain,
+        "year": p.year,
+        "start": p.start,
+        "end": p.end,
+        "month": p.month,
+        "quarter": p.quarter,
+        "semester": p.semester,
+        "label": p.label,
+        "short_label": p.short_label,
+    }
 
 
 def build_dim_period(observations: pl.DataFrame) -> pl.DataFrame:
-    """Períodos observados: ano (AAAA), mês (AAAAMmm) e trimestre (AAAATt)."""
-    periods = sorted(observations["period"].unique().to_list())
-    rows = [period_row(p) for p in periods]
+    """Períodos observados e os períodos maiores que os contêm (ADR-0013).
+
+    Um mês observado traz também o trimestre, o semestre e o ano dele, para que a
+    consulta agregada no tempo tenha rótulo e chave. Os períodos maiores só existem na
+    dimensão: os valores deles são calculados na consulta, nunca gravados como oficiais.
+    """
+    periods = set(observations["period"].unique().to_list())
+    for code in list(periods):
+        for target in coarser_grains(parse_period(code).grain)[1:]:
+            periods.add(ancestor(code, target))
+    ordered = sorted(periods)
+    rows = [period_row(p) for p in ordered]
     frame = pl.DataFrame(
         {
-            "period": periods,
+            "period": ordered,
             "period_type": [r["period_type"] for r in rows],
             "year": [r["year"] for r in rows],
             "start_date": [r["start"] for r in rows],
             "end_date": [r["end"] for r in rows],
-        }
+            "month": [r["month"] for r in rows],
+            "quarter": [r["quarter"] for r in rows],
+            "semester": [r["semester"] for r in rows],
+            "label": [r["label"] for r in rows],
+            "short_label": [r["short_label"] for r in rows],
+        },
+        schema_overrides={"month": pl.Int16, "quarter": pl.Int16, "semester": pl.Int16},
     )
     return _conform(frame, DIM_PERIOD)
+
+
+def build_bridge_period_ancestor(observations: pl.DataFrame) -> pl.DataFrame:
+    """Cada período observado → períodos maiores que o contêm e quantas partes eles têm."""
+    rows: list[dict[str, object]] = []
+    for code in sorted(set(observations["period"].unique().to_list())):
+        grain = parse_period(code).grain
+        rows.extend(
+            {
+                "period": code,
+                "ancestor_period": ancestor(code, target),
+                "ancestor_type": target,
+                "parts": parts(grain, target),
+            }
+            for target in coarser_grains(grain)[1:]
+        )
+    frame = pl.DataFrame(rows, schema=BRIDGE_PERIOD_ANCESTOR.frame_schema())
+    return _conform(frame, BRIDGE_PERIOD_ANCESTOR)
+
+
+def time_grains(indicator: IndicatorConfig, periods: Sequence[str]) -> list[str]:
+    """Grãos em que o indicador pode ser consultado (ADR-0013).
+
+    Só fluxos (``time_aggregation = "sum"``) sobem na hierarquia; os demais ficam no
+    grão publicado. Sem períodos, a lista fica vazia.
+    """
+    if not periods:
+        return []
+    grain = parse_period(periods[0]).grain
+    return list(coarser_grains(grain)) if indicator.time_aggregation == "sum" else [grain]
 
 
 def category_names(selected: pl.DataFrame, catalog: SemanticCatalog) -> dict[str, str]:
@@ -665,6 +699,8 @@ def build_dim_indicator(
                 "incompatible_with": sorted(incompatible[ind.id], key=lambda d: d["indicator"]),
                 "reference_url": ds.reference_url,
                 "license_id": ds.license_id,
+                "time_aggregation": ind.time_aggregation,
+                "time_grains": time_grains(ind, list(st["periods"])),
             }
         )
     return _conform(pl.DataFrame(rows, schema=DIM_INDICATOR.frame_schema()), DIM_INDICATOR)

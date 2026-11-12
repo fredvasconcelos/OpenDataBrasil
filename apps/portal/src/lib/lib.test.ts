@@ -4,9 +4,9 @@ import { flattenDetail } from "./detail";
 import { formatBound, formatCompact, formatPeriod, formatShare, formatValue } from "./format";
 import { rewindForD3 } from "./geo";
 import { MISSING_COLOR, ZERO_COLOR, nextNice, niceCuts, quantileScale, snapNice } from "./scale";
-import { readState, writeState } from "./state";
+import { grainPeriods, readState, writeState } from "./state";
 import { fitView, levelOf, nextLevel, previousLevel, validFocus, zoomDecision, zoomLadder } from "./zoom";
-import type { GeoCollection, Navigation } from "./types";
+import type { GeoCollection, Kpi, Navigation } from "./types";
 
 describe("format", () => {
   it("formata em pt-BR e nunca transforma ausência em zero", () => {
@@ -128,7 +128,7 @@ describe("geo", () => {
 });
 
 describe("state", () => {
-  const kpi = (id: string, dims: string[], levels: string[], periods: string[]) => ({
+  const kpi = (id: string, dims: string[], levels: string[], periods: string[], time_grains: Kpi["time_grains"] = []) => ({
     kpi_id: id,
     label: id,
     theme_id: "t",
@@ -143,8 +143,16 @@ describe("state", () => {
     map_levels: levels.filter((l) => l !== "terra_indigena"),
     dimensions: dims.map((d) => ({ classification_id: d, label: d, partition_id: d, total_category_key: `${d}:0`, categories: [] })),
     caveats: [],
+    time_grains,
     source: { dataset_id: "d", source_table_id: "1", source_variable_id: "1", source_variable_name: null, reference_url: null, license_id: null },
   });
+  // Fluxo mensal (ADR-0013): jan 2025 a set 2026; 2026 e o 4º tri de 2026 incompletos.
+  const months = [...Array.from({ length: 12 }, (_, i) => `2025M${String(i + 1).padStart(2, "0")}`), ...Array.from({ length: 9 }, (_, i) => `2026M${String(i + 1).padStart(2, "0")}`)];
+  const flow = kpi("vit", [], ["brasil", "uf"], months, [
+    { grain: "mes", label: "Mês", periods: months, complete_periods: months },
+    { grain: "trimestre", label: "Trimestre", periods: ["2025T1", "2025T2", "2025T3", "2025T4", "2026T1", "2026T2", "2026T3"], complete_periods: ["2025T1", "2025T2", "2025T3", "2025T4", "2026T1", "2026T2", "2026T3"] },
+    { grain: "ano", label: "Ano", periods: ["2025", "2026"], complete_periods: ["2025"] },
+  ]);
   const nav: Navigation = {
     release_id: "r",
     scope: "demografia",
@@ -159,7 +167,7 @@ describe("state", () => {
             subtheme_id: "s",
             label: "S",
             planned: [],
-            kpis: [kpi("pop", ["c86", "c2"], ["brasil", "uf", "municipio"], ["2010", "2022"]), kpi("ti", ["c2"], ["uf", "terra_indigena"], ["2022"])],
+            kpis: [kpi("pop", ["c86", "c2"], ["brasil", "uf", "municipio"], ["2010", "2022"]), kpi("ti", ["c2"], ["uf", "terra_indigena"], ["2022"]), flow],
           },
         ],
       },
@@ -168,9 +176,28 @@ describe("state", () => {
 
   it("lê a URL validando KPI, nível, período, dimensões e território", () => {
     const s = readState(new URLSearchParams("kpi=pop&nivel=municipio&periodo=2010&dim=c2,c86,c99&territorio=uf:29"), nav);
-    expect(s).toEqual({ kpi: "pop", level: "municipio", period: "2010", dimensions: ["c86", "c2"], geography: "uf:29", focus: null });
+    expect(s).toEqual({ kpi: "pop", level: "municipio", grain: null, period: "2010", dimensions: ["c86", "c2"], geography: "uf:29", focus: null });
     const bad = readState(new URLSearchParams("kpi=x&nivel=zzz&periodo=1999&territorio=uf;drop"), nav);
-    expect(bad).toEqual({ kpi: "pop", level: "uf", period: null, dimensions: [], geography: "brasil:1", focus: null });
+    expect(bad).toEqual({ kpi: "pop", level: "uf", grain: null, period: null, dimensions: [], geography: "brasil:1", focus: null });
+  });
+
+  it("lê o grão de tempo e valida o período nele (ADR-0013)", () => {
+    const yearly = readState(new URLSearchParams("kpi=vit&grao=ano&periodo=2025"), nav);
+    expect([yearly.grain, yearly.period]).toEqual(["ano", "2025"]);
+    // Mês de um ano pedido no grão anual: descartado. O grão publicado não vai na URL.
+    expect(readState(new URLSearchParams("kpi=vit&grao=ano&periodo=2025M03"), nav).period).toBeNull();
+    expect(readState(new URLSearchParams("kpi=vit&grao=mes"), nav).grain).toBeNull();
+    // Grão que o KPI não oferece (estoque ou sem o semestre): descartado.
+    expect(readState(new URLSearchParams("kpi=vit&grao=semestre"), nav).grain).toBeNull();
+    expect(readState(new URLSearchParams("kpi=pop&grao=ano"), nav).grain).toBeNull();
+    expect(writeState({ ...yearly, period: null })).toBe("kpi=vit&nivel=uf&grao=ano");
+  });
+
+  it("sem período, o padrão do grão é o último completo", () => {
+    const { periods, complete } = grainPeriods(flow as Kpi, "ano");
+    expect(periods).toEqual(["2025", "2026"]);
+    expect(complete.at(-1)).toBe("2025");
+    expect(grainPeriods(flow as Kpi, null).periods.at(-1)).toBe("2026M09");
   });
 
   it("abre na Grande Região quando o KPI tem esse mapa", () => {
@@ -190,10 +217,10 @@ describe("state", () => {
   });
 
   it("escreve só o que difere do padrão", () => {
-    expect(writeState({ kpi: "ti", level: "uf", period: null, dimensions: ["c2"], geography: "brasil:1", focus: null })).toBe(
+    expect(writeState({ kpi: "ti", level: "uf", grain: null, period: null, dimensions: ["c2"], geography: "brasil:1", focus: null })).toBe(
       "kpi=ti&nivel=uf&dim=c2",
     );
-    expect(writeState({ kpi: "pop", level: "municipio", period: null, dimensions: [], geography: "brasil:1", focus: "uf:13" })).toBe(
+    expect(writeState({ kpi: "pop", level: "municipio", grain: null, period: null, dimensions: [], geography: "brasil:1", focus: "uf:13" })).toBe(
       "kpi=pop&nivel=municipio&foco=uf%3A13",
     );
   });
@@ -254,6 +281,7 @@ describe("formatPeriod", () => {
     expect(formatPeriod("2026M09")).toBe("set 2026");
     expect(formatPeriod("2026M01")).toBe("jan 2026");
     expect(formatPeriod("2026T2")).toBe("2º tri 2026");
+    expect(formatPeriod("2026S1")).toBe("1º sem 2026");
     expect(formatPeriod("2026M13")).toBe("2026M13");
   });
 });

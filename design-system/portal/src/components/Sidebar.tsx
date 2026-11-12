@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { flatten, flattenPlanned, highlight, matchKpi, matchPlanned, snippet } from "@/lib/catalog";
 import type { Kpi, Navigation } from "@/lib/types";
 import { formatPeriod } from "@/lib/format";
+import { grainPeriods, timeGrains } from "@/lib/state";
 
 interface Props {
   nav: Navigation;
@@ -16,8 +17,11 @@ interface Props {
   /** Filtros do indicador atual (nível territorial e período). */
   level: string;
   period: string;
+  /** Grão de tempo (ADR-0013): null é o publicado; os demais somam os meses. */
+  grain: string | null;
   onLevel: (level: string) => void;
   onPeriod: (period: string) => void;
+  onGrain: (grain: string | null) => void;
   /** Volta os filtros ao estado inicial do indicador (desativado se já estiverem nele). */
   onClear: () => void;
   canClear: boolean;
@@ -39,8 +43,10 @@ export function Sidebar({
   onDimensions,
   level,
   period,
+  grain,
   onLevel,
   onPeriod,
+  onGrain,
   onClear,
   canClear,
 }: Props) {
@@ -61,10 +67,27 @@ export function Sidebar({
               ))}
             </select>
           </label>
+          {timeGrains(kpi).length > 1 ? (
+            <fieldset className="grains">
+              <legend>{t("dashboard.grain")}</legend>
+              {timeGrains(kpi).map((g, i) => (
+                <label key={g.grain} className="check">
+                  <input
+                    type="radio"
+                    name="grao"
+                    checked={(grain ?? timeGrains(kpi)[0]?.grain) === g.grain}
+                    onChange={() => onGrain(i === 0 ? null : g.grain)}
+                  />
+                  {t(`grains.${g.grain}`)}
+                </label>
+              ))}
+              {grain ? <p className="grain-note">{t("dashboard.grainNote")}</p> : null}
+            </fieldset>
+          ) : null}
           <label className="field">
             {t("dashboard.period")}
             <select value={period} onChange={(e) => onPeriod(e.target.value)}>
-              {kpi.periods.map((p) => (
+              {grainPeriods(kpi, grain).periods.map((p) => (
                 <option key={p} value={p}>
                   {formatPeriod(p)}
                 </option>

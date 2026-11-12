@@ -41,6 +41,7 @@ from odb_lakehouse import DeltaReader, DeltaWriter
 from odb_modeling import model
 from odb_modeling.contracts import (
     BRIDGE_GEOGRAPHY_ANCESTOR,
+    BRIDGE_PERIOD_ANCESTOR,
     DIM_BREAKDOWN,
     DIM_CATEGORY,
     DIM_CLASSIFICATION,
@@ -542,6 +543,7 @@ class GoldBuilder:
             DIM_GEOGRAPHY.name: geography,
             BRIDGE_GEOGRAPHY_ANCESTOR.name: bridge,
             DIM_PERIOD.name: model.build_dim_period(keys["period"]),
+            BRIDGE_PERIOD_ANCESTOR.name: model.build_bridge_period_ancestor(keys["period"]),
             DIM_CLASSIFICATION.name: model.build_dim_classification(self._catalog, used),
             DIM_CATEGORY.name: categories,
             DIM_BREAKDOWN.name: model.build_dim_breakdown(
@@ -616,6 +618,13 @@ class GoldBuilder:
             ),
             foreign_key("fk.node.parent", nodes, "parent_key", nodes, "node_key"),
             foreign_key("fk.geography.parent", geo, "parent_key", geo, "geography_key"),
+            foreign_key(
+                "fk.period_bridge.ancestor",
+                frames[BRIDGE_PERIOD_ANCESTOR.name],
+                "ancestor_period",
+                frames[DIM_PERIOD.name],
+                "period",
+            ),
         ]
         if DIM_GEOMETRY.name in frames:
             results.append(

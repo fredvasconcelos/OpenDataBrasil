@@ -45,6 +45,7 @@ from odb_api.schemas import (
     TableRowOut,
     TableVersionOut,
     ThemeOut,
+    TimeGrainOut,
 )
 from odb_semantics import (
     IndicatorQuery,
@@ -54,6 +55,7 @@ from odb_semantics import (
     plan_query,
     resolve_links,
 )
+from odb_semantics.periods import GRAIN_LABELS, complete_periods_at, periods_at
 
 Combo = tuple[str, ...]
 
@@ -209,6 +211,7 @@ class KpiService:
             map_levels=[lvl for lvl in levels if lvl in geometry],
             dimensions=self._dimension_out(ctx, kpi),
             caveats=list(meta["caveats"] or ()),
+            time_grains=self._time_grains(kpi, meta),
             source=KpiSourceOut(
                 dataset_id=meta["dataset_id"],
                 source_table_id=meta["source_table_id"],
@@ -220,6 +223,23 @@ class KpiService:
                 system=self._provenance.get(meta["dataset_id"], (None, None))[1],
             ),
         )
+
+    @staticmethod
+    def _time_grains(kpi: KpiConfig, meta: Mapping[str, Any]) -> list[TimeGrainOut]:
+        """Grãos de tempo do KPI com os períodos de cada um (ADR-0013)."""
+        base = list(meta["periods"] or ())
+        grains = list(meta.get("time_grains") or ())
+        if kpi.map_share is not None:
+            grains = grains[:1]
+        return [
+            TimeGrainOut(
+                grain=g,
+                label=GRAIN_LABELS[g],
+                periods=periods_at(base, g) if i else base,
+                complete_periods=complete_periods_at(base, g) if i else base,
+            )
+            for i, g in enumerate(grains)
+        ]
 
     def navigation(self, ctx: ReleaseContext) -> NavigationOut:
         """Temas, subtemas e KPIs (publicados e, com o panorama, planejados)."""
@@ -300,13 +320,33 @@ class KpiService:
 
     # ------------------------------------------------------------- consulta
 
-    def _period(self, ctx: ReleaseContext, kpi: KpiConfig, period: str | None) -> str:
-        periods: list[str] = list(self._gold.indicators(ctx)[kpi.indicator]["periods"] or ())
+    def _grain(self, ctx: ReleaseContext, kpi: KpiConfig, grain: str | None) -> str | None:
+        """Grão de tempo pedido, validado; ``None`` quando é o grão publicado (ADR-0013)."""
+        if grain is None:
+            return None
+        grains = list(self._gold.indicators(ctx)[kpi.indicator].get("time_grains") or ())
+        if grain not in grains:
+            msg = f"{kpi.indicator} não pode ser detalhado por {grain} (disponível: {grains})"
+            raise SemanticError(msg)
+        if grain == grains[0]:
+            return None
+        if kpi.map_share is not None:
+            msg = f"{kpi.id}: o mapa em % de uma categoria não é agregado no tempo"
+            raise SemanticError(msg)
+        return grain
+
+    def _period(
+        self, ctx: ReleaseContext, kpi: KpiConfig, period: str | None, grain: str | None = None
+    ) -> str:
+        """Período pedido, validado no grão; sem período, o último completo do grão."""
+        base: list[str] = list(self._gold.indicators(ctx)[kpi.indicator]["periods"] or ())
+        periods = periods_at(base, grain) if grain else base
         if period is None:
             if not periods:
                 msg = f"{kpi.indicator} sem períodos publicados"
                 raise NotFoundError(msg)
-            return periods[-1]
+            complete = complete_periods_at(base, grain) if grain else periods
+            return (complete or periods)[-1]
         if period not in periods:
             msg = f"{kpi.indicator} não tem o período {period} (disponíveis: {periods})"
             raise SemanticError(msg)
@@ -333,6 +373,7 @@ class KpiService:
         periods: Sequence[str],
         dims: Sequence[str],
         max_rows: int,
+        grain: str | None = None,
     ) -> tuple[list[Observation], Provenance]:
         query = IndicatorQuery(
             indicators=(kpi.indicator,),
@@ -340,6 +381,7 @@ class KpiService:
             within=within,
             periods=tuple(periods),
             breakdown=self._breakdown(ctx, kpi, dims),
+            grain=grain,
         )
         plan = plan_query(query, self._gold.indicator_meta(ctx))
         result = self._gold.run_plan(ctx, plan, max_rows=max_rows)
@@ -361,7 +403,9 @@ class KpiService:
                     status=row["value_status"],
                 )
             )
-        return out, provenance(ctx, plan.aliases.values(), truncated=result.truncated)
+        return out, provenance(
+            ctx, plan.aliases.values(), derived=plan.derived, truncated=result.truncated
+        )
 
     def _combos(self, ctx: ReleaseContext, kpi: KpiConfig, dims: Sequence[str]) -> list[Combo]:
         """Combinações em pré-ordem: Total, depois cada categoria e seus filhos."""
@@ -409,22 +453,32 @@ class KpiService:
         level: str,
         period: str | None,
         within: str | None,
+        grain: str | None = None,
     ) -> MapOut:
         """Valor do KPI em cada território do nível: o Total ou, com ``map_share``, o %
         de uma categoria no Total (KPIs cujo Total é só o universo)."""
         kpi = self.kpi(ctx, kpi_id)
-        chosen = self._period(ctx, kpi, period)
+        grain = self._grain(ctx, kpi, grain)
+        chosen = self._period(ctx, kpi, period, grain)
         meta = self._gold.indicators(ctx)[kpi.indicator]
         if kpi.map_share is not None:
             return self._share_map(ctx, kpi, level=level, period=chosen, within=within)
         obs, prov = self._observations(
-            ctx, kpi, level=level, within=within, periods=(chosen,), dims=(), max_rows=50_000
+            ctx,
+            kpi,
+            level=level,
+            within=within,
+            periods=(chosen,),
+            dims=(),
+            max_rows=50_000,
+            grain=grain,
         )
         return MapOut(
             kpi_id=kpi.id,
             indicator_id=kpi.indicator,
             level=level,
             period=chosen,
+            grain=grain,
             unit=meta["unit"],
             additivity=meta["additivity"],
             values=[
@@ -490,11 +544,13 @@ class KpiService:
         geography: str,
         period: str | None,
         dimensions: Sequence[str],
+        grain: str | None = None,
     ) -> DetailOut:
         """Sub-KPIs aninhados de um território (tooltip)."""
         kpi = self.kpi(ctx, kpi_id)
         dims = self._dims(kpi, dimensions)
-        chosen = self._period(ctx, kpi, period)
+        grain = self._grain(ctx, kpi, grain)
+        chosen = self._period(ctx, kpi, period, grain)
         ref = self._ref(ctx, geography)
         obs, prov = self._observations(
             ctx,
@@ -504,6 +560,7 @@ class KpiService:
             periods=(chosen,),
             dims=dims,
             max_rows=10_000,
+            grain=grain,
         )
         meta = self._gold.indicators(ctx)[kpi.indicator]
         additive = meta["additivity"] == "additive"
@@ -549,11 +606,18 @@ class KpiService:
         )
 
     def series(
-        self, ctx: ReleaseContext, kpi_id: str, *, geography: str, dimensions: Sequence[str]
+        self,
+        ctx: ReleaseContext,
+        kpi_id: str,
+        *,
+        geography: str,
+        dimensions: Sequence[str],
+        grain: str | None = None,
     ) -> SeriesOut:
         """Todos os períodos de um território, por combinação de categorias."""
         kpi = self.kpi(ctx, kpi_id)
         dims = self._dims(kpi, dimensions)
+        grain = self._grain(ctx, kpi, grain)
         ref = self._ref(ctx, geography)
         obs, prov = self._observations(
             ctx,
@@ -563,6 +627,7 @@ class KpiService:
             periods=(),
             dims=dims,
             max_rows=50_000,
+            grain=grain,
         )
         by_combo: dict[Combo, list[Observation]] = {}
         for o in obs:
@@ -587,6 +652,7 @@ class KpiService:
             indicator_id=kpi.indicator,
             geography=ref,
             unit=meta["unit"],
+            grain=grain,
             series=series,
             provenance=prov,
         )
@@ -605,6 +671,7 @@ class KpiService:
         offset: int,
         limit: int,
         locate: str | None = None,
+        grain: str | None = None,
     ) -> TableOut:
         """Territórios do nível, com o Total e as combinações de categorias.
 
@@ -614,7 +681,8 @@ class KpiService:
         """
         kpi = self.kpi(ctx, kpi_id)
         dims = self._dims(kpi, dimensions)
-        chosen = self._period(ctx, kpi, period)
+        grain = self._grain(ctx, kpi, grain)
+        chosen = self._period(ctx, kpi, period, grain)
         limit = min(limit, self._page_max)
         obs, prov = self._observations(
             ctx,
@@ -624,6 +692,7 @@ class KpiService:
             periods=(chosen,),
             dims=dims,
             max_rows=200_000,
+            grain=grain,
         )
         combos = self._combos(ctx, kpi, dims)
         totals = [self._gold.total_category(ctx, d)["category_key"] for d in dims]
@@ -662,6 +731,7 @@ class KpiService:
             indicator_id=kpi.indicator,
             level=level,
             period=chosen,
+            grain=grain,
             unit=meta["unit"],
             columns=[
                 ColumnOut(
@@ -694,12 +764,14 @@ class KpiService:
         within: str | None,
         dimensions: Sequence[str],
         max_rows: int,
+        grain: str | None = None,
     ) -> tuple[KpiConfig, list[str], list[Observation], Provenance]:
         """Observações para exportação (formato longo)."""
         kpi = self.kpi(ctx, kpi_id)
         dims = self._dims(kpi, dimensions)
+        grain = self._grain(ctx, kpi, grain)
         for p in periods:
-            self._period(ctx, kpi, p)
+            self._period(ctx, kpi, p, grain)
         obs, prov = self._observations(
             ctx,
             kpi,
@@ -708,5 +780,6 @@ class KpiService:
             periods=periods,
             dims=dims,
             max_rows=max_rows + 1,
+            grain=grain,
         )
         return kpi, dims, obs, prov

@@ -6,7 +6,7 @@ mais as revisões da beta) e mantêm todas as classes, rótulos e `aria-*` de qu
 
 ## Novidades da v2.3 (sobre a v2.1)
 
-> Versão do pacote: **2.3.1** (arquivo `VERSION`; ajustes da 2.3.1 na seção "Ajustes depois da 2.3.0"). Telas de referência em `reference/`.
+> Versão do pacote: **2.3.2** (arquivo `VERSION`; ajustes da 2.3.1 e da 2.3.2 na seção "Ajustes depois da 2.3.0"). Telas de referência em `reference/`.
 >
 > **O que a API ainda não fornece (não inventado):** o canvas mostra indicadores
 > "em preparação" e o filtro de situação; o contrato `/navigation` só traz indicadores
@@ -88,6 +88,7 @@ anteriores a estes ajustes e ainda não os mostram.
 | Versão | Item | Onde | Regra |
 |---|---|---|---|
 | 2.3.1 | Busca da barra lateral fixa | `Sidebar.tsx` (`.tree-head`), `globals.css` | Título "Temas e indicadores", campo e resumo ficam fixos no topo da área que rola (a barra até 1599 px; o cartão da árvore em tela cheia). O fundo cobre a árvore que passa por baixo e o recuo de cima; `scroll-padding-top` mantém à vista o item focado pelo teclado. "Filtros" não é fixo. Captura: `reference/screens/busca-barra-lateral-fixa.png`. Especificação: `docs/DESIGN-SYSTEM.md`, "Páginas (v2.3)" |
+| 2.3.2 | Período por (grão de tempo) | `Sidebar.tsx` (`fieldset.grains`, `.grain-note`), `Dashboard.tsx`, `ExportMenu.tsx`, `lib/state.ts` (`grao=`, `grainPeriods`), `lib/period.ts` (semestre), `lib/format.ts` (`incomplete_period`), `globals.css`, `messages/pt-BR.json` (`dashboard.grain`, `dashboard.grainNote`, `grains.*`) | Rádios Mês, Trimestre, Semestre e Ano acima do Período, só em KPIs que somam no tempo (`time_grains` da API). Ano, semestre e trimestre são a soma dos meses (valor derivado); período incompleto fica "período incompleto". Padrão: o último período completo. Especificação: `docs/DESIGN-SYSTEM.md`, "Páginas (v2.3)"; regra: ADR-0013 |
 | 2.3.1 | Fonte de indicador fora do IBGE | `KpiInfo.tsx`, `messages/pt-BR.json` (`meta.tableOther`) | A linha "Fonte" usa a instituição e o sistema que a API informa (`source.institution`, `source.system`), por exemplo "MJSP · SINESP-VDE"; sem esses campos, continua "IBGE · Tabela SIDRA N" |
 
 ## Estado da v2.1: o que o portal tem além da v2
@@ -127,7 +128,7 @@ design-system/
 ├── tokens/
 │   ├── tokens.css            ← variáveis CSS (claro, dark, prefers-color-scheme)
 │   └── tokens.json           ← os mesmos valores em JSON (para outras ferramentas)
-├── VERSION                   ← 2.3.1
+├── VERSION                   ← 2.3.2
 ├── reference/                ← telas do canvas (fontes) e capturas dos componentes
 ├── assets/brand/             ← logos em SVG (texto convertido em curvas) e ícones PNG
 ├── assets/icons/             ← github.svg (Bootstrap Icons, MIT) + licença

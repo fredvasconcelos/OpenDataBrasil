@@ -293,7 +293,7 @@ export interface paths {
         };
         /**
          * Série temporal
-         * @description Todos os períodos publicados de um território.
+         * @description Todos os períodos publicados de um território (ou somados no grão pedido).
          */
         get: operations["kpi_series_api_v1_kpis__kpi_id__series_get"];
         put?: never;
@@ -481,6 +481,8 @@ export interface components {
             geography: components["schemas"]["GeographyRefOut"];
             /** Period */
             period: string;
+            /** Grain */
+            grain?: string | null;
             /** Unit */
             unit: string;
             /** Additivity */
@@ -540,6 +542,8 @@ export interface components {
             periods?: string[];
             /** Dimensions */
             dimensions?: string[];
+            /** Grain */
+            grain?: ("mes" | "trimestre" | "semestre" | "ano") | null;
             /**
              * Format
              * @default csv
@@ -662,6 +666,11 @@ export interface components {
             dimensions: components["schemas"]["DimensionOut"][];
             /** Caveats */
             caveats: string[];
+            /**
+             * Time Grains
+             * @default []
+             */
+            time_grains: components["schemas"]["TimeGrainOut"][];
             source: components["schemas"]["KpiSourceOut"];
         };
         /**
@@ -715,6 +724,8 @@ export interface components {
             level: string;
             /** Period */
             period: string;
+            /** Grain */
+            grain?: string | null;
             /** Unit */
             unit: string;
             /** Additivity */
@@ -935,6 +946,8 @@ export interface components {
             geography: components["schemas"]["GeographyRefOut"];
             /** Unit */
             unit: string;
+            /** Grain */
+            grain?: string | null;
             /** Series */
             series: components["schemas"]["SeriesItemOut"][];
             provenance: components["schemas"]["Provenance"];
@@ -987,6 +1000,8 @@ export interface components {
             level: string;
             /** Period */
             period: string;
+            /** Grain */
+            grain?: string | null;
             /** Unit */
             unit: string;
             /** Columns */
@@ -1043,6 +1058,20 @@ export interface components {
             filters: components["schemas"]["FilterOut"][];
             /** Subthemes */
             subthemes: components["schemas"]["SubthemeOut"][];
+        };
+        /**
+         * TimeGrainOut
+         * @description Grão de tempo de um KPI (ADR-0013): o publicado e os somados a partir dele.
+         */
+        TimeGrainOut: {
+            /** Grain */
+            grain: string;
+            /** Label */
+            label: string;
+            /** Periods */
+            periods: string[];
+            /** Complete Periods */
+            complete_periods: string[];
         };
         /**
          * TreeNodeOut
@@ -1885,6 +1914,8 @@ export interface operations {
                 period?: string | null;
                 /** @description Recorte, ex.: uf:29. */
                 within?: string | null;
+                /** @description Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos). */
+                grain?: ("mes" | "trimestre" | "semestre" | "ano") | null;
             };
             header?: never;
             path: {
@@ -1957,6 +1988,8 @@ export interface operations {
                 geography: string;
                 /** @description Padrão: o mais recente. */
                 period?: string | null;
+                /** @description Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos). */
+                grain?: ("mes" | "trimestre" | "semestre" | "ano") | null;
                 /** @description Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2. */
                 dimensions?: string[] | null;
             };
@@ -2029,6 +2062,8 @@ export interface operations {
             query: {
                 /** @description Território, ex.: uf:29. */
                 geography: string;
+                /** @description Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos). */
+                grain?: ("mes" | "trimestre" | "semestre" | "ano") | null;
                 /** @description Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2. */
                 dimensions?: string[] | null;
             };
@@ -2107,6 +2142,8 @@ export interface operations {
                 within?: string | null;
                 sort?: "value" | "name";
                 order?: "asc" | "desc";
+                /** @description Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos). */
+                grain?: ("mes" | "trimestre" | "semestre" | "ano") | null;
                 offset?: number;
                 limit?: number;
                 /** @description Território a localizar: devolve a página que o contém (ignora offset). */

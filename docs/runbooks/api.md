@@ -39,10 +39,19 @@ Quando o banco volta, tudo se normaliza sem reiniciar a API.
 | `POST /api/v1/exports` | CSV (ZIP), XLSX, Parquet ou JSON, com metadados |
 | `POST /api/v1/query` | consulta estruturada sobre qualquer indicador |
 
+**Grão de tempo (ADR-0013):**
+- Mapa, detalhe, série, tabela e exportação aceitam `grain=mes|trimestre|semestre|ano`.
+- O valor é a soma das partes publicadas e vem marcado como derivado
+  (`provenance.derived`, status `derived_sum`).
+- O período com parte sem valor fica sem valor, com status `incomplete_period`.
+- Só vale para os grãos em `time_grains` do KPI, que são os fluxos com
+  `time_aggregation = "sum"`. Outro grão é recusado (400).
+
 Exemplos:
 
 ```bash
 curl -s 'localhost:8000/api/v1/kpis/populacao_residente/detail?geography=uf:29&dimensions=c86,c2'
+curl -s 'localhost:8000/api/v1/kpis/sinesp_homicidio_doloso/map?level=uf&grain=ano&period=2025'
 curl -s -X POST localhost:8000/api/v1/exports -H 'Content-Type: application/json' \
   -d '{"kpi_id":"pessoas_quilombolas","level":"uf","dimensions":["c2"],"format":"csv"}' -o quilombolas.zip
 ```

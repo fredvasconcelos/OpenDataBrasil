@@ -101,6 +101,10 @@ Os testes cobrem:
 - busca da barra lateral fixa (v2.3.1): ao rolar a árvore até o fim, a 1280 px e em
   tela cheia, título e campo continuam no topo, por cima da árvore, e a busca segue
   funcionando;
+- grão de tempo (ADR-0013): no Sinesp, "Período por" Ano soma os meses, abre no
+  último ano completo e mostra "período incompleto" em 2026; KPIs de estoque ou
+  anuais não mostram o seletor;
+- óbitos por residência (SIM): mapa por UF, série desde 1996 e fonte "MS · SIM-DORES";
 - trechos da busca lateral em texto puro, sem entidades nem marcas HTML da fonte
   ("Mortalidade": descrição da tabela 6606);
 - KPI de Total gerado do panorama (Nascidos vivos, tabela 2609): mapa por UF,

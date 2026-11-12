@@ -7,6 +7,7 @@ import type { Detail, DetailNode, GeoCollection, Kpi, Navigation, Series, Table 
 import { DataTable } from "./DataTable";
 import { DetailTooltip } from "./DetailTooltip";
 import { navFixture } from "../lib/fixtures";
+import { allKpis } from "../lib/state";
 import { AboutCatalog } from "./AboutCatalog";
 import { HomeCatalog } from "./HomeCatalog";
 import { KpiInfo } from "./KpiInfo";
@@ -343,8 +344,10 @@ describe("Sidebar · busca", () => {
     onDimensions: vi.fn(),
     level: "uf",
     period: "2022",
+    grain: null,
     onLevel: vi.fn(),
     onPeriod: vi.fn(),
+    onGrain: vi.fn(),
     onClear: vi.fn(),
     canClear: false,
   };
@@ -357,6 +360,30 @@ describe("Sidebar · busca", () => {
     expect(screen.queryByText("Pessoas com pelo menos uma doença crônica")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Limpar" }));
     expect(screen.getByText("Todos os temas")).toBeTruthy();
+  });
+
+  it("mostra o grão de tempo só para KPIs que somam no tempo (ADR-0013)", () => {
+    const onGrain = vi.fn();
+    const months = ["2025M11", "2025M12"];
+    const flow = {
+      ...allKpis(navFixture)[0]!,
+      periods: months,
+      time_grains: [
+        { grain: "mes", label: "Mês", periods: months, complete_periods: months },
+        { grain: "trimestre", label: "Trimestre", periods: ["2025T4"], complete_periods: [] },
+        { grain: "ano", label: "Ano", periods: ["2025"], complete_periods: [] },
+      ],
+    };
+    wrap(<Sidebar {...props} kpi={flow} period="2025T4" grain="trimestre" onGrain={onGrain} />);
+    const group = screen.getByRole("group", { name: "Período por" });
+    expect(within(group).getAllByRole("radio").map((r) => (r as HTMLInputElement).checked)).toEqual([false, true, false]);
+    expect(within(screen.getByRole("combobox", { name: "Período" })).getByRole("option").textContent).toBe("4º tri 2025");
+    fireEvent.click(within(group).getByRole("radio", { name: "Mês" }));
+    expect(onGrain).toHaveBeenCalledWith(null);
+    // Estoque ou taxa (um grão só): sem o seletor.
+    cleanup();
+    wrap(<Sidebar {...props} kpi={allKpis(navFixture)[0]!} />);
+    expect(screen.queryByRole("group", { name: "Período por" })).toBeNull();
   });
 
   it("avisa quando não há resultado", () => {
@@ -506,7 +533,7 @@ describe("Sidebar", () => {
       },
     ],
   };
-  const props = { dimensions: [], onDimensions: vi.fn(), level: "", period: "", onLevel: vi.fn(), onPeriod: vi.fn(), onClear: vi.fn(), canClear: false };
+  const props = { dimensions: [], onDimensions: vi.fn(), level: "", period: "", grain: null, onLevel: vi.fn(), onPeriod: vi.fn(), onGrain: vi.fn(), onClear: vi.fn(), canClear: false };
 
   it("abre só o tema do indicador atual e mostra os planejados sem ação", () => {
     const onKpi = vi.fn();
@@ -559,8 +586,10 @@ describe("Indicadores em preparação (panorama) no catálogo", () => {
         onDimensions={vi.fn()}
         level="uf"
         period="2022"
+        grain={null}
         onLevel={vi.fn()}
         onPeriod={vi.fn()}
+        onGrain={vi.fn()}
         onClear={vi.fn()}
         canClear={false}
       />,

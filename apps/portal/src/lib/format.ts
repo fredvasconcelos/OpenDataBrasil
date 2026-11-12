@@ -11,6 +11,8 @@ export const MISSING: Record<string, string> = {
   not_available: "…",
   not_applicable: "não se aplica",
   absent: "sem dado",
+  // Soma no tempo (ADR-0013) com alguma parte sem valor: o período fica sem valor.
+  incomplete_period: "período incompleto",
 };
 
 export function formatValue(value: number | null | undefined, status = "valid"): string {
@@ -53,7 +55,7 @@ export function unitSuffix(unit: string): string {
 
 /**
  * Período da Gold para exibição, no mesmo formato do eixo e do tooltip da série
- * (lib/period): "2022", "2026M09" → "set 2026", "2026T2" → "2º tri 2026".
+ * (lib/period): "2022", "2026M09" → "set 2026", "2026T2" → "2º tri 2026", "2026S1" → "1º sem 2026".
  * Código não reconhecido volta como veio.
  */
 export function formatPeriod(period: string): string {

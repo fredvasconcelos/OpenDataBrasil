@@ -8,13 +8,14 @@
 //   "202003" · "2020-03"       → mês (março de 2020)
 //   "2020M03"                  → mês, como a Gold do projeto grava (AAAAMmm)
 //   "2020T1" · "2020-Q1"       → trimestre
+//   "2020S1"                   → semestre (soma dos meses na Gold, ADR-0013)
 //   "202001"…"202004"          → trimestre, SÓ quando todos os códigos de 6 dígitos da
 //                                série terminam em 01–04 e cobrem mais de um ano
 //                                (heurística; passe `hint` quando a fonte informar).
 // Se qualquer código não for reconhecido, `parsePeriods` devolve null e o gráfico usa
 // o eixo ordinal (um passo por período, na ordem do texto).
 
-export type Granularity = "year" | "quarter" | "month";
+export type Granularity = "year" | "semester" | "quarter" | "month";
 
 export interface ParsedPeriod {
   raw: string;
@@ -25,12 +26,13 @@ export interface ParsedPeriod {
   t: number;
 }
 
-const PER_YEAR: Record<Granularity, number> = { year: 1, quarter: 4, month: 12 };
+const PER_YEAR: Record<Granularity, number> = { year: 1, semester: 2, quarter: 4, month: 12 };
 const MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
 const YEAR = /^(\d{4})$/;
 const MONTH = /^(\d{4})(?:-|M)?(0[1-9]|1[0-2])$/;
 const QUARTER = /^(\d{4})-?(?:T|Q)([1-4])$/i;
+const SEMESTER = /^(\d{4})-?S([12])$/i;
 const SIX = /^(\d{4})(\d{2})$/;
 
 function make(raw: string, granularity: Granularity, year: number, index = 1): ParsedPeriod {
@@ -53,6 +55,8 @@ export function parsePeriod(raw: string, hint?: Granularity): ParsedPeriod | nul
   if (m) return make(raw, "year", Number(m[1]));
   m = QUARTER.exec(s);
   if (m) return make(raw, "quarter", Number(m[1]), Number(m[2]));
+  m = SEMESTER.exec(s);
+  if (m) return make(raw, "semester", Number(m[1]), Number(m[2]));
   if (hint === "quarter") {
     m = SIX.exec(s);
     if (m && Number(m[2]) >= 1 && Number(m[2]) <= 4) return make(raw, "quarter", Number(m[1]), Number(m[2]));
@@ -84,11 +88,12 @@ function split(p: Pick<ParsedPeriod, "granularity" | "unit">): { year: number; i
   return { year: Math.floor(p.unit / k), index: (p.unit % k) + 1 };
 }
 
-/** Rótulo completo, para o tooltip e a leitura de tela: "2020", "mar 2020", "1º tri 2020". */
+/** Rótulo completo, para o tooltip e a leitura de tela: "2020", "mar 2020", "1º tri 2020", "1º sem 2020". */
 export function formatPeriod(p: Pick<ParsedPeriod, "granularity" | "unit">): string {
   const { year, index } = split(p);
   if (p.granularity === "month") return `${MONTHS[index - 1]} ${year}`;
   if (p.granularity === "quarter") return `${index}º tri ${year}`;
+  if (p.granularity === "semester") return `${index}º sem ${year}`;
   return String(year);
 }
 
@@ -102,6 +107,7 @@ export function formatTick(p: Pick<ParsedPeriod, "granularity" | "unit">, stepUn
 
 const STEPS: Record<Granularity, number[]> = {
   year: [1, 2, 5, 10, 20, 25, 50, 100],
+  semester: [1, 2, 4, 10, 20, 50],
   quarter: [1, 2, 4, 8, 20, 40, 100],
   month: [1, 2, 3, 6, 12, 24, 60, 120, 240],
 };

@@ -45,6 +45,8 @@ fact = "fact_public_security_victims"
 column = "homicide_victims"
 unit = "Vítimas"
 additivity = "additive"
+# Fluxo: o trimestre, o semestre e o ano são a soma dos meses (ADR-0013).
+time_aggregation = "sum"
 concept = "vitimas_homicidio_doloso_registro_policial"
 path = ["Segurança e vitimização", "Registros policiais"]
 caveats = [
@@ -63,6 +65,8 @@ fact = "fact_public_security_victims"
 column = "femicide_victims"
 unit = "Vítimas"
 additivity = "additive"
+# Fluxo: o trimestre, o semestre e o ano são a soma dos meses (ADR-0013).
+time_aggregation = "sum"
 concept = "vitimas_feminicidio_registro_policial"
 path = ["Segurança e vitimização", "Registros policiais"]
 caveats = [
@@ -81,6 +85,8 @@ fact = "fact_public_security_victims"
 column = "robbery_death_victims"
 unit = "Vítimas"
 additivity = "additive"
+# Fluxo: o trimestre, o semestre e o ano são a soma dos meses (ADR-0013).
+time_aggregation = "sum"
 concept = "vitimas_latrocinio_registro_policial"
 path = ["Segurança e vitimização", "Registros policiais"]
 caveats = [
@@ -97,6 +103,8 @@ fact = "fact_public_security_victims"
 column = "rape_victims"
 unit = "Vítimas"
 additivity = "additive"
+# Fluxo: o trimestre, o semestre e o ano são a soma dos meses (ADR-0013).
+time_aggregation = "sum"
 concept = "vitimas_estupro_registro_policial"
 path = ["Segurança e vitimização", "Registros policiais"]
 caveats = [
@@ -115,6 +123,8 @@ fact = "fact_public_security_state_deaths"
 column = "state_intervention_deaths"
 unit = "Vítimas"
 additivity = "additive"
+# Fluxo: o trimestre, o semestre e o ano são a soma dos meses (ADR-0013).
+time_aggregation = "sum"
 concept = "mortes_intervencao_agente_estado"
 path = ["Segurança e vitimização", "Registros policiais"]
 caveats = [
@@ -132,6 +142,8 @@ fact = "fact_public_security_vehicle_theft"
 column = "vehicle_robberies"
 unit = "Ocorrências"
 additivity = "additive"
+# Fluxo: o trimestre, o semestre e o ano são a soma dos meses (ADR-0013).
+time_aggregation = "sum"
 concept = "roubos_veiculo_registro_policial"
 path = ["Segurança e vitimização", "Registros policiais"]
 caveats = [

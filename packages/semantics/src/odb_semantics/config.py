@@ -182,6 +182,10 @@ class IndicatorConfig(_Strict):
     # Primeiro período publicado na Gold (código do SIDRA ou prefixo, como "1998"):
     # a Silver guarda a série inteira; a Gold mostra a partir daqui.
     first_period: str | None = Field(default=None, pattern=r"^\d{4,6}$")
+    # Agregação no tempo (ADR-0013). "sum" só para fluxos (ocorrências, vítimas, óbitos):
+    # o trimestre, o semestre e o ano são a soma dos meses. Estoques (população,
+    # ocupados), taxas e índices não declaram e nunca são somados no tempo.
+    time_aggregation: Literal["sum"] | None = None
 
 
 class PendingInstallation(_Strict):

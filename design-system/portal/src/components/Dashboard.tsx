@@ -16,6 +16,7 @@ import { formatPeriod, legendTitleKey } from "@/lib/format";
 import {
   allKpis,
   DEFAULT_GEOGRAPHY,
+  grainPeriods,
   readState,
   writeState,
   type DashboardState,
@@ -124,9 +125,10 @@ export function Dashboard({ nav }: { nav: Navigation }) {
             level: state.level,
             period: state.period,
             within: focus,
+            grain: state.grain,
           })
       : null,
-    [kpiId, state.level, state.period, focus],
+    [kpiId, state.level, state.period, focus, state.grain],
     retry,
   );
   // Trilha do recorte (ex.: Norte › Amazonas), pelos territórios pais publicados na Gold.
@@ -152,9 +154,10 @@ export function Dashboard({ nav }: { nav: Navigation }) {
           api.series(kpiId, {
             geography: state.geography,
             dimensions: state.dimensions,
+            grain: state.grain,
           })
       : null,
-    [kpiId, state.geography, state.dimensions.join()],
+    [kpiId, state.geography, state.dimensions.join(), state.grain],
     retry,
   );
   const table = useAsync(
@@ -170,11 +173,13 @@ export function Dashboard({ nav }: { nav: Navigation }) {
             offset: sort.offset,
             locate: sort.locate,
             limit: 50,
+            grain: state.grain,
           })
       : null,
     [
       kpiId,
       state.level,
+      state.grain,
       state.period,
       focus,
       state.dimensions.join(),
@@ -261,7 +266,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
   const canUp = Boolean(focus) || previousLevel(ladder, state.level) !== null;
 
   const detailKey = (geo: string) =>
-    `${kpiId}|${state.period ?? ""}|${state.dimensions.join()}|${geo}`;
+    `${kpiId}|${state.grain ?? ""}|${state.period ?? ""}|${state.dimensions.join()}|${geo}`;
   const onHover = (
     key: string | null,
     name: string,
@@ -282,6 +287,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
           geography: key,
           period: state.period,
           dimensions: state.dimensions,
+          grain: state.grain,
         })
         .then((d) => setDetails((all) => ({ ...all, [cacheKey]: d })))
         .catch(() => undefined);
@@ -289,7 +295,9 @@ export function Dashboard({ nav }: { nav: Navigation }) {
   };
 
   if (!kpi) return <p className="page">{t("dashboard.selectKpi")}</p>;
-  const period = state.period ?? kpi.periods.at(-1) ?? "";
+  // Sem período escolhido: o último completo do grão (ex.: o último ano com 12 meses).
+  const { periods: grainList, complete } = grainPeriods(kpi, state.grain);
+  const period = state.period ?? complete.at(-1) ?? grainList.at(-1) ?? "";
   const periodLabel = formatPeriod(period);
   const levelLabel = t(`levels.${state.level}`);
   const crumb =
@@ -343,10 +351,12 @@ export function Dashboard({ nav }: { nav: Navigation }) {
         nav={nav}
         kpi={kpi}
         dimensions={state.dimensions}
-        onKpi={(id) => update({ kpi: id, dimensions: [], period: null })}
+        onKpi={(id) => update({ kpi: id, dimensions: [], period: null, grain: null })}
         onDimensions={(dims) => update({ dimensions: dims })}
         level={state.level}
         period={period}
+        grain={state.grain}
+        onGrain={(grain) => update({ grain, period: null })}
         onLevel={(level) =>
           update({
             level,
@@ -459,6 +469,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
               within={focus}
               period={period}
               dimensions={state.dimensions}
+              grain={state.grain as "mes" | "trimestre" | "semestre" | "ano" | null}
             />
           </div>
 

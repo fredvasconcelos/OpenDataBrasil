@@ -61,16 +61,38 @@ BRIDGE_GEOGRAPHY_ANCESTOR = Contract(
 
 DIM_PERIOD = Contract(
     name="dim_period",
-    version="1.0.0",
+    version="1.1.0",
     schema={
         "period": S,
         "period_type": S,
         "year": I32,
         "start_date": pl.Date(),
         "end_date": pl.Date(),
+        # 1.1.0 (ADR-0013): posição na hierarquia e rótulos por extenso e abreviados.
+        "month": I16,
+        "quarter": I16,
+        "semester": I16,
+        "label": S,
+        "short_label": S,
     },
     key=("period",),
-    required=("period", "period_type", "year", "start_date", "end_date"),
+    required=("period", "period_type", "year", "start_date", "end_date", "label", "short_label"),
+    partition_by=(),
+)
+
+# Hierarquia temporal (ADR-0013): cada período observado e os períodos maiores que o
+# contêm, com o número de partes de que o maior precisa para estar completo.
+BRIDGE_PERIOD_ANCESTOR = Contract(
+    name="bridge_period_ancestor",
+    version="1.0.0",
+    schema={
+        "period": S,
+        "ancestor_period": S,
+        "ancestor_type": S,
+        "parts": I16,
+    },
+    key=("period", "ancestor_period"),
+    required=("period", "ancestor_period", "ancestor_type", "parts"),
     partition_by=(),
 )
 
@@ -130,7 +152,7 @@ INCOMPATIBILITY = pl.Struct({"indicator": S, "reason": S})
 
 DIM_INDICATOR = Contract(
     name="dim_indicator",
-    version="1.0.0",
+    version="1.1.0",
     schema={
         "indicator_id": S,
         "name": S,
@@ -155,6 +177,9 @@ DIM_INDICATOR = Contract(
         "incompatible_with": pl.List(INCOMPATIBILITY),
         "reference_url": S,
         "license_id": S,
+        # 1.1.0 (ADR-0013): agregação no tempo ("sum" para fluxos) e grãos oferecidos.
+        "time_aggregation": S,
+        "time_grains": LS,
     },
     key=("indicator_id",),
     required=("indicator_id", "name", "dataset_id", "unit", "additivity", "fact_table"),
@@ -272,6 +297,7 @@ FIXED_CONTRACTS: tuple[Contract, ...] = (
     DIM_GEOGRAPHY,
     BRIDGE_GEOGRAPHY_ANCESTOR,
     DIM_PERIOD,
+    BRIDGE_PERIOD_ANCESTOR,
     DIM_CLASSIFICATION,
     DIM_CATEGORY,
     DIM_BREAKDOWN,

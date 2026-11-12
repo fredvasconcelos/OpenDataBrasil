@@ -466,3 +466,34 @@ test("óbitos por residência (SIM, Ministério da Saúde): mapa por UF, série 
   await expect(page.locator(".series-tip")).toContainText("1996");
   await page.screenshot({ path: "test-results/sim-obitos-uf.png", fullPage: false });
 });
+
+test("grão de tempo (ADR-0013): Sinesp por ano soma os meses; ano incompleto sem valor", async ({ page }) => {
+  await page.goto("/dashboard?kpi=sinesp_homicidio_doloso&nivel=uf");
+  const grains = page.getByRole("group", { name: "Período por" });
+  await expect(grains.getByRole("radio")).toHaveCount(4);
+  // O rádio é controlado pela URL (estado compartilhável): clica e espera a URL.
+  await grains.getByRole("radio", { name: "Ano" }).click();
+  await expect(page).toHaveURL(/grao=ano/);
+  await expect(grains.getByRole("radio", { name: "Ano" })).toBeChecked();
+  await expect(grains).toContainText("valor derivado");
+  // Sem período escolhido: o último ano completo (com os 12 meses).
+  const period = page.getByRole("combobox", { name: /^Período/ });
+  await expect(period).toHaveValue("2025");
+  await expect(period.locator("option")).toContainText(["2015", "2026"]);
+  const table = page.locator(".data-table");
+  await expect(table.locator("tbody tr").first()).toContainText(/\d/);
+  // 2026 só tem meses até setembro: o ano fica sem valor ("período incompleto").
+  await period.selectOption("2026");
+  await expect(table.locator("tbody")).toContainText("período incompleto");
+  // Volta ao mês: o seletor de período lista meses de novo.
+  await grains.getByRole("radio", { name: "Mês" }).click();
+  await expect(page).not.toHaveURL(/grao=/);
+  await expect(period.locator("option").first()).toHaveText("jan 2015");
+  await page.screenshot({ path: "test-results/sinesp-grao-mes.png", fullPage: false });
+});
+
+test("grão de tempo: KPI de estoque ou anual não oferece o seletor", async ({ page }) => {
+  await page.goto("/dashboard?kpi=populacao_estimada");
+  await expect(page.getByRole("combobox", { name: /^Período/ })).toBeVisible();
+  await expect(page.getByRole("group", { name: "Período por" })).toHaveCount(0);
+});

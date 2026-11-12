@@ -265,6 +265,9 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
 }
 .sidebar .check:hover { background: var(--odbr-bg-hover); }
 .sidebar .check:has(input:checked) { font-weight: 800; }
+/* Grão de tempo (ADR-0013): opções em linha, como um seletor segmentado que quebra se faltar espaço. */
+.sidebar fieldset.grains { flex-direction: row; flex-wrap: wrap; gap: 2px 4px; }
+.sidebar .grain-note { flex-basis: 100%; margin: 2px 0 0; padding: 0 8px; font-size: var(--odbr-fs-caption); font-weight: 600; line-height: 1.35; color: var(--odbr-text-muted); }
 
 /* Área central */
 /* position: relative contém os elementos absolutos (ex.: .sr-only) na rolagem interna. */

@@ -13,6 +13,7 @@ from odb_api.schemas import (
     DetailOut,
     ErrorOut,
     ExportIn,
+    Grain,
     KpiOut,
     MapOut,
     NavigationOut,
@@ -26,6 +27,10 @@ Level = Annotated[str, Query(pattern=ID, description="Nível territorial, ex.: u
 Period = Annotated[str | None, Query(pattern=PERIOD, description="Padrão: o mais recente.")]
 Within = Annotated[str | None, Query(pattern=GEOGRAPHY_KEY, description="Recorte, ex.: uf:29.")]
 Geography = Annotated[str, Query(pattern=GEOGRAPHY_KEY, description="Território, ex.: uf:29.")]
+GrainQ = Annotated[
+    Grain | None,
+    Query(description="Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos)."),
+]
 
 
 @router.get("/portal/navigation", response_model=NavigationOut, summary="Navegação do portal")
@@ -48,24 +53,40 @@ def kpi(d: Deps, ctx: Ctx, kpi_id: KpiId) -> KpiOut:
 
 @router.get("/kpis/{kpi_id}/map", response_model=MapOut, summary="Valores para o mapa")
 def kpi_map(
-    d: Deps, ctx: Ctx, kpi_id: KpiId, level: Level, period: Period = None, within: Within = None
+    d: Deps,
+    ctx: Ctx,
+    kpi_id: KpiId,
+    level: Level,
+    period: Period = None,
+    within: Within = None,
+    grain: GrainQ = None,
 ) -> MapOut:
     """Total do KPI em cada território do nível."""
-    return d.kpis.map(ctx, kpi_id, level=level, period=period, within=within)
+    return d.kpis.map(ctx, kpi_id, level=level, period=period, within=within, grain=grain)
 
 
 @router.get("/kpis/{kpi_id}/detail", response_model=DetailOut, summary="Detalhe (tooltip)")
 def kpi_detail(
-    d: Deps, ctx: Ctx, kpi_id: KpiId, geography: Geography, dims: Dims, period: Period = None
+    d: Deps,
+    ctx: Ctx,
+    kpi_id: KpiId,
+    geography: Geography,
+    dims: Dims,
+    period: Period = None,
+    grain: GrainQ = None,
 ) -> DetailOut:
     """Sub-KPIs aninhados de um território, na ordem das dimensões do portal."""
-    return d.kpis.detail(ctx, kpi_id, geography=geography, period=period, dimensions=dims)
+    return d.kpis.detail(
+        ctx, kpi_id, geography=geography, period=period, dimensions=dims, grain=grain
+    )
 
 
 @router.get("/kpis/{kpi_id}/series", response_model=SeriesOut, summary="Série temporal")
-def kpi_series(d: Deps, ctx: Ctx, kpi_id: KpiId, geography: Geography, dims: Dims) -> SeriesOut:
-    """Todos os períodos publicados de um território."""
-    return d.kpis.series(ctx, kpi_id, geography=geography, dimensions=dims)
+def kpi_series(
+    d: Deps, ctx: Ctx, kpi_id: KpiId, geography: Geography, dims: Dims, grain: GrainQ = None
+) -> SeriesOut:
+    """Todos os períodos publicados de um território (ou somados no grão pedido)."""
+    return d.kpis.series(ctx, kpi_id, geography=geography, dimensions=dims, grain=grain)
 
 
 @router.get("/kpis/{kpi_id}/table", response_model=TableOut, summary="Tabela")
@@ -79,6 +100,7 @@ def kpi_table(
     within: Within = None,
     sort: Annotated[Literal["value", "name"], Query()] = "value",
     order: Annotated[Literal["asc", "desc"], Query()] = "desc",
+    grain: GrainQ = None,
     offset: Annotated[int, Query(ge=0)] = 0,
     limit: Annotated[int, Query(ge=1, le=10_000)] = 100,
     locate: Annotated[
@@ -102,6 +124,7 @@ def kpi_table(
         offset=offset,
         limit=limit,
         locate=locate,
+        grain=grain,
     )
 
 
@@ -125,6 +148,7 @@ def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
         within=body.within,
         dimensions=body.dimensions,
         max_rows=limit,
+        grain=body.grain,
     )
     if len(obs) > limit:
         msg = f"a exportação passa do limite de {limit} linhas; aplique filtros"

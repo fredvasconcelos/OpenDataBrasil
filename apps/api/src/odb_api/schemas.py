@@ -167,6 +167,19 @@ class KpiSourceOut(_Out):
     system: str | None = None
 
 
+Grain = Literal["mes", "trimestre", "semestre", "ano"]
+
+
+class TimeGrainOut(_Out):
+    """Grão de tempo de um KPI (ADR-0013): o publicado e os somados a partir dele."""
+
+    grain: str
+    label: str
+    periods: list[str]
+    # Períodos com todas as partes publicadas (ex.: o ano com os 12 meses).
+    complete_periods: list[str]
+
+
 class KpiOut(_Out):
     """KPI do portal com os metadados do indicador no release."""
 
@@ -184,6 +197,8 @@ class KpiOut(_Out):
     map_levels: list[str]
     dimensions: list[DimensionOut]
     caveats: list[str]
+    # O primeiro é o grão publicado; os demais são somas (só fluxos). Vazio sem períodos.
+    time_grains: list[TimeGrainOut] = []
     source: KpiSourceOut
 
 
@@ -248,6 +263,8 @@ class MapOut(_Out):
     indicator_id: str
     level: str
     period: str
+    # Grão somado a partir do publicado (ADR-0013); None: valores publicados.
+    grain: str | None = None
     unit: str
     additivity: str
     # "total": o valor do KPI; "share": a participação de uma categoria no Total (%).
@@ -284,6 +301,8 @@ class DetailOut(_Out):
     indicator_id: str
     geography: GeographyRefOut
     period: str
+    # Grão somado a partir do publicado (ADR-0013); None: valores publicados.
+    grain: str | None = None
     unit: str
     additivity: str
     dimensions: list[str]
@@ -316,6 +335,7 @@ class SeriesOut(_Out):
     indicator_id: str
     geography: GeographyRefOut
     unit: str
+    grain: str | None = None
     series: list[SeriesItemOut]
     provenance: Provenance
 
@@ -351,6 +371,8 @@ class TableOut(_Out):
     indicator_id: str
     level: str
     period: str
+    # Grão somado a partir do publicado (ADR-0013); None: valores publicados.
+    grain: str | None = None
     unit: str
     columns: list[ColumnOut]
     rows: list[TableRowOut]
@@ -415,4 +437,5 @@ class ExportIn(BaseModel):
     within: str | None = Field(default=None, pattern=GEOGRAPHY_KEY)
     periods: list[str] = Field(default_factory=list, max_length=50)
     dimensions: list[str] = Field(default_factory=list, max_length=6)
+    grain: Grain | None = None
     format: ExportFormat = "csv"

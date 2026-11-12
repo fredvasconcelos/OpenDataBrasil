@@ -17,6 +17,10 @@ Regras aplicadas:
 5. ``sum_to`` (soma dos territórios filhos até um nível superior) só vale para
    indicadores aditivos. O resultado é marcado como derivado, nunca oficial,
    e traz os alertas do indicador.
+6. ``grain`` (trimestre, semestre ou ano a partir dos meses, ADR-0013) só vale para
+   fluxos (``time_aggregation = "sum"``). O período maior é a soma das partes e só
+   tem valor quando todas as partes têm valor; senão fica ``incomplete_period``,
+   sem valor. Também é derivado, e não se combina com ``sum_to``.
 """
 
 from __future__ import annotations
@@ -27,6 +31,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from odb_semantics.geography import is_ancestor_level, level_rank
+from odb_semantics.periods import GRAIN_LABELS, GRAINS
 
 _GEOGRAPHY_KEY = re.compile(r"^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$")
 _PERIOD = re.compile(r"^[0-9A-Za-z]{1,16}$")
@@ -37,11 +42,13 @@ OBSERVATION_TABLE = "indicator_observation"
 GEOGRAPHY_TABLE = "dim_geography"
 ANCESTOR_TABLE = "bridge_geography_ancestor"
 BREAKDOWN_TABLE = "dim_breakdown"
+PERIOD_BRIDGE_TABLE = "bridge_period_ancestor"
 TABLE_ALIASES = {
     "obs": OBSERVATION_TABLE,
     "geo": GEOGRAPHY_TABLE,
     "anc": ANCESTOR_TABLE,
     "brk": BREAKDOWN_TABLE,
+    "per": PERIOD_BRIDGE_TABLE,
 }
 
 
@@ -63,6 +70,8 @@ class IndicatorMeta:
     classification_ids: tuple[str, ...]
     caveats: tuple[str, ...] = ()
     incompatible_with: Mapping[str, str] = field(default_factory=dict)
+    # Grãos de tempo oferecidos, do publicado ao menos detalhado (ADR-0013).
+    time_grains: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,6 +88,8 @@ class IndicatorQuery:
     periods: tuple[str, ...] = ()
     breakdown: Mapping[str, tuple[str, ...] | None] = field(default_factory=dict)
     sum_to: str | None = None
+    # Grão de tempo pedido; ``None`` ou o grão publicado devolvem os valores publicados.
+    grain: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -107,6 +118,9 @@ def _validate_shape(query: IndicatorQuery) -> None:
             level_rank(query.within.split(":", 1)[0])
     except ValueError as exc:
         raise SemanticError(str(exc)) from exc
+    if query.grain is not None and query.grain not in GRAINS:
+        msg = f"grão de tempo inválido: {query.grain!r} (use {list(GRAINS)})"
+        raise SemanticError(msg)
     bad_periods = [p for p in query.periods if not _PERIOD.fullmatch(p)]
     if bad_periods:
         msg = f"períodos inválidos: {bad_periods}"
@@ -146,31 +160,68 @@ def check_semantics(query: IndicatorQuery, meta: Mapping[str, IndicatorMeta]) ->
             )
             raise SemanticError(msg)
     warnings = [f"{ind.indicator_id}: {c}" for ind in selected for c in ind.caveats]
+    if aggregates_time(query, meta):
+        warnings.insert(0, _check_time(query, selected))
     if query.within is not None:
         within_level = query.within.split(":", 1)[0]
         if within_level != query.level and not is_ancestor_level(within_level, query.level):
             msg = f"o recorte {query.within} não contém unidades do nível {query.level}"
             raise SemanticError(msg)
     if query.sum_to is not None:
-        if not is_ancestor_level(query.sum_to, query.level):
-            msg = f"sum_to={query.sum_to} precisa ser um nível que contém {query.level}"
-            raise SemanticError(msg)
-        not_additive = [i.indicator_id for i in selected if i.additivity != "additive"]
-        if not_additive:
-            msg = (
-                f"indicadores não aditivos não podem ser somados: {not_additive} "
-                "(razões, percentuais e densidades)"
-            )
-            raise SemanticError(msg)
-        warnings.insert(
-            0,
-            f"valores somados a partir do nível {query.level}: resultado derivado, não é o "
-            "total oficial. Para níveis publicados, consulte o valor oficial do próprio nível.",
-        )
+        warnings.insert(0, _check_sum_to(query, selected))
     return warnings
 
 
-def _filters(query: IndicatorQuery, params: dict[str, Any]) -> list[str]:
+def _check_sum_to(query: IndicatorQuery, selected: Sequence[IndicatorMeta]) -> str:
+    """Regra 5: soma territorial só de indicadores aditivos. Devolve o alerta."""
+    if not is_ancestor_level(str(query.sum_to), query.level):
+        msg = f"sum_to={query.sum_to} precisa ser um nível que contém {query.level}"
+        raise SemanticError(msg)
+    not_additive = [i.indicator_id for i in selected if i.additivity != "additive"]
+    if not_additive:
+        msg = (
+            f"indicadores não aditivos não podem ser somados: {not_additive} "
+            "(razões, percentuais e densidades)"
+        )
+        raise SemanticError(msg)
+    return (
+        f"valores somados a partir do nível {query.level}: resultado derivado, não é o "
+        "total oficial. Para níveis publicados, consulte o valor oficial do próprio nível."
+    )
+
+
+def _check_time(query: IndicatorQuery, selected: Sequence[IndicatorMeta]) -> str:
+    """Regra 6: o grão pedido vale para todos os indicadores. Devolve o alerta."""
+    label = GRAIN_LABELS[str(query.grain)].lower()
+    if query.sum_to is not None:
+        msg = "não é possível somar territórios e períodos na mesma consulta"
+        raise SemanticError(msg)
+    for ind in selected:
+        if query.grain not in ind.time_grains:
+            msg = (
+                f"{ind.indicator_id} não pode ser detalhado por {label} "
+                f"(disponível: {list(ind.time_grains)})"
+            )
+            raise SemanticError(msg)
+    return (
+        f"valores por {label} somados a partir dos períodos publicados: resultado "
+        "derivado. Período incompleto fica sem valor."
+    )
+
+
+def aggregates_time(query: IndicatorQuery, meta: Mapping[str, IndicatorMeta]) -> bool:
+    """A consulta pede um grão de tempo maior que o publicado."""
+    if query.grain is None:
+        return False
+    published = {
+        meta[i].time_grains[0] for i in query.indicators if i in meta and meta[i].time_grains
+    }
+    return published != {query.grain}
+
+
+def _filters(
+    query: IndicatorQuery, params: dict[str, Any], period_column: str = "o.period"
+) -> list[str]:
     where = [
         "list_contains(CAST($indicators AS VARCHAR[]), o.indicator_id)",
         "o.level_id = $level",
@@ -183,7 +234,7 @@ def _filters(query: IndicatorQuery, params: dict[str, Any]) -> list[str]:
         dims=sorted(query.breakdown),
     )
     if query.periods:
-        where.append("list_contains(CAST($periods AS VARCHAR[]), o.period)")
+        where.append(f"list_contains(CAST($periods AS VARCHAR[]), {period_column})")
         params["periods"] = list(query.periods)
     if query.within is not None:
         where.append(
@@ -204,10 +255,29 @@ def plan_query(query: IndicatorQuery, meta: Mapping[str, IndicatorMeta]) -> Quer
     """Valida e monta o SQL da consulta."""
     warnings = check_semantics(query, meta)
     params: dict[str, Any] = {}
-    where = " AND ".join(_filters(query, params))
+    by_time = aggregates_time(query, meta)
+    where = " AND ".join(_filters(query, params, "p.ancestor_period" if by_time else "o.period"))
     order = "ORDER BY indicator_id, period, geography_key, breakdown_key"
     # O SQL é composto só de fragmentos fixos deste módulo; valores entram como $parâmetros.
-    if query.sum_to is None:
+    if by_time:
+        params["grain"] = query.grain
+        complete = "count(o.value) = any_value(p.parts)"
+        sql = (
+            "SELECT o.indicator_id, o.geography_key, g.name AS territory_name, o.level_id, "
+            "p.ancestor_period AS period, o.breakdown_key, b.label AS breakdown_label, "
+            f"CASE WHEN {complete} THEN sum(o.value) END AS value, "
+            f"CASE WHEN {complete} THEN 'derived_sum' ELSE 'incomplete_period' END "
+            "AS value_status, any_value(o.unit) AS unit, count(o.value) AS parts_with_value, "
+            "any_value(p.parts) AS parts_expected FROM {{obs}} AS o "
+            "JOIN {{per}} AS p ON p.period = o.period AND p.ancestor_type = $grain "
+            "JOIN {{geo}} AS g ON g.geography_key = o.geography_key "
+            "JOIN {{brk}} AS b ON b.breakdown_key = o.breakdown_key "
+            f"WHERE {where} "
+            "GROUP BY o.indicator_id, o.geography_key, g.name, o.level_id, p.ancestor_period, "
+            f"o.breakdown_key, b.label {order}"
+        )
+        aliases = {a: TABLE_ALIASES[a] for a in ("obs", "geo", "brk", "per")}
+    elif query.sum_to is None:
         sql = (
             "SELECT o.indicator_id, o.geography_key, g.name AS territory_name, o.level_id, "
             "o.period, o.breakdown_key, b.label AS breakdown_label, o.value, o.value_status, "
@@ -244,7 +314,7 @@ def plan_query(query: IndicatorQuery, meta: Mapping[str, IndicatorMeta]) -> Quer
         params=params,
         aliases=aliases,
         warnings=tuple(warnings),
-        derived=query.sum_to is not None,
+        derived=query.sum_to is not None or by_time,
     )
 
 
@@ -265,5 +335,6 @@ def meta_from_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, IndicatorMeta
             incompatible_with={
                 str(i["indicator"]): str(i["reason"]) for i in r["incompatible_with"] or ()
             },
+            time_grains=tuple(r.get("time_grains") or ()),
         )
     return out
