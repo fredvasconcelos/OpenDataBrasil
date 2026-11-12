@@ -55,7 +55,7 @@ export function unitSuffix(unit: string): string {
 
 /**
  * Período da Gold para exibição, no mesmo formato do eixo e do tooltip da série
- * (lib/period): "2022", "2026M09" → "set 2026", "2026T2" → "2º tri 2026", "2026S1" → "1º sem 2026".
+ * (lib/period): "2022", "2026M09" → "set 2026", "2026T2" → "T2 2026", "2026S1" → "S1 2026".
  * Código não reconhecido volta como veio.
  */
 export function formatPeriod(period: string): string {

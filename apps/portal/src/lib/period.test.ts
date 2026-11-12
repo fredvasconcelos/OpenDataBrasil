@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatPeriod, parsePeriod, parsePeriods, timeTicks, typicalStep } from "./period";
+import { formatPeriod, groupedAxis, labelWidth, parsePeriod, parsePeriods, timeTicks, typicalStep } from "./period";
 
 describe("parsePeriod", () => {
   it("lê ano, mês e trimestre", () => {
@@ -27,7 +27,7 @@ describe("parsePeriod", () => {
 
   it("formata o período por extenso", () => {
     expect(formatPeriod({ granularity: "month", unit: 2020 * 12 + 2 })).toBe("mar 2020");
-    expect(formatPeriod({ granularity: "quarter", unit: 2020 * 4 })).toBe("1º tri 2020");
+    expect(formatPeriod({ granularity: "quarter", unit: 2020 * 4 })).toBe("T1 2020");
   });
 });
 
@@ -78,5 +78,44 @@ describe("typicalStep", () => {
   it("é a mediana dos passos (vãos ficam acima de 1,5×)", () => {
     expect(typicalStep(parsePeriods(["2000", "2001", "2002", "2005", "2006"]) ?? [])).toBe(1);
     expect(typicalStep(parsePeriods(["1991", "2000", "2010", "2022"]) ?? [])).toBe(10);
+  });
+});
+
+describe("groupedAxis (trimestres e semestres em duas linhas)", () => {
+  const scale = (from: number, to: number, x0: number, x1: number) => (t: number) => x0 + ((t - from) / (to - from)) * (x1 - x0);
+
+  it("semestres: S1 e S2 em cima, o ano centralizado embaixo, divisória entre anos", () => {
+    const ps = parsePeriods(["2025S1", "2025S2", "2026S1"])!;
+    const toX = scale(ps[0]!.t, ps[2]!.t, 0, 400);
+    const axis = groupedAxis(ps, 0, 400, toX);
+    expect(axis.parts.map((p) => p.label)).toEqual(["S1", "S2", "S1"]);
+    expect(axis.years.map((y) => y.label)).toEqual(["2025", "2026"]);
+    expect(axis.bounds).toHaveLength(1);
+    // O ano fica no meio do trecho dos seus semestres.
+    expect(axis.years[0]!.x).toBeCloseTo((axis.parts[0]!.x + axis.parts[1]!.x) / 2);
+  });
+
+  it("muitos trimestres: some a linha de cima e o ano pula num passo que caiba", () => {
+    const raws = Array.from({ length: 47 }, (_, i) => `${2015 + Math.floor(i / 4)}T${(i % 4) + 1}`);
+    const ps = parsePeriods(raws)!;
+    const toX = scale(ps[0]!.t, ps.at(-1)!.t, 0, 300);
+    const axis = groupedAxis(ps, 0, 300, toX);
+    expect(axis.parts).toEqual([]);
+    const shown = axis.years.filter((y) => y.label);
+    expect(shown.length).toBeGreaterThan(1);
+    expect(shown.length).toBeLessThan(12);
+  });
+
+  it("ano corrente com poucos trimestres não encosta no anterior", () => {
+    const raws = Array.from({ length: 58 }, (_, i) => `${2012 + Math.floor(i / 4)}T${(i % 4) + 1}`);
+    const ps = parsePeriods(raws)!;
+    const toX = scale(ps[0]!.t, ps.at(-1)!.t, 0, 640);
+    const shown = groupedAxis(ps, 0, 640, toX, 8, false).years.filter((y) => y.label);
+    for (let i = 1; i < shown.length; i++) expect(shown[i]!.x - shown[i - 1]!.x).toBeGreaterThanOrEqual(labelWidth("2026") + 8);
+  });
+
+  it("ano e mês não usam o eixo agrupado", () => {
+    const ps = parsePeriods(["2024M01", "2024M02"])!;
+    expect(groupedAxis(ps, 0, 100, (t) => t)).toEqual({ parts: [], years: [], bounds: [] });
   });
 });

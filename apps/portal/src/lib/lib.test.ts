@@ -280,8 +280,8 @@ describe("formatPeriod", () => {
     expect(formatPeriod("2022")).toBe("2022");
     expect(formatPeriod("2026M09")).toBe("set 2026");
     expect(formatPeriod("2026M01")).toBe("jan 2026");
-    expect(formatPeriod("2026T2")).toBe("2º tri 2026");
-    expect(formatPeriod("2026S1")).toBe("1º sem 2026");
+    expect(formatPeriod("2026T2")).toBe("T2 2026");
+    expect(formatPeriod("2026S1")).toBe("S1 2026");
     expect(formatPeriod("2026M13")).toBe("2026M13");
   });
 });

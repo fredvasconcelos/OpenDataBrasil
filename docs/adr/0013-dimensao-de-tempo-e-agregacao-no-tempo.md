@@ -85,8 +85,12 @@ trimestres daria um número sem sentido.
     para KPIs com mais de um grão;
   - o grão vai na URL (`grao=`), e o seletor de período lista os períodos do grão;
   - uma nota curta avisa que o valor é derivado;
-  - o semestre aparece como "1º sem 2024", no estilo do trimestre do design system
-    ("1º tri 2024").
+  - os rótulos são os abreviados da Gold: "T2 2026" e "S1 2026" (decisão do
+    mantenedor; antes, "2º tri 2026");
+  - no gráfico de evolução, trimestres e semestres têm o eixo em duas linhas: a parte
+    do ano em cima (T1…T4, S1/S2) e o ano embaixo, centralizado no trecho dele, com
+    divisórias entre os anos (design system 2.3.3). Sem espaço para as partes, fica
+    uma linha só com os anos e as divisórias.
 
 ## Consequências
 
@@ -94,8 +98,8 @@ trimestres daria um número sem sentido.
   mais linhas na `dim_period` (921). O pico do build segue em 9,4 GiB.
 - **Novos indicadores:** um indicador mensal ou trimestral que seja fluxo ganha o
   detalhe só declarando `time_aggregation = "sum"`, sem mudar código.
-- **Rótulos:** o portal mantém os rótulos do design system ("2º tri 2026"). Os rótulos
-  abreviados da Gold ("T2 2026") ficam disponíveis para exportações e outros
-  consumidores; trocar os do portal é uma decisão de design ainda em aberto.
+- **Rótulos:** o portal e a Gold usam os mesmos rótulos abreviados ("T2 2026",
+  "S1 2026", "set 2026"). O rótulo por extenso da Gold ("2º trimestre de 2026") fica para
+  exportações e leitura de tela.
 - **Fora do escopo:** média ou último valor no tempo, para estoques e taxas, exigiria
   regra própria por indicador, e não foi feito.

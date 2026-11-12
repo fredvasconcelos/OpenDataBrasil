@@ -88,12 +88,16 @@ function split(p: Pick<ParsedPeriod, "granularity" | "unit">): { year: number; i
   return { year: Math.floor(p.unit / k), index: (p.unit % k) + 1 };
 }
 
-/** Rótulo completo, para o tooltip e a leitura de tela: "2020", "mar 2020", "1º tri 2020", "1º sem 2020". */
+/**
+ * Rótulo do período, para o tooltip, os seletores e a leitura de tela: "2020", "mar 2020",
+ * "T1 2020" e "S1 2020" (decisão do mantenedor, ADR-0013: os mesmos rótulos abreviados da
+ * dim_period da Gold).
+ */
 export function formatPeriod(p: Pick<ParsedPeriod, "granularity" | "unit">): string {
   const { year, index } = split(p);
   if (p.granularity === "month") return `${MONTHS[index - 1]} ${year}`;
-  if (p.granularity === "quarter") return `${index}º tri ${year}`;
-  if (p.granularity === "semester") return `${index}º sem ${year}`;
+  if (p.granularity === "quarter") return `T${index} ${year}`;
+  if (p.granularity === "semester") return `S${index} ${year}`;
   return String(year);
 }
 
@@ -183,4 +187,83 @@ export function typicalStep(periods: readonly ParsedPeriod[]): number {
   if (!diffs.length) return 1;
   diffs.sort((a, b) => a - b);
   return diffs[Math.floor(diffs.length / 2)] as number;
+}
+
+// ---------------------------------------------------------------- eixo agrupado (v2.3.2)
+
+/** As partes do ano ("T4", "S2") cabem numa fatia de `slot` px? */
+export function partsFit(slot: number, granularity: Granularity, gap = 8): boolean {
+  const k = PER_YEAR[granularity];
+  return slot >= labelWidth(`${granularity === "quarter" ? "T" : "S"}${k}`) + gap;
+}
+
+/** Fatia de um período (px) numa largura útil, pelo intervalo da série. */
+export function slotWidth(periods: readonly ParsedPeriod[], width: number): number {
+  const first = periods[0];
+  const last = periods[periods.length - 1];
+  return first && last ? width / Math.max(1, last.unit - first.unit) : width;
+}
+
+/** Granularidades com eixo em duas linhas: a parte do ano em cima e o ano embaixo. */
+export const GROUPED: readonly Granularity[] = ["quarter", "semester"];
+
+export interface GroupedAxis {
+  /** Rótulos de cima ("T1"…"T4", "S1"/"S2"), um por período do intervalo; vazio sem espaço. */
+  parts: { x: number; label: string }[];
+  /** Ano centralizado sob o grupo; `label` vazio quando o passo pula o ano. */
+  years: { x: number; label: string }[];
+  /** Divisórias entre anos (posição x). */
+  bounds: number[];
+}
+
+/**
+ * Eixo de trimestres ou semestres em duas linhas: em cima a parte do ano, embaixo o ano,
+ * centralizado no trecho que os períodos dele ocupam, com divisórias entre os anos.
+ * As partes só aparecem se couberem todas; os anos, num passo redondo (1, 2, 5, 10…)
+ * que caiba. `toX` recebe o tempo decimal (2026,5 = julho de 2026).
+ */
+export function groupedAxis(
+  periods: readonly ParsedPeriod[],
+  x0: number,
+  x1: number,
+  toX: (t: number) => number,
+  gap = 8,
+  withParts = true,
+): GroupedAxis {
+  const empty: GroupedAxis = { parts: [], years: [], bounds: [] };
+  const first = periods[0];
+  const last = periods[periods.length - 1];
+  if (!first || !last || !GROUPED.includes(first.granularity)) return empty;
+  const g = first.granularity;
+  const k = PER_YEAR[g];
+  const prefix = g === "quarter" ? "T" : "S";
+  const slot = Math.abs(toX(first.t + 1 / k) - toX(first.t));
+  const units = Array.from({ length: last.unit - first.unit + 1 }, (_, i) => first.unit + i);
+  const fits = withParts && partsFit(slot, g, gap);
+  const parts = fits ? units.map((u) => ({ x: toX(u / k), label: `${prefix}${(u % k) + 1}` })) : [];
+
+  const firstYear = Math.floor(first.unit / k);
+  const lastYear = Math.floor(last.unit / k);
+  const spans: { year: number; from: number; to: number }[] = [];
+  for (let yr = firstYear; yr <= lastYear; yr++) {
+    const a = Math.max(first.unit, yr * k);
+    const b = Math.min(last.unit, yr * k + k - 1);
+    spans.push({ year: yr, from: toX(a / k) - slot / 2, to: toX(b / k) + slot / 2 });
+  }
+  const yearWidth = labelWidth("2026");
+  const widest = Math.max(...spans.map((sp) => sp.to - sp.from));
+  const yearStep = [1, 2, 5, 10, 20, 50].find((st) => widest * st >= yearWidth + gap) ?? 50;
+  // Centro do trecho do ano, mantendo o rótulo inteiro dentro do gráfico.
+  const inside = (x: number) => Math.min(x1 - yearWidth / 2, Math.max(x0 + yearWidth / 2, x));
+  // Da esquerda para a direita: o ano que encostaria no anterior fica sem rótulo
+  // (ex.: o ano corrente com só dois trimestres, empurrado para dentro do gráfico).
+  let right = -Infinity;
+  const years = spans.map((sp) => {
+    const x = inside((sp.from + sp.to) / 2);
+    const show = (sp.year - firstYear) % yearStep === 0 && x - yearWidth / 2 >= right + gap;
+    if (show) right = x + yearWidth / 2;
+    return { x, label: show ? String(sp.year) : "" };
+  });
+  const bounds = spans.slice(1).map((sp) => sp.from);
+  return { parts, years, bounds };
 }

@@ -7,7 +7,20 @@ import { useTranslations } from "next-intl";
 import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 
 import { formatCompact, formatValue, unitSuffix } from "@/lib/format";
-import { formatPeriod, labelWidth, parsePeriods, timeTicks, typicalStep, type ParsedPeriod, type Tick } from "@/lib/period";
+import {
+  formatPeriod,
+  GROUPED,
+  groupedAxis,
+  labelWidth,
+  partsFit,
+  slotWidth,
+  parsePeriods,
+  timeTicks,
+  typicalStep,
+  type GroupedAxis,
+  type ParsedPeriod,
+  type Tick,
+} from "@/lib/period";
 import { CHART, SERIES } from "@/lib/theme";
 import type { Series } from "@/lib/types";
 
@@ -58,12 +71,20 @@ export function SeriesChart({ data }: { data: Series }) {
     return p ? formatPeriod(p) : raw;
   };
 
+  // Trimestres e semestres: eixo em duas linhas (parte do ano em cima, ano embaixo).
+  // Sem espaço para as partes, uma linha só com os anos e as divisórias.
+  const grouped = Boolean(parsed?.length && GROUPED.includes((parsed[0] as ParsedPeriod).granularity));
+  const withParts =
+    grouped &&
+    partsFit(slotWidth(parsed ?? [], W - 64 - M.right - 2 * PAD_X), (parsed?.[0] as ParsedPeriod).granularity);
+  const bottom = withParts ? M.bottom + 18 : M.bottom;
+
   const values = data.series.flatMap((s) => s.points.map((p) => p.value)).filter((v): v is number => v !== null);
   const [lo, hi] = extent(values);
   const y = scaleLinear()
     .domain([Math.min(0, lo ?? 0), hi ?? 1])
     .nice()
-    .range([H - M.bottom, M.top]);
+    .range([H - bottom, M.top]);
   const yTicks = y.ticks(5);
   // Margem esquerda pelo maior rótulo do eixo Y (milhões e decimais não cortam).
   const left = Math.max(40, ...yTicks.map((v) => labelWidth(formatCompact(v)) + 14));
@@ -73,6 +94,7 @@ export function SeriesChart({ data }: { data: Series }) {
   let xOf: (raw: string) => number;
   let tickX: (tk: Tick) => number;
   let ticks: Tick[];
+  let axis: GroupedAxis | null = null;
   if (parsed && parsed.length) {
     const first = parsed[0] as ParsedPeriod;
     const last = parsed[parsed.length - 1] as ParsedPeriod;
@@ -84,6 +106,10 @@ export function SeriesChart({ data }: { data: Series }) {
     tickX = (tk) => xt(tk.t);
     ticks = timeTicks(parsed, x1 - x0, (v) => xt(v)).ticks;
     if (first.t === last.t) ticks = ticks.map((tk) => ({ ...tk, anchor: "middle" }));
+    if (grouped) {
+      axis = groupedAxis(parsed, x0, x1, (v) => xt(v), 8, withParts);
+      ticks = [];
+    }
   } else {
     const xp = scalePoint<string>().domain(periods).range([x0, x1]).padding(periods.length === 1 ? 0.5 : 0);
     xOf = (raw) => xp(raw) ?? x0;
@@ -200,7 +226,7 @@ export function SeriesChart({ data }: { data: Series }) {
       ? null
       : {
           x: xOf(period),
-          y: Math.min(...rows.filter((r) => r.value !== null).map((r) => y(r.value as number)), H - M.bottom),
+          y: Math.min(...rows.filter((r) => r.value !== null).map((r) => y(r.value as number)), H - bottom),
         };
 
   // Posiciona o tooltip depois de medir: direita do ponto → esquerda; acima → abaixo;
@@ -255,11 +281,33 @@ export function SeriesChart({ data }: { data: Series }) {
               </text>
             </g>
           ))}
+          {axis ? (
+            <g className="series-axis-grouped" aria-hidden="true">
+              {axis.parts.map((pt) => (
+                <g key={`p-${pt.x}`}>
+                  <line x1={pt.x} x2={pt.x} y1={H - bottom} y2={H - bottom + 4} style={{ stroke: CHART.axis }} />
+                  <text x={pt.x} y={H - bottom + 16} textAnchor="middle" fontSize="12" fontWeight="700" style={{ fill: CHART.label }}>
+                    {pt.label}
+                  </text>
+                </g>
+              ))}
+              {axis.bounds.map((bx) => (
+                <line key={`b-${bx}`} x1={bx} x2={bx} y1={H - bottom} y2={H - 4} style={{ stroke: CHART.grid }} />
+              ))}
+              {axis.years.map((yr) =>
+                yr.label ? (
+                  <text key={`y-${yr.label}`} x={yr.x} y={H - 8} textAnchor="middle" fontSize="12" fontWeight="800" style={{ fill: CHART.label }}>
+                    {yr.label}
+                  </text>
+                ) : null,
+              )}
+            </g>
+          ) : null}
           {ticks.map((tk) => {
             const tx = tickX(tk);
             return (
               <g key={`${tk.unit}-${tk.label}`} className="series-tick">
-                <line x1={tx} x2={tx} y1={H - M.bottom} y2={H - M.bottom + 4} style={{ stroke: CHART.axis }} />
+                <line x1={tx} x2={tx} y1={H - bottom} y2={H - bottom + 4} style={{ stroke: CHART.axis }} />
                 <text x={tx} y={H - 8} textAnchor={tk.anchor} fontSize="12" fontWeight="700" style={{ fill: CHART.label }}>
                   {tk.label}
                 </text>
@@ -281,7 +329,7 @@ export function SeriesChart({ data }: { data: Series }) {
               x1={anchor.x}
               x2={anchor.x}
               y1={M.top}
-              y2={H - M.bottom}
+              y2={H - bottom}
               style={{ stroke: CHART.axis }}
               strokeDasharray="3 3"
             />
@@ -336,7 +384,7 @@ export function SeriesChart({ data }: { data: Series }) {
             x={left}
             y={M.top}
             width={Math.max(0, W - M.right - left)}
-            height={Math.max(0, H - M.bottom - M.top)}
+            height={Math.max(0, H - bottom - M.top)}
             fill="transparent"
             onPointerMove={onMove}
             onPointerDown={onMove}

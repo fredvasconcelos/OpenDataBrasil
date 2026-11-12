@@ -377,7 +377,7 @@ describe("Sidebar · busca", () => {
     wrap(<Sidebar {...props} kpi={flow} period="2025T4" grain="trimestre" onGrain={onGrain} />);
     const group = screen.getByRole("group", { name: "Período por" });
     expect(within(group).getAllByRole("radio").map((r) => (r as HTMLInputElement).checked)).toEqual([false, true, false]);
-    expect(within(screen.getByRole("combobox", { name: "Período" })).getByRole("option").textContent).toBe("4º tri 2025");
+    expect(within(screen.getByRole("combobox", { name: "Período" })).getByRole("option").textContent).toBe("T4 2025");
     fireEvent.click(within(group).getByRole("radio", { name: "Mês" }));
     expect(onGrain).toHaveBeenCalledWith(null);
     // Estoque ou taxa (um grão só): sem o seletor.
