@@ -21,9 +21,23 @@ Exportação, DBeaver e Python: [exportacao.md](exportacao.md).
 
 | Estado da construção | Significado |
 |---|---|
-| `succeeded` | novas versões Delta das 14 tabelas; release criado e validado |
+| `succeeded` | novas versões Delta das tabelas do escopo; release criado e validado |
 | `skipped` | Silver, catálogo semântico e contratos iguais aos da última construção: nenhuma versão nova; se o release ativo já aponta para essas versões, nada muda |
-| `failed` | verificação `fail`, Silver ausente ou schema incompatível. **Nada é escrito nem publicado**, e o release ativo continua vigente (`active_release` na saída) |
+| `failed` | verificação `fail`, Silver ausente ou schema incompatível. **Nada é publicado**: lotes já gravados ficam em versões Delta sem release (KI-007), e o release ativo continua vigente (`active_release` na saída) |
+
+**Configuração nova (indicadores, portal, panorama):** a configuração vai embutida
+nas imagens do worker e da API, e a API confere o portal contra o release ativo.
+Release novo com a API antiga (ou o contrário) deixa a navegação fora do ar até as
+duas casarem: em 2026-11-12, o portal mostrou "Dados temporariamente
+indisponíveis" por alguns minutos, porque o release sem o indicador da 9514 foi
+ativado antes de a API ser reiniciada. Ordem segura:
+
+```bash
+docker compose --profile data --profile web build worker api
+docker compose --profile data run --rm worker odb gold build     # release validated
+docker compose --profile data run --rm worker odb release activate <release_id> \
+  && docker compose --profile web up -d api                      # em seguida
+```
 
 **Reverter** para um release anterior: não há reativação de `superseded`. Corrija
 a causa e reconstrua, ou ative outro release `validated`. As versões Delta
