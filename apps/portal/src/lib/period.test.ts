@@ -95,15 +95,24 @@ describe("groupedAxis (trimestres e semestres em duas linhas)", () => {
     expect(axis.years[0]!.x).toBeCloseTo((axis.parts[0]!.x + axis.parts[1]!.x) / 2);
   });
 
-  it("muitos trimestres: some a linha de cima e o ano pula num passo que caiba", () => {
+  it("muitos trimestres: some a linha de cima e o ano fica com dois dígitos", () => {
     const raws = Array.from({ length: 47 }, (_, i) => `${2015 + Math.floor(i / 4)}T${(i % 4) + 1}`);
     const ps = parsePeriods(raws)!;
-    const toX = scale(ps[0]!.t, ps.at(-1)!.t, 0, 300);
-    const axis = groupedAxis(ps, 0, 300, toX);
+    const toX = scale(ps[0]!.t, ps.at(-1)!.t, 0, 400);
+    const axis = groupedAxis(ps, 0, 400, toX);
     expect(axis.parts).toEqual([]);
-    const shown = axis.years.filter((y) => y.label);
-    expect(shown.length).toBeGreaterThan(1);
-    expect(shown.length).toBeLessThan(12);
+    const shown = axis.years.filter((y) => y.label).map((y) => y.label);
+    expect(shown[0]).toBe("15");
+    expect(shown.length).toBeGreaterThan(6);
+  });
+
+  it("com espaço, o ano fica com quatro dígitos; na virada do século também", () => {
+    const wide = parsePeriods(["2025S1", "2025S2", "2026S1"])!;
+    expect(groupedAxis(wide, 0, 400, scale(wide[0]!.t, wide[2]!.t, 0, 400)).years[0]!.label).toBe("2025");
+    const raws = Array.from({ length: 118 }, (_, i) => `${1997 + Math.floor(i / 4)}T${(i % 4) + 1}`);
+    const century = parsePeriods(raws)!;
+    const labels = groupedAxis(century, 0, 500, scale(century[0]!.t, century.at(-1)!.t, 0, 500)).years.filter((y) => y.label);
+    expect(labels.every((y) => y.label.length === 4)).toBe(true);
   });
 
   it("ano corrente com poucos trimestres não encosta no anterior", () => {

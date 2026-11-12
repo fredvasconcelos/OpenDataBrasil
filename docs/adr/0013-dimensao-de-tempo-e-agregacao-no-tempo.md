@@ -90,7 +90,8 @@ trimestres daria um número sem sentido.
   - no gráfico de evolução, trimestres e semestres têm o eixo em duas linhas: a parte
     do ano em cima (T1…T4, S1/S2) e o ano embaixo, centralizado no trecho dele, com
     divisórias entre os anos (design system 2.3.3). Sem espaço para as partes, fica
-    uma linha só com os anos e as divisórias.
+    uma linha só com os anos e as divisórias. Se o ano com quatro dígitos não couber,
+    ele fica com dois ("26"), salvo em séries que atravessam a virada do século.
 
 ## Consequências
 

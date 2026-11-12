@@ -250,8 +250,14 @@ export function groupedAxis(
     const b = Math.min(last.unit, yr * k + k - 1);
     spans.push({ year: yr, from: toX(a / k) - slot / 2, to: toX(b / k) + slot / 2 });
   }
-  const yearWidth = labelWidth("2026");
+  // Ano com 4 dígitos se couber em todos os grupos; senão, com 2 ("26", pedido do
+  // mantenedor), desde que a série não atravesse a virada do século ("97" e "26" seriam
+  // ambíguos). Ainda sem espaço, os anos seguem um passo redondo.
   const widest = Math.max(...spans.map((sp) => sp.to - sp.from));
+  const sameCentury = Math.floor(firstYear / 100) === Math.floor(lastYear / 100);
+  const short = widest < labelWidth("2026") + gap && sameCentury;
+  const yearText = (yr: number) => (short ? String(yr % 100).padStart(2, "0") : String(yr));
+  const yearWidth = labelWidth(short ? "26" : "2026");
   const yearStep = [1, 2, 5, 10, 20, 50].find((st) => widest * st >= yearWidth + gap) ?? 50;
   // Centro do trecho do ano, mantendo o rótulo inteiro dentro do gráfico.
   const inside = (x: number) => Math.min(x1 - yearWidth / 2, Math.max(x0 + yearWidth / 2, x));
@@ -262,7 +268,7 @@ export function groupedAxis(
     const x = inside((sp.from + sp.to) / 2);
     const show = (sp.year - firstYear) % yearStep === 0 && x - yearWidth / 2 >= right + gap;
     if (show) right = x + yearWidth / 2;
-    return { x, label: show ? String(sp.year) : "" };
+    return { x, label: show ? yearText(sp.year) : "" };
   });
   const bounds = spans.slice(1).map((sp) => sp.from);
   return { parts, years, bounds };
