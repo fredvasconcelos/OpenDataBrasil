@@ -389,21 +389,31 @@ def _to_contract(
     lineage: Lineage,
 ) -> pl.DataFrame:
     rows = []
+    # Código da categoria: o nome sem acento nem espaço ("Não informado" → "nao-informado"),
+    # no formato que o catálogo e a API aceitam; o nome publicado fica em category_name.
+    codes = {v: slug(v) for v in agg["dim_value"].drop_nulls().unique().to_list()}
     for event, labels in dims_by_event.items():
         part = agg.filter(pl.col("evento") == event)
 
         def category(label: str) -> pl.Expr:
             return (
                 pl.when(pl.col("dim_label") == label)
-                .then(pl.col("dim_value"))
+                .then(pl.col("dim_value").replace_strict(codes, default=None))
                 .otherwise(pl.lit(TOTAL))
+            )
+
+        def category_name(label: str) -> pl.Expr:
+            return (
+                pl.when(pl.col("dim_label") == label)
+                .then(pl.col("dim_value"))
+                .otherwise(pl.lit("Total"))
             )
 
         structs = [
             pl.struct(
                 pl.lit(label).alias("dimension"),
                 category(label).alias("category_id"),
-                category(label).replace(TOTAL, "Total").alias("category_name"),
+                category_name(label).alias("category_name"),
             )
             for label in labels
         ]

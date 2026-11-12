@@ -241,3 +241,27 @@ summable = false
     _write(tmp_path / "demografia", ext.replace('"c2"', '"c999"', 1), "ext.toml")
     with pytest.raises(SemanticConfigError, match="não declarada"):
         load_scope(tmp_path, "demografia")
+
+
+def test_classification_scoped_to_datasets(tmp_path: Path) -> None:
+    """Mesmo nome de dimensão, outros códigos: classificação própria por dataset."""
+    from odb_modeling.model import dimension_map  # noqa: PLC0415
+
+    scoped = (
+        '[[classifications]]\nid = "sexosim"\nname = "Sexo"\nsilver_dimension = "Sexo"\n'
+        'total = "T"\ndatasets = ["datasus-sim-cid10-dores"]\n\n'
+    )
+    catalog = load_catalog(
+        _write(tmp_path, BASE.replace("[[classifications]]", scoped + "[[classifications]]", 1))
+    )
+    assert dimension_map(catalog)["Sexo"] == "c2"
+    assert dimension_map(catalog, "datasus-sim-cid10-dores")["Sexo"] == "sexosim"
+    assert dimension_map(catalog, "ibge-sidra-9606")["Sexo"] == "c2"
+    # Duas classificações gerais (ou duas no mesmo dataset) para a mesma dimensão: recusado.
+    general = scoped.replace('datasets = ["datasus-sim-cid10-dores"]\n', "")
+    with pytest.raises(SemanticConfigError, match="mais de uma classificação geral"):
+        load_catalog(
+            _write(
+                tmp_path, BASE.replace("[[classifications]]", general + "[[classifications]]", 1)
+            )
+        )

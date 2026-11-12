@@ -6,18 +6,35 @@
 # completa a série do IBGE. Criação aprovada pelo mantenedor em 2026-11-12.
 #
 # A Silver (`datasus_sim_do`) traz o Total e cada dimensão (sexo, faixa etária, cor ou
-# raça, capítulo da CID-10, local de ocorrência), com as demais no Total. Esta versão
-# leva à Gold só o Total: as cinco dimensões ficam fixas em "T".
+# raça, capítulo da CID-10, local de ocorrência), com as demais no Total. A Gold leva o
+# Total e o sexo, numa classificação própria (`sexosim`: códigos 1, 2 e 9 do SIM, não os
+# da c2 do IBGE); as outras quatro dimensões ficam fixas em "T".
 
 config_version = "1.0.0"
 scope = "demografia"
+
+[[classifications]]
+id = "sexosim"
+name = "Sexo"
+silver_dimension = "Sexo"
+total = "T"
+datasets = ["datasus-sim-cid10-dores"]
+
+[[classifications.partitions]]
+id = "sexo"
+label = "Sexo"
+# 1 masculino, 2 feminino, 9 ignorado (o SIM grava "M"/"F" nos anos antigos, convertidos
+# na Silver). A soma é o Total por construção (conferência da Silver).
+categories = ["1", "2", "9"]
+exhaustive = true
 
 [[facts]]
 id = "fact_sim_deaths"
 dataset = "datasus-sim-cid10-dores"
 grain = "território (Brasil, UF, município de residência) x ano"
 description = "Óbitos das declarações de óbito do SIM por local de residência, de 1996 em diante (CID-10)."
-fixed_categories = { "Sexo" = "T", "Faixa etária" = "T", "Cor ou raça" = "T", "Capítulo CID-10" = "T", "Local de ocorrência" = "T" }
+classifications = { "sexosim" = "sex_category_key" }
+fixed_categories = { "Faixa etária" = "T", "Cor ou raça" = "T", "Capítulo CID-10" = "T", "Local de ocorrência" = "T" }
 
 [[indicators]]
 id = "sim_obitos_residencia"

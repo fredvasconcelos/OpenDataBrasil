@@ -29,7 +29,8 @@ class _Strict(BaseModel):
 class DimensionConfig(_Strict):
     """Classificação exposta e a partição de categorias mostrada."""
 
-    classification: str = Field(pattern=r"^c\d+$")
+    # Mesmo padrão do catálogo semântico: "c86" (SIDRA) ou próprias, como "sexosim".
+    classification: str = Field(pattern=r"^[a-z][a-z0-9]{0,15}$")
     partition: str = Field(pattern=_ID)
     label: str
 

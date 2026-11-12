@@ -187,10 +187,18 @@ def test_health_release_and_catalog(stack: dict[str, Any]) -> None:
 
 def test_navigation_lists_mvp_kpis(stack: dict[str, Any]) -> None:
     nav = _get(stack, "/api/v1/portal/navigation")
-    assert nav["dimension_order"] == ["c86", "c2", "c339", "c12190"]
+    assert nav["dimension_order"] == [
+        "c86",
+        "c2",
+        "sexosim",
+        "sexosinesp",
+        "c287",
+        "c339",
+        "c12190",
+    ]
     kpis = {k["kpi_id"]: k for t in nav["themes"] for s in t["subthemes"] for k in s["kpis"]}
     pop = kpis["populacao_residente"]
-    assert [d["classification_id"] for d in pop["dimensions"]] == ["c86", "c2"]
+    assert [d["classification_id"] for d in pop["dimensions"]] == ["c86", "c2", "c287"]
     assert [c["name"] for c in pop["dimensions"][1]["categories"]] == ["Homens", "Mulheres"]
     # Fixtures sem nível municipal: o mapa só tem os níveis com valores e geometria.
     assert pop["map_levels"] == ["brasil", "regiao", "uf"]
@@ -220,8 +228,8 @@ def test_navigation_follows_panorama(stack: dict[str, Any]) -> None:
     assert {f["filter_id"] for f in agro["filters"]} == {"produto", "especie"}
     assert "cor_raca" in {f["filter_id"] for f in themes["populacao"]["filters"]}
     published = [k["kpi_id"] for t in nav["themes"] for s in t["subthemes"] for k in s["kpis"]]
-    # 12 com `kpi` explícito e a 9605, ligada pelo id do item (populacao_cor_raca_censos).
-    assert len(published) == 13
+    # 13 com `kpi` explícito e a 9605, ligada pelo id do item (populacao_cor_raca_censos).
+    assert len(published) == 14
     assert "populacao_cor_raca_censos" in published
 
 

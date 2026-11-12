@@ -57,7 +57,7 @@ def test_render_catalog_flags_coverage() -> None:
     assert "último período 2008" in row
     assert "não verificada: timeout" in doc
     assert "não verificada" in doc
-    assert "1 de 147 tabelas verificadas" in doc
+    assert "1 de 146 tabelas verificadas" in doc  # 9514 saiu do panorama (2026-11-12)
 
 
 def test_verificar_writes_resumable_json(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

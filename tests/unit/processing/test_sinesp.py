@@ -143,15 +143,15 @@ def test_victims_by_municipality_sum_duplicates_and_sex() -> None:
     out, report = _convert()
     hom = "homicidio-doloso"
     assert _value(out, hom, "6", "1200401", "Sexo=T")[0] == 5  # duas linhas somadas
-    assert _value(out, hom, "6", "1200401", "Sexo=Masculino")[0] == 4
-    assert _value(out, hom, "6", "1200401", "Sexo=Feminino")[0] == 1
+    assert _value(out, hom, "6", "1200401", "Sexo=masculino")[0] == 4
+    assert _value(out, hom, "6", "1200401", "Sexo=feminino")[0] == 1
     # Zero informado é zero verdadeiro (não arredondamento).
     assert _value(out, hom, "6", "3545803", "Sexo=T")[1] == "true_zero"
     # UF inclui o município sem correspondência na DTB.
     assert _value(out, hom, "3", "35", "Sexo=T")[0] == 2
     # Brasil derivado: soma das UFs (5 no AC + 2 em SP).
     assert _value(out, hom, "1", "1", "Sexo=T")[0] == 7
-    assert _value(out, hom, "1", "1", "Sexo=Masculino")[0] == 6
+    assert _value(out, hom, "1", "1", "Sexo=masculino")[0] == 6
     assert "3500000" not in out["territory_id"].to_list()
     assert report.unmatched == {"SP/CIDADE INEXISTENTE": 1}
     assert report.duplicated_keys == 1
@@ -168,7 +168,7 @@ def test_uf_events_federal_scope_and_missing_values() -> None:
     # Estadual ausente com PF informada: o total fica ausente ("...", nunca 0 nem parcial).
     value, status, raw = _value(out, "furto-de-veiculo", "3", "35", "Abrangência=T")
     assert (value, status, raw) == (None, "not_available", "...")
-    assert _value(out, "furto-de-veiculo", "3", "35", "Abrangência=Polícia Federal")[0] == 2
+    assert _value(out, "furto-de-veiculo", "3", "35", "Abrangência=policia-federal")[0] == 2
     # "NÃO INFORMADO" não gera município.
     assert sorted(out.filter(pl.col("variable_id") == roubo)["territorial_level"].unique()) == [
         "1",
@@ -184,7 +184,7 @@ def test_weight_and_row_dimensions() -> None:
     arma = out.filter(
         (pl.col("variable_id") == "arma-de-fogo-apreendida") & (pl.col("territorial_level") == "3")
     )
-    assert sorted(arma["classification_key"].to_list()) == ["Arma=Fuzil", "Arma=Pistola", "Arma=T"]
+    assert sorted(arma["classification_key"].to_list()) == ["Arma=T", "Arma=fuzil", "Arma=pistola"]
     assert arma["unit_name"].unique().to_list() == ["Armas"]
     # Homicídio só estadual: a abrangência não entra (repetiria o Total).
     hom = out.filter(pl.col("variable_id") == "homicidio-doloso")["classification_key"]
@@ -261,6 +261,6 @@ def test_coverage_marks_state_rows_unavailable(tmp_path: object) -> None:
     # Outra UF não muda.
     assert _value(out, "homicidio-doloso", "6", "1200401", "Sexo=T")[0] == 5
     # A parte federal (PF) não é afetada pela cobertura estadual.
-    assert _value(out, "furto-de-veiculo", "3", "35", "Abrangência=Polícia Federal")[0] == 2
+    assert _value(out, "furto-de-veiculo", "3", "35", "Abrangência=policia-federal")[0] == 2
     assert report.coverage_applied == {"SP 202301-202312: Homicídio doloso, Furto de veículo": 3}
     assert report.coverage_unknown_events == ["Evento inexistente"]

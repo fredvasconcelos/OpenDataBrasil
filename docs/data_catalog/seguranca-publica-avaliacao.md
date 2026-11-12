@@ -217,10 +217,9 @@ se os nomes servem para o portal.
 1. ~~Licença~~: resolvida (item 1).
 2. ~~Cobertura~~: aplicada (item 2).
 3. ~~Gold e KPIs~~: publicados (6 KPIs; detalhe por sexo pendente).
-4. **Detalhe por sexo e mais eventos:** a etapa 2 do KI-007 (Gold por dataset) foi
-   feita em 2026-11-12 e o volume deixou de ser obstáculo. Falta dar à dimensão "Sexo"
-   da Silver do Sinesp um nome próprio, porque o catálogo já usa "Sexo" para a
-   classificação c2 do IBGE (ADR-0012, decisão 7).
+4. ~~Detalhe por sexo~~: feito em 2026-11-12 (classificação própria `sexosinesp`,
+   ADR-0014). Mais eventos e as outras dimensões (agente, arma, faixa etária) seguem
+   o mesmo caminho quando forem pedidos.
 5. **Comparação com o SIM:** o espelho do DATASUS terminou e o SIM tem KPI próprio (ADR-0011). A comparação com o Sinesp exige separar as agressões (CID-10 X85–Y09) na Silver do SIM.
 
 ## Onde está cada coisa

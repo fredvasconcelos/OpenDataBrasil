@@ -105,6 +105,8 @@ Os testes cobrem:
   último ano completo e mostra "período incompleto" em 2026; KPIs de estoque ou
   anuais não mostram o seletor;
 - óbitos por residência (SIM): mapa por UF, série desde 1996 e fonte "MS · SIM-DORES";
+- "População por sexo e idade" (9606) com os grupos quinquenais de idade; sexo do SIM
+  e do Sinesp (classificações próprias, rótulo "Sexo"), também no grão anual;
 - trechos da busca lateral em texto puro, sem entidades nem marcas HTML da fonte
   ("Mortalidade": descrição da tabela 6606);
 - KPI de Total gerado do panorama (Nascidos vivos, tabela 2609): mapa por UF,

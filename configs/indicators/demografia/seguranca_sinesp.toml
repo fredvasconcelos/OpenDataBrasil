@@ -4,9 +4,10 @@
 # uma um dataset com `silver.series = "mjsp-sinesp-vde"` em configs/sources/mj.toml.
 # Licença: dados abertos do PDA do MJSP (mjsp-dados-abertos), com crédito da fonte.
 #
-# Esta primeira versão leva à Gold só o Total de cada evento (sexo e abrangência no
-# Total). O detalhe por sexo fica para depois da etapa 2 do KI-007 (processamento por
-# dataset), por causa do volume municipal x mensal.
+# Os KPIs de vítimas detalham por sexo (masculino, feminino, não informado), numa
+# classificação própria (`sexosinesp`): o "Sexo" do Sinesp tem outros códigos que a c2 do
+# IBGE e a categoria "não informado". No portal, o rótulo é o mesmo ("Sexo"). Decisão do
+# mantenedor em 2026-11-12. As demais dimensões (agente, arma, faixa etária) ficam no Total.
 #
 # Conceito: registro policial informado pelos gestores estaduais, por local da
 # ocorrência. Não é a mesma série das declarações de óbito (SIM, SIDRA 6606): KPIs
@@ -15,19 +16,34 @@
 config_version = "1.0.0"
 scope = "demografia"
 
+[[classifications]]
+id = "sexosinesp"
+name = "Sexo"
+silver_dimension = "Sexo"
+total = "T"
+datasets = ["mjsp-sinesp-vde"]
+
+[[classifications.partitions]]
+id = "sexo"
+label = "Sexo"
+# Conferido na Silver em 2026-11-12: a soma das três é igual ao Total em 2.278.097 casos.
+categories = ["masculino", "feminino", "nao-informado"]
+exhaustive = true
+
 [[facts]]
 id = "fact_public_security_victims"
 dataset = "mjsp-sinesp-vde"
 grain = "território (Brasil, UF, município) x mês"
-description = "Vítimas registradas pelos gestores estaduais no Sinesp VDE: homicídio doloso, feminicídio, latrocínio (município, UF e Brasil) e estupro (UF e Brasil)."
-fixed_categories = { "Sexo" = "T" }
+description = "Vítimas registradas pelos gestores estaduais no Sinesp VDE: homicídio doloso, feminicídio, latrocínio (município, UF e Brasil) e estupro (UF e Brasil), por sexo."
+classifications = { "sexosinesp" = "sex_category_key" }
 
 [[facts]]
 id = "fact_public_security_state_deaths"
 dataset = "mjsp-sinesp-vde"
 grain = "território (Brasil, UF) x mês"
-description = "Mortes por intervenção de agente do Estado registradas no Sinesp VDE (polícias estaduais, PF e PRF)."
-fixed_categories = { "Sexo" = "T", "Abrangência" = "T" }
+description = "Mortes por intervenção de agente do Estado registradas no Sinesp VDE (polícias estaduais, PF e PRF), por sexo."
+classifications = { "sexosinesp" = "sex_category_key" }
+fixed_categories = { "Abrangência" = "T" }
 
 [[facts]]
 id = "fact_public_security_vehicle_theft"

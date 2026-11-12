@@ -161,8 +161,9 @@ metodológicas dos gestores.
   - O scan lazy descarta as linhas fora das categorias fixas dos fatos.
   - O detalhe por sexo ficou para depois da etapa 2 do KI-007 (volume municipal ×
     mensal). A etapa 2 foi feita em 2026-11-12: o volume deixou de ser o obstáculo.
-    Falta resolver um nome: a dimensão "Sexo" da Silver do Sinesp tem o mesmo nome da
-    classificação c2 do IBGE, e o catálogo liga a dimensão à classificação pelo nome.
+    O conflito de nome com a c2 do IBGE foi resolvido na ADR-0014 (classificação
+    própria `sexosinesp`, com o rótulo "Sexo"). Desde 2026-11-12, os 5 KPIs de vítimas
+    detalham por sexo.
 
 ### 8. KPIs no portal
 

@@ -6,12 +6,12 @@
 # tooltip é `dimension_order`.
 #
 # Escopo do MVP (docs/data_catalog/escopo-mvp-e-expansao.md): Total, cor ou raça
-# e sexo. Para liberar uma dimensão já publicada na Gold (por exemplo, grupos
-# de idade da 9971), acrescente-a ao KPI e a `dimension_order`.
+# e sexo; idade (grupos quinquenais) na 9606 desde 2026-11-12. Para liberar uma
+# dimensão já publicada na Gold, acrescente-a ao KPI e a `dimension_order`.
 
 config_version = "1.0.0"
 scope = "demografia"
-dimension_order = ["c86", "c2", "c339", "c12190"]
+dimension_order = ["c86", "c2", "sexosim", "sexosinesp", "c287", "c339", "c12190"]
 
 [[themes]]
 id = "demografia"
@@ -28,6 +28,18 @@ indicator = "censo_populacao_cor_raca_sexo"
 dimensions = [
     { classification = "c86", partition = "cor_ou_raca", label = "Cor ou raça" },
     { classification = "c2", partition = "sexo", label = "Sexo" },
+    { classification = "c287", partition = "grupos_quinquenais", label = "Idade" },
+]
+
+[[themes.subthemes.kpis]]
+# Mesmo indicador da 9606, com sexo e idade (pirâmide etária): substitui o KPI gerado
+# da 9514, que publicava só o Total por sexo (decisão do mantenedor, 2026-11-12).
+id = "populacao_sexo_idade"
+label = "População por sexo e idade"
+indicator = "censo_populacao_cor_raca_sexo"
+dimensions = [
+    { classification = "c2", partition = "sexo", label = "Sexo" },
+    { classification = "c287", partition = "grupos_quinquenais", label = "Idade" },
 ]
 
 [[themes.subthemes.kpis]]

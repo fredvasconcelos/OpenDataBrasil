@@ -331,7 +331,7 @@ classifications = { "c2" = "sex_category_key", "c287" = "age_category_key", "c1"
 id = "fact_population_by_race_sex"
 dataset = "ibge-sidra-9606"
 grain = "território x ano censitário x cor ou raça x sexo x idade"
-description = "População residente por cor ou raça, sexo e idade, nos Censos 2010 e 2022. Ingerida só com o Total de idade (escopo do MVP)."
+description = "População residente por cor ou raça, sexo e idade (Total e grupos quinquenais), nos Censos 2010 e 2022."
 classifications = { "c86" = "race_category_key", "c2" = "sex_category_key", "c287" = "age_category_key" }
 
 [[facts]]

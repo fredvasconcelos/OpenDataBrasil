@@ -53,7 +53,7 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     gen = _generate()
     ids = {i["id"]: i for i in gen.indicators}
     skipped = {k: why for k, _, why in gen.skipped}
-    assert len(ids) == 127
+    assert len(ids) == 126  # a 9514 saiu: o item passou à 9606 curada (2026-11-12)
     # Variável fixada no panorama e regra automática (sem coeficientes de variação).
     assert ids["homicidios"]["variable"] == "13532"
     assert ids["taxa_escolarizacao"]["variable"] == "10276"
@@ -71,7 +71,7 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     assert "unidade não é única" in skipped["producao_origem_animal"]
     assert "casamentos" in ids
     # Total + %: a dimensão principal vira classificação do fato; as demais ficam fixas.
-    fact = next(f for f in gen.facts if f["dataset"] == "ibge-sidra-9514")
+    fact = next(f for f in gen.facts if f["dataset"] == "ibge-sidra-9543")
     assert fact["classifications"] == {"c2": "c2_category_key"}  # sexo, curada
     assert "Sexo" not in fact["fixed_categories"]
     assert fact["fixed_categories"]["Idade"] == "100362"
@@ -86,7 +86,7 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     # Série longa com município: categorias só até UF; Censo (1 período): até município.
     obitos = next(d for d in gen.datasets if d["official_id"] == "2654")
     assert obitos["params"]["detail_levels"] == ["n1", "n2", "n3"]
-    censo = next(d for d in gen.datasets if d["official_id"] == "9514")
+    censo = next(d for d in gen.datasets if d["official_id"] == "9543")
     assert "detail_levels" not in censo["params"]
     assert "n6" in censo["params"]["territorial_levels"]
     # Sexo da PNS (110095/110096) entra como partição nova na c2 curada.
@@ -228,9 +228,9 @@ def test_gerar_command_writes_three_fragments(tmp_path: Path) -> None:
         path.unlink()
     result = CliRunner().invoke(app, ["panorama", "gerar", "--raiz", str(tmp_path)])
     assert result.exit_code == 0, result.output
-    assert "127 KPIs gerados (127 tabelas), 72 com categorias" in result.output
+    assert "126 KPIs gerados (126 tabelas), 71 com categorias" in result.output
     data = tomllib.loads((tmp_path / "sources" / "ibge-panorama.toml").read_text("utf-8"))
-    assert len(data["datasets"]) == 127
+    assert len(data["datasets"]) == 126
     assert "institution" not in data
 
 
@@ -296,7 +296,7 @@ def test_proposal_of_main_dimension_from_descriptors() -> None:
     assert rows["plano_diretor"]["categories"] == ["Com Plano Diretor", "Sem Plano Diretor"]
     assert rows["plano_diretor"]["sums"] is True
     # Só recortes comuns: o primeiro deles, marcado como tal.
-    assert rows["populacao_sexo_idade"]["classification"] == "c2 Sexo"
+    assert rows["populacao_sexo_idade"]["classification"] == "c86 Cor ou raça"  # 9606
     assert rows["populacao_sexo_idade"]["is_subject"] is False
     # Sem classificações: só o Total.
     assert rows["ipca"]["classification"] is None

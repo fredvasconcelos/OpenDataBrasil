@@ -70,6 +70,11 @@ class Classification(_Strict):
     silver_dimension: str
     total: str = Field(pattern=CATEGORY_ID)
     partitions: tuple[Partition, ...] = ()
+    # Datasets em que esta classificação lê a dimensão. Vazio: todos os demais. Serve a
+    # fontes que usam o mesmo nome de dimensão com outros códigos: o "Sexo" do SIM
+    # (1, 2, 9) e do Sinesp (masculino, feminino...) não é a c2 do IBGE (4, 5), e uma
+    # classificação própria, com o mesmo rótulo no portal, lê só esses datasets.
+    datasets: tuple[str, ...] = ()
 
     @model_validator(mode="after")
     def _categories(self) -> Classification:
@@ -188,6 +193,25 @@ class IndicatorConfig(_Strict):
     time_aggregation: Literal["sum"] | None = None
 
 
+def _dimension_scope_problems(classifications: Sequence[Classification]) -> list[str]:
+    """Cada dimensão da Silver tem no máximo uma classificação geral e, por dataset, uma."""
+    problems = []
+    general: dict[str, list[str]] = {}
+    scoped: dict[tuple[str, str], list[str]] = {}
+    for c in classifications:
+        if not c.datasets:
+            general.setdefault(c.silver_dimension, []).append(c.id)
+        for ds in c.datasets:
+            scoped.setdefault((c.silver_dimension, ds), []).append(c.id)
+    for dim, ids in general.items():
+        if len(ids) > 1:
+            problems.append(f"dimensão {dim!r} em mais de uma classificação geral: {ids}")
+    for (dim, ds), ids in scoped.items():
+        if len(ids) > 1:
+            problems.append(f"dimensão {dim!r} em mais de uma classificação para {ds}: {ids}")
+    return problems
+
+
 class PendingInstallation(_Strict):
     """Municípios com instalação prevista, segundo nota oficial."""
 
@@ -250,7 +274,7 @@ class SemanticCatalog(_Strict):
 
     @model_validator(mode="after")
     def _references(self) -> SemanticCatalog:  # noqa: PLR0912 - verificações independentes
-        problems: list[str] = []
+        problems: list[str] = _dimension_scope_problems(self.classifications)
         for kind, ids in (
             ("classificação", [c.id for c in self.classifications]),
             ("fato", [f.id for f in self.facts]),

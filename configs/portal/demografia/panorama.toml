@@ -4,7 +4,7 @@
 
 config_version = "1.0.0"
 scope = "demografia"
-dimension_order = ["c2", "c2083", "c232", "c1836", "c664", "c345", "c460", "c63", "c338", "c845", "c1821", "c825", "c921", "c11558", "c67", "c1568", "c58", "c12258", "c1", "c556", "c339", "c12404", "c688", "c422", "c427", "c937", "c782", "c48", "c18", "c12716", "c1835", "c734", "c829", "c716", "c12899", "c12762", "c11065", "c85", "c892", "c956", "c696", "c543", "c1480", "c1346", "c1329", "c1328"]
+dimension_order = ["c2083", "c232", "c1836", "c664", "c345", "c460", "c63", "c338", "c845", "c1821", "c825", "c921", "c11558", "c67", "c2", "c1568", "c58", "c12258", "c1", "c556", "c339", "c12404", "c688", "c422", "c427", "c937", "c782", "c48", "c18", "c12716", "c1835", "c734", "c829", "c716", "c12899", "c12762", "c11065", "c85", "c892", "c956", "c696", "c543", "c1480", "c1346", "c1329", "c1328"]
 
 [[themes]]
 id = "populacao"
@@ -32,12 +32,6 @@ label = "Sexo, idade e cor ou raça"
 id = "envelhecimento"
 label = "Índice de envelhecimento, idade mediana e razão de sexo"
 indicator = "envelhecimento"
-
-[[themes.subthemes.kpis]]
-id = "populacao_sexo_idade"
-label = "População por sexo e idade"
-indicator = "populacao_sexo_idade"
-dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
 
 [[themes.subthemes]]
 id = "natalidade_mortalidade"

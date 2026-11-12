@@ -140,9 +140,8 @@ gerado da Silver do SIM (1996–2024) e da tabela 2654 (2003–2024).
   - Configuração: `configs/indicators/demografia/obitos_sim.toml` e
     `configs/portal/demografia/obitos_sim.toml`.
   - Níveis: município, UF e Brasil. Série anual desde 1996.
-  - Esta versão leva o Total. As cinco dimensões da Silver ficam fixas em "T" no fato.
-  - O detalhe por sexo e por faixa etária exige nomes de dimensão próprios na Silver,
-    porque "Sexo" já é a dimensão da classificação c2 do IBGE.
+  - Detalha por sexo desde 2026-11-12, numa classificação própria (`sexosim`: 1, 2 e
+    9; ADR-0014). As outras quatro dimensões ficam fixas em "T" no fato.
   - O dataset aponta para a pasta `CID10/DORES` (`restricted`, por causa dos
     microdados da Bronze). A Gold só publica as contagens agregadas.
 

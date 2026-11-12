@@ -165,6 +165,17 @@ navegador automatizado ou credenciais pessoais.
     1 min 45 s;
   - release `af0367e2`, já com os nomes municipais lidos em streaming: pico de
     memória do processo (`ru_maxrss`) de 9,4 GiB.
+- **Sub-lotes (2026-11-12):** com a idade na 9606 e o sexo no Sinesp e no SIM, as
+  observações passaram de 8,9 para 20,6 milhões, e o lote do Sinesp sozinho levou o pico
+  a 24,05 GiB, no limite do worker. Agora cada dataset é dividido em sub-lotes de tabela
+  e ano, com até 1,5 milhão de linhas da Silver (`CHUNK_ROWS`); um dataset pequeno
+  continua num lote só.
+  - Os fatos são gravados como as observações: o primeiro bloco substitui a tabela e
+    os demais acrescentam.
+  - As verificações de tabela, as estatísticas por indicador e a reconciliação por
+    categoria são combinadas entre os sub-lotes (`merge_reconciliation`).
+  - Medição (release `0a683906`, 20,6 milhões de observações): pico do processo de
+    11,4 GiB, em cerca de 3 min 20 s.
 
   O maior lote é a tabela 9971 (2,87 milhões de observações). O limite do worker
   continua em 24 GB.

@@ -1,0 +1,39 @@
+# Indicadores só de conferência (fora do portal): comparam tabelas que publicam o mesmo
+# número. A Gold confere cada par em `[[consistency]]` (aviso se divergir).
+#
+# 9514 x 9606 (decisão do mantenedor, 2026-11-12): o portal usa a 9606 (cor ou raça x
+# sexo x idade, 2010 e 2022) nos KPIs "População residente (Censo)" e "População por
+# sexo e idade"; a 9514 fica só como conferência, por sexo em 2022.
+
+config_version = "1.0.0"
+scope = "demografia"
+
+[[facts]]
+id = "fact_population_by_sex_9514"
+dataset = "ibge-sidra-9514"
+grain = "território x ano censitário x sexo"
+description = "População residente por sexo (tabela 9514, idade e forma de declaração no Total). Só conferência da 9606; fora do portal."
+classifications = { "c2" = "sex_category_key" }
+fixed_categories = { "Forma de declaração da idade" = "113635", "Idade" = "100362" }
+
+[[indicators]]
+id = "censo_populacao_sexo_9514"
+name = "População residente por sexo (tabela 9514, conferência)"
+description = "População residente por sexo no Censo 2022, pela tabela 9514. Serve de conferência da tabela 9606, que publica o mesmo número e ainda traz cor ou raça, idade e 2010."
+dataset = "ibge-sidra-9514"
+variable = "93"
+fact = "fact_population_by_sex_9514"
+column = "population"
+unit = "Pessoas"
+additivity = "additive"
+concept = "populacao_residente"
+path = ["Censo Demográfico", "Conferências"]
+caveats = [
+    "Fora do portal: o KPI 'População residente (Censo)' usa a tabela 9606.",
+    "Nota da tabela 9514: os dados de Abel Figueiredo (PA) e São Pedro da Água Branca (MA) foram corrigidos em 22/12/2023, com impacto nos totais do Pará, do Maranhão, do Norte e do Nordeste.",
+]
+
+[[consistency]]
+indicator = "censo_populacao_sexo_9514"
+reference = "censo_populacao_cor_raca_sexo"
+note = "9514 (idade e forma de declaração no Total) = 9606 (cor ou raça e idade no Total), por sexo, em 2022."

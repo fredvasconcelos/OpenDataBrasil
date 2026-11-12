@@ -405,3 +405,53 @@ def test_consistency_compares_common_categories_with_others_at_total() -> None:
     empty = results["consistency.censo_populacao_cor_raca_sexo.censo_populacao_cor_raca"]
     assert empty.status is CheckStatus.WARN
     assert empty.observed == 0
+
+
+def test_chunks_split_large_datasets_by_table_and_year(monkeypatch: pytest.MonkeyPatch) -> None:
+    """KI-007: dataset grande vira sub-lotes de tabela e ano; pequeno fica num só."""
+    from odb_modeling import builder as b  # noqa: PLC0415
+
+    monkeypatch.setattr(b, "CHUNK_ROWS", 100)
+    sizes = {
+        ("T-2015", "2015"): 80,
+        ("T-2016", "2016"): 80,
+        ("T-2017", "2017"): 10,
+        ("X", "2022"): 5,
+    }
+    assert b._chunks(("T-2015", "T-2016", "T-2017"), sizes) == [
+        [("T-2015", "2015")],
+        [("T-2016", "2016"), ("T-2017", "2017")],
+    ]
+    assert b._chunks(("X",), sizes) == [[("X", "2022")]]
+    # Sem linhas na Silver: um lote com a tabela inteira (fatos vazios ainda são gravados).
+    assert b._chunks(("Y",), sizes) == [[("Y", None)]]
+
+
+def test_reconciliation_parts_are_merged() -> None:
+    from odb_modeling.quality import merge_reconciliation  # noqa: PLC0415
+    from odb_processing.quality import CheckResult, CheckStatus  # noqa: PLC0415
+
+    cid = "reconciliation.category.x.c2.sexo"
+    ok = CheckResult(
+        cid,
+        CheckStatus.PASS,
+        "3 totais conferem (categorias = Total)",
+        observed=3,
+        details={"exhaustive": True, "compared": 3, "skipped": 0},
+    )
+    bad = CheckResult(
+        cid,
+        CheckStatus.WARN,
+        "1 de 2 totais divergem",
+        observed=1,
+        expected=0,
+        details={"exhaustive": True, "compared": 2, "skipped": 1, "divergent": [{"a": "1"}]},
+    )
+    [merged] = merge_reconciliation([ok, bad])
+    assert merged.status is CheckStatus.WARN
+    assert (merged.observed, merged.details["compared"], merged.details["skipped"]) == (1, 5, 1)
+    [both_ok] = merge_reconciliation([ok, ok])
+    assert (both_ok.status, both_ok.message) == (
+        CheckStatus.PASS,
+        "6 totais conferem (categorias = Total)",
+    )

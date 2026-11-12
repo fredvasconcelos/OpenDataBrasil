@@ -16,3 +16,4 @@ label = "Mortalidade"
 id = "sim_obitos_residencia"
 label = "Óbitos por residência (SIM)"
 indicator = "sim_obitos_residencia"
+dimensions = [{ classification = "sexosim", partition = "sexo", label = "Sexo" }]

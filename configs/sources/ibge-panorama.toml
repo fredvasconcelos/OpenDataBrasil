@@ -80,32 +80,6 @@ transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
 
 [[datasets]]
-id = "ibge-sidra-9514"
-source = "ibge-sidra"
-official_id = "9514"
-title = "População residente, por sexo, idade e forma de declaração da idade"
-description = "Tabela SIDRA 9514, variável 93 (População residente), no Total das classificações (Forma de declaração da idade: Total; Idade: Total). KPI de panorama 'População por sexo e idade' (ADR-0010)."
-license = "ibge-reuso-com-citacao"
-access_classification = "public_conditional"
-periodicity = "período único"
-reference_url = "https://sidra.ibge.gov.br/tabela/9514"
-
-[datasets.params]
-table = "9514"
-variables = ["93"]
-territorial_levels = ["n1", "n2", "n3", "n6"]
-period_discovery_level = "n1"
-estimated_values_per_period = 16899
-min_rows = 1
-max_rows = 16899
-refresh_recent_periods = 1
-classifications = { "c2" = "all" }
-
-[datasets.silver]
-transformer = "sidra_observation"
-territorial_reference = "ibge-dtb"
-
-[[datasets]]
 id = "ibge-sidra-7362"
 source = "ibge-sidra"
 official_id = "7362"

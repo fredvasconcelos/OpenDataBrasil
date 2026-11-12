@@ -4,9 +4,9 @@
 
 Regra e decisões: [ADR-0010](../adr/0010-panorama-taxonomia-e-tier1.md). Fonte da lista: `configs/catalog/panorama.toml` (versão 1.0.0), conferida contra o acervo SIDRA exportado em 2026-11-10 (`sidra_acervo_2026-11-10.csv`).
 
-- 20 temas, 64 subtemas, 150 KPIs de 147 tabelas;
+- 20 temas, 64 subtemas, 150 KPIs de 146 tabelas;
 - 141 KPIs publicados no portal e 9 em preparação;
-- 146 de 147 tabelas verificadas na API SIDRA (`panorama_verificacao.json`, atualizado em 2026-11-10T16:28:44.216785+00:00).
+- 145 de 146 tabelas verificadas na API SIDRA (`panorama_verificacao.json`, atualizado em 2026-11-10T16:28:44.216785+00:00).
 
 Colunas: **Períodos** traz o tipo, o intervalo e a quantidade; **Níveis** lista os níveis com dados no último período (RM e Município com a contagem); **Var.** é o número de variáveis da tabela.
 
@@ -23,7 +23,7 @@ Filtros do tema: Sexo, Grupos de idade, Cor ou raça, Situação do domicílio.
 | Tamanho e crescimento | Taxa de crescimento da população | [4709](https://sidra.ibge.gov.br/tabela/4709 "População residente, Variação absoluta de população residente e Taxa de crescimento geométrico") | Censo Demográfico | — | publicado | Ano 2022 (1) | Brasil, Região, UF, Município (5570) | 3 | — |
 | Tamanho e crescimento | População nos Censos (série histórica) | [1286](https://sidra.ibge.gov.br/tabela/1286 "População e Distribuição da população pelas Grandes Regiões e Unidades da Federação nos Censos Demográficos") | Censo Demográfico | — | publicado | Ano 1872–2010 (12) | Brasil, Região, UF | 2 | último período 2010 |
 | Sexo, idade e cor ou raça | Índice de envelhecimento, idade mediana e razão de sexo | [9515](https://sidra.ibge.gov.br/tabela/9515 "Índice de envelhecimento, idade mediana e razão de sexo da população") | Censo Demográfico | — | publicado | Ano 2022 (1) | Brasil, Região, UF, Município (5570) | 3 | — |
-| Sexo, idade e cor ou raça | População por sexo e idade | [9514](https://sidra.ibge.gov.br/tabela/9514 "População residente, por sexo, idade e forma de declaração da idade") | Censo Demográfico | Sexo, Grupos de idade | publicado | Ano 2022 (1) | Brasil, Região, UF, Município (5570) | 2 | — |
+| Sexo, idade e cor ou raça | População por sexo e idade | [9606](https://sidra.ibge.gov.br/tabela/9606 "População residente, por cor ou raça, segundo o sexo e a idade") | Censo Demográfico | Sexo, Grupos de idade | publicado | Ano 2010–2022 (2) | Brasil, Região, UF, Município (5570) | 2 | — |
 | Sexo, idade e cor ou raça | População por cor ou raça (2010 e 2022) | [9605](https://sidra.ibge.gov.br/tabela/9605 "População residente, por cor ou raça, nos Censos Demográficos") | Censo Demográfico | Cor ou raça | publicado | Ano 2010–2022 (2) | Brasil, Região, UF, Município (5570) | 2 | — |
 | Povos indígenas | Pessoas indígenas | [9971](https://sidra.ibge.gov.br/tabela/9971 "Pessoas indígenas, por sexo, grupos de idade, localização e situação do domicílio") | Censo Demográfico | Sexo | publicado | Ano 2022 (1) | Brasil, Região, UF, Município (5570) | 1 | — |
 | Povos indígenas | Percentual de pessoas indígenas | [9718](https://sidra.ibge.gov.br/tabela/9718 "População residente, total e indígena, por localização do domicílio e quesito de declaração indígena nos Censos Demográficos - Primeiros Resultados do Universo") | Censo Demográfico | — | publicado | Ano 2022 (1) | Brasil, Região, UF, Município (5570) | 5 | — |

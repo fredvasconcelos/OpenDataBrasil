@@ -24,8 +24,9 @@ from odb_modeling.model import (
     NO_BREAKDOWN,
     SIDRA_LEVELS,
     DatasetInfo,
+    by_dataset,
     category_column,
-    dimension_map,
+    with_dataset,
 )
 from odb_processing.contracts import Contract
 from odb_processing.quality import CheckResult, CheckStatus, check_contract, check_required
@@ -122,17 +123,25 @@ def input_checks(
         )
     )
 
-    dims = dimension_map(catalog)
     exploded = (
-        selected.select("indicator_id", "fact_table", "classification_key", "classifications")
+        with_dataset(selected)
+        .select("dataset_id", "indicator_id", "fact_table", "classification_key", "classifications")
         .unique(["indicator_id", "classification_key"])
         .drop("classification_key")
         .explode("classifications", empty_as_null=False)
         .drop_nulls("classifications")
         .unnest("classifications")
         .unique(["fact_table", "dimension", "category_id"])
+        # Classificação de cada dimensão, com o mapa do dataset (classificações próprias).
+        .with_columns(
+            by_dataset(
+                catalog, lambda dims: pl.col("dimension").replace_strict(dims, default=None)
+            ).alias("classification_id")
+        )
     )
-    unknown_dims = sorted(set(exploded["dimension"].unique().to_list()) - set(dims))
+    unknown_dims = sorted(
+        set(exploded.filter(pl.col("classification_id").is_null())["dimension"].to_list())
+    )
     results.append(
         _result(
             "semantics.classification",
@@ -145,14 +154,12 @@ def input_checks(
     undeclared: dict[str, list[str]] = {}
     for fact in catalog.facts:
         rows = exploded.filter(pl.col("fact_table") == fact.id)
-        observed = {dims.get(d) for d in rows["dimension"].unique().to_list()}
+        observed = set(rows["classification_id"].unique().to_list())
         if observed != set(fact.classifications) and rows.height:
             wrong_fact[fact.id] = sorted(str(o) for o in observed)
         for cid in fact.classifications:
             cls = catalog.classification(cid)
-            cats = set(
-                rows.filter(pl.col("dimension") == cls.silver_dimension)["category_id"].to_list()
-            )
+            cats = set(rows.filter(pl.col("classification_id") == cid)["category_id"].to_list())
             extra = sorted(cats - cls.declared())
             if extra:
                 undeclared[cid] = sorted(set(undeclared.get(cid, [])) | set(extra))
@@ -491,6 +498,63 @@ def category_reconciliation(
                         )
                     )
     return results
+
+
+def merge_reconciliation(results: Sequence[CheckResult]) -> list[CheckResult]:
+    """Junta os resultados de ``category_reconciliation`` de vários sub-lotes (KI-007).
+
+    Um indicador grande é processado em partes (tabela e ano); cada parte confere os
+    seus totais. O resultado final tem um item por verificação: aviso se alguma parte
+    divergiu, com as contagens somadas e as divergências reunidas (até 200).
+    """
+    grouped: dict[str, list[CheckResult]] = {}
+    for r in results:
+        grouped.setdefault(r.check_id, []).append(r)
+    merged = []
+    for check_id, parts in grouped.items():
+        if len(parts) == 1:
+            merged.append(parts[0])
+            continue
+        details = [dict(p.details) for p in parts]
+        compared = sum(int(d.get("compared", 0)) for d in details)
+        bad = sum(int(p.observed or 0) for p in parts if p.status is CheckStatus.WARN)
+        out: dict[str, Any] = {
+            "exhaustive": details[0].get("exhaustive"),
+            "compared": compared,
+            "skipped": sum(int(d.get("skipped", 0)) for d in details),
+        }
+        if "residual_brasil" in details[0]:
+            out["residual_brasil"] = sorted(
+                (r for d in details for r in d.get("residual_brasil", [])),
+                key=lambda r: (r["period"], r["context"]),
+            )
+            out["note"] = details[0].get("note")
+        divergent = [r for d in details for r in d.get("divergent", [])]
+        if divergent:
+            out["divergent"] = divergent[:200]
+        if bad:
+            merged.append(
+                CheckResult(
+                    check_id,
+                    CheckStatus.WARN,
+                    f"{bad} de {compared} totais divergem da soma das categorias",
+                    observed=bad,
+                    expected=0,
+                    details=out,
+                )
+            )
+        else:
+            rule = parts[0].message.split("(categorias ", 1)[-1].rstrip(")")
+            merged.append(
+                CheckResult(
+                    check_id,
+                    CheckStatus.PASS,
+                    f"{compared} totais conferem (categorias {rule})",
+                    observed=compared,
+                    details=out,
+                )
+            )
+    return merged
 
 
 # ------------------------------------------------------------------ consistência

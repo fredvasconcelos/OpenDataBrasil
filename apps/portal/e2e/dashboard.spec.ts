@@ -497,3 +497,28 @@ test("grão de tempo: KPI de estoque ou anual não oferece o seletor", async ({ 
   await expect(page.getByRole("combobox", { name: /^Período/ })).toBeVisible();
   await expect(page.getByRole("group", { name: "Período por" })).toHaveCount(0);
 });
+
+test("População por sexo e idade (9606): detalhe por idade em grupos quinquenais", async ({ page }) => {
+  await page.goto("/dashboard?kpi=populacao_sexo_idade&nivel=uf&dim=c287");
+  await expect(page.getByRole("heading", { level: 1, name: "População por sexo e idade" })).toBeVisible();
+  const head = page.locator(".data-table thead");
+  await expect(head).toContainText("0 a 4 anos");
+  await expect(head).toContainText("100 anos ou mais");
+  // A fonte é a 9606 (a 9514 ficou só como conferência).
+  await expect(page.locator(".meta-source")).toContainText("9606");
+});
+
+test("sexo no SIM e no Sinesp: classificações próprias com o rótulo Sexo", async ({ page }) => {
+  await page.goto("/dashboard?kpi=sim_obitos_residencia&nivel=uf&dim=sexosim");
+  const head = page.locator(".data-table thead");
+  await expect(head).toContainText("Masculino");
+  await expect(head).toContainText("Ignorado");
+  await expect(page.getByRole("checkbox", { name: "Sexo" })).toBeChecked();
+  await page.goto("/dashboard?kpi=sinesp_homicidio_doloso&nivel=uf&dim=sexosinesp");
+  await expect(head).toContainText("Feminino");
+  await expect(head).toContainText("Não informado");
+  // Com o grão anual, o detalhe por sexo continua (soma dos meses por categoria).
+  await page.goto("/dashboard?kpi=sinesp_homicidio_doloso&nivel=uf&dim=sexosinesp&grao=ano&periodo=2025");
+  await expect(head).toContainText("Masculino");
+  await expect(page.locator(".data-table tbody tr").first()).toContainText(/\d/);
+});

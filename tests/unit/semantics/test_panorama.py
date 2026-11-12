@@ -33,7 +33,7 @@ def test_repository_panorama_is_valid() -> None:
     assert len(panorama.temas) == 20
     assert len(panorama.subthemes()) == 64
     assert len(panorama.items()) == 150
-    assert sum(k.kpi is not None for _, _, k in panorama.items()) == 12
+    assert sum(k.kpi is not None for _, _, k in panorama.items()) == 13  # + 9514 → 9606
     # Variáveis fixadas e KPIs cujo Total é só o universo (esperam as categorias).
     by_id = {k.id: k for _, _, k in panorama.items()}
     assert by_id["homicidios"].variavel == "13532"

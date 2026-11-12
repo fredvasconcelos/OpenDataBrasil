@@ -106,7 +106,11 @@ id = "estrutura_populacao"
 label = "Sexo, idade e cor ou raça"
 kpis = [
   { id = "envelhecimento", label = "Índice de envelhecimento, idade mediana e razão de sexo", tabela = "9515", pesquisa = "Censo Demográfico" },
-  { id = "populacao_sexo_idade", label = "População por sexo e idade", tabela = "9514", pesquisa = "Censo Demográfico", filtros = ["sexo", "idade"] },
+  # A 9606 (cor ou raça x sexo x idade, 2010 e 2022) cobre a 9514 (sexo x idade x forma de
+  # declaração, só 2022): valores iguais por sexo em 2022 (decisão do mantenedor, 2026-11-12).
+  # O item passou à 9606, num KPI curado com sexo e idade; a 9514 fica como conferência
+  # (configs/indicators/demografia/conferencias.toml).
+  { id = "populacao_sexo_idade", label = "População por sexo e idade", tabela = "9606", pesquisa = "Censo Demográfico", filtros = ["sexo", "idade"], kpi = "populacao_sexo_idade" },
   { id = "populacao_cor_raca_censos", label = "População por cor ou raça (2010 e 2022)", tabela = "9605", pesquisa = "Censo Demográfico", filtros = ["cor_raca"] },
 ]
 

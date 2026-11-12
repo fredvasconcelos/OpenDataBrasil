@@ -809,14 +809,6 @@ description = "Índice de envelhecimento, idade mediana e razão de sexo: tabela
 fixed_categories = {}
 
 [[facts]]
-id = "fact_sidra_9514"
-dataset = "ibge-sidra-9514"
-grain = "território (Brasil, Grande Região, UF, Município) x ano x sexo"
-description = "População por sexo e idade: tabela SIDRA 9514 (População residente, por sexo, idade e forma de declaração da idade), por sexo."
-classifications = { "c2" = "c2_category_key" }
-fixed_categories = { "Forma de declaração da idade" = "113635", "Idade" = "100362" }
-
-[[facts]]
 id = "fact_sidra_7362"
 dataset = "ibge-sidra-7362"
 grain = "território (Brasil, Grande Região, UF) x ano"
@@ -1789,20 +1781,6 @@ additivity = "non_additive"
 concept = "envelhecimento"
 path = ["População e demografia", "Sexo, idade e cor ou raça"]
 caveats = ["Nota da tabela 9515: 1 - Dados do Universo.", "Nota da tabela 9515: 2 - Idade mediana", "Nota da tabela 9515: É a medida separatriz que utiliza o critério de idade para dividir a população em duas partes iguais, ou seja, é a idade que separa a metade mais jovem da metade mais velha da população.", "Nota da tabela 9515: 3 - Índice de envelhecimento", "Nota da tabela 9515: O índice de envelhecimento (IE) representa o número de pessoas com 65 anos e mais de idade em relação a um grupo de 100 crianças de zero a 14 anos. É determinado pela seguinte fórmula:", "Nota da tabela 9515: IE = (P65+ / P0-14) x 100", "Nota da tabela 9515: Sendo P65+ representando a população de 65 anos ou mais de idade e P0-14 a população de 0 a 14 anos.", "Nota da tabela 9515: 4 - Razão de sexo", "Mais 4 notas na tabela oficial (SIDRA 9515)."]
-
-[[indicators]]
-id = "populacao_sexo_idade"
-name = "População residente"
-description = "População residente (Censo Demográfico, tabela SIDRA 9514). Recorte: Forma de declaração da idade: Total; Idade: Total. Fonte: IBGE - Censo Demográfico."
-dataset = "ibge-sidra-9514"
-variable = "93"
-fact = "fact_sidra_9514"
-column = "valor"
-unit = "Pessoas"
-additivity = "non_additive"
-concept = "populacao_sexo_idade"
-path = ["População e demografia", "Sexo, idade e cor ou raça"]
-caveats = ["Nota da tabela 9514: 1 - Dados do Universo.", "Nota da tabela 9514: 2- Os dados referentes aos municípios Abel Figueiredo (PA) e São Pedro da Água Branca (MA) foram corrigidos no dia 22/12/2023, impactando nos totais dos estados do Pará e do Maranhão e nos totais das Grandes Regiões do Norte e Nordeste."]
 
 [[indicators]]
 id = "esperanca_vida"

@@ -158,15 +158,26 @@ já vêm da 9718. Ampliar exige só configuração.
 | Item | Valor |
 |---|---|
 | Variável | 93 População residente |
-| Classificações | c86 Cor ou raça (Total e 5 categorias); c2 Sexo; c287 Idade (só o Total, escopo do MVP) |
+| Classificações | c86 Cor ou raça (Total e 5 categorias); c2 Sexo; c287 Idade (Total e os 21 grupos quinquenais, de 0 a 4 anos a 100 anos ou mais, desde 2026-11-12) |
 | Níveis | N1, N2, N3, N6 |
-| Divisão | 6 requisições (ano × sexo) de 33.618 valores |
-| Linhas | 201.708 |
+| Divisão | 132 requisições (ano × sexo × idade) de 33.618 valores |
+| Linhas | 4.437.576 na Silver |
 | Brasil | 2022: 203.080.756 = 98.532.431 homens + 104.548.325 mulheres; 2010: 190.755.799 |
 
 Com o sexo no Total, os valores são iguais aos da 9605 em todos os territórios
 (verificação `consistency`). Em 2010, os municípios instalados depois do Censo
 vêm com `...` (não disponível).
+
+**Substitui a 9514 no portal (decisão do mantenedor, 2026-11-12).** A 9514 (sexo ×
+idade × forma de declaração da idade, só 2022) publica, por sexo, o mesmo número da
+9606: os 16.809 pares comparados na Silver (Brasil, regiões, UFs e municípios) são
+iguais. A 9606 ainda traz cor ou raça e 2010. Por isso:
+- o item "População por sexo e idade" do panorama usa um KPI curado sobre a 9606
+  (sexo e idade);
+- o KPI "População residente (Censo)" ganhou a idade;
+- a 9514 ficou só como conferência (`configs/sources/ibge-conferencias.toml` e
+  `configs/indicators/demografia/conferencias.toml`), com a verificação
+  `consistency.censo_populacao_sexo_9514.censo_populacao_cor_raca_sexo`.
 
 ### `ibge-sidra-8176`: Censo 2022, pessoas quilombolas por sexo, idade e localização
 

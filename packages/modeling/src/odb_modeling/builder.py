@@ -66,6 +66,7 @@ from odb_modeling.quality import (
     geography_checks,
     geometry_checks,
     input_checks,
+    merge_reconciliation,
     table_checks,
 )
 from odb_processing.contracts import SIDRA_OBSERVATION, Contract, SchemaChange, compare_schema
@@ -431,52 +432,64 @@ class GoldBuilder:
         summary = _Summary()
         observations_out = _BatchedTable(self, build, contracts[INDICATOR_OBSERVATION.name], evolve)
         table_results: list[CheckResult] = []
+        sizes = _chunk_sizes(scan)
         for dataset_id in sorted(datasets):
             info = datasets[dataset_id]
             part = mapping.filter(pl.col("dataset_id") == dataset_id)
-            silver = (
-                scan.filter(pl.col("table_id").is_in(list(info.source_tables)))
-                .join(
-                    part.lazy().select("table_id", "variable_id").unique(),
-                    on=["table_id", "variable_id"],
-                    how="semi",
-                )
-                .collect(engine="streaming")
-            )
-            selected, fixed_problems = model.strip_fixed_categories(
-                model.select_silver(silver, part, self._catalog), self._catalog
-            )
-            del silver
-            observations = model.build_observations(
-                selected,
-                self._catalog,
-                silver_version=versions,
-                build_id=build.build_id,
-                pending=pending,
-                period_types=period_types,
-            )
-            summary.add(selected, observations, fixed_problems)
             indicators = set(part["indicator_id"].to_list())
-            summary.reconciliation.extend(
-                category_reconciliation(observations, self._catalog, indicators)
-            )
-            if consistency_ids & indicators:
-                summary.consistency.append(
-                    observations.filter(pl.col("indicator_id").is_in(list(consistency_ids)))
+            facts = [f for f in self._catalog.facts if f.dataset == dataset_id]
+            fact_out = {f.id: _BatchedTable(self, build, contracts[f.id], evolve) for f in facts}
+            # Sub-lotes de tabela e ano até ~1,5 milhão de linhas da Silver: um dataset
+            # grande (Sinesp por sexo, 9606 por idade) não fica inteiro na memória.
+            for chunk in _chunks(info.source_tables, sizes):
+                silver = (
+                    scan.filter(_chunk_filter(chunk))
+                    .join(
+                        part.lazy().select("table_id", "variable_id").unique(),
+                        on=["table_id", "variable_id"],
+                        how="semi",
+                    )
+                    .collect(engine="streaming")
                 )
-            for fact in self._catalog.facts:
-                if fact.dataset != dataset_id:
-                    continue
-                frame = model.build_fact(observations, self._catalog, fact, contracts[fact.id])
-                table_results.extend(table_checks(fact.id, frame, contracts[fact.id]))
-                summary.add_fact_categories(fact.id, frame, fact.classifications.values())
-                self._write_table(build, fact.id, frame, contracts[fact.id], evolve)
-            observations_out.add(observations)
-            logger.info(
-                "gold batch written",
-                extra={"dataset_id": dataset_id, "observations": observations.height},
-            )
-            del selected, observations
+                selected, fixed_problems = model.strip_fixed_categories(
+                    model.select_silver(silver, part, self._catalog), self._catalog
+                )
+                del silver
+                observations = model.build_observations(
+                    selected,
+                    self._catalog,
+                    silver_version=versions,
+                    build_id=build.build_id,
+                    pending=pending,
+                    period_types=period_types,
+                )
+                summary.add(selected, observations, fixed_problems)
+                del selected
+                summary.reconciliation.extend(
+                    category_reconciliation(observations, self._catalog, indicators)
+                )
+                if consistency_ids & indicators:
+                    summary.consistency.append(
+                        observations.filter(pl.col("indicator_id").is_in(list(consistency_ids)))
+                    )
+                for fact in facts:
+                    frame = model.build_fact(observations, self._catalog, fact, contracts[fact.id])
+                    summary.add_fact_categories(fact.id, frame, fact.classifications.values())
+                    fact_out[fact.id].add(frame)
+                observations_out.add(observations)
+                logger.info(
+                    "gold batch written",
+                    extra={
+                        "dataset_id": dataset_id,
+                        "chunk": len(chunk),
+                        "observations": observations.height,
+                    },
+                )
+                del observations
+            for fact in facts:
+                fact_out[fact.id].close()
+                table_results.extend(fact_out[fact.id].checks.results())
+        summary.reconciliation = merge_reconciliation(summary.reconciliation)
         observations_out.close()
         summary.municipal_names = names
         summary.pending_report = pending_report
@@ -769,6 +782,57 @@ class GoldBuilder:
         )
 
 
+# Linhas da Silver por sub-lote (tabela e ano): o maior lote cabe com folga no worker.
+CHUNK_ROWS = 1_500_000
+
+
+def _chunk_sizes(scan: pl.LazyFrame) -> dict[tuple[str, str], int]:
+    """Linhas da Silver por tabela e ano (só duas colunas lidas, em streaming)."""
+    sizes = (
+        scan.group_by("table_id", pl.col("period").str.slice(0, 4).alias("year"))
+        .len()
+        .collect(engine="streaming")
+    )
+    return {(str(t), str(y)): int(n) for t, y, n in sizes.iter_rows()}
+
+
+def _chunks(
+    tables: Sequence[str], sizes: Mapping[tuple[str, str], int]
+) -> list[list[tuple[str, str | None]]]:
+    """Sub-lotes de um dataset: pares (tabela, ano) até ``CHUNK_ROWS`` linhas.
+
+    Tabela sem linhas entra inteira (``None``), para o lote existir mesmo vazio.
+    """
+    pieces = sorted(
+        ((t, y, n) for (t, y), n in sizes.items() if t in set(tables)), key=lambda x: (x[0], x[1])
+    )
+    if not pieces:
+        return [[(t, None) for t in tables]]
+    chunks: list[list[tuple[str, str | None]]] = []
+    current: list[tuple[str, str | None]] = []
+    rows = 0
+    for table, year, n in pieces:
+        if current and rows + n > CHUNK_ROWS:
+            chunks.append(current)
+            current, rows = [], 0
+        current.append((table, year))
+        rows += n
+    chunks.append(current)
+    return chunks
+
+
+def _chunk_filter(chunk: Sequence[tuple[str, str | None]]) -> pl.Expr:
+    """Filtro do sub-lote: as tabelas (poda de partição) e os pares tabela e ano."""
+    tables = sorted({t for t, _ in chunk})
+    keep = pl.col("table_id").is_in(tables)
+    pairs = [f"{t}|{y}" for t, y in chunk if y is not None]
+    if pairs:
+        whole = [t for t, y in chunk if y is None]
+        pair = (pl.col("table_id") + pl.lit("|") + pl.col("period").str.slice(0, 4)).is_in(pairs)
+        keep = keep & (pair | pl.col("table_id").is_in(whole))
+    return keep
+
+
 # Linhas de observação acumuladas antes de cada gravação: poucos arquivos por partição
 # sem guardar a tabela inteira na memória (cerca de 0,5 GB por lote gravado).
 OBSERVATION_FLUSH_ROWS = 2_000_000
@@ -830,6 +894,7 @@ class _BatchedTable:
 # Colunas da Silver que as verificações de entrada usam (``input_checks``): o resumo
 # de cada lote guarda só as combinações distintas delas, sem território nem período.
 _INPUT_KEYS = (
+    "dataset_id",
     "table_id",
     "variable_id",
     "unit_name",
@@ -874,8 +939,8 @@ class _Summary:
             selected.unique(list(_INPUT_KEYS)).select(*_INPUT_KEYS, "classifications")
         )
         self._categories.append(
-            selected.select("period", "classification_key", "classifications").unique(
-                ["period", "classification_key"]
+            selected.select("dataset_id", "period", "classification_key", "classifications").unique(
+                ["dataset_id", "period", "classification_key"]
             )
         )
         self._observed.append(
@@ -907,7 +972,11 @@ class _Summary:
     def add_fact_categories(self, fact_id: str, frame: pl.DataFrame, columns: Any) -> None:
         """Categorias usadas por um fato (para a integridade com ``dim_category``)."""
         for column in columns:
-            self.fact_categories[(fact_id, column)] = frame.select(column).unique()
+            found = frame.select(column).unique()
+            previous = self.fact_categories.get((fact_id, column))
+            self.fact_categories[(fact_id, column)] = (
+                found if previous is None else pl.concat([previous, found]).unique()
+            )
 
     def selected(self) -> pl.DataFrame:
         """Combinações distintas da Silver selecionada, para ``input_checks``."""
@@ -931,8 +1000,23 @@ class _Summary:
         return pl.concat(self._names)
 
     def stats(self) -> pl.DataFrame:
-        """Níveis, períodos e contagem por indicador."""
-        return pl.concat(self._stats)
+        """Níveis, períodos e contagem por indicador (somados entre sub-lotes)."""
+        return (
+            pl.concat(self._stats)
+            .group_by("indicator_id")
+            .agg(
+                pl.col("levels")
+                .list.explode(keep_nulls=False, empty_as_null=False)
+                .unique()
+                .alias("levels"),
+                pl.col("periods")
+                .list.explode(keep_nulls=False, empty_as_null=False)
+                .unique()
+                .sort()
+                .alias("periods"),
+                pl.col("n").sum().alias("n"),
+            )
+        )
 
     def indicator_breakdowns(self) -> pl.DataFrame:
         """Pares indicador e desagregação observados."""

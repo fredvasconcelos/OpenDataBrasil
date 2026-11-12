@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 
 import polars as pl
@@ -138,9 +138,41 @@ def indicator_map(catalog: SemanticCatalog, datasets: Mapping[str, DatasetInfo])
     )
 
 
-def dimension_map(catalog: SemanticCatalog) -> dict[str, str]:
-    """Nome da dimensão na Silver → identificador da classificação."""
-    return {c.silver_dimension: c.id for c in catalog.classifications}
+def dimension_map(catalog: SemanticCatalog, dataset: str | None = None) -> dict[str, str]:
+    """Nome da dimensão na Silver → identificador da classificação.
+
+    Sem ``dataset``, só as classificações gerais. Com ele, as classificações próprias do
+    dataset (``datasets``) têm precedência: o "Sexo" do SIM é ``sexosim``, não a c2.
+    """
+    out = {c.silver_dimension: c.id for c in catalog.classifications if not c.datasets}
+    if dataset is not None:
+        out |= {c.silver_dimension: c.id for c in catalog.classifications if dataset in c.datasets}
+    return out
+
+
+def with_dataset(frame: pl.DataFrame) -> pl.DataFrame:
+    """A coluna ``dataset_id`` (nula se faltar): sem ela, vale o mapa geral de dimensões."""
+    if "dataset_id" in frame.columns:
+        return frame
+    return frame.with_columns(pl.lit(None, dtype=pl.String).alias("dataset_id"))
+
+
+def by_dataset(catalog: SemanticCatalog, build: Callable[[dict[str, str]], pl.Expr]) -> pl.Expr:
+    """Expressão com o mapa de dimensões de cada dataset (coluna ``dataset_id``).
+
+    ``build`` recebe o mapa e devolve a expressão; os datasets com classificações
+    próprias ganham um ramo, os demais usam o mapa geral.
+    """
+    expr = build(dimension_map(catalog))
+    scoped = sorted({ds for c in catalog.classifications for ds in c.datasets})
+    # Sem classificações próprias, a coluna ``dataset_id`` nem é consultada.
+    for ds in scoped:
+        expr = (
+            pl.when(pl.col("dataset_id") == ds)
+            .then(build(dimension_map(catalog, ds)))
+            .otherwise(expr)
+        )
+    return expr
 
 
 def select_silver(
@@ -310,15 +342,17 @@ def build_observations(
     ``period_types`` (dataset → ``mes``/``trimestre``) converte o código SIDRA
     do período na chave da Gold (``gold_period``); sem tipo, o período é anual.
     """
-    dims = dimension_map(catalog)
-    category_keys = (
-        pl.col("classifications")
-        .list.eval(
-            pl.element().struct.field("dimension").replace_strict(dims, default=None)
-            + pl.lit(":")
-            + pl.element().struct.field("category_id")
-        )
-        .list.sort()
+    category_keys = by_dataset(
+        catalog,
+        lambda dims: (
+            pl.col("classifications")
+            .list.eval(
+                pl.element().struct.field("dimension").replace_strict(dims, default=None)
+                + pl.lit(":")
+                + pl.element().struct.field("category_id")
+            )
+            .list.sort()
+        ),
     )
     pending_keys = pl.DataFrame(
         [
@@ -514,10 +548,11 @@ def time_grains(indicator: IndicatorConfig, periods: Sequence[str]) -> list[str]
 
 def category_names(selected: pl.DataFrame, catalog: SemanticCatalog) -> dict[str, str]:
     """Rótulo de cada categoria observada (o do período mais recente)."""
-    dims = dimension_map(catalog)
+    keys = ["dataset_id", "period", "classification_key"]
     exploded = (
-        selected.select("period", "classification_key", "classifications")
-        .unique(["period", "classification_key"])
+        with_dataset(selected)
+        .select(*keys, "classifications")
+        .unique(keys)
         .drop("classification_key")
         .explode("classifications", empty_as_null=False)
         .drop_nulls("classifications")
@@ -528,7 +563,9 @@ def category_names(selected: pl.DataFrame, catalog: SemanticCatalog) -> dict[str
     rows = (
         exploded.with_columns(
             (
-                pl.col("dimension").replace_strict(dims, default=None)
+                by_dataset(
+                    catalog, lambda dims: pl.col("dimension").replace_strict(dims, default=None)
+                )
                 + pl.lit(":")
                 + pl.col("category_id")
             ).alias("category_key")
