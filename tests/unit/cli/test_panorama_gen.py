@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import tomllib
 from pathlib import Path
@@ -16,6 +17,7 @@ from odb_cli.main import app
 from odb_cli.panorama_gen import (
     generate,
     official_notes,
+    official_source,
     pick_variable,
     render_indicators,
     render_portal,
@@ -185,6 +187,34 @@ def test_official_notes_are_plain_text() -> None:
     )
     assert notes == ["1 - Dados do Universo.", "2 - Ação."]
     assert official_notes(None) == []
+
+
+def test_official_source_is_plain_text_without_glued_blocks() -> None:
+    # Descritor da tabela 6606: dois blocos <div>, entidades e ponto final.
+    fonte = official_source(
+        {
+            "Fonte": "<div>Minist&eacute;rio da Sa&uacute;de, Informa&ccedil;&otilde;es sobre "
+            "Mortalidade (SIM).</div> <div>Instituto Brasileiro de Geografia e Estat&iacute;stica."
+            "</div>"
+        }
+    )
+    assert fonte == (
+        "Ministério da Saúde, Informações sobre Mortalidade (SIM). "
+        "Instituto Brasileiro de Geografia e Estatística"
+    )
+    assert official_source(None) == ""
+
+
+def test_generated_configs_have_no_html() -> None:
+    """Nada de entidade ou marca HTML nos textos que vão à API e ao portal."""
+    pattern = re.compile(r"&[a-zA-Z]+;|&#\d+;|</?(?:div|br|p|b|i|span|li)\b", re.IGNORECASE)
+    found = [
+        f"{path.name}:{n}"
+        for path in sorted(Path("configs").rglob("*.toml"))
+        for n, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1)
+        if pattern.search(line)
+    ]
+    assert found == []
 
 
 def test_gerar_command_writes_three_fragments(tmp_path: Path) -> None:

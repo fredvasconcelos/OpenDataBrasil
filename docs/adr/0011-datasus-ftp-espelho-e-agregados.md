@@ -95,6 +95,16 @@ observação da Silver (o mesmo do SIDRA, `table_id = "SIM-DORES"`):
   desenho escolhido, são 925 linhas para a mesma UF e o mesmo ano.
 - **Conferência:** a soma de cada dimensão é comparada ao número de registros
   lidos, então nenhum óbito se perde.
+- **Arquivo nacional `DOBR<ano>.dbc`:** a pasta traz, além das 27 UFs, um arquivo do
+  Brasil com os mesmos registros. Ele não entra na soma, porque contaria cada óbito
+  duas vezes. Só o número de registros dele é lido, pelo cabeçalho do DBF, e
+  comparado à soma das UFs no ano (verificação `sim.national_file`, aviso).
+- **Residente de outra UF no arquivo de uma UF:** raro (24 óbitos em 1996–2024, todos de
+  residentes de Tocantins em `DOGO1999.dbc` e `DOGO2001.dbc`). Esse óbito conta no total da UF do arquivo, como
+  os de município ignorado, e fica fora do nível municipal: lá ele repetiria a linha do
+  município que vem do arquivo da outra UF, e cada linha da Silver aponta para um único
+  arquivo da Bronze. A verificação `sim.other_uf_residents` (aviso) lista arquivos e
+  quantidades.
 
 ### 5. Complementar ou novo KPI (decisão do mantenedor)
 
@@ -107,6 +117,18 @@ Os dados do SUS são comparados com os do IBGE antes de qualquer uso conjunto
 
 Para os óbitos, a comparação é SIM × Registro Civil por UF e ano, e o
 resultado vai para `docs/data_catalog/` antes de entrar na Gold.
+
+**Resultado (2026-11-12):** [`comparacao-obitos-sim-registro-civil.md`](../data_catalog/comparacao-obitos-sim-registro-civil.md),
+gerado da Silver do SIM (1996–2024) e da tabela 2654 (2003–2024).
+
+- **Brasil:** o SIM conta de 1,1% a 3,2% a mais que o Registro Civil em todos os anos.
+- **UFs:** só 37% dos 594 pares UF × ano ficam a até 2%. A diferença se concentra no
+  Norte e no Nordeste, como Maranhão (média de 127,6%), Pará (116,1%) e Piauí (112,8%),
+  onde o sub-registro em cartório é conhecido. Sul, Sudeste e Centro-Oeste ficam perto
+  de 100%.
+- **Conclusão:** cobertura não compatível. Pela regra acima, o SIM entra como **KPI
+  novo** ("Óbitos por residência, SIM"), não como complemento da série do IBGE. A criação
+  do KPI na Gold aguarda a aprovação do mantenedor.
 
 ### 6. Licença
 

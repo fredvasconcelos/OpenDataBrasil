@@ -396,3 +396,58 @@ test("segurança pública (Sinesp VDE, MJSP): mapa municipal, série mensal e fo
   await expect(page.locator(".series-tip")).toContainText(/\d/);
   await page.screenshot({ path: "test-results/sinesp-feminicidio-serie.png", fullPage: false });
 });
+
+test("busca da barra lateral fica fixa ao rolar a árvore de temas", async ({ page }) => {
+  // Até 1599 px rola a barra inteira; em tela cheia, só a árvore (.themes).
+  for (const [width, height, scroller] of [
+    [1280, 720, ".sidebar"],
+    [1920, 1080, ".sidebar .themes"],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    await page.goto("/dashboard?kpi=populacao_estimada");
+    const menu = page.getByRole("navigation", { name: "Temas e indicadores" });
+    const search = page.getByLabel("Buscar tema ou indicador");
+    // Abre temas até a árvore passar da altura da área que rola.
+    const summaries = menu.locator(":scope > details:not([open]) > summary");
+    for (let i = 0; i < 6; i++) await summaries.first().click();
+    const area = page.locator(scroller);
+    const overflow = await area.evaluate((el) => el.scrollHeight - el.clientHeight);
+    expect(overflow).toBeGreaterThan(300);
+    await area.evaluate((el) => el.scrollTo(0, el.scrollHeight));
+    const areaBox = await area.boundingBox();
+    const box = await search.boundingBox();
+    if (!areaBox || !box) throw new Error("barra lateral sem caixa");
+    // O campo continua dentro da área visível, logo abaixo do título fixo.
+    expect(box.y).toBeGreaterThanOrEqual(areaBox.y - 1);
+    expect(box.y).toBeLessThan(areaBox.y + 90);
+    // Nenhum item da árvore aparece no recuo acima do bloco fixo.
+    const above = await area.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      const hit = document.elementFromPoint(r.x + r.width / 2, r.y + 4);
+      return Boolean(hit?.closest("details"));
+    });
+    expect(above).toBe(false);
+    // E está por cima da árvore: o ponto do meio do campo é o próprio campo.
+    const onTop = await search.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) === el;
+    });
+    expect(onTop).toBe(true);
+    // E segue funcionando depois da rolagem.
+    await search.fill("homicídio");
+    await expect(menu.locator(".tree-status")).toContainText("indicador");
+  }
+});
+
+test("trechos da busca lateral sem HTML da fonte (entidades e marcas)", async ({ page }) => {
+  await page.goto("/dashboard?kpi=populacao_estimada");
+  await page.getByLabel("Buscar tema ou indicador").fill("Mortalidade");
+  const snippets = page.locator(".tree-snippet");
+  await expect(snippets.first()).toBeVisible();
+  for (const text of await snippets.allInnerTexts()) {
+    expect(text).not.toMatch(/&[a-z]+;|&#\d+;|<\/?[a-z]/i);
+  }
+  // Descrição da tabela 6606 (vítimas de homicídio): blocos da fonte separados por espaço.
+  await page.getByLabel("Buscar tema ou indicador").fill("Mortalidade (SIM). Instituto");
+  await expect(snippets.first()).toContainText("Mortalidade (SIM). Instituto");
+});

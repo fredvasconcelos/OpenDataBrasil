@@ -46,7 +46,14 @@ from odb_processing.contracts import (
     SchemaChange,
     compare_schema,
 )
-from odb_processing.datasus import SIM_FIELDS, UF_CODES, read_dbc, sim_deaths
+from odb_processing.datasus import (
+    SIM_FIELDS,
+    UF_CODES,
+    dbc_record_count,
+    other_uf_residents,
+    read_dbc,
+    sim_deaths,
+)
 from odb_processing.parsers import (
     Lineage,
     MeshSpec,
@@ -61,6 +68,7 @@ from odb_processing.quality import (
     dtb_checks,
     mesh_checks,
     sidra_checks,
+    sim_checks,
     sinesp_checks,
 )
 from odb_processing.sinesp import (
@@ -140,6 +148,14 @@ class SilverRegistry(Protocol):
     def record_checks(self, run_id: str, dataset_id: str, results: Sequence[CheckResult]) -> None:
         """Grava os resultados de qualidade."""
         ...
+
+
+@dataclass(frozen=True)
+class SimReport:
+    """Conferências do SIM: contagens por ano (UFs x DOBR) e residentes de outra UF por arquivo."""
+
+    counts: dict[str, dict[str, int | None]]
+    other_uf: dict[str, dict[str, int]]
 
 
 @dataclass
@@ -320,9 +336,14 @@ class SilverBuilder:
             )
         elif transformer == "datasus_sim_do":
             reference_ids, reference_label = self._reference(dataset)
-            frame, partition = self._sim_frame(dataset, inputs, run, processed_at, reference_ids)
+            frame, partition, sim_report = self._sim_frame(
+                dataset, inputs, run, processed_at, reference_ids
+            )
             # Sem reconciliação entre níveis: a UF inclui óbitos de município ignorado.
-            run.checks = sidra_checks(frame, contract, {}, reference_ids, reference_label)
+            run.checks = [
+                *sidra_checks(frame, contract, {}, reference_ids, reference_label),
+                *sim_checks(sim_report.counts, sim_report.other_uf),
+            ]
         elif transformer == "sinesp_vde":
             reference_ids, reference_label = self._reference(dataset)
             frame, partition, report = self._sinesp_frame(dataset, inputs, run, processed_at)
@@ -411,20 +432,35 @@ class SilverBuilder:
         run: SilverRun,
         processed_at: datetime,
         reference_ids: set[str] | None,
-    ) -> tuple[pl.DataFrame, dict[str, str]]:
-        """Arquivos ``DO<UF><ano>.dbc`` do SIM → óbitos por município e UF (marginais)."""
+    ) -> tuple[pl.DataFrame, dict[str, str], SimReport]:
+        """Arquivos ``DO<UF><ano>.dbc`` do SIM → óbitos por município e UF (marginais).
+
+        A pasta também traz ``DOBR<ano>.dbc``, o arquivo nacional: ele repete os
+        registros das UFs, então não entra na soma (contaria cada óbito duas vezes). Só
+        o número de registros dele é lido, para conferir a soma das UFs no ano.
+        """
         if not reference_ids:
             msg = f"{dataset.id}: o SIM exige a DTB na Silver (códigos de 6 para 7 dígitos)"
             raise SilverBuildError(msg)
         municipalities = {code[:6]: code for code in reference_ids}
         table_id = str(dataset.silver.get("table_id", "SIM-DORES"))
         frames = []
+        states: dict[str, int] = {}
+        national: dict[str, int] = {}
+        other_uf: dict[str, dict[str, int]] = {}
         for item in inputs:
             m = _SIM_FILE.fullmatch(item.partition_key)
             if m is None:
                 msg = f"arquivo fora do padrão DO<UF><ano>.dbc: {item.partition_key}"
                 raise SilverBuildError(msg)
-            records = read_dbc(Path(uri_to_local_path(item.storage_uri)), SIM_FIELDS)
+            path = Path(uri_to_local_path(item.storage_uri))
+            if m["uf"].upper() == "BR":
+                national[m["year"]] = dbc_record_count(path)
+                continue
+            records = read_dbc(path, SIM_FIELDS)
+            states[m["year"]] = states.get(m["year"], 0) + records.height
+            if found := other_uf_residents(records, m["uf"].upper()):
+                other_uf[item.partition_key] = found
             frames.append(
                 sim_deaths(
                     records,
@@ -435,7 +471,9 @@ class SilverBuilder:
                     lineage=self._lineage(item, run, processed_at),
                 )
             )
-        return pl.concat(frames), {"table_id": table_id}
+        years = sorted(states.keys() | national.keys())
+        counts = {y: {"states": states.get(y), "national": national.get(y)} for y in years}
+        return pl.concat(frames), {"table_id": table_id}, SimReport(counts, other_uf)
 
     def _sinesp_frame(
         self,

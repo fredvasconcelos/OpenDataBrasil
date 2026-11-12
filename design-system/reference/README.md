@@ -9,3 +9,5 @@
   - `TooltipLargo.dc.html`, `SerieTempo.dc.html`, `Tooltip.dc.html` — tooltip do mapa e série temporal.
 - `screens/` — os componentes React deste pacote renderizados com os **dados de teste**
   de `src/lib/fixtures.ts` (por isso só 2 temas e 3 indicadores).
+  - `busca-barra-lateral-fixa.png` (2.3.1) é a exceção: captura do portal com dados reais,
+    barra lateral a 1280 px rolada até o meio da árvore, com a busca fixa no topo.

@@ -33,6 +33,8 @@ Codificação (estrutura do SIM, ``SIM/CID10/DOCS`` no FTP):
 
 from __future__ import annotations
 
+import mmap
+import struct
 import tempfile
 from collections.abc import Mapping
 from pathlib import Path
@@ -127,6 +129,35 @@ def read_dbc(path: Path, fields: tuple[str, ...]) -> pl.DataFrame:
     return pl.DataFrame(columns, schema=dict.fromkeys(fields, pl.String))
 
 
+def dbc_record_count(path: Path) -> int:
+    """Registros válidos de um ``.dbc`` sem ler os campos (arquivos grandes, como o ``DOBR``)."""
+    import datasus_dbc  # noqa: PLC0415
+
+    with tempfile.TemporaryDirectory() as tmp:
+        dbf_path = Path(tmp) / "dados.dbf"
+        datasus_dbc.decompress(str(path), str(dbf_path))
+        return dbf_record_count(dbf_path)
+
+
+def dbf_record_count(path: Path) -> int:
+    """Registros de um DBF pelo cabeçalho, descontando os marcados como excluídos (``*``).
+
+    Conta como ``read_dbc``, que também ignora os excluídos, mas só lê o primeiro byte de
+    cada registro.
+    """
+    with path.open("rb") as fh, mmap.mmap(fh.fileno(), 0, access=mmap.ACCESS_READ) as mm:
+        if len(mm) < 12:  # noqa: PLR2004 - tamanho mínimo do cabeçalho DBF
+            msg = f"{path.name}: cabeçalho DBF incompleto"
+            raise ParseError(msg)
+        numrecords, headerlen, recordlen = struct.unpack("<IHH", mm[4:12])
+        end = headerlen + numrecords * recordlen
+        if recordlen == 0 or end > len(mm):
+            msg = f"{path.name}: cabeçalho DBF inconsistente"
+            raise ParseError(msg)
+        deleted = mm[headerlen:end:recordlen].count(b"*")
+    return int(numrecords) - deleted
+
+
 def _age_group() -> pl.Expr:
     code = pl.col("IDADE")
     unit = code.str.slice(0, 1)
@@ -197,6 +228,13 @@ def _marginals(frame: pl.DataFrame, level: str, keys: list[str]) -> pl.DataFrame
     )
 
 
+def other_uf_residents(records: pl.DataFrame, uf: str) -> dict[str, int]:
+    """Registros cujo município de residência é de outra UF: prefixo do código → quantidade."""
+    prefix = pl.col("CODMUNRES").str.slice(0, 2)
+    other = records.filter(prefix.is_in(list(UF_CODES.values())) & (prefix != UF_CODES[uf]))
+    return dict(other.group_by(prefix.alias("uf")).len().sort("uf").iter_rows())
+
+
 def sim_deaths(
     records: pl.DataFrame,
     *,
@@ -225,7 +263,10 @@ def sim_deaths(
         pl.col("mun6").replace_strict(municipalities, default=None).alias("mun7"),
     )
     keys = [d[0] for d in DIMENSIONS]
-    located = coded.drop_nulls("mun7")
+    # Município só quando o código é da UF do arquivo: um registro de residente de outra UF
+    # (raro: DOGO1999 e DOGO2001, 24 óbitos de Tocantins) também sairia no arquivo daquela UF
+    # e repetiria a linha do município. Ele conta só na UF do arquivo, como os sem código.
+    located = coded.filter(pl.col("mun6").str.slice(0, 2) == UF_CODES[uf]).drop_nulls("mun7")
     frames = [
         _marginals(located.rename({"mun7": "territory_id"}), "6", keys),
         _marginals(coded.with_columns(pl.lit(UF_CODES[uf]).alias("territory_id")), "3", keys),

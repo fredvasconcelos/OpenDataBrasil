@@ -54,7 +54,8 @@ SIDRA_VALUE_LIMIT = 50_000
 # Notas oficiais copiadas para o indicador; o restante fica na tabela oficial.
 MAX_NOTES = 8
 _TAG = re.compile(r"<[^>]+>")
-_BREAK = re.compile(r"<br\s*/?>", re.IGNORECASE)
+# Quebras do HTML dos descritores: <br> e fim de bloco (</div>, </p>, </li>).
+_BREAK = re.compile(r"<br\s*/?>|</(?:div|p|li)\s*>", re.IGNORECASE)
 SOURCE_ID = "ibge-sidra"
 LICENSE_ID = "ibge-reuso-com-citacao"
 
@@ -143,11 +144,27 @@ def _periodicity(periods: list[str]) -> str:
     return "anos de referência da pesquisa" if len(years) > 1 else "período único"
 
 
+def html_lines(raw: str | None) -> list[str]:
+    """Texto HTML do descritor do SIDRA (``Nota``, ``Fonte``) em linhas de texto puro.
+
+    Quebra em ``<br>`` e no fim de bloco, tira as marcas de linha (``<b>``, ``<sub>``, ``<a>``)
+    sem pôr espaço e decodifica as entidades
+    (``&ccedil;`` → ``ç``), para nada de HTML chegar ao catálogo, à API ou ao portal.
+    """
+    lines = [
+        html.unescape(_TAG.sub("", part)).replace("\xa0", " ") for part in _BREAK.split(raw or "")
+    ]
+    return [" ".join(line.split()) for line in lines if line.strip()]
+
+
 def official_notes(descriptor: Mapping[str, Any] | None) -> list[str]:
     """Notas do descritor (HTML) em linhas de texto."""
-    raw = (descriptor or {}).get("Nota") or ""
-    lines = [html.unescape(_TAG.sub("", part)).replace("\xa0", " ") for part in _BREAK.split(raw)]
-    return [" ".join(line.split()) for line in lines if line.strip()]
+    return html_lines((descriptor or {}).get("Nota"))
+
+
+def official_source(descriptor: Mapping[str, Any] | None) -> str:
+    """Campo ``Fonte`` do descritor em texto puro, sem ponto final (a descrição põe o seu)."""
+    return " ".join(html_lines((descriptor or {}).get("Fonte"))).rstrip(" .")
 
 
 def _caveats(
@@ -546,7 +563,7 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
             if why_total:
                 out.total_only.append((kpi.id, kpi.tabela, why_total))
         title = titles[kpi.tabela]
-        fonte = (descriptor or {}).get("Fonte")
+        fonte = official_source(descriptor)
         names = {
             str(c["Nome"]): {str(x["Id"]): str(x["Nome"]) for x in c.get("Categorias") or []}
             for c in (descriptor or {}).get("Classificacoes") or []

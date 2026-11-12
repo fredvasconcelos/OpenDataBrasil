@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import struct
 from datetime import UTC, datetime
+from pathlib import Path
 
 import polars as pl
 import pytest
 
-from odb_processing.datasus import SIM_FIELDS, sim_deaths
+from odb_processing.datasus import SIM_FIELDS, dbf_record_count, other_uf_residents, sim_deaths
 from odb_processing.parsers import Lineage, ParseError
+from odb_processing.quality import CheckStatus, sim_checks
 
 LINEAGE = Lineage(
     "a", "b" * 64, "ftp://x/DOAC2023.dbc", datetime.now(UTC), "i", "r", datetime.now(UTC)
@@ -100,3 +103,55 @@ def test_unknown_state_is_rejected() -> None:
             table_id="SIM-DORES",
             lineage=LINEAGE,
         )
+
+
+def _dbf(path: Path, flags: bytes) -> Path:
+    """DBF mínimo (um campo C de 3 bytes); ``flags`` traz o 1º byte de cada registro."""
+    field = b"CAMPO".ljust(11, b"\0") + b"C" + b"\0" * 4 + bytes([3]) + b"\0" * 15
+    headerlen, recordlen = 32 + len(field) + 1, 1 + 3
+    header = struct.pack("<B3BIHH", 3, 126, 1, 1, len(flags), headerlen, recordlen).ljust(32, b"\0")
+    records = b"".join(bytes([f]) + b"abc" for f in flags)
+    path.write_bytes(header + field + b"\r" + records + b"\x1a")
+    return path
+
+
+def test_dbf_record_count_skips_deleted_records(tmp_path: Path) -> None:
+    assert dbf_record_count(_dbf(tmp_path / "a.dbf", b"  *  ")) == 4
+
+
+def test_dbf_record_count_rejects_truncated_file(tmp_path: Path) -> None:
+    path = _dbf(tmp_path / "a.dbf", b"   ")
+    path.write_bytes(path.read_bytes()[:-5])
+    with pytest.raises(ParseError, match="inconsistente"):
+        dbf_record_count(path)
+
+
+def test_sim_checks() -> None:
+    same, none = sim_checks({"2023": {"states": 10, "national": 10}}, {})
+    assert (same.status, none.status) == (CheckStatus.PASS, CheckStatus.PASS)
+    differ, moved = sim_checks(
+        {"2023": {"states": 10, "national": 11}, "2024": {"states": 5, "national": None}},
+        {"DOGO1999.dbc": {"17": 10}},
+    )
+    assert differ.status is CheckStatus.WARN
+    assert differ.details == {
+        "differ": {"2023": {"states": 10, "national": 11}},
+        "missing": ["2024"],
+    }
+    assert (moved.status, moved.observed) == (CheckStatus.WARN, 10)
+
+
+def test_resident_of_another_state_counts_only_in_the_file_state() -> None:
+    # Arquivo do Acre com um residente do Amazonas (130260 → Manaus).
+    records = pl.concat([RECORDS, _records([("06012023", "130260", "1", "450", "1", "I10", "1")])])
+    assert other_uf_residents(records, "AC") == {"13": 1}
+    frame = sim_deaths(
+        records,
+        uf="AC",
+        year="2023",
+        municipalities=MUNICIPALITIES | {"130260": "1302603"},
+        table_id="SIM-DORES",
+        lineage=LINEAGE,
+    )
+    assert _value(frame, "3", "12") == 6
+    assert frame.filter(pl.col("territory_id") == "1302603").is_empty()

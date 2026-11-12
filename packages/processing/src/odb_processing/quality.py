@@ -448,6 +448,52 @@ def mesh_checks(
     return results
 
 
+def sim_checks(
+    counts: Mapping[str, Mapping[str, int | None]],
+    other_uf: Mapping[str, Mapping[str, int]],
+) -> list[CheckResult]:
+    """Avisos do SIM (ADR-0011), que não bloqueiam a escrita.
+
+    ``counts``: ano → ``{"states": registros nas UFs, "national": registros no DOBR}``. O
+    DOBR não entra na Silver; uma diferença aponta um arquivo revisado de um lado só.
+    ``other_uf``: arquivo → {código da UF de residência: registros}. Esses óbitos contam só
+    na UF do arquivo, não no município (a linha repetiria a do arquivo da outra UF).
+    """
+    both = {
+        y: c
+        for y, c in counts.items()
+        if c.get("national") is not None and c.get("states") is not None
+    }
+    differ = {y: dict(c) for y, c in both.items() if c["national"] != c["states"]}
+    missing = sorted(set(counts) - set(both))
+    moved = sum(sum(v.values()) for v in other_uf.values())
+    return [
+        CheckResult(
+            "sim.national_file",
+            CheckStatus.WARN if differ or missing else CheckStatus.PASS,
+            f"{len(both)} anos conferidos com o arquivo nacional DOBR"
+            + (f"; {len(differ)} com contagem diferente" if differ else "; contagens iguais")
+            + (f"; anos sem um dos lados: {missing}" if missing else ""),
+            observed=len(differ),
+            expected=0,
+            details={"differ": differ, "missing": missing},
+        ),
+        CheckResult(
+            "sim.other_uf_residents",
+            CheckStatus.WARN if other_uf else CheckStatus.PASS,
+            (
+                f"{moved} óbitos em {len(other_uf)} arquivos com residência em outra UF: "
+                "contados só na UF do arquivo, fora do nível municipal"
+                if other_uf
+                else "todos os registros residem na UF do arquivo"
+            ),
+            observed=moved,
+            expected=0,
+            details={"files": {k: dict(v) for k, v in other_uf.items()}},
+        ),
+    ]
+
+
 def sinesp_checks(report: Any) -> list[CheckResult]:
     """Avisos da conversão do SINESP VDE (ADR-0012): não bloqueiam a escrita.
 

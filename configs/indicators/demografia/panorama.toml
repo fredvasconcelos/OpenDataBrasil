@@ -1821,7 +1821,7 @@ caveats = ["Valor de referência em Ano: 2026 (a classificação não tem Total;
 [[indicators]]
 id = "fecundidade_total"
 name = "Taxa de fecundidade total"
-description = "Taxa de fecundidade total (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 3727). Tabela sem classificações. Fonte: IBGE, Proje&ccedil;&atilde;o da Popula&ccedil;&atilde;o do Brasil, por Sexo e Idade, para o Per&iacute;odo 2000/2060, Revis&atilde;o 2013, e Proje&ccedil;&atilde;o da Popula&ccedil;&atilde;o das Unidades da Federa&ccedil;&atilde;o, por Sexo e Idade, para o Per&iacute;odo 2000/2030, Revis&atilde;o 2013.."
+description = "Taxa de fecundidade total (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 3727). Tabela sem classificações. Fonte: IBGE, Projeção da População do Brasil, por Sexo e Idade, para o Período 2000/2060, Revisão 2013, e Projeção da População das Unidades da Federação, por Sexo e Idade, para o Período 2000/2030, Revisão 2013."
 dataset = "ibge-sidra-3727"
 variable = "2493"
 fact = "fact_sidra_3727"
@@ -1919,7 +1919,7 @@ caveats = ["Nota da tabela 4712: 1- Dados do Universo.", "Nota da tabela 4712: 2
 [[indicators]]
 id = "arranjos_domiciliares"
 name = "Domicílios"
-description = "Domicílios (PNAD Contínua anual, tabela SIDRA 6788). Recorte: Sexo do responsável pelo domicílio: Total. Fonte: IBGE. Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua, acumulado de primeiras visitas, exceto 2020-2021, acumulado de quintas visitas, devido &agrave; pandemia de Covid-19.."
+description = "Domicílios (PNAD Contínua anual, tabela SIDRA 6788). Recorte: Sexo do responsável pelo domicílio: Total. Fonte: IBGE. Pesquisa Nacional por Amostra de Domicílios Contínua, acumulado de primeiras visitas, exceto 2020-2021, acumulado de quintas visitas, devido à pandemia de Covid-19."
 dataset = "ibge-sidra-6788"
 variable = "162"
 fact = "fact_sidra_6788"
@@ -2227,7 +2227,7 @@ caveats = ["Nota da tabela 4099: A partir do 4º trimestre de 2015, em acordo co
 [[indicators]]
 id = "taxa_informalidade"
 name = "Taxa de informalidade das pessoas de 14 anos ou mais de idade ocupadas na semana de referência"
-description = "Taxa de informalidade das pessoas de 14 anos ou mais de idade ocupadas na semana de referência (PNAD Contínua trimestral, tabela SIDRA 4708). Tabela sem classificações. Fonte: IBGE. Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua, acumulado de primeiras visitas, exceto 2020-2022, acumulado de quintas visitas, devido &agrave; pandemia de Covid-19.."
+description = "Taxa de informalidade das pessoas de 14 anos ou mais de idade ocupadas na semana de referência (PNAD Contínua trimestral, tabela SIDRA 4708). Tabela sem classificações. Fonte: IBGE. Pesquisa Nacional por Amostra de Domicílios Contínua, acumulado de primeiras visitas, exceto 2020-2022, acumulado de quintas visitas, devido à pandemia de Covid-19."
 dataset = "ibge-sidra-4708"
 variable = "12466"
 fact = "fact_sidra_4708"
@@ -2269,7 +2269,7 @@ caveats = ["Nota da tabela 5606: A partir do 4º trimestre de 2015, em acordo co
 [[indicators]]
 id = "gini_domiciliar"
 name = "Índice de Gini do rendimento domiciliar per capita, a preços médios do ano"
-description = "Índice de Gini do rendimento domiciliar per capita, a preços médios do ano (PNAD Contínua anual, tabela SIDRA 7435). Tabela sem classificações. Fonte: IBGE. Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua, acumulado de primeiras visitas, exceto 2020-2022, acumulado de quintas visitas, devido &agrave; pandemia de Covid-19.."
+description = "Índice de Gini do rendimento domiciliar per capita, a preços médios do ano (PNAD Contínua anual, tabela SIDRA 7435). Tabela sem classificações. Fonte: IBGE. Pesquisa Nacional por Amostra de Domicílios Contínua, acumulado de primeiras visitas, exceto 2020-2022, acumulado de quintas visitas, devido à pandemia de Covid-19."
 dataset = "ibge-sidra-7435"
 variable = "10681"
 fact = "fact_sidra_7435"
@@ -2297,7 +2297,7 @@ caveats = ["Nota da tabela 10295: 1) Dados dos resultados preliminares da amostr
 [[indicators]]
 id = "pobreza_linha_nacional"
 name = "Proporção da população abaixo da linha de pobreza nacional"
-description = "Proporção da população abaixo da linha de pobreza nacional (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 5877). Tabela sem classificações. Fonte: IBGE, Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua (PNAD Cont&iacute;nua)."
+description = "Proporção da população abaixo da linha de pobreza nacional (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 5877). Tabela sem classificações. Fonte: IBGE, Pesquisa Nacional por Amostra de Domicílios Contínua (PNAD Contínua)."
 dataset = "ibge-sidra-5877"
 variable = "9948"
 fact = "fact_sidra_5877"
@@ -2311,7 +2311,7 @@ caveats = ["Nota da tabela 5877: Nota 1: Consolidado das primeiras entrevistas d
 [[indicators]]
 id = "trabalho_infantil"
 name = "Percentual de pessoas de 5 a 17 anos de idade em situação de trabalho infantil"
-description = "Percentual de pessoas de 5 a 17 anos de idade em situação de trabalho infantil (PNAD Contínua anual, tabela SIDRA 9836). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 5&ordf; visita.."
+description = "Percentual de pessoas de 5 a 17 anos de idade em situação de trabalho infantil (PNAD Contínua anual, tabela SIDRA 9836). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 5ª visita."
 dataset = "ibge-sidra-9836"
 variable = "9489"
 fact = "fact_sidra_9836"
@@ -2521,7 +2521,7 @@ caveats = ["As categorias de Situação do domicílio podem se sobrepor (a fonte
 [[indicators]]
 id = "mortalidade_materna"
 name = "Razão de mortalidade materna"
-description = "Razão de mortalidade materna (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6694). Tabela sem classificações. Fonte: Minist&eacute;rio da Sa&uacute;de. Sistema de Informa&ccedil;&atilde;o Sobre Mortalidade - SIM e Sistema de Informa&ccedil;&otilde;es sobre Nascidos Vivos - SINASC.."
+description = "Razão de mortalidade materna (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6694). Tabela sem classificações. Fonte: Ministério da Saúde. Sistema de Informação Sobre Mortalidade - SIM e Sistema de Informações sobre Nascidos Vivos - SINASC."
 dataset = "ibge-sidra-6694"
 variable = "9730"
 fact = "fact_sidra_6694"
@@ -2535,7 +2535,7 @@ caveats = ["Nota da tabela 6694: 1. Última atualização: 25 de julho de 2025 (
 [[indicators]]
 id = "mortalidade_menores_5"
 name = "Taxa de mortalidade em menores de 5 anos"
-description = "Taxa de mortalidade em menores de 5 anos (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6695). Tabela sem classificações. Fonte: Minist&eacute;rio da Sa&uacute;de, Sistema de Informa&ccedil;&otilde;es sobre Mortalidade (SIM), Sistema de Informa&ccedil;&otilde;es sobre Nascidos Vivos (SINASC); IBGE. Proje&ccedil;&otilde;es da Popula&ccedil;&atilde;o do Brasil e Unidades da Federa&ccedil;&atilde;o: 2000-2070, ed. 2024, Estimativas de Sub-Registro de Nascimentos e &Oacute;bitos (2015- ) e Sistema de Estat&iacute;sticas Vitais, Estudo Complementar &agrave; Aplica&ccedil;&atilde;o da T&eacute;cnica de Captura-Recaptura (2015-2022).."
+description = "Taxa de mortalidade em menores de 5 anos (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6695). Tabela sem classificações. Fonte: Ministério da Saúde, Sistema de Informações sobre Mortalidade (SIM), Sistema de Informações sobre Nascidos Vivos (SINASC); IBGE. Projeções da População do Brasil e Unidades da Federação: 2000-2070, ed. 2024, Estimativas de Sub-Registro de Nascimentos e Óbitos (2015- ) e Sistema de Estatísticas Vitais, Estudo Complementar à Aplicação da Técnica de Captura-Recaptura (2015-2022)."
 dataset = "ibge-sidra-6695"
 variable = "9731"
 fact = "fact_sidra_6695"
@@ -2549,7 +2549,7 @@ caveats = []
 [[indicators]]
 id = "mortalidade_doencas_cronicas"
 name = "Probabilidade de morrer atribuída a doenças cardiovasculares, câncer, diabetes ou doenças respiratórias crônicas entre os 30 a 69 anos"
-description = "Probabilidade de morrer atribuída a doenças cardiovasculares, câncer, diabetes ou doenças respiratórias crônicas entre os 30 a 69 anos (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 4277). Recorte: Grupo de idade: 30 a 69 anos. Fonte: 1. Minist&eacute;rio da Sa&uacute;de, Sistema de Informa&ccedil;&otilde;es sobre Mortalidade - SIM. 2. IBGE, Proje&ccedil;&otilde;es da Popula&ccedil;&atilde;o do Brasil e Unidades da Federa&ccedil;&atilde;o por Sexo e Idade 2000-2070, Revis&atilde;o 2024.."
+description = "Probabilidade de morrer atribuída a doenças cardiovasculares, câncer, diabetes ou doenças respiratórias crônicas entre os 30 a 69 anos (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 4277). Recorte: Grupo de idade: 30 a 69 anos. Fonte: 1. Ministério da Saúde, Sistema de Informações sobre Mortalidade - SIM. 2. IBGE, Projeções da População do Brasil e Unidades da Federação por Sexo e Idade 2000-2070, Revisão 2024."
 dataset = "ibge-sidra-4277"
 variable = "11754"
 fact = "fact_sidra_4277"
@@ -2605,7 +2605,7 @@ caveats = ["As categorias de Dependência administrativa da escola podem se sobr
 [[indicators]]
 id = "vacinacao_covid"
 name = "Pessoas de 5 anos ou mais de idade que se vacinaram pelo menos uma vez contra a COVID-19"
-description = "Pessoas de 5 anos ou mais de idade que se vacinaram pelo menos uma vez contra a COVID-19 (PNAD Contínua, tabela SIDRA 9730). Recorte: Grupo de idade: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 1&ordm; trimestre."
+description = "Pessoas de 5 anos ou mais de idade que se vacinaram pelo menos uma vez contra a COVID-19 (PNAD Contínua, tabela SIDRA 9730). Recorte: Grupo de idade: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1º trimestre."
 dataset = "ibge-sidra-9730"
 variable = "8992"
 fact = "fact_sidra_9730"
@@ -2619,7 +2619,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "tiveram_covid"
 name = "Pessoas de 5 anos ou mais de idade que tiveram ou consideram que tiveram COVID-19"
-description = "Pessoas de 5 anos ou mais de idade que tiveram ou consideram que tiveram COVID-19 (PNAD Contínua, tabela SIDRA 9373). Recorte: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 1&ordm; trimestre."
+description = "Pessoas de 5 anos ou mais de idade que tiveram ou consideram que tiveram COVID-19 (PNAD Contínua, tabela SIDRA 9373). Recorte: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1º trimestre."
 dataset = "ibge-sidra-9373"
 variable = "9446"
 fact = "fact_sidra_9373"
@@ -2647,7 +2647,7 @@ caveats = ["As categorias de Classes de rendimento total e variação patrimonia
 [[indicators]]
 id = "seguranca_alimentar"
 name = "Domicílios"
-description = "Domicílios (PNAD Contínua, tabela SIDRA 9552). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre.."
+description = "Domicílios (PNAD Contínua, tabela SIDRA 9552). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 4º trimestre."
 dataset = "ibge-sidra-9552"
 variable = "162"
 fact = "fact_sidra_9552"
@@ -2661,7 +2661,7 @@ caveats = ["As categorias de Situação de segurança alimentar existente no dom
 [[indicators]]
 id = "domicilios_internet"
 name = "Domicílios"
-description = "Domicílios (PNAD Contínua anual, tabela SIDRA 7307). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
+description = "Domicílios (PNAD Contínua anual, tabela SIDRA 7307). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 4º trimestre."
 dataset = "ibge-sidra-7307"
 variable = "162"
 fact = "fact_sidra_7307"
@@ -2675,7 +2675,7 @@ caveats = ["As categorias de Existência de utilização da Internet no domicíl
 [[indicators]]
 id = "pessoas_internet"
 name = "Pessoas de 10 anos ou mais de idade"
-description = "Pessoas de 10 anos ou mais de idade (PNAD Contínua anual, tabela SIDRA 7325). Recorte: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
+description = "Pessoas de 10 anos ou mais de idade (PNAD Contínua anual, tabela SIDRA 7325). Recorte: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 4º trimestre."
 dataset = "ibge-sidra-7325"
 variable = "140"
 fact = "fact_sidra_7325"
@@ -2689,7 +2689,7 @@ caveats = ["As categorias de Utilização da internet no período de referência
 [[indicators]]
 id = "celular_uso_pessoal"
 name = "Pessoas de 10 anos ou mais de idade"
-description = "Pessoas de 10 anos ou mais de idade (PNAD Contínua anual, tabela SIDRA 7373). Recorte: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
+description = "Pessoas de 10 anos ou mais de idade (PNAD Contínua anual, tabela SIDRA 7373). Recorte: Sexo: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 4º trimestre."
 dataset = "ibge-sidra-7373"
 variable = "140"
 fact = "fact_sidra_7373"
@@ -2703,7 +2703,7 @@ caveats = ["As categorias de Posse de telefone móvel celular para uso pessoal p
 [[indicators]]
 id = "domicilios_televisao"
 name = "Domicílios"
-description = "Domicílios (PNAD Contínua anual, tabela SIDRA 7167). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
+description = "Domicílios (PNAD Contínua anual, tabela SIDRA 7167). Recorte: Situação do domicílio: Total. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 4º trimestre."
 dataset = "ibge-sidra-7167"
 variable = "162"
 fact = "fact_sidra_7167"
@@ -2717,7 +2717,7 @@ caveats = ["As categorias de Existência de televisão no domicílio podem se so
 [[indicators]]
 id = "sensacao_seguranca"
 name = "Pessoas de 15 anos ou mais de idade que se sentem seguras ao andar sozinhas nas redondezas ou arredores do seu domicílio"
-description = "Pessoas de 15 anos ou mais de idade que se sentem seguras ao andar sozinhas nas redondezas ou arredores do seu domicílio (PNAD Contínua, tabela SIDRA 8713). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
+description = "Pessoas de 15 anos ou mais de idade que se sentem seguras ao andar sozinhas nas redondezas ou arredores do seu domicílio (PNAD Contínua, tabela SIDRA 8713). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 4º trimestre."
 dataset = "ibge-sidra-8713"
 variable = "12567"
 fact = "fact_sidra_8713"
@@ -2731,7 +2731,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "vitimas_roubo"
 name = "Pessoas de 15 anos ou mais de idade que foram vítimas de roubo nos últimos 12 meses"
-description = "Pessoas de 15 anos ou mais de idade que foram vítimas de roubo nos últimos 12 meses (PNAD Contínua, tabela SIDRA 8503). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua Anual - 4&ordm; trimestre."
+description = "Pessoas de 15 anos ou mais de idade que foram vítimas de roubo nos últimos 12 meses (PNAD Contínua, tabela SIDRA 8503). Tabela sem classificações. Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 4º trimestre."
 dataset = "ibge-sidra-8503"
 variable = "12452"
 fact = "fact_sidra_8503"
@@ -2759,7 +2759,7 @@ caveats = ["As categorias de Sexo podem se sobrepor (a fonte não permite somá-
 [[indicators]]
 id = "homicidios"
 name = "Taxa de vítimas de homicídios intencionais"
-description = "Taxa de vítimas de homicídios intencionais (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6606). Tabela sem classificações. Fonte: <div>Minist&eacute;rio da Sa&uacute;de. SVS/DANTPS/CGIAE - Sistema de Informa&ccedil;&otilde;es sobre Mortalidade (SIM).</div>\n<div>Instituto Brasileiro de Geografia e Estat&iacute;stica (IBGE), disponibilizado no Datasus. Popula&ccedil;&atilde;o RIPSA/IBGE.</div>."
+description = "Taxa de vítimas de homicídios intencionais (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6606). Tabela sem classificações. Fonte: Ministério da Saúde. SVS/DANTPS/CGIAE - Sistema de Informações sobre Mortalidade (SIM). Instituto Brasileiro de Geografia e Estatística (IBGE), disponibilizado no Datasus. População RIPSA/IBGE."
 dataset = "ibge-sidra-6606"
 variable = "13532"
 fact = "fact_sidra_6606"
@@ -2899,7 +2899,7 @@ caveats = ["Série encerrada na fonte em 2006: é a série publicada, sem atuali
 [[indicators]]
 id = "agrotoxicos"
 name = "Quantidade comercializada de ingredientes ativos de agrotóxicos e afins"
-description = "Quantidade comercializada de ingredientes ativos de agrotóxicos e afins (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5802). Tabela sem classificações. Fonte: IBAMA. Relat&oacute;rios de Comercializa&ccedil;&atilde;o de Agrot&oacute;xicos - Boletim Anual de Produ&ccedil;&atilde;o, Importa&ccedil;&atilde;o, Exporta&ccedil;&atilde;o e Vendas de Agrot&oacute;xicos no Brasil. Boletins 2009 - 2014, Bras&iacute;lia, DF: Instituto Brasileiro do Meio Ambiente e dos Recursos Naturais Renov&aacute;veis, Diretoria de Qualidade Ambiental. Dispon&iacute;vel em: &lt;http://www.ibama.gov.br/areas-tematicas-qa/relatorio-de-comercializacao-de-agrotoxicos/pagina-3&gt;. Acesso em: abr. 2016.."
+description = "Quantidade comercializada de ingredientes ativos de agrotóxicos e afins (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5802). Tabela sem classificações. Fonte: IBAMA. Relatórios de Comercialização de Agrotóxicos - Boletim Anual de Produção, Importação, Exportação e Vendas de Agrotóxicos no Brasil. Boletins 2009 - 2014, Brasília, DF: Instituto Brasileiro do Meio Ambiente e dos Recursos Naturais Renováveis, Diretoria de Qualidade Ambiental. Disponível em: <http://www.ibama.gov.br/areas-tematicas-qa/relatorio-de-comercializacao-de-agrotoxicos/pagina-3>. Acesso em: abr. 2016."
 dataset = "ibge-sidra-5802"
 variable = "6535"
 fact = "fact_sidra_5802"
@@ -2913,7 +2913,7 @@ caveats = ["Série encerrada na fonte em 2014: é a série publicada, sem atuali
 [[indicators]]
 id = "fertilizantes"
 name = "Quantidade de fertilizantes entregue ao consumidor final"
-description = "Quantidade de fertilizantes entregue ao consumidor final (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 770). Tabela sem classificações. Fonte: <p>Anu&aacute;rio estat&iacute;stico do setor de fertilizantes 2014, S&atilde;o Paulo: Associa&ccedil;&atilde;o Nacional para Difus&atilde;o de Adubos, 2015;<br />Produ&ccedil;&atilde;o agr&iacute;cola municipal 2014 In: IBGE. Sistema IBGE de Recupera&ccedil;&atilde;o Autom&aacute;tica - SIDRA. Rio de Janeiro, 2015.<br />Dispon&iacute;vel em: <a href=\"../pesquisa/pam\" target=\"_blank\" rel=\"noopener\">https://sidra.ibge.gov.br/pesquisa/pam</a>. Acesso em: nov. 2015.</p>."
+description = "Quantidade de fertilizantes entregue ao consumidor final (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 770). Tabela sem classificações. Fonte: Anuário estatístico do setor de fertilizantes 2014, São Paulo: Associação Nacional para Difusão de Adubos, 2015; Produção agrícola municipal 2014 In: IBGE. Sistema IBGE de Recuperação Automática - SIDRA. Rio de Janeiro, 2015. Disponível em: https://sidra.ibge.gov.br/pesquisa/pam. Acesso em: nov. 2015."
 dataset = "ibge-sidra-770"
 variable = "2397"
 fact = "fact_sidra_770"
@@ -2955,7 +2955,7 @@ caveats = ["A fonte não publica esta tabela para o Brasil: os dados vêm por UF
 [[indicators]]
 id = "va_industria_pib"
 name = "Valor adicionado da indústria de transformação em proporção do PIB"
-description = "Valor adicionado da indústria de transformação em proporção do PIB (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6587). Tabela sem classificações. Fonte: IBGE, &nbsp;Sistema de Contas Nacionais - CONAC; e Estimativas da Popula&ccedil;&atilde;o - COPIS."
+description = "Valor adicionado da indústria de transformação em proporção do PIB (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6587). Tabela sem classificações. Fonte: IBGE, Sistema de Contas Nacionais - CONAC; e Estimativas da População - COPIS."
 dataset = "ibge-sidra-6587"
 variable = "9312"
 fact = "fact_sidra_6587"
@@ -2969,7 +2969,7 @@ caveats = []
 [[indicators]]
 id = "emprego_industria"
 name = "Emprego na indústria em proporção do emprego total"
-description = "Emprego na indústria em proporção do emprego total (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6608). Tabela sem classificações. Fonte: IBGE, &nbsp;Sistema de Contas Nacionais - CONAC; e Estimativas da Popula&ccedil;&atilde;o - COPIS."
+description = "Emprego na indústria em proporção do emprego total (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6608). Tabela sem classificações. Fonte: IBGE, Sistema de Contas Nacionais - CONAC; e Estimativas da População - COPIS."
 dataset = "ibge-sidra-6608"
 variable = "9314"
 fact = "fact_sidra_6608"
@@ -3081,7 +3081,7 @@ caveats = ["Nota da tabela 10646: 1 - Outras despesas operacionais e outros cust
 [[indicators]]
 id = "exportacoes_importacoes"
 name = "Valor das exportações"
-description = "Valor das exportações (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5945). Tabela sem classificações. Fonte: <font size=3>Minist&eacute;rio de Desenvolvimento Ind&uacute;stria e Com&eacute;rcio  Exterior, Secretaria de Com&eacute;rcio Exterior, Estat&iacute;sticas de com&eacute;rcio exterior. Balan&ccedil;a comercial brasileira - Unidades da Federa&ccedil;&atilde;o, BR-BC-201312. Dispon&iacute;vel em: &lt;http://www.desenvolvimento.gov.br/sitio/interna/interna.php?area=5&menu=4893&refr=1076&gt;. Acesso em: jan 2016. e  IBGE, Diretoria de Pesquisas, Coordena&ccedil;&atilde;o de Contas Nacionais.</font>."
+description = "Valor das exportações (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5945). Tabela sem classificações. Fonte: Ministério de Desenvolvimento Indústria e Comércio Exterior, Secretaria de Comércio Exterior, Estatísticas de comércio exterior. Balança comercial brasileira - Unidades da Federação, BR-BC-201312. Disponível em: <http://www.desenvolvimento.gov.br/sitio/interna/interna.php?area=5&menu=4893&refr=1076>. Acesso em: jan 2016. e IBGE, Diretoria de Pesquisas, Coordenação de Contas Nacionais."
 dataset = "ibge-sidra-5945"
 variable = "2153"
 fact = "fact_sidra_5945"
@@ -3137,7 +3137,7 @@ caveats = ["Valor de referência em Tipos de índice: Índice de volume das ativ
 [[indicators]]
 id = "viagens"
 name = "Viagens realizadas pelos moradores dos domicílios"
-description = "Viagens realizadas pelos moradores dos domicílios (PNAD Contínua, tabela SIDRA 7204). Tabela sem classificações. Fonte: IBGE. Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua,&nbsp;2019 (3&ordm; trimestre), a partir de 2020 (acumulado de segundas visitas).."
+description = "Viagens realizadas pelos moradores dos domicílios (PNAD Contínua, tabela SIDRA 7204). Tabela sem classificações. Fonte: IBGE. Pesquisa Nacional por Amostra de Domicílios Contínua, 2019 (3º trimestre), a partir de 2020 (acumulado de segundas visitas)."
 dataset = "ibge-sidra-7204"
 variable = "10390"
 fact = "fact_sidra_7204"
@@ -3207,7 +3207,7 @@ caveats = ["Nota da tabela 5453: 1 - As informações de natureza quantitativa (
 [[indicators]]
 id = "pd_pib"
 name = "Dispêndio em P&D em proporção do PIB"
-description = "Dispêndio em P&D em proporção do PIB (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6610). Tabela sem classificações. Fonte: &nbsp;IBGE, &nbsp;Sistema de Contas Nacionais - CONAC; Disp&ecirc;ndios federais: Sistema Integrado de Administra&ccedil;&atilde;o Financeira do Governo Federal (SIAFI).&nbsp;."
+description = "Dispêndio em P&D em proporção do PIB (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6610). Tabela sem classificações. Fonte: IBGE, Sistema de Contas Nacionais - CONAC; Dispêndios federais: Sistema Integrado de Administração Financeira do Governo Federal (SIAFI)."
 dataset = "ibge-sidra-6610"
 variable = "9316"
 fact = "fact_sidra_6610"
@@ -3320,7 +3320,7 @@ caveats = ["Valor de referência em Setores e subsetores: PIB a preços de merca
 [[indicators]]
 id = "pib_municipios"
 name = "Produto Interno Bruto a preços correntes"
-description = "Produto Interno Bruto a preços correntes (Produto Interno Bruto dos Municípios, tabela SIDRA 5938). Tabela sem classificações. Fonte: IBGE, em parceria com os &Oacute;rg&atilde;os Estaduais de Estat&iacute;stica, Secretarias Estaduais de Governo e Superintend&ecirc;ncia da Zona Franca de Manaus - SUFRAMA."
+description = "Produto Interno Bruto a preços correntes (Produto Interno Bruto dos Municípios, tabela SIDRA 5938). Tabela sem classificações. Fonte: IBGE, em parceria com os Órgãos Estaduais de Estatística, Secretarias Estaduais de Governo e Superintendência da Zona Franca de Manaus - SUFRAMA."
 dataset = "ibge-sidra-5938"
 variable = "37"
 fact = "fact_sidra_5938"
@@ -3362,7 +3362,7 @@ caveats = []
 [[indicators]]
 id = "unidades_conservacao"
 name = "Número de unidades de conservação terrestres"
-description = "Número de unidades de conservação terrestres (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5619). Tabela sem classificações. Fonte: Minist&eacute;rio do Meio Ambiente, Departamento de &Aacute;reas Protegidas, Cadastro Nacional de Unidades de Conserva&ccedil;&atilde;o - CNUC; IBGE. &Aacute;rea Territorial Brasileira. Dispon&iacute;vel em: &lt;http://www.ibge.gov.br/home/geociencias/areaterritorial/principal.shtm&gt;. Acesso em: fevereiro de 2017.."
+description = "Número de unidades de conservação terrestres (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5619). Tabela sem classificações. Fonte: Ministério do Meio Ambiente, Departamento de Áreas Protegidas, Cadastro Nacional de Unidades de Conservação - CNUC; IBGE. Área Territorial Brasileira. Disponível em: <http://www.ibge.gov.br/home/geociencias/areaterritorial/principal.shtm>. Acesso em: fevereiro de 2017."
 dataset = "ibge-sidra-5619"
 variable = "6306"
 fact = "fact_sidra_5619"
@@ -3376,7 +3376,7 @@ caveats = ["Nota da tabela 5619: 1 - Dados do Cadastro Nacional de Unidades de C
 [[indicators]]
 id = "area_florestal"
 name = "Área de floresta como proporção da área total terrestre"
-description = "Área de floresta como proporção da área total terrestre (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6843). Tabela sem classificações. Fonte: https://fra-data.fao.org/assessments/fra/2025/BRA/sections/sustainableDevelopment; Resolu&ccedil;&atilde;o n&ordm; 1 de 15/01/2013 do IBGE (dado usado no FRA 2015)."
+description = "Área de floresta como proporção da área total terrestre (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6843). Tabela sem classificações. Fonte: https://fra-data.fao.org/assessments/fra/2025/BRA/sections/sustainableDevelopment; Resolução nº 1 de 15/01/2013 do IBGE (dado usado no FRA 2015)."
 dataset = "ibge-sidra-6843"
 variable = "9971"
 fact = "fact_sidra_6843"
@@ -3390,7 +3390,7 @@ caveats = []
 [[indicators]]
 id = "focos_calor"
 name = "Número de focos de calor"
-description = "Número de focos de calor (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5805). Tabela sem classificações. Fonte: Queimadas: monitoramento de focos. Cachoeira Paulista, SP: Instituto Nacional de Pesquisas Espaciais - INPE, Centro de Previs&atilde;o de Tempo e Estudos Clim&aacute;ticos - CPTEC. Dispon&iacute;vel em: &lt;http://www.dpi.inpe.br/proarco/bdqueimadas/&gt;. Acesso em: jan. 2017.."
+description = "Número de focos de calor (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5805). Tabela sem classificações. Fonte: Queimadas: monitoramento de focos. Cachoeira Paulista, SP: Instituto Nacional de Pesquisas Espaciais - INPE, Centro de Previsão de Tempo e Estudos Climáticos - CPTEC. Disponível em: <http://www.dpi.inpe.br/proarco/bdqueimadas/>. Acesso em: jan. 2017."
 dataset = "ibge-sidra-5805"
 variable = "2142"
 fact = "fact_sidra_5805"
@@ -3404,7 +3404,7 @@ caveats = ["Nota da tabela 5805: 1. Dados de focos de calor obtidos pelos satét
 [[indicators]]
 id = "desflorestamento_amazonia"
 name = "Desflorestamento bruto anual na Amazônia Legal, em 01/08"
-description = "Desflorestamento bruto anual na Amazônia Legal, em 01/08 (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 896). Tabela sem classificações. Fonte: Projeto PRODES: Monitoramento da Floresta Amaz&ocirc;nica Brasileira por Sat&eacute;lite. S&atilde;o Jos&eacute; dos Campos: Instituto Nacional de Pesquisas Espaciais - INPE, 2017. Dispon&iacute;vel em: &lt;http://www.obt.inpe.br/prodes/index.html&gt;. Acesso em: 26 de maio de 2017; e &Aacute;rea territorial oficial. Rio de Janeiro: IBGE, [2015]. Dispon&iacute;vel em: &lt;http://www.ibge.gov.br/home/geociencias/areaterritorial/principal.shtm&gt;. Acesso em: 26 de maio de 2017.."
+description = "Desflorestamento bruto anual na Amazônia Legal, em 01/08 (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 896). Tabela sem classificações. Fonte: Projeto PRODES: Monitoramento da Floresta Amazônica Brasileira por Satélite. São José dos Campos: Instituto Nacional de Pesquisas Espaciais - INPE, 2017. Disponível em: <http://www.obt.inpe.br/prodes/index.html>. Acesso em: 26 de maio de 2017; e Área territorial oficial. Rio de Janeiro: IBGE, [2015]. Disponível em: <http://www.ibge.gov.br/home/geociencias/areaterritorial/principal.shtm>. Acesso em: 26 de maio de 2017."
 dataset = "ibge-sidra-896"
 variable = "2144"
 fact = "fact_sidra_896"
@@ -3418,7 +3418,7 @@ caveats = ["A fonte não publica esta tabela para o Brasil: os dados vêm por UF
 [[indicators]]
 id = "energia_renovavel"
 name = "Participação percentual das energias renováveis na Oferta Interna de Energia (OIE)"
-description = "Participação percentual das energias renováveis na Oferta Interna de Energia (OIE) (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6592). Tabela sem classificações. Fonte: Empresa de Pesquisa Energ&eacute;tica."
+description = "Participação percentual das energias renováveis na Oferta Interna de Energia (OIE) (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 6592). Tabela sem classificações. Fonte: Empresa de Pesquisa Energética."
 dataset = "ibge-sidra-6592"
 variable = "9340"
 fact = "fact_sidra_6592"
@@ -3432,7 +3432,7 @@ caveats = []
 [[indicators]]
 id = "estresse_hidrico"
 name = "Proporção entre a retirada de água doce e o total dos recursos de água doce disponíveis"
-description = "Proporção entre a retirada de água doce e o total dos recursos de água doce disponíveis (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 7077). Tabela sem classificações. Fonte: Ag&ecirc;ncia Nacional de &Aacute;guas e Saneamento B&aacute;sico (ANA) - Sistema Nacional de Informa&ccedil;&otilde;es sobre Recursos H&iacute;dricos (SNIRH)<br /> Institui&ccedil;&atilde;o produtora: Ag&ecirc;ncia Nacional de &Aacute;guas e Saneamento B&aacute;sico (ANA)."
+description = "Proporção entre a retirada de água doce e o total dos recursos de água doce disponíveis (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 7077). Tabela sem classificações. Fonte: Agência Nacional de Águas e Saneamento Básico (ANA) - Sistema Nacional de Informações sobre Recursos Hídricos (SNIRH) Instituição produtora: Agência Nacional de Águas e Saneamento Básico (ANA)."
 dataset = "ibge-sidra-7077"
 variable = "10233"
 fact = "fact_sidra_7077"
@@ -3446,7 +3446,7 @@ caveats = []
 [[indicators]]
 id = "esgoto_tratado"
 name = "Proporção de águas residuais domésticas tratadas de forma segura"
-description = "Proporção de águas residuais domésticas tratadas de forma segura (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 8916). Tabela sem classificações. Fonte: Institui&ccedil;&atilde;o produtora: Ag&ecirc;ncia Nacional de &Aacute;guas e Saneamento B&aacute;sico (ANA)<br /> Fonte dos dados: Instituto Brasileiro de Geografia e Estat&iacute;stica (IBGE) - Pesquisa Nacional por Amostra de Domic&iacute;lios (PNAD) e Pesquisa Nacional por Amostra de Domic&iacute;lios Cont&iacute;nua (PNAD Cont&iacute;nua), Minist&eacute;rio do Desenvolvimento Regional (MDR) - Sistema Nacional de Informa&ccedil;&otilde;es sobre Saneamento (SNIS) e Ag&ecirc;ncia Nacional de &Aacute;guas e Saneamento B&aacute;sico (ANA) - Sistema Nacional de Informa&ccedil;&otilde;es sobre Recursos H&iacute;dricos (SNIRH)."
+description = "Proporção de águas residuais domésticas tratadas de forma segura (Objetivos de Desenvolvimento Sustentável, tabela SIDRA 8916). Tabela sem classificações. Fonte: Instituição produtora: Agência Nacional de Águas e Saneamento Básico (ANA) Fonte dos dados: Instituto Brasileiro de Geografia e Estatística (IBGE) - Pesquisa Nacional por Amostra de Domicílios (PNAD) e Pesquisa Nacional por Amostra de Domicílios Contínua (PNAD Contínua), Ministério do Desenvolvimento Regional (MDR) - Sistema Nacional de Informações sobre Saneamento (SNIS) e Agência Nacional de Águas e Saneamento Básico (ANA) - Sistema Nacional de Informações sobre Recursos Hídricos (SNIRH)."
 dataset = "ibge-sidra-8916"
 variable = "12735"
 fact = "fact_sidra_8916"
@@ -3474,7 +3474,7 @@ caveats = []
 [[indicators]]
 id = "legislacao_ambiental"
 name = "Número de municípios com legislação ambiental"
-description = "Número de municípios com legislação ambiental (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5608). Tabela sem classificações. Fonte: IBGE, Diretoria de Pesquisas, Pesquisa de Informa&ccedil;&otilde;es B&aacute;sicas Municipais - Perfil dos Munic&iacute;pios Brasileiros."
+description = "Número de municípios com legislação ambiental (Indicadores de Desenvolvimento Sustentável, tabela SIDRA 5608). Tabela sem classificações. Fonte: IBGE, Diretoria de Pesquisas, Pesquisa de Informações Básicas Municipais - Perfil dos Municípios Brasileiros."
 dataset = "ibge-sidra-5608"
 variable = "6299"
 fact = "fact_sidra_5608"

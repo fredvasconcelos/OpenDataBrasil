@@ -560,6 +560,7 @@ p.error { margin: var(--odbr-space-2) 0 0; font-size: var(--odbr-fs-small); }
   .main { padding: 20px var(--odbr-space-6) var(--odbr-space-4); }
   .sidebar { padding: 20px var(--odbr-space-4); }
   .sidebar .themes { flex: 1; min-height: 0; border: 1px solid var(--odbr-border); border-radius: 14px; padding: 14px 10px; overflow-y: auto; }
+  .sidebar .themes { --tree-pad: 14px; --tree-lift: 14px; scroll-padding-top: 9rem; }
   .dash-grid {
     flex: 1; min-height: 0; gap: var(--odbr-space-4) var(--odbr-space-5);
     /* Gráfico e tabela dividem a altura em frações fixas: carregar a série não
@@ -739,7 +740,18 @@ mark { background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px; 
   .about-detail { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* Busca da barra lateral (proposta A) */
+/* Busca da barra lateral (proposta A). Título, campo e resumo ficam fixos (sticky) no topo da
+   área que rola: a barra inteira até 1599 px, só a árvore (.themes) em tela cheia.
+   --tree-pad é o padding-top do contêiner que rola: o bloco gruda acima dele e o cobre com o
+   fundo, para a árvore não aparecer no recuo. --tree-lift é quanto o bloco sobe no layout
+   (o espaço livre acima dele: o gap depois de "Filtros"), sem cobrir o cartão de filtros.
+   O scroll-padding evita que um item focado pelo teclado fique escondido atrás do bloco. */
+.sidebar { --tree-pad: var(--odbr-space-6); --tree-lift: var(--odbr-space-5); scroll-padding-top: 9rem; }
+.tree-head {
+  position: sticky; top: calc(-1 * var(--tree-pad)); z-index: 2;
+  margin-top: calc(-1 * var(--tree-lift)); padding-top: var(--tree-pad);
+  background: var(--odbr-bg-surface);
+}
 .tree-search { position: relative; margin: 0 0 6px; }
 .tree-search svg { position: absolute; left: 12px; top: 12px; color: var(--odbr-text-muted); pointer-events: none; }
 .tree-search input { width: 100%; box-sizing: border-box; height: 40px; padding: 0 40px 0 36px; border: 1px solid var(--odbr-border-strong); border-radius: var(--odbr-radius-md); background: var(--odbr-bg-surface); font-size: var(--odbr-fs-ui); font-weight: 700; color: var(--odbr-text); }

@@ -97,7 +97,6 @@ export function Sidebar({
         </section>
       ) : null}
       <nav className="themes" aria-label={t("dashboard.menu")}>
-        <h2>{t("dashboard.menu")}</h2>
         <TreeSearch nav={nav} kpi={kpi} onKpi={onKpi} />
       </nav>
     </aside>
@@ -148,34 +147,38 @@ function TreeSearch({ nav, kpi, onKpi }: { nav: Navigation; kpi: Kpi | null; onK
 
   return (
     <>
-      <div role="search" className="tree-search">
-        <label htmlFor="busca-indicador" className="sr-only">
-          {t("searchLabel")}
-        </label>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="7" />
-          <path d="M20 20l-3.5-3.5" />
-        </svg>
-        <input
-          ref={input}
-          id="busca-indicador"
-          type="search"
-          value={q}
-          placeholder={t("searchPlaceholder")}
-          onChange={(e) => setQ(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") setQ("");
-          }}
-        />
-        {q ? null : <kbd aria-hidden="true">/</kbd>}
-      </div>
-      <div className="tree-status" aria-live="polite">
-        <span>{status}</span>
-        {query ? (
-          <button type="button" onClick={() => setQ("")}>
-            {t("searchClear")}
-          </button>
-        ) : null}
+      {/* Título, campo e resumo fixos no topo da área que rola (sticky): a busca fica à vista na árvore longa. */}
+      <div className="tree-head">
+        <h2>{t("menu")}</h2>
+        <div role="search" className="tree-search">
+          <label htmlFor="busca-indicador" className="sr-only">
+            {t("searchLabel")}
+          </label>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="M20 20l-3.5-3.5" />
+          </svg>
+          <input
+            ref={input}
+            id="busca-indicador"
+            type="search"
+            value={q}
+            placeholder={t("searchPlaceholder")}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setQ("");
+            }}
+          />
+          {q ? null : <kbd aria-hidden="true">/</kbd>}
+        </div>
+        <div className="tree-status" aria-live="polite">
+          <span>{status}</span>
+          {query ? (
+            <button type="button" onClick={() => setQ("")}>
+              {t("searchClear")}
+            </button>
+          ) : null}
+        </div>
       </div>
       {query && !count && !pendingHits.size ? (
         <div className="tree-empty">

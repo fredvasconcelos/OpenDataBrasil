@@ -98,6 +98,11 @@ Os testes cobrem:
   sem ação, com a tabela SIDRA no `title` (Serviços > Turismo e transportes, 8695);
 - tooltip da evolução temporal (v2.3): período mais próximo do ponteiro, inteiro
   dentro do quadro, e navegação pelo teclado;
+- busca da barra lateral fixa (v2.3.1): ao rolar a árvore até o fim, a 1280 px e em
+  tela cheia, título e campo continuam no topo, por cima da árvore, e a busca segue
+  funcionando;
+- trechos da busca lateral em texto puro, sem entidades nem marcas HTML da fonte
+  ("Mortalidade": descrição da tabela 6606);
 - KPI de Total gerado do panorama (Nascidos vivos, tabela 2609): mapa por UF,
   fonte e notas oficiais no rodapé;
 - POF 6715 completa: classes de rendimento e despesas de consumo, com o tooltip do

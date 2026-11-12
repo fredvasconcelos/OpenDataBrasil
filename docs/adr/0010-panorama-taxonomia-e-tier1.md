@@ -202,6 +202,16 @@ observação está nessa categoria (`semantics.fixed_categories`) e retira a
 dimensão. A aditividade vem do descritor. Notas oficiais e fonte entram no
 indicador.
 
+No descritor, `Nota` e `Fonte` vêm em HTML (entidades como `&ccedil;`, `<br>`, blocos
+`<div>`). O gerador converte os dois em texto puro antes de gravar o indicador:
+- quebra a linha em `<br>` e no fim de bloco;
+- tira as marcas de linha sem pôr espaço (`P<sub>65+</sub>` → `P65+`);
+- decodifica as entidades;
+- não repete o ponto final da fonte.
+
+O teste `test_generated_configs_have_no_html` impede que HTML volte às configurações.
+O descritor original continua preservado como publicado.
+
 Um KPI gerado tem o `id` do item do panorama. Por isso a ligação passou a ser
 implícita: o item está publicado quando o portal tem o KPI de `kpi` ou, sem
 `kpi`, um KPI com o mesmo id.

@@ -6,7 +6,7 @@ mais as revisões da beta) e mantêm todas as classes, rótulos e `aria-*` de qu
 
 ## Novidades da v2.3 (sobre a v2.1)
 
-> Versão do pacote: **2.3.0** (arquivo `VERSION`). Telas de referência em `reference/`.
+> Versão do pacote: **2.3.1** (arquivo `VERSION`; ajustes da 2.3.1 na seção "Ajustes depois da 2.3.0"). Telas de referência em `reference/`.
 >
 > **O que a API ainda não fornece (não inventado):** o canvas mostra indicadores
 > "em preparação" e o filtro de situação; o contrato `/navigation` só traz indicadores
@@ -79,6 +79,17 @@ do portal em uso. Adaptações feitas na integração:
 - **Mensagens:** mantidas as chaves do portal (`plannedCount`, `planned`,
   `plannedSource`, legenda "Pessoas") junto com as novas da v2.3.
 
+## Ajustes depois da 2.3.0 (registro para o Claude Design)
+
+Comportamentos definidos no projeto depois do pacote 2.3.0. **Ao gerar a próxima versão,
+preserve-os** (nos canvas e nos componentes): os canvas de `reference/canvas/` são
+anteriores a estes ajustes e ainda não os mostram.
+
+| Versão | Item | Onde | Regra |
+|---|---|---|---|
+| 2.3.1 | Busca da barra lateral fixa | `Sidebar.tsx` (`.tree-head`), `globals.css` | Título "Temas e indicadores", campo e resumo ficam fixos no topo da área que rola (a barra até 1599 px; o cartão da árvore em tela cheia). O fundo cobre a árvore que passa por baixo e o recuo de cima; `scroll-padding-top` mantém à vista o item focado pelo teclado. "Filtros" não é fixo. Captura: `reference/screens/busca-barra-lateral-fixa.png`. Especificação: `docs/DESIGN-SYSTEM.md`, "Páginas (v2.3)" |
+| 2.3.1 | Fonte de indicador fora do IBGE | `KpiInfo.tsx`, `messages/pt-BR.json` (`meta.tableOther`) | A linha "Fonte" usa a instituição e o sistema que a API informa (`source.institution`, `source.system`), por exemplo "MJSP · SINESP-VDE"; sem esses campos, continua "IBGE · Tabela SIDRA N" |
+
 ## Estado da v2.1: o que o portal tem além da v2
 
 Para o Claude Design: ao gerar a próxima versão, **parta destes arquivos** e preserve os
@@ -116,7 +127,7 @@ design-system/
 ├── tokens/
 │   ├── tokens.css            ← variáveis CSS (claro, dark, prefers-color-scheme)
 │   └── tokens.json           ← os mesmos valores em JSON (para outras ferramentas)
-├── VERSION                   ← 2.3.0
+├── VERSION                   ← 2.3.1
 ├── reference/                ← telas do canvas (fontes) e capturas dos componentes
 ├── assets/brand/             ← logos em SVG (texto convertido em curvas) e ícones PNG
 ├── assets/icons/             ← github.svg (Bootstrap Icons, MIT) + licença

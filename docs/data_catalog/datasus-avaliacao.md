@@ -38,8 +38,9 @@ alternativa oficial, e aqui há.
   - os nomes das categorias vêm em entidades HTML (`&ccedil;`), na codificação
     Latin-1.
 - **FTP**:
-  - `SIM/CID10/DORES` tem 812 arquivos `DO<UF><ano>.dbc`, de 1996 a 2024,
-    somando cerca de 4,8 GB comprimidos;
+  - `SIM/CID10/DORES` tem 812 arquivos de 1996 a 2024, somando cerca de 4,8 GB
+    comprimidos: por ano, 27 `DO<UF><ano>.dbc` e o nacional `DOBR<ano>.dbc`, que
+    repete os registros das UFs;
   - `SIM/CID10/TAB` tem as conversões do TabWin (`CNVS_CID10_v2019.rar`,
     `OBITOS_CID10_TAB.zip`), e `SIM/CID10/DOCS`, a estrutura do SIM (PDF);
   - `IBGE/censo` tem só alfabetização, escolaridade, idosos e renda, por isso o
