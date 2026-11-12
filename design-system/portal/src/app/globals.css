@@ -32,6 +32,11 @@
 /* ---------- Base ---------- */
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
+/* Coluna da altura da janela: com pouco conteúdo (ex.: a página de erro), o conteúdo
+   ocupa o espaço livre e o rodapé fica no fim da janela, não logo abaixo do cartão. */
+body { display: flex; flex-direction: column; min-height: 100dvh; }
+body > * { flex-shrink: 0; }
+#conteudo { flex: 1 0 auto; }
 body {
   font-family: var(--odbr-font);
   font-size: var(--odbr-fs-body);
