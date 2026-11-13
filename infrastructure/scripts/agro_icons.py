@@ -1,3 +1,4 @@
+# ruff: noqa: E501 - traçados SVG (path data) não se quebram em linhas
 """Ícones de agropecuária do design system (DS 2.3.14): fonte única dos SVGs e do TSX.
 
 Traço único (currentColor, 1,8 px, pontas arredondadas, grade 24 x 24), como os demais
