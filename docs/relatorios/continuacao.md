@@ -154,6 +154,30 @@ docker compose --profile data run --rm worker odb release activate <release_id> 
 docker compose --profile test run --rm tests pytest -q   # + portal (vitest) e e2e
 ```
 
+## Depois que a carga municipal (C2) terminar: roteiro
+
+A imagem do contêiner `odb-carga-municipal` é anterior às mudanças da rodada 4. Ao
+fim, ele constrói Silver e Gold com as configurações antigas; o build abaixo refaz com
+as atuais (edições do Censo, cruzamentos até UF).
+
+```bash
+docker logs --tail 40 odb-carga-municipal          # falhas da ingestão e o build
+docker compose --profile data run --rm worker odb ingest status
+docker compose --profile data build worker          # imagem com as configs atuais
+docker compose --profile data run --rm worker odb ingest run \
+  ibge-sidra-9841 ibge-sidra-2609 ibge-sidra-2654 ibge-sidra-9543   # edições e partições -c… (C1)
+docker compose --profile data run --rm worker odb silver build --all
+docker compose --profile data run --rm worker odb gold build
+docker compose --profile data run --rm worker odb release check <release_id>
+docker compose --profile data run --rm worker odb release activate <release_id>
+docker compose --profile web up -d --build api portal
+infrastructure/scripts/backup.sh --verify
+```
+
+Conferir no portal: óbitos por sexo × idade na UF (cruzados) e no município (um por
+vez); "População nos Censos" até 2022; alfabetização com 2010. Depois, testes
+(Python, vitest, e2e) e marcar C1 e C2.
+
 ## Comando para retomar numa sessão nova do Claude Code
 
 > Continue o plano em docs/relatorios/continuacao.md a partir do primeiro item não
