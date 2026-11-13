@@ -12,7 +12,10 @@
 #
 # Regra de escrita: até ~35 caracteres, sem perder o que distingue as categorias entre
 # si; o termo da classificação vai na frente quando várias categorias o repetem
-# ("Rede geral: outra forma").
+# ("Rede geral: outra forma"). O rótulo não pode coincidir com o nome de outra categoria
+# da mesma classificação: a c11558 é usada pelo Censo e pela PNAD, com categorias
+# parecidas mas diferentes ("Fossa séptica ou filtro, não ligada" no Censo e "Fossa
+# séptica não ligada à rede" na PNAD).
 
 [dimensoes]
 c12404 = "Segurança alimentar no domicílio"
@@ -43,8 +46,8 @@ c956 = "Atividade econômica (CNAE)"
 "c1821:72153" = "Rede geral: não possui"
 
 # Esgoto e lixo
-"c11558:46290" = "Rede geral ou pluvial"
-"c11558:72112" = "Fossa séptica não ligada à rede"
+"c11558:46290" = "Rede geral, pluvial ou fossa ligada"
+"c11558:72112" = "Fossa séptica ou filtro, não ligada"
 "c67:72124" = "Terreno baldio ou área pública"
 "c67t6736:4661" = "Coleta direta"
 "c67t6736:92864" = "Coleta em caçamba"
