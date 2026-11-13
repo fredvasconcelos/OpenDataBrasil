@@ -10,7 +10,7 @@ o JSON do SIDRA repete nomes de território, variável e categorias em cada linh
 - **Portal hoje (detalhes marginais):** cada detalhe vem sozinho, com os demais no
   Total, em todos os níveis até o município. Em óbitos e nascidos vivos, também sexo ×
   idade cruzados até a UF (C1). Responde "quantos óbitos de mulheres?" ou "quantos
-  óbitos aos 67 anos?", mas não "quantos óbitos de mulheres de 67 anos?" no
+  óbitos de 65 a 69 anos?", mas não "quantos óbitos de mulheres de 65 a 69 anos?" no
   município.
 - **Cubo completo (sem teto):** todas as combinações de todos os detalhes, em todos os
   níveis e anos. Responde qualquer combinação, em qualquer município.
@@ -57,11 +57,14 @@ Territórios: Brasil, 5 regiões, 27 UFs e 5.570 municípios.
 | Mês de ocorrência | 14 |
 | Natureza do óbito | 5 |
 | Sexo | 4 |
-| Idade (anos simples e grupos) | 81 |
+| Idade (anos simples de 0 a 14 e de 85 a 99; faixas de 5 anos de 15 a 84) | 81 |
 | Local de ocorrência | 6 |
 
-- **Cubo:** "óbitos de mulheres de 67 anos, por causa natural, em hospital, em agosto
-  de 2021, em Feira de Santana".
+- **Cubo:** "óbitos de mulheres de 65 a 69 anos, por causa natural, em hospital, em
+  agosto de 2021, de residentes em Feira de Santana". A tabela é por lugar de
+  residência do falecido. Consulta real à API do SIDRA (2026-11-13):
+  `/values/t/2654/n6/2910800/v/343/p/2021/c244/5593/c1836/26877/c2/5/c260/5976/c257/5832`
+  → **12 óbitos**.
 - **Hoje:** cada detalhe sozinho no município, mais sexo × idade cruzados até a UF.
 
 ### 3. Divórcios (1695), 2009 a 2024
