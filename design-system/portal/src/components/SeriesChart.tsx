@@ -435,7 +435,7 @@ export function SeriesChart({ data, additive = false }: { data: Series; additive
       <figcaption className="small">
         <ul className="series-legend">
           {plotted.map((s, i) => (
-            <li key={s.key}>
+            <li key={s.key} title={s.full_label && s.full_label !== s.label ? s.full_label : undefined}>
               <span aria-hidden="true" style={{ width: 16, height: 3, borderRadius: 2, background: color(i) }} />
               {s.label}
             </li>

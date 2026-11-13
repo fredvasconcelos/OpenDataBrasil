@@ -407,6 +407,12 @@ export interface components {
             category_id: string;
             /** Name */
             name: string;
+            /**
+             * Full Name
+             * @description Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11).
+             * @default
+             */
+            full_name: string;
         };
         /**
          * CellOut
@@ -427,6 +433,12 @@ export interface components {
             key: string;
             /** Label */
             label: string;
+            /**
+             * Full Label
+             * @description Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11).
+             * @default
+             */
+            full_label: string;
             /** Depth */
             depth: number;
             /**
@@ -483,6 +495,12 @@ export interface components {
         DetailNodeOut: {
             /** Label */
             label: string;
+            /**
+             * Full Label
+             * @description Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11).
+             * @default
+             */
+            full_label: string;
             /** Classification Id */
             classification_id: string | null;
             /** Category Key */
@@ -530,6 +548,12 @@ export interface components {
             classification_id: string;
             /** Label */
             label: string;
+            /**
+             * Full Label
+             * @description Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11).
+             * @default
+             */
+            full_label: string;
             /** Partition Id */
             partition_id: string;
             /** Total Category Key */
@@ -1009,6 +1033,12 @@ export interface components {
             key: string;
             /** Label */
             label: string;
+            /**
+             * Full Label
+             * @description Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11).
+             * @default
+             */
+            full_label: string;
             /** Categories */
             categories: {
                 [key: string]: string;

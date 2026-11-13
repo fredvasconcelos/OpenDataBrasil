@@ -106,6 +106,7 @@ describe("flattenDetail", () => {
   it("achata a árvore do tooltip na ordem de exibição", () => {
     const rows = flattenDetail({
       label: "Total",
+      full_label: "Total",
       classification_id: null,
       category_key: null,
       value: 100,
@@ -114,13 +115,14 @@ describe("flattenDetail", () => {
       children: [
         {
           label: "Parda",
+          full_label: "Parda",
           classification_id: "c86",
           category_key: "c86:2779",
           value: 60,
           status: "valid",
           share_pct: 60,
           children: [
-            { label: "Homens", classification_id: "c2", category_key: "c2:4", value: null, status: "suppressed", share_pct: null, children: [] },
+            { label: "Homens", full_label: "Homens", classification_id: "c2", category_key: "c2:4", value: null, status: "suppressed", share_pct: null, children: [] },
           ],
         },
       ],
@@ -169,7 +171,7 @@ describe("state", () => {
     periods,
     levels,
     map_levels: levels.filter((l) => l !== "terra_indigena"),
-    dimensions: dims.map((d) => ({ classification_id: d, label: d, partition_id: d, total_category_key: `${d}:0`, categories: [] })),
+    dimensions: dims.map((d) => ({ classification_id: d, label: d, full_label: d, partition_id: d, total_category_key: `${d}:0`, categories: [] })),
     exclusive_dimensions: false,
     crossed: [],
     crossed_levels: [],

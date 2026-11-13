@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from sqlalchemy import Engine
 
@@ -18,7 +19,7 @@ from odb_common.storage import LakehouseLayout, Layer
 from odb_ingestion.config import SourceCatalog, load_sources
 from odb_query_engine import DuckDBConfig, DuckDBReadEngine, ReadEngine
 from odb_semantics import load_panorama
-from odb_semantics.portal import load_portal
+from odb_semantics.portal import load_portal, load_short_labels
 
 
 class _NoVerifier:
@@ -81,7 +82,12 @@ def build_deps(settings: Settings | None = None, api: ApiSettings | None = None)
         resolver=ReleaseResolver(lambda: publication.active(api.scope), ttl_s=api.release_ttl_s),
         gold=gold,
         kpis=KpiService(
-            gold, portal, page_max=api.page_max, panorama=panorama, provenance=provenance(sources)
+            gold,
+            portal,
+            page_max=api.page_max,
+            panorama=panorama,
+            provenance=provenance(sources),
+            labels=load_short_labels(Path(api.portal_config_dir) / "rotulos.toml"),
         ),
         catalog=CatalogRepository(pg),
         engine=duck,

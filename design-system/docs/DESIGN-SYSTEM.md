@@ -281,3 +281,20 @@ SVG e PNG exportados devem levar as cores já calculadas (`resolveSvgColors`) e 
   na tabela. Com muitas séries, o tooltip mostra as 8 primeiras e "+ N séries · veja a
   tabela".
 
+## Ajustes da 2.3.11 (rótulos curtos e informação da tabela)
+
+- **Rótulos curtos (80/20):** nomes de classificação e de categoria com mais de 40
+  caracteres ganham um rótulo curto curado em `configs/portal/rotulos.toml` (32
+  classificações e 85 categorias em 2026-11-13). O termo comum vai na frente ("Rede
+  geral: forma principal", "Assistência social: sem informação"). Valem em "Detalhar
+  por", nas colunas, na série, nos tooltips e na legenda do mapa.
+- **Nome oficial sempre à mão:** no `title` (passar o mouse), no painel ⓘ e nas
+  exportações, que não mudam.
+- **ⓘ "Sobre esta tabela":** ícone de informação (círculo com "i", contorno, cor de
+  link) ao lado de "Calcular % por". Abre um painel com a unidade, os nomes completos
+  das colunas abreviadas, a regra do % escolhido e a linha de totais. Substitui "Como
+  ler os %".
+- **Cabeçalhos:** quebram linha, com largura entre 9 e 22 caracteres.
+- **Cruzamentos:** a dica de "Detalhar por" diz quais detalhes se cruzam no nível
+  ("Neste nível, cruzam-se Sexo × Idade; os demais detalhes, um por vez").
+

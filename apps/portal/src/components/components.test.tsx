@@ -27,6 +27,7 @@ const wrap = (ui: React.ReactNode) =>
 
 const node = (label: string, value: number | null, share: number | null, children: DetailNode[] = [], status = "valid"): DetailNode => ({
   label,
+  full_label: label,
   classification_id: null,
   category_key: label,
   value,
@@ -195,8 +196,8 @@ describe("DataTable", () => {
     period: "2022",
     unit: "Pessoas",
     columns: [
-      { key: "c2:6794", label: "Total", depth: 0, group: "c2:6794", parent: null },
-      { key: "c2:4", label: "Homens", depth: 1, group: "c2:4", parent: "c2:6794" },
+      { key: "c2:6794", label: "Total", full_label: "Total", depth: 0, group: "c2:6794", parent: null },
+      { key: "c2:4", label: "Homens", full_label: "Homens", depth: 1, group: "c2:4", parent: "c2:6794" },
     ],
     rows: [
       { geography_key: "uf:29", name: "Bahia", uf_abbreviation: "BA", cells: { "c2:6794": { value: 10, status: "valid" } } },
@@ -228,12 +229,12 @@ describe("DataTable", () => {
   const matrix: Table = {
     ...table,
     columns: [
-      { key: "T|T", label: "Total", depth: 0, group: "T|T", parent: null },
-      { key: "T|h", label: "Homens", depth: 1, group: "T|T", parent: "T|T" },
-      { key: "T|m", label: "Mulheres", depth: 1, group: "T|T", parent: "T|T" },
-      { key: "b|T", label: "Branca", depth: 1, group: "b|T", parent: "T|T" },
-      { key: "b|h", label: "Branca › Homens", depth: 2, group: "b|T", parent: "b|T" },
-      { key: "b|m", label: "Branca › Mulheres", depth: 2, group: "b|T", parent: "b|T" },
+      { key: "T|T", label: "Total", full_label: "Total", depth: 0, group: "T|T", parent: null },
+      { key: "T|h", label: "Homens", full_label: "Homens", depth: 1, group: "T|T", parent: "T|T" },
+      { key: "T|m", label: "Mulheres", full_label: "Mulheres", depth: 1, group: "T|T", parent: "T|T" },
+      { key: "b|T", label: "Branca", full_label: "Branca", depth: 1, group: "b|T", parent: "T|T" },
+      { key: "b|h", label: "Branca › Homens", full_label: "Branca › Homens", depth: 2, group: "b|T", parent: "b|T" },
+      { key: "b|m", label: "Branca › Mulheres", full_label: "Branca › Mulheres", depth: 2, group: "b|T", parent: "b|T" },
     ],
     rows: [
       {
@@ -283,7 +284,7 @@ describe("DataTable", () => {
   });
 
   it("recolhe grupos com muitas linhas e expande pelo cabeçalho", () => {
-    const many = Array.from({ length: 13 }, (_, i) => ({ key: `b|${i}`, label: `Branca › Item ${i}`, depth: 2, group: "b|T", parent: "b|T" }));
+    const many = Array.from({ length: 13 }, (_, i) => ({ key: `b|${i}`, label: `Branca › Item ${i}`, full_label: `Branca › Item ${i}`, depth: 2, group: "b|T", parent: "b|T" }));
     const { container } = wrap(
       <DataTable data={{ ...matrix, columns: [...matrix.columns.slice(0, 4), ...many] }} additive selected={null} sort="value" order="desc" onSort={vi.fn()} onPage={vi.fn()} onSelect={vi.fn()} />,
     );
@@ -292,13 +293,33 @@ describe("DataTable", () => {
     expect(container.querySelectorAll("tbody td")[1]?.textContent).toContain("Item 0");
   });
 
+  it("rótulos curtos: o ícone de informação mostra o nome completo das colunas", () => {
+    const short: Table = {
+      ...table,
+      columns: [
+        { key: "t", label: "Total", full_label: "Total", depth: 0, group: "t", parent: null },
+        { key: "a", label: "Rede geral: forma principal", full_label: "Possui ligação à rede geral e a utiliza como forma principal", depth: 1, group: "a", parent: "t" },
+      ],
+    };
+    const { container } = wrap(
+      <DataTable data={short} additive selected={null} sort="value" order="desc" onSort={vi.fn()} onPage={vi.fn()} onSelect={vi.fn()} />,
+    );
+    expect(container.querySelector("thead")?.textContent).toContain("Rede geral: forma principal");
+    expect(screen.queryByRole("note")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Sobre esta tabela" }));
+    const note = screen.getByRole("note");
+    expect(note.textContent).toContain("Possui ligação à rede geral e a utiliza como forma principal");
+    expect(note.textContent).toContain("pessoas");
+  });
+
   it("sem KPI aditivo, não mostra % nem a escolha da base", () => {
     const { container } = wrap(
       <DataTable data={matrix} selected={null} sort="value" order="desc" onSort={vi.fn()} onPage={vi.fn()} onSelect={vi.fn()} />,
     );
     expect(container.querySelector(".share")).toBeNull();
-    expect(container.querySelector(".share-base")).toBeNull();
-    expect(container.textContent).not.toContain("Como ler os %");
+    expect(container.querySelector(".share-base select")).toBeNull();
+    expect(screen.getByRole("button", { name: "Sobre esta tabela" })).toBeTruthy();
+    expect(container.textContent).not.toContain("Calcular % por");
   });
 });
 

@@ -1397,8 +1397,8 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                     shown_levels = ", ".join(LEVEL_LABELS.get(lv, lv) for lv in comp.levels)
                     caveats.append(f"{comp.detail.name}: só em {shown_levels}.")
         if kpi.id in out.crossed:
-            names = {d.cid: d.name for d in (detail, *extras.details) if d is not None}
-            groups = "; ".join(" × ".join(names[c] for c in g) for g in out.crossed[kpi.id])  # noqa: RUF001
+            dim_names = {d.cid: d.name for d in (detail, *extras.details) if d is not None}
+            groups = "; ".join(" × ".join(dim_names[c] for c in g) for g in out.crossed[kpi.id])  # noqa: RUF001
             caveats.append(
                 f"Cruzamentos completos ({groups}) em Brasil, Grandes Regiões e UFs. "
                 "No município, um detalhe por vez, com os demais no Total."

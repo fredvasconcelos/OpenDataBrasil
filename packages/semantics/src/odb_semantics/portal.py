@@ -10,6 +10,7 @@ ativar o release, e tolerante na API, que esconde só os KPIs com problema.
 
 from __future__ import annotations
 
+import re
 import tomllib
 from collections.abc import Mapping, Sequence
 from pathlib import Path
@@ -277,6 +278,42 @@ def _correction_problems(
                     f"índice da correção {corr.id} ({corr.indicator}) não publicado no release"
                 )
     return out
+
+
+class ShortLabels(_Strict):
+    """Rótulos curtos do portal (``configs/portal/rotulos.toml``, DS 2.3.11).
+
+    O nome oficial continua na Gold e nas exportações; o portal mostra o curto e
+    oferece o completo no botão de informação da tabela.
+    """
+
+    dimensoes: dict[str, str] = Field(default_factory=dict)
+    categorias: dict[str, str] = Field(default_factory=dict)
+
+    @staticmethod
+    def _origin(cid: str) -> str:
+        # Classificação própria de tabela ("c653t4423", ADR-0014) → a de origem ("c653").
+        return re.sub(r"t\d+$", "", cid)
+
+    def dimension(self, cid: str) -> str | None:
+        """Rótulo curto da classificação (ou da de origem); None se não houver."""
+        return self.dimensoes.get(cid) or self.dimensoes.get(self._origin(cid))
+
+    def category(self, key: str) -> str | None:
+        """Rótulo curto da categoria pela chave exata; None se não houver."""
+        return self.categorias.get(key)
+
+
+def load_short_labels(path: str | Path) -> ShortLabels:
+    """Carrega os rótulos curtos; sem o arquivo, nenhum rótulo (vale o nome oficial)."""
+    path = Path(path)
+    if not path.is_file():
+        return ShortLabels()
+    try:
+        return ShortLabels.model_validate(tomllib.loads(path.read_text(encoding="utf-8")))
+    except (tomllib.TOMLDecodeError, ValidationError) as exc:
+        msg = f"{path}: rótulos curtos inválidos: {exc}"
+        raise PortalConfigError(msg) from exc
 
 
 def describe_problems(problems: Mapping[str, Sequence[str]]) -> str:

@@ -70,6 +70,7 @@ from odb_semantics.portal import (
     KpiConfig,
     PortalConfig,
     PortalConfigError,
+    ShortLabels,
     describe_problems,
     release_problems,
 )
@@ -123,6 +124,7 @@ class KpiService:
         page_max: int,
         panorama: Panorama | None = None,
         provenance: Mapping[str, tuple[str, str | None]] | None = None,
+        labels: ShortLabels | None = None,
     ) -> None:
         """Recebe o acesso à Gold, a configuração do portal e, opcionalmente, o panorama.
 
@@ -136,6 +138,7 @@ class KpiService:
             self._links = resolve_links(panorama, (k.id for k in portal.kpis()))
         self._gold = gold
         self._portal = portal
+        self._short = labels or ShortLabels()
         self._panorama = panorama
         self._page_max = page_max
         # dataset → (sigla da instituição, sistema), das fontes configuradas.
@@ -223,7 +226,8 @@ class KpiService:
             out.append(
                 DimensionOut(
                     classification_id=dim.classification,
-                    label=dim.label,
+                    label=self._short.dimension(dim.classification) or dim.label,
+                    full_label=dim.label,
                     partition_id=dim.partition,
                     total_category_key=self._gold.total_category(ctx, dim.classification)[
                         "category_key"
@@ -232,7 +236,8 @@ class KpiService:
                         CategoryOut(
                             category_key=c["category_key"],
                             category_id=c["category_id"],
-                            name=c["name"],
+                            name=self._name(ctx, c["category_key"]),
+                            full_name=c["name"],
                         )
                         for c in cats
                     ],
@@ -677,11 +682,18 @@ class KpiService:
             geography_key=target, name=geo["name"], uf_abbreviation=None, cells=cells
         )
 
-    def _label(self, ctx: ReleaseContext, combo: Combo, dims: Sequence[str]) -> str:
+    def _name(self, ctx: ReleaseContext, key: str) -> str:
+        """Rótulo curto da categoria (``rotulos.toml``) ou o nome da Gold."""
+        return self._short.category(key) or str(self._gold.categories(ctx)[key]["name"])
+
+    def _label(
+        self, ctx: ReleaseContext, combo: Combo, dims: Sequence[str], *, full: bool = False
+    ) -> str:
+        cats = self._gold.categories(ctx)
         names = [
-            self._gold.categories(ctx)[key]["name"]
+            str(cats[key]["name"]) if full else self._name(ctx, key)
             for key in combo
-            if not self._gold.categories(ctx)[key]["is_total"]
+            if not cats[key]["is_total"]
         ]
         return " › ".join(names) if names else "Total"  # noqa: RUF001 - separador de exibição
 
@@ -772,7 +784,7 @@ class KpiService:
             values.append(
                 MapValueOut(geography_key=key, name=total.name, value=share, status=status)
             )
-        name = self._gold.categories(ctx)[share_key]["name"]
+        name = self._name(ctx, share_key)
         return MapOut(
             kpi_id=kpi.id,
             indicator_id=kpi.indicator,
@@ -839,7 +851,8 @@ class KpiService:
                         children.append(sub)
             key = combo[depth - 1] if depth else None
             return DetailNodeOut(
-                label=categories[key]["name"] if key else "Total",
+                label=self._name(ctx, key) if key else "Total",
+                full_label=str(categories[key]["name"]) if key else "Total",
                 classification_id=dims[depth - 1] if depth else None,
                 category_key=key,
                 value=to_float(value),
@@ -896,6 +909,7 @@ class KpiService:
             SeriesItemOut(
                 key="|".join(combo) or "total",
                 label=self._label(ctx, combo, dims),
+                full_label=self._label(ctx, combo, dims, full=True),
                 categories=dict(zip(dims, combo, strict=True)),
                 depth=sum(c != t for c, t in zip(combo, totals, strict=True)),
                 points=[
@@ -1015,6 +1029,7 @@ class KpiService:
                 ColumnOut(
                     key=keys[c],
                     label=self._label(ctx, c, dims),
+                    full_label=self._label(ctx, c, dims, full=True),
                     depth=self._depth(c, totals),
                     group=group(c),
                     parent=parent(c),

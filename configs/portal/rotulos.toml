@@ -1,0 +1,135 @@
+# Rótulos curtos do portal (DS 2.3.11, princípio 80/20).
+#
+# A fonte publica nomes longos de classificações e categorias. O portal mostra o rótulo
+# curto em "Detalhar por", nas colunas da tabela, na série e no tooltip. O nome
+# completo fica no botão de informação da tabela (ⓘ), no título (hover) e nas
+# exportações, que guardam sempre o nome oficial.
+#
+# Chaves:
+# - [dimensoes]: código da classificação no portal ("c1821"). Uma classificação própria
+#   de tabela ("c653t4423", ADR-0014) usa o rótulo da origem ("c653") se não tiver o seu.
+# - [categorias]: chave exata da categoria ("c1821:72144", "c67t6736:4661").
+#
+# Regra de escrita: até ~35 caracteres, sem perder o que distingue as categorias entre
+# si; o termo da classificação vai na frente quando várias categorias o repetem
+# ("Rede geral: outra forma").
+
+[dimensoes]
+c12404 = "Segurança alimentar no domicílio"
+c12446 = "Tamanho do município"
+c12762 = "Atividade econômica (CNAE)"
+c1347 = "Plano para a seca"
+c1393 = "Meio de informação sobre crimes"
+c1821 = "Ligação à rede de água"
+c2083 = "Residência 5 anos antes"
+c218 = "Condição do produtor"
+c274 = "Idade do marido na sentença"
+c275 = "Idade da mulher na sentença"
+c339 = "Classes de rendimento"
+c345 = "Tempo de casamento até o divórcio"
+c422 = "Uso da internet (3 meses)"
+c427 = "Celular para uso pessoal"
+c652 = "Rendimento domiciliar per capita"
+c653 = "Força de trabalho"
+c688 = "Internet no domicílio"
+c696 = "Atividade (indústria e serviços)"
+c782 = "Produto da lavoura"
+c956 = "Atividade econômica (CNAE)"
+
+[categorias]
+# Água (Censo 2022, tabela 6803)
+"c1821:72144" = "Rede geral: forma principal"
+"c1821:72145" = "Rede geral: outra forma"
+"c1821:72153" = "Rede geral: não possui"
+
+# Esgoto e lixo
+"c11558:46290" = "Rede geral ou pluvial"
+"c11558:72112" = "Fossa séptica não ligada à rede"
+"c67:72124" = "Terreno baldio ou área pública"
+"c67t6736:4661" = "Coleta direta"
+"c67t6736:92864" = "Coleta em caçamba"
+
+# CNAE (seções)
+"c12762t9949:116830" = "A Agropecuária e pesca"
+"c12762t9949:117307" = "E Água, esgoto e resíduos"
+"c12762t9949:117363" = "G Comércio e reparação de veículos"
+"c12762t9949:117608" = "K Finanças e seguros"
+"c12762t9949:117673" = "M Profissionais, científicas e técnicas"
+"c12762t9949:117714" = "N Administrativas e complementares"
+"c12762t9949:117774" = "O Administração pública"
+"c12762t9949:117892" = "U Organismos internacionais"
+"c956:48591" = "A Agropecuária e pesca"
+"c956:59964" = "G Comércio e reparação de veículos"
+
+# Conselhos municipais (MUNIC, c1328)
+"c1328:77667" = "Assistência social: com"
+"c1328:77668" = "Assistência social: sem"
+"c1328:77669" = "Assistência social: sem informação"
+"c1328:77670" = "Segurança alimentar: com"
+"c1328:77671" = "Segurança alimentar: sem"
+"c1328:77672" = "Segurança alimentar: sem informação"
+"c1328:77673" = "Direitos da mulher: com"
+"c1328:77674" = "Direitos da mulher: sem"
+"c1328:77675" = "Direitos da mulher: sem informação"
+"c1328:77676" = "Segurança pública: com"
+"c1328:77677" = "Segurança pública: sem"
+"c1328:77678" = "Segurança pública: sem informação"
+"c1328:77681" = "Segurança comunitária: sem informação"
+"c1328:77682" = "Direitos humanos: com"
+"c1328:77683" = "Direitos humanos: sem"
+"c1328:77684" = "Direitos humanos: sem informação"
+"c1328:77685" = "Criança e adolescente: com"
+"c1328:77686" = "Criança e adolescente: sem"
+"c1328:77687" = "Criança e adolescente: sem informação"
+"c1328:77688" = "Pessoa idosa: com"
+"c1328:77689" = "Pessoa idosa: sem"
+"c1328:77690" = "Pessoa idosa: sem informação"
+"c1328:77691" = "Pessoa com deficiência: com"
+"c1328:77692" = "Pessoa com deficiência: sem"
+"c1328:77693" = "Pessoa com deficiência: sem informação"
+"c1328:77694" = "LGBT: com"
+"c1328:77695" = "LGBT: sem"
+"c1328:77696" = "LGBT: sem informação"
+"c1328:77697" = "Igualdade racial: com"
+"c1328:77698" = "Igualdade racial: sem"
+"c1328:77699" = "Igualdade racial: sem informação"
+"c1328:77700" = "Povos tradicionais: com"
+"c1328:77701" = "Povos tradicionais: sem"
+"c1328:77702" = "Povos tradicionais: sem informação"
+
+# Planos municipais (MUNIC, c1329)
+"c1329:15608" = "Segurança alimentar: com"
+"c1329:15609" = "Segurança alimentar: sem"
+"c1329:15675" = "Segurança alimentar: sem informação"
+"c1329:15676" = "Política para mulheres: com"
+"c1329:15677" = "Política para mulheres: sem"
+"c1329:15678" = "Política para mulheres: sem informação"
+"c1329:15681" = "Direitos humanos: sem informação"
+"c1329:15684" = "Segurança pública: sem informação"
+"c1329:15685" = "Primeira infância: com"
+"c1329:15686" = "Primeira infância: sem"
+"c1329:15687" = "Primeira infância: sem informação"
+
+# Seca (MUNIC)
+"c1346:57248" = "Seca nos últimos 4 anos: com"
+"c1346:57249" = "Seca nos últimos 4 anos: sem"
+"c1347:57253" = "Plano para a seca: com"
+"c1347:57254" = "Plano para a seca: sem"
+
+# Outros
+"c1393t8724:57658" = "Conversas com outras pessoas"
+"c1393t8724:57662" = "Redes sociais"
+"c1568:11628" = "Fundamental completo"
+"c1568:11631" = "Superior incompleto"
+"c1568:11779" = "Fundamental incompleto"
+"c210:3628" = "Eletrodomésticos, som e TV"
+"c210:3657" = "Cursos regulares"
+"c210:3668" = "Cerimônias e práticas religiosas"
+"c210:3669" = "Cartórios e serviços profissionais"
+"c210alim:5767" = "Outros cereais e leguminosas"
+"c215:111502" = "Alimentos preparados"
+"c218:46504" = "Assentado aguardando título"
+"c338:45904" = "Madeira aparelhada"
+"c716:33635" = "Fungicidas, herbicidas e outros"
+"c85:9272" = "Profissionais e administrativos"
+"c85:9273" = "Transportes e correios"

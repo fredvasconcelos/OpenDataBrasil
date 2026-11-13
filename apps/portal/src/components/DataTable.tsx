@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
+import { InfoIcon } from "@/components/icons";
 import { formatShare, formatValue, unitShort } from "@/lib/format";
 import type { Table } from "@/lib/types";
 
@@ -82,6 +83,9 @@ export function DataTable({ data, additive = false, selected, sort, order, onSor
   const shares = additive && unitShort(data.unit) !== "%";
   const bases: ShareBase[] = ["row", ...(nested ? (["group"] as const) : []), ...(footer ? (["column", "overall"] as const) : [])];
   const [chosen, setChosen] = useState<ShareBase>("row");
+  const [info, setInfo] = useState(false);
+  // Colunas cujo rótulo é o curto (DS 2.3.11): o nome oficial vai no painel de informação.
+  const renamed = data.columns.filter((c) => c.full_label && c.full_label !== c.label);
   // Grupos abertos/fechados pelo usuário; sem escolha, abertos até COLLAPSE_AFTER linhas.
   const [toggled, setToggled] = useState<Record<string, boolean>>({});
   const isOpen = (g: Group) => toggled[g.head.key] ?? g.inner.length <= COLLAPSE_AFTER;
@@ -131,7 +135,9 @@ export function DataTable({ data, additive = false, selected, sort, order, onSor
           <div className="cell-line cell-head">{valueWithShare(row, g.head)}</div>
           {g.inner.map((c) => (
             <div key={c.key} className="cell-line" style={{ paddingLeft: `${Math.max(0, c.depth - g.head.depth - 1) * 12}px` }}>
-              <span className="cell-label">{innerLabel(g.head, c)}</span>
+              <span className="cell-label" title={c.full_label || undefined}>
+                {innerLabel(g.head, c)}
+              </span>
               <span>{valueWithShare(row, c)}</span>
             </div>
           ))}
@@ -148,28 +154,59 @@ export function DataTable({ data, additive = false, selected, sort, order, onSor
 
   return (
     <div className="table-box">
-      {shares ? (
-        <div className="share-base">
-          {bases.length > 1 ? (
-            <label>
-              {t("shareOf")}
-              <select value={base} onChange={(e) => setChosen(e.target.value as ShareBase)}>
-                {bases.map((b) => (
-                  <option key={b} value={b}>
-                    {b === "column" && footer ? t("share.column", { name: footer.name }) : t(`share.${b}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
-          <details className="method">
-            <summary>{t("shareHow")}</summary>
-            <p className="caption">
-              {t(`shareNote.${base}`)} {t("shareNoteAll")}
+      <div className="share-base">
+        {shares && bases.length > 1 ? (
+          <label>
+            {t("shareOf")}
+            <select value={base} onChange={(e) => setChosen(e.target.value as ShareBase)}>
+              {bases.map((b) => (
+                <option key={b} value={b}>
+                  {b === "column" && footer ? t("share.column", { name: footer.name }) : t(`share.${b}`)}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
+        <button
+          type="button"
+          className="info-button"
+          aria-expanded={info}
+          aria-controls="table-info"
+          aria-label={t("about")}
+          title={t("about")}
+          onClick={() => setInfo((v) => !v)}
+        >
+          <InfoIcon />
+        </button>
+        {info ? (
+          <div id="table-info" className="table-info caption" role="note">
+            <p>
+              <strong>{t("aboutUnit")}</strong> {unit}.
             </p>
-          </details>
-        </div>
-      ) : null}
+            {renamed.length ? (
+              <>
+                <p>
+                  <strong>{t("aboutColumns")}</strong>
+                </p>
+                <dl>
+                  {renamed.map((c) => (
+                    <div key={c.key}>
+                      <dt>{c.label}</dt>
+                      <dd>{c.full_label}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </>
+            ) : null}
+            {shares ? (
+              <p>
+                {t(`shareNote.${base}`)} {t("shareNoteAll")}
+              </p>
+            ) : null}
+            {footer ? <p>{t("aboutFooter", { name: footer.name })}</p> : null}
+          </div>
+        ) : null}
+      </div>
       <div className="table-wrap" ref={wrap}>
         <table className={`data-table${nested ? " is-matrix" : ""}`}>
           <thead>
@@ -181,7 +218,7 @@ export function DataTable({ data, additive = false, selected, sort, order, onSor
                 </button>
               </th>
               {groups.map((g, i) => (
-                <th scope="col" key={g.head.key}>
+                <th scope="col" key={g.head.key} title={g.head.full_label || undefined}>
                   {i === 0 ? (
                     <button type="button" onClick={() => onSort("value")} aria-label={t("sortByValue")}>
                       {g.head.label}

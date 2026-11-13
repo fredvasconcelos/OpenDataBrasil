@@ -2048,6 +2048,12 @@
           "name": {
             "type": "string",
             "title": "Name"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name",
+            "description": "Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11).",
+            "default": ""
           }
         },
         "type": "object",
@@ -2094,6 +2100,12 @@
           "label": {
             "type": "string",
             "title": "Label"
+          },
+          "full_label": {
+            "type": "string",
+            "title": "Full Label",
+            "description": "Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11).",
+            "default": ""
           },
           "depth": {
             "type": "integer",
@@ -2216,6 +2228,12 @@
           "label": {
             "type": "string",
             "title": "Label"
+          },
+          "full_label": {
+            "type": "string",
+            "title": "Full Label",
+            "description": "Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11).",
+            "default": ""
           },
           "classification_id": {
             "anyOf": [
@@ -2367,6 +2385,12 @@
           "label": {
             "type": "string",
             "title": "Label"
+          },
+          "full_label": {
+            "type": "string",
+            "title": "Full Label",
+            "description": "Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11).",
+            "default": ""
           },
           "partition_id": {
             "type": "string",
@@ -3626,6 +3650,12 @@
           "label": {
             "type": "string",
             "title": "Label"
+          },
+          "full_label": {
+            "type": "string",
+            "title": "Full Label",
+            "description": "Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11).",
+            "default": ""
           },
           "categories": {
             "additionalProperties": {

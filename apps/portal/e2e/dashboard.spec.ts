@@ -538,7 +538,8 @@ test("POF em série (ADR-0016): 2002 a 2018 e só as faixas da edição na tabel
 
 test("detalhes marginais (ADR-0016): uma dimensão por vez e POF antiga sem Brasil", async ({ page }) => {
   await page.goto("/dashboard?kpi=obitos&nivel=uf&dim=c1836,c244");
-  await expect(page.getByText("Uma por vez: cada detalhe vem com os demais no Total.")).toBeVisible();
+  // C1: na UF, só sexo × idade se cruzam; natureza e mês continuam um por vez.
+  await expect(page.getByText(/Neste nível, cruzam-se Sexo × Idade/)).toBeVisible();
   const nature = page.getByRole("checkbox", { name: "Natureza do óbito" });
   const month = page.getByRole("checkbox", { name: "Mês de ocorrência" });
   await expect(nature).toBeChecked();
@@ -547,6 +548,8 @@ test("detalhes marginais (ADR-0016): uma dimensão por vez e POF antiga sem Bras
   await expect(page).toHaveURL(/dim=c244(&|$)/);
   await expect(nature).not.toBeChecked();
   await page.screenshot({ path: "test-results/detalhar-uma-por-vez.png", fullPage: false });
+  await page.goto("/dashboard?kpi=obitos&nivel=municipio&dim=c1836");
+  await expect(page.getByText(/um detalhe por vez; os cruzamentos existem/)).toBeVisible();
   await page.goto("/dashboard?kpi=pof_despesa_distribuicao_antiga");
   await expect(page.locator(".data-table tbody")).toContainText("Belém - PA");
   await expect(page.getByRole("heading", { name: /Total das áreas da POF/ })).toBeVisible();

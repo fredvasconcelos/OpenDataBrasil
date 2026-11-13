@@ -153,6 +153,9 @@ class CategoryOut(_Out):
     category_key: str
     category_id: str
     name: str
+    full_name: str = Field(
+        "", description="Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11)."
+    )
 
 
 class DimensionOut(_Out):
@@ -160,6 +163,9 @@ class DimensionOut(_Out):
 
     classification_id: str
     label: str
+    full_label: str = Field(
+        "", description="Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11)."
+    )
     partition_id: str
     total_category_key: str
     categories: list[CategoryOut]
@@ -319,6 +325,9 @@ class DetailNodeOut(_Out):
     """Nó do tooltip: categoria, valor e participação no nó de cima."""
 
     label: str
+    full_label: str = Field(
+        "", description="Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11)."
+    )
     classification_id: str | None
     category_key: str | None
     value: float | None
@@ -357,6 +366,9 @@ class SeriesItemOut(_Out):
 
     key: str
     label: str
+    full_label: str = Field(
+        "", description="Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11)."
+    )
     categories: dict[str, str]
     depth: int = Field(
         0,
@@ -385,6 +397,9 @@ class ColumnOut(_Out):
 
     key: str
     label: str
+    full_label: str = Field(
+        "", description="Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11)."
+    )
     depth: int
     # Matriz (DS 2.3.9): coluna-grupo (categoria da primeira dimensão, ou o Total) e a
     # combinação-mãe (a mesma com a última categoria detalhada trocada pelo Total).

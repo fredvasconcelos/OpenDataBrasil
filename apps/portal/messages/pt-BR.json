@@ -93,7 +93,7 @@
     "grain": "Período por",
     "correction": "Corrigir por",
     "nominal": "Nominal (valores da época)",
-    "dimensionsCrossed": "Neste nível, os detalhes se cruzam (ex.: sexo e idade juntos).",
+    "dimensionsCrossed": "Neste nível, cruzam-se {groups}; os demais detalhes, um por vez.",
     "dimensionsCrossedElsewhere": "Neste nível, um detalhe por vez; os cruzamentos existem em Brasil, região e UF."
   },
   "grainNotes": {
@@ -125,7 +125,7 @@
     "sortByName": "Ordenar por nome",
     "sortByValue": "Ordenar por valor",
     "footer": "Total: {name}",
-    "shareOf": "% em relação a",
+    "shareOf": "Calcular % por",
     "share": {
       "row": "Território (linha)",
       "group": "Grupo",
@@ -138,10 +138,13 @@
       "column": "Entre parênteses: % que o território representa no total da coluna, a linha de totais no fim da tabela.",
       "overall": "Entre parênteses: % do total geral, o Total da linha de totais no fim da tabela."
     },
-    "shareNoteAll": "Os % podem ser calculados sobre o território, o grupo, a coluna ou o total geral (\"% em relação a\"). A linha de totais traz o valor publicado pela fonte para o recorte ou para o Brasil, não a soma das linhas da página.",
-    "shareHow": "Como ler os %",
+    "shareNoteAll": "Os % podem ser calculados sobre o território, o grupo, a coluna ou o total geral (\"Calcular % por\").",
     "collapse": "− recolher",
-    "expand": "+ {count} detalhes"
+    "expand": "+ {count} detalhes",
+    "about": "Sobre esta tabela",
+    "aboutUnit": "Unidade dos valores:",
+    "aboutColumns": "Nomes completos das colunas (a fonte usa nomes longos; a tabela mostra a forma curta):",
+    "aboutFooter": "A última linha (Total: {name}) traz o valor publicado pela fonte para {name}, e não a soma das linhas da página."
   },
   "export": {
     "title": "Exportar",

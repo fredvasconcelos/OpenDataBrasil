@@ -121,13 +121,23 @@ export function Sidebar({
                 <p className="hint">
                   {kpi.crossed_levels?.length
                     ? kpi.crossed_levels.includes(level)
-                      ? t("dashboard.dimensionsCrossed")
+                      ? t("dashboard.dimensionsCrossed", {
+                          groups: (kpi.crossed ?? [])
+                            .map((g) =>
+                              g.map((c) => kpi.dimensions.find((d) => d.classification_id === c)?.label ?? c).join(" × "),
+                            )
+                            .join("; "),
+                        })
                       : t("dashboard.dimensionsCrossedElsewhere")
                     : t("dashboard.dimensionsExclusive")}
                 </p>
               ) : null}
               {kpi.dimensions.map((d) => (
-                <label key={d.classification_id} className="check">
+                <label
+                  key={d.classification_id}
+                  className="check"
+                  title={d.full_label && d.full_label !== d.label ? d.full_label : undefined}
+                >
                   <input
                     type="checkbox"
                     checked={dimensions.includes(d.classification_id)}
