@@ -27,6 +27,7 @@ coverage.xml
 htmlcov/
 
 # --- Backups, temporários e logs ---
+/backups/
 *.dump
 *.bak
 *.tmp

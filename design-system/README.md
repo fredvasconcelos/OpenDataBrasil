@@ -6,7 +6,7 @@ mais as revisões da beta) e mantêm todas as classes, rótulos e `aria-*` de qu
 
 ## Novidades da v2.3 (sobre a v2.1)
 
-> Versão do pacote: **2.3.7** (arquivo `VERSION`; ajustes da 2.3.1 a 2.3.7 na seção "Ajustes depois da 2.3.0"). Telas de referência em `reference/`.
+> Versão do pacote: **2.3.9** (arquivo `VERSION`; ajustes da 2.3.1 a 2.3.9 na seção "Ajustes depois da 2.3.0"). Telas de referência em `reference/`.
 >
 > **O que a API ainda não fornece (não inventado):** o canvas mostra indicadores
 > "em preparação" e o filtro de situação; o contrato `/navigation` só traz indicadores
@@ -88,6 +88,8 @@ anteriores a estes ajustes e ainda não os mostram.
 | Versão | Item | Onde | Regra |
 |---|---|---|---|
 | 2.3.1 | Busca da barra lateral fixa | `Sidebar.tsx` (`.tree-head`), `globals.css` | Título "Temas e indicadores", campo e resumo ficam fixos no topo da área que rola (a barra até 1599 px; o cartão da árvore em tela cheia). O fundo cobre a árvore que passa por baixo e o recuo de cima; `scroll-padding-top` mantém à vista o item focado pelo teclado. "Filtros" não é fixo. Captura: `reference/screens/busca-barra-lateral-fixa.png`. Especificação: `docs/DESIGN-SYSTEM.md`, "Páginas (v2.3)" |
+| 2.3.9 | Tabela em matriz | `DataTable.tsx` (`groupColumns`, `shareBase`, `COLLAPSE_AFTER`), API `ColumnOut.group`/`.parent` e `TableOut.footer`, `messages/pt-BR.json` (`table.share*`, `footer`, `expand`, `collapse`), `globals.css` (`.cell-group`, `.th-unit`, `.share-base`, `tfoot`) | Colunas agrupadas pela categoria da primeira dimensão (Total, Branca, Preta…); dentro da célula do grupo, o valor do grupo em negrito e, embaixo, as categorias das demais dimensões ("Homens 1.318.946 (47,6%)"). O grupo Total traz os totais de linha (Total por sexo). A unidade fica na segunda linha do cabeçalho ("pessoas", "pessoas (%)"). No fim, a linha de totais com o valor publicado do recorte ou do Brasil (não a soma da página). "% em relação a" (`select`): Território (linha, padrão), Grupo, Coluna (o recorte) e Total geral; método em "Como ler os %". % só em KPIs aditivos. Grupos com mais de 12 linhas começam recolhidos ("+ N detalhes"). Primeira coluna fixa na rolagem horizontal. Captura: `reference/screens/tabela-matriz.png` |
+| 2.3.8 | Série: Total fora do gráfico com detalhe; pontas do eixo | `SeriesChart.tsx` (`depth`, `plotted`), API `SeriesItemOut.depth`, `lib/period.ts` (`timeTicks`, `slack`), `globals.css` (`.series-tip-total`) | Com "Detalhar por", o gráfico mostra só as combinações mais detalhadas (`depth` máximo): a série do Total (e, com duas dimensões, os subtotais) sai das linhas, da legenda e da escala do eixo Y (achatava as categorias); fica na primeira linha do tooltip, sem cor e com um filete embaixo, e na tabela. Sem detalhe, a linha única continua com área. As categorias têm o mesmo peso (2 px). No eixo de tempo, o primeiro e o último rótulo ficam centralizados no ponto quando cabem na margem; só se ancoram por dentro quando não cabem. Antes, a âncora por dentro tirava 2002 e 2025 de séries anuais (6579). Conferido em 153 KPIs |
 | 2.3.7 | Corrigir por (índice de preços) | `Sidebar.tsx` (`fieldset.corrections`, `details.method`), `lib/state.ts` (`correcao=`), `DataTable.tsx` (unidade "R$ de jan/2018"), `Dashboard.tsx` (legenda com índice e mês-base), `messages/pt-BR.json` (`dashboard.correction`, `.nominal`, `.howCalculated`), `globals.css` | Em KPIs com `corrections` da API, o grupo "Corrigir por" (Nominal, IPCA geral, IPCA por grupo de despesa) aparece entre o grão e o Período, com o estilo de `.check`. O método fica recolhido em "Como é calculado" (`details`, `caption`). Com correção, a unidade das colunas vira "R$ de jan/2018", e a legenda acrescenta "· IPCA geral, preços de jan/2018". Captura: `reference/screens/pof-corrigir-por.png`. Regra: ADR-0020 |
 | 2.3.6 | Escala do mapa sem colapso | `lib/scale.ts` (`roundestIn`, `niceCuts`) | Cada corte é o número mais redondo dentro da janela entre os quantis vizinhos: grosso com dados espalhados (4 mil, 25 mil), fino com dados concentrados (73,5; 74; 75). Antes, a esperança de vida (7362) ficava em "Até 80 · Mais de 80" no Brasil e num grupo só no Nordeste. Captura: `reference/screens/escala-esperanca-vida-nordeste.png` |
 | 2.3.6 | Unidade nas colunas e % do Total | `DataTable.tsx` (cabeçalho "Rótulo (unidade)", `.share`), `lib/format.ts` (`unitShort`, `indexTitle`), `globals.css` (`.data-table td .share`) | Cada coluna mostra a unidade curta: "Total (%)", "Alimentação (R$)", "Total (índice)". Em KPIs aditivos, as categorias mostram também "(12,3%)" do Total do território, em `caption` / `text-muted`. A legenda de um número-índice diz a base: "Índice (2022 = 100)" |
@@ -136,7 +138,7 @@ design-system/
 ├── tokens/
 │   ├── tokens.css            ← variáveis CSS (claro, dark, prefers-color-scheme)
 │   └── tokens.json           ← os mesmos valores em JSON (para outras ferramentas)
-├── VERSION                   ← 2.3.7
+├── VERSION                   ← 2.3.9
 ├── reference/                ← telas do canvas (fontes) e capturas dos componentes
 ├── assets/brand/             ← logos em SVG (texto convertido em curvas) e ícones PNG
 ├── assets/icons/             ← github.svg (Bootstrap Icons, MIT) + licença

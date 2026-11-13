@@ -120,7 +120,7 @@ export interface Tick {
   unit: number;
   t: number;
   label: string;
-  /** Âncora do texto: a primeira e a última ficam dentro do gráfico. */
+  /** Âncora do texto: as pontas centralizam quando cabem na margem; senão, ficam por dentro. */
   anchor: "start" | "middle" | "end";
 }
 
@@ -137,6 +137,8 @@ export function timeTicks(
   innerWidth: number,
   toX: (t: number) => number,
   gap = 16,
+  /** Espaço livre (px) fora da área do gráfico, à esquerda e à direita. */
+  slack: { start: number; end: number } = { start: 0, end: 0 },
 ): { ticks: Tick[]; step: number } {
   if (!periods.length) return { ticks: [], step: 1 };
   const first = periods[0] as ParsedPeriod;
@@ -156,8 +158,27 @@ export function timeTicks(
     }
   }
 
-  const ends: Tick[] = [{ unit: first.unit, t: first.t, label: formatPeriod(first), anchor: "start" }];
-  if (last.unit !== first.unit) ends.push({ unit: last.unit, t: last.t, label: formatPeriod(last), anchor: "end" });
+  // As pontas ficam centralizadas no ponto quando cabem na margem; senão, ancoradas por
+  // dentro. Ancorar por dentro sem necessidade ocupa o lugar do vizinho (2002, 2025).
+  const half = (tick: Tick) => labelWidth(tick.label) / 2;
+  const fstLabel = formatPeriod(first);
+  const lstLabel = formatPeriod(last);
+  const ends: Tick[] = [
+    {
+      unit: first.unit,
+      t: first.t,
+      label: fstLabel,
+      anchor: labelWidth(fstLabel) / 2 <= slack.start ? "middle" : "start",
+    },
+  ];
+  if (last.unit !== first.unit) {
+    ends.push({
+      unit: last.unit,
+      t: last.t,
+      label: lstLabel,
+      anchor: labelWidth(lstLabel) / 2 <= slack.end ? "middle" : "end",
+    });
+  }
   // Passos a partir de um ano: alinhados ao início do ano (2005, 2010…; jan de cada ano).
   // Os passos de STEPS a partir de k são múltiplos de k, então caem sempre no início do ano.
   const startUnit = Math.ceil((first.unit + 1) / step) * step;
@@ -166,14 +187,15 @@ export function timeTicks(
     inner.push({ unit: u, t: u / k, label: formatTick(at(u), step), anchor: "middle" });
   }
 
-  const half = (tick: Tick) => labelWidth(tick.label) / 2;
-  const fstX = toX(first.t) + labelWidth(ends[0]!.label);
-  const lstX = ends[1] ? toX(last.t) - labelWidth(ends[1].label) : Infinity;
+  const e0 = ends[0] as Tick;
+  const fstX = toX(first.t) + (e0.anchor === "middle" ? half(e0) : labelWidth(e0.label));
+  const e1 = ends[1];
+  const lstX = e1 ? toX(last.t) - (e1.anchor === "middle" ? half(e1) : labelWidth(e1.label)) : Infinity;
   const kept = inner.filter((tick) => {
     const x = toX(tick.t);
     return x - half(tick) >= fstX + gap / 2 && x + half(tick) <= lstX - gap / 2;
   });
-  const ticks = [ends[0]!, ...kept, ...(ends[1] ? [ends[1]] : [])];
+  const ticks = [e0, ...kept, ...(e1 ? [e1] : [])];
   return { ticks, step };
 }
 

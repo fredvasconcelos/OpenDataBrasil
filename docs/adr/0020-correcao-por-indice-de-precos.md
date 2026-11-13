@@ -59,3 +59,40 @@ entre edições mistura o aumento real com a inflação. O mantenedor pediu:
 - **Outros KPIs em moeda:** podem receber a mesma correção só com configuração.
 - **IPCA por grupo:** o grupo é uma aproximação. A cesta de cada grupo do IPCA não é a
   mesma do tipo de despesa da POF, e isso está registrado na nota.
+
+## Atualização (2026-11-13): outros KPIs em moeda
+
+O mantenedor pediu a correção em outros KPIs em moeda, onde houver base metodológica.
+
+1. **Referência pelo próprio período (`reference = "period"`):**
+   - num mês, o índice do mês;
+   - num trimestre, semestre ou ano, a média do índice nos meses do período. É a
+     prática usual para deflacionar fluxos e médias do período, como o PIB anual ou a
+     receita anual de uma pesquisa estrutural;
+   - a base é o período mais recente do KPI que o índice cobre, e avança sozinha;
+   - a POF continua com o mês de referência de cada edição (`reference = "months"`).
+2. **No panorama:** `correcao = "ipca"` no item. O gerador põe o "Corrigir por: IPCA
+   geral" com a nota de método.
+3. **KPIs com a correção:**
+
+   | KPI (tabela) | Por quê |
+   |---|---|
+   | Custo médio do m² (2296, SINAPI) | preço nominal em R$; a correção dá o custo em poder de compra do consumidor |
+   | PIB anual (6784) e PIB trimestral a preços correntes (1846) | valores correntes; a correção dá o poder de compra, não o volume |
+   | PIB dos municípios (5938) | valores correntes; não há deflator municipal oficial |
+   | Serviços empresariais não financeiros (2581, PAS) | receita nominal anual |
+
+   Conferência: o PIB de 2023 a preços de 2024 sobe 4,37%, a razão entre a média do
+   IPCA de 2024 e a de 2023.
+4. **Ficam sem correção:**
+   - rendimento médio e massa de rendimento da PNAD Contínua (5436, 5606): a fonte já
+     os publica a preços do último trimestre (deflacionados). Corrigir de novo contaria
+     a inflação duas vezes;
+   - KPIs com um período só (rendimento do Censo 2022, rendimento da POF 2018,
+     empresas comerciais 2024): o fator seria 1.
+5. **Limites registrados na nota:**
+   - o índice geral começa em agosto de 1999, e antes disso o valor corrigido fica
+     vazio. Antes de julho de 1994 os valores nem estão em reais;
+   - deflacionar o PIB pelo IPCA mede poder de compra, não volume. Para volume, a fonte
+     publica as variações em volume, e o deflator implícito do PIB (6784, variável
+     9811, só Brasil) fica como opção futura de "Corrigir por".

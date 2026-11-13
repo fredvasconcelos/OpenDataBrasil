@@ -152,6 +152,36 @@ describe("SeriesChart", () => {
     fireEvent.keyDown(svg, { key: "Escape" });
     expect(screen.queryByRole("tooltip")).toBeNull();
   });
+
+  it("com detalhe, tira o Total das linhas, da legenda e do eixo Y, mas mantém no tooltip", () => {
+    const cat = (key: string, label: string, v: number) => ({
+      key,
+      label,
+      categories: { c86: key },
+      depth: 1,
+      points: [2019, 2020].map((y) => ({ period: String(y), value: v, status: "valid" })),
+    });
+    const data = {
+      ...series([2019, 2020]),
+      series: [
+        { key: "c86:0", label: "Total", categories: { c86: "c86:0" }, depth: 0, points: [2019, 2020].map((y) => ({ period: String(y), value: 900_000, status: "valid" })) },
+        cat("2776", "Branca", 400),
+        cat("2777", "Preta", 120),
+      ],
+    } as unknown as Series;
+    const { container } = wrap(<SeriesChart data={data} />);
+    const legend = container.querySelector(".series-legend")?.textContent ?? "";
+    expect(legend).toContain("Branca");
+    expect(legend).not.toContain("Total");
+    // Eixo Y na escala das categorias (centenas), não do Total (900 mil).
+    const yLabels = [...container.querySelectorAll("svg text")].map((t) => t.textContent ?? "");
+    expect(yLabels.some((l) => /mil/.test(l))).toBe(false);
+    expect(container.querySelectorAll("svg path[fill='none']")).toHaveLength(2);
+    fireEvent.keyDown(container.querySelector("svg") as SVGSVGElement, { key: "End" });
+    const tip = screen.getByRole("tooltip");
+    expect(tip.querySelector(".series-tip-total")?.textContent).toContain("Total");
+    expect(tip.textContent).toContain("900.000");
+  });
 });
 
 describe("DataTable", () => {
@@ -162,8 +192,8 @@ describe("DataTable", () => {
     period: "2022",
     unit: "Pessoas",
     columns: [
-      { key: "c2:6794", label: "Total", depth: 0 },
-      { key: "c2:4", label: "Homens", depth: 1 },
+      { key: "c2:6794", label: "Total", depth: 0, group: "c2:6794", parent: null },
+      { key: "c2:4", label: "Homens", depth: 1, group: "c2:4", parent: "c2:6794" },
     ],
     rows: [
       { geography_key: "uf:29", name: "Bahia", uf_abbreviation: "BA", cells: { "c2:6794": { value: 10, status: "valid" } } },
@@ -189,6 +219,83 @@ describe("DataTable", () => {
     expect((screen.getByRole("button", { name: "Anterior" }) as HTMLButtonElement).disabled).toBe(true);
     fireEvent.click(screen.getByRole("button", { name: "Ordenar por nome" }));
     expect(onSort).toHaveBeenCalledWith("name");
+  });
+
+  // Cor ou raça × sexo: Total (com os totais de linha por sexo) e Branca (com o sexo).
+  const matrix: Table = {
+    ...table,
+    columns: [
+      { key: "T|T", label: "Total", depth: 0, group: "T|T", parent: null },
+      { key: "T|h", label: "Homens", depth: 1, group: "T|T", parent: "T|T" },
+      { key: "T|m", label: "Mulheres", depth: 1, group: "T|T", parent: "T|T" },
+      { key: "b|T", label: "Branca", depth: 1, group: "b|T", parent: "T|T" },
+      { key: "b|h", label: "Branca › Homens", depth: 2, group: "b|T", parent: "b|T" },
+      { key: "b|m", label: "Branca › Mulheres", depth: 2, group: "b|T", parent: "b|T" },
+    ],
+    rows: [
+      {
+        geography_key: "uf:29",
+        name: "Bahia",
+        uf_abbreviation: "BA",
+        cells: Object.fromEntries(
+          Object.entries({ "T|T": 200, "T|h": 90, "T|m": 110, "b|T": 50, "b|h": 20, "b|m": 30 }).map(([k, v]) => [k, { value: v, status: "valid" }]),
+        ),
+      },
+    ],
+    footer: {
+      geography_key: "regiao:2",
+      name: "Nordeste",
+      uf_abbreviation: null,
+      cells: Object.fromEntries(
+        Object.entries({ "T|T": 1000, "T|h": 480, "T|m": 520, "b|T": 250, "b|h": 100, "b|m": 150 }).map(([k, v]) => [k, { value: v, status: "valid" }]),
+      ),
+    },
+    total_rows: 1,
+    limit: 100,
+  };
+
+  it("agrupa pela primeira dimensão, com totais de linha e a linha de totais", () => {
+    const { container } = wrap(
+      <DataTable data={matrix} additive selected={null} sort="value" order="desc" onSort={vi.fn()} onPage={vi.fn()} onSelect={vi.fn()} />,
+    );
+    const heads = [...container.querySelectorAll("thead th")].map((th) => th.firstChild?.textContent);
+    expect(heads).toEqual(["Território", "Total ↓", "Branca"]);
+    const bahia = container.querySelectorAll("tbody td");
+    // Total: 200, com Homens 90 (45%) e Mulheres 110 (55%) da linha.
+    expect(bahia[0]?.textContent).toContain("Homens90 (45,0%)");
+    // Branca: 50 (25% do território); Homens 20 (10% do território).
+    expect(bahia[1]?.textContent).toContain("50 (25,0%)");
+    expect(bahia[1]?.textContent).toContain("Homens20 (10,0%)");
+    // Grupo: Homens dentro de Branca = 40%.
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "group" } });
+    expect(container.querySelectorAll("tbody td")[1]?.textContent).toContain("Homens20 (40,0%)");
+    // Coluna: a Bahia tem 20% da população branca do Nordeste (50 de 250).
+    expect(screen.getByRole("option", { name: "Coluna (Nordeste)" })).toBeTruthy();
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "column" } });
+    expect(container.querySelectorAll("tbody td")[1]?.textContent).toContain("50 (20,0%)");
+    // Total geral: 50 de 1.000 = 5%.
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "overall" } });
+    expect(container.querySelectorAll("tbody td")[1]?.textContent).toContain("50 (5,0%)");
+    expect(container.querySelector("tfoot")?.textContent).toContain("Total: Nordeste");
+  });
+
+  it("recolhe grupos com muitas linhas e expande pelo cabeçalho", () => {
+    const many = Array.from({ length: 13 }, (_, i) => ({ key: `b|${i}`, label: `Branca › Item ${i}`, depth: 2, group: "b|T", parent: "b|T" }));
+    const { container } = wrap(
+      <DataTable data={{ ...matrix, columns: [...matrix.columns.slice(0, 4), ...many] }} additive selected={null} sort="value" order="desc" onSort={vi.fn()} onPage={vi.fn()} onSelect={vi.fn()} />,
+    );
+    expect(container.querySelectorAll("tbody td")[1]?.textContent).not.toContain("Item 0");
+    fireEvent.click(screen.getByRole("button", { name: "+ 13 detalhes" }));
+    expect(container.querySelectorAll("tbody td")[1]?.textContent).toContain("Item 0");
+  });
+
+  it("sem KPI aditivo, não mostra % nem a escolha da base", () => {
+    const { container } = wrap(
+      <DataTable data={matrix} selected={null} sort="value" order="desc" onSort={vi.fn()} onPage={vi.fn()} onSelect={vi.fn()} />,
+    );
+    expect(container.querySelector(".share")).toBeNull();
+    expect(container.querySelector(".share-base")).toBeNull();
+    expect(container.textContent).not.toContain("Como ler os %");
   });
 });
 

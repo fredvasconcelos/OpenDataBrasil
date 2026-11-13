@@ -1,10 +1,60 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { formatShare, formatValue, unitShort } from "@/lib/format";
 import type { Table } from "@/lib/types";
+
+type Column = Table["columns"][number];
+type Row = NonNullable<Table["footer"]>;
+
+/** Base do % (DS 2.3.9): o território (linha), o grupo, a coluna (rodapé) ou o total geral. */
+export type ShareBase = "row" | "group" | "column" | "overall";
+
+/** Grupos com mais linhas internas que isto começam recolhidos (expansíveis no cabeçalho). */
+export const COLLAPSE_AFTER = 12;
+
+interface Group {
+  head: Column;
+  inner: Column[];
+}
+
+/** Colunas agrupadas pela categoria da primeira dimensão, na ordem da API. */
+export function groupColumns(columns: readonly Column[]): Group[] {
+  const groups = new Map<string, Group>();
+  for (const c of columns) {
+    const g = c.group ?? c.key;
+    const found = groups.get(g);
+    if (!found) groups.set(g, { head: c, inner: [] });
+    else found.inner.push(c);
+  }
+  return [...groups.values()];
+}
+
+/** Rótulo dentro do grupo: "Branca › Homens" sob "Branca" vira "Homens". */
+export function innerLabel(head: Column, c: Column): string {
+  const prefix = `${head.label} › `;
+  return c.label.startsWith(prefix) ? c.label.slice(prefix.length) : c.label;
+}
+
+/** Denominador do % de uma célula, pela base escolhida; null quando não se aplica. */
+export function shareBase(
+  base: ShareBase,
+  c: Column,
+  row: Row,
+  footer: Row | null | undefined,
+  totalKey: string,
+): number | null {
+  const value = (r: Row | null | undefined, key: string | null | undefined) =>
+    key ? (r?.cells[key]?.value ?? null) : null;
+  if (base === "column") return value(footer, c.key);
+  if (base === "overall") return value(footer, totalKey);
+  if (c.key === totalKey) return null; // o Total é 100% da linha e do grupo
+  if (base === "group") return value(row, c.parent ?? totalKey);
+  return value(row, totalKey);
+}
+
 
 interface Props {
   data: Table;
@@ -19,12 +69,23 @@ interface Props {
 }
 
 export function DataTable({ data, additive = false, selected, sort, order, onSort, onPage, onSelect }: Props) {
-  // Unidade no cabeçalho de cada coluna: "Total (%)", "Alimentação (R$)" (DS 2.3.6).
+  const t = useTranslations("table");
+  // Unidade embaixo do nome de cada coluna: "pessoas", "R$ de jan/2018" (DS 2.3.6).
   const unit = data.provenance.price_base
     ? `${unitShort(data.unit)} de ${data.provenance.price_base}`
     : unitShort(data.unit);
-  const totalKey = data.columns[0]?.key;
-  const t = useTranslations("table");
+  const totalKey = data.columns[0]?.key ?? "total";
+  const groups = groupColumns(data.columns);
+  const nested = groups.some((g) => g.inner.length > 0);
+  const footer = data.footer ?? null;
+  // % só em KPIs aditivos (a soma das partes é o todo) e fora de unidades que já são %.
+  const shares = additive && unitShort(data.unit) !== "%";
+  const bases: ShareBase[] = ["row", ...(nested ? (["group"] as const) : []), ...(footer ? (["column", "overall"] as const) : [])];
+  const [chosen, setChosen] = useState<ShareBase>("row");
+  // Grupos abertos/fechados pelo usuário; sem escolha, abertos até COLLAPSE_AFTER linhas.
+  const [toggled, setToggled] = useState<Record<string, boolean>>({});
+  const isOpen = (g: Group) => toggled[g.head.key] ?? g.inner.length <= COLLAPSE_AFTER;
+  const base: ShareBase = bases.includes(chosen) ? chosen : "row";
   const from = data.total_rows ? data.offset + 1 : 0;
   const to = Math.min(data.offset + data.limit, data.total_rows);
   const arrow = order === "desc" ? " ↓" : " ↑";
@@ -50,10 +111,67 @@ export function DataTable({ data, additive = false, selected, sort, order, onSor
     box.scrollTo?.({ top: Math.max(0, top), behavior: reduce ? "auto" : "smooth" });
   }, [selected, data]);
 
+  const valueWithShare = (row: Row, c: Column) => {
+    const cell = row.cells[c.key];
+    const denominator = shares ? shareBase(base, c, row, footer, totalKey) : null;
+    const share = denominator && cell?.value != null ? (cell.value / denominator) * 100 : null;
+    return (
+      <>
+        <span className="cell-value">{formatValue(cell?.value, cell?.status ?? "absent")}</span>
+        {share !== null ? <span className="share"> ({formatShare(share)})</span> : null}
+      </>
+    );
+  };
+
+  // Célula de um grupo: o valor do grupo e, embaixo, as categorias detalhadas dentro dele.
+  const groupCell = (row: Row, g: Group) => (
+    <td key={g.head.key}>
+      {g.inner.length && isOpen(g) ? (
+        <div className="cell-group">
+          <div className="cell-line cell-head">{valueWithShare(row, g.head)}</div>
+          {g.inner.map((c) => (
+            <div key={c.key} className="cell-line" style={{ paddingLeft: `${Math.max(0, c.depth - g.head.depth - 1) * 12}px` }}>
+              <span className="cell-label">{innerLabel(g.head, c)}</span>
+              <span>{valueWithShare(row, c)}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        valueWithShare(row, g.head)
+      )}
+    </td>
+  );
+
+  // "(%)" na unidade das colunas que mostram %: na linha e no grupo, todas menos o Total.
+  const unitLine = (c: Column) =>
+    shares && (base === "column" || base === "overall" || c.key !== totalKey) ? `${unit} (%)` : unit;
+
   return (
     <div className="table-box">
+      {shares ? (
+        <div className="share-base">
+          {bases.length > 1 ? (
+            <label>
+              {t("shareOf")}
+              <select value={base} onChange={(e) => setChosen(e.target.value as ShareBase)}>
+                {bases.map((b) => (
+                  <option key={b} value={b}>
+                    {b === "column" && footer ? t("share.column", { name: footer.name }) : t(`share.${b}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          <details className="method">
+            <summary>{t("shareHow")}</summary>
+            <p className="caption">
+              {t(`shareNote.${base}`)} {t("shareNoteAll")}
+            </p>
+          </details>
+        </div>
+      ) : null}
       <div className="table-wrap" ref={wrap}>
-        <table className="data-table">
+        <table className={`data-table${nested ? " is-matrix" : ""}`}>
           <thead>
             <tr>
               <th scope="col">
@@ -62,16 +180,27 @@ export function DataTable({ data, additive = false, selected, sort, order, onSor
                   {sort === "name" ? arrow : ""}
                 </button>
               </th>
-              {data.columns.map((c, i) => (
-                <th scope="col" key={c.key} style={{ fontWeight: c.depth ? 400 : 600 }}>
+              {groups.map((g, i) => (
+                <th scope="col" key={g.head.key}>
                   {i === 0 ? (
                     <button type="button" onClick={() => onSort("value")} aria-label={t("sortByValue")}>
-                      {c.label} ({unit})
+                      {g.head.label}
                       {sort === "value" ? arrow : ""}
                     </button>
                   ) : (
-                    `${c.label} (${unit})`
+                    g.head.label
                   )}
+                  <span className="th-unit">{unitLine(g.head)}</span>
+                  {g.inner.length ? (
+                    <button
+                      type="button"
+                      className="th-toggle"
+                      aria-expanded={isOpen(g)}
+                      onClick={() => setToggled((cur) => ({ ...cur, [g.head.key]: !isOpen(g) }))}
+                    >
+                      {isOpen(g) ? t("collapse") : t("expand", { count: g.inner.length })}
+                    </button>
+                  ) : null}
                 </th>
               ))}
             </tr>
@@ -90,24 +219,18 @@ export function DataTable({ data, additive = false, selected, sort, order, onSor
                     <span className="muted"> ({r.uf_abbreviation})</span>
                   ) : null}
                 </th>
-                {data.columns.map((c) => {
-                  const cell = r.cells[c.key];
-                  const total = totalKey ? r.cells[totalKey]?.value : null;
-                  // Aditivo: a categoria mostra também o % do Total do território.
-                  const share =
-                    additive && c.key !== totalKey && unit !== "%" && cell?.value != null && total
-                      ? (cell.value / total) * 100
-                      : null;
-                  return (
-                    <td key={c.key}>
-                      {formatValue(cell?.value, cell?.status ?? "absent")}
-                      {share !== null ? <span className="share"> ({formatShare(share)})</span> : null}
-                    </td>
-                  );
-                })}
+                {groups.map((g) => groupCell(r, g))}
               </tr>
             ))}
           </tbody>
+          {footer ? (
+            <tfoot>
+              <tr>
+                <th scope="row">{t("footer", { name: footer.name })}</th>
+                {groups.map((g) => groupCell(footer, g))}
+              </tr>
+            </tfoot>
+          ) : null}
         </table>
       </div>
       <div className="pager">

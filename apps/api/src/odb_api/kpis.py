@@ -56,7 +56,15 @@ from odb_semantics import (
     plan_query,
     resolve_links,
 )
-from odb_semantics.periods import GRAIN_LABELS, MONTH_SHORT, complete_periods_at, periods_at
+from odb_semantics.periods import (
+    GRAIN_LABELS,
+    MONTH_SHORT,
+    PeriodError,
+    complete_periods_at,
+    months_of,
+    parse_period,
+    periods_at,
+)
 from odb_semantics.portal import (
     CorrectionConfig,
     KpiConfig,
@@ -510,20 +518,27 @@ class KpiService:
         dims: Sequence[str],
         prov: Provenance,
     ) -> tuple[list[Observation], Provenance]:
-        """Valores a preços do mês de referência do período mais recente (ADR-0020).
+        """Valores a preços do período mais recente coberto pelo índice (ADR-0020).
 
-        fator = I(mês-base) ÷ I(mês de referência do período), com I o índice encadeado
-        das variações mensais do grupo (ou do índice geral). Sem o fator (mês fora da
-        série do índice), o valor fica sem valor.
+        fator = I(base) ÷ I(período), com I o índice encadeado das variações mensais do
+        grupo (ou do índice geral). I de um período é o do mês de referência dele
+        (``reference = "months"``) ou a média dos meses do próprio período
+        (``reference = "period"``). Sem o fator (meses fora da série do índice), o valor
+        fica sem valor.
         """
         corr = self._correction(kpi, correction_id)
         periods = list(self._gold.indicators(ctx)[kpi.indicator]["periods"] or ())
-        dated = [p for p in periods if p in corr.reference_months]
-        if not dated:
-            msg = f"{kpi.id}: nenhum período com mês de referência para {corr.id}"
-            raise SemanticError(msg)
-        base_month = corr.reference_months[max(dated)]
         indexes = self._price_index(ctx, corr)
+        general = indexes.get(corr.general, {})
+
+        base_period = correction_base(corr, general, periods)
+        if base_period is None:
+            msg = f"{kpi.id}: nenhum período coberto pelo índice de {corr.id}"
+            raise SemanticError(msg)
+
+        def level(chain: Mapping[str, Decimal], period: str) -> Decimal | None:
+            return index_level(corr, chain, period)
+
         position = dims.index(corr.dimension) if corr.dimension in dims else None
         out = []
         categories = self._gold.categories(ctx)
@@ -544,18 +559,20 @@ class KpiService:
             if position is not None and corr.groups:
                 group = group_of(o.combo[position])
             chain = indexes.get(group, {})
-            month = corr.reference_months.get(o.period)
-            start, end = chain.get(month or ""), chain.get(base_month)
+            start, end = level(chain, o.period), level(chain, base_period)
             value = o.value
             status = o.status
             if value is not None:
                 if start is None or end is None:
                     value, status = None, "not_available"
                 else:
-                    value = value * end / start
+                    # A média no tempo (ADR-0017) chega como float do DuckDB.
+                    value = Decimal(str(value)) * end / start
             out.append(Observation(o.geography_key, o.name, o.period, o.combo, value, status))
-        year, month_num = base_month.split("M")
-        base = f"{MONTH_SHORT[int(month_num) - 1]}/{year}"
+        base_ref = (
+            reference_months(corr, base_period)[0] if corr.reference == "months" else base_period
+        )
+        base = _price_base(base_ref)
         prov = prov.model_copy(
             update={
                 "derived": True,
@@ -566,8 +583,19 @@ class KpiService:
         )
         return out, prov
 
-    def _combos(self, ctx: ReleaseContext, kpi: KpiConfig, dims: Sequence[str]) -> list[Combo]:
-        """Combinações em pré-ordem: Total, depois cada categoria e seus filhos."""
+    def _combos(
+        self,
+        ctx: ReleaseContext,
+        kpi: KpiConfig,
+        dims: Sequence[str],
+        *,
+        row_totals: bool = False,
+    ) -> list[Combo]:
+        """Combinações em pré-ordem: Total, depois cada categoria e seus filhos.
+
+        ``row_totals``: com duas ou mais dimensões, também o Total da primeira cruzado com
+        as demais (Total e Homens), logo depois do Total: os totais de linha da matriz.
+        """
         totals = [self._gold.total_category(ctx, d)["category_key"] for d in dims]
         cats = {
             d.classification: [
@@ -586,7 +614,58 @@ class KpiService:
                     visit([*prefix, cat])
 
         visit([])
+        if row_totals and len(dims) > 1:
+            extra: list[Combo] = []
+            for cat in cats[dims[1]]:
+                saved, out[:] = list(out), []
+                visit([totals[0], cat])
+                extra += out
+                out[:] = saved
+            out[1:1] = extra
         return out
+
+    def _footer(
+        self,
+        ctx: ReleaseContext,
+        kpi: KpiConfig,
+        *,
+        level: str,
+        within: str | None,
+        period: str,
+        dims: Sequence[str],
+        keys: Mapping[Combo, str],
+        grain: str | None,
+        correction: str | None,
+    ) -> TableRowOut | None:
+        """Linha de totais: o recorte, ou o Brasil, com o valor publicado (ou derivado)."""
+        target = within or ("brasil:1" if level != "brasil" else None)
+        if target is None:
+            return None
+        try:
+            geo = self._gold.geography(ctx, target)
+            obs, _ = self._observations(
+                ctx,
+                kpi,
+                level=geo["level_id"],
+                within=None,
+                periods=(period,),
+                dims=dims,
+                max_rows=50_000,
+                grain=grain,
+                correction=correction,
+            )
+        except (SemanticError, NotFoundError):
+            return None  # o KPI não tem o nível do recorte
+        cells = {
+            keys[o.combo]: CellOut(value=to_float(o.value), status=o.status)
+            for o in obs
+            if o.geography_key == target and o.combo in keys
+        }
+        if not cells:
+            return None
+        return TableRowOut(
+            geography_key=target, name=geo["name"], uf_abbreviation=None, cells=cells
+        )
 
     def _label(self, ctx: ReleaseContext, combo: Combo, dims: Sequence[str]) -> str:
         names = [
@@ -802,11 +881,13 @@ class KpiService:
         for o in obs:
             if o.geography_key == geography:
                 by_combo.setdefault(o.combo, []).append(o)
+        totals = [self._gold.total_category(ctx, d)["category_key"] for d in dims]
         series = [
             SeriesItemOut(
                 key="|".join(combo) or "total",
                 label=self._label(ctx, combo, dims),
                 categories=dict(zip(dims, combo, strict=True)),
+                depth=sum(c != t for c, t in zip(combo, totals, strict=True)),
                 points=[
                     PointOut(period=o.period, value=to_float(o.value), status=o.status)
                     for o in sorted(by_combo[combo], key=lambda x: x.period)
@@ -865,9 +946,22 @@ class KpiService:
             grain=grain,
             correction=correction,
         )
-        combos = self._combos(ctx, kpi, dims)
+        combos = self._combos(ctx, kpi, dims, row_totals=True)
         totals = [self._gold.total_category(ctx, d)["category_key"] for d in dims]
         keys = {c: "|".join(c) or "total" for c in combos}
+
+        def parent(c: Combo) -> str | None:
+            # A mesma combinação com a última categoria detalhada trocada pelo Total.
+            last = max(
+                (i for i, (k, t) in enumerate(zip(c, totals, strict=True)) if k != t), default=None
+            )
+            if last is None:
+                return None
+            return keys.get((*c[:last], totals[last], *c[last + 1 :]))
+
+        def group(c: Combo) -> str:
+            return keys[(c[0], *totals[1:])] if c else keys[c]
+
         grid: dict[str, dict[str, Any]] = {}
         for o in obs:
             row = grid.setdefault(o.geography_key, {"name": o.name, "cells": {}})
@@ -909,7 +1003,11 @@ class KpiService:
             unit=meta["unit"],
             columns=[
                 ColumnOut(
-                    key=keys[c], label=self._label(ctx, c, dims), depth=self._depth(c, totals)
+                    key=keys[c],
+                    label=self._label(ctx, c, dims),
+                    depth=self._depth(c, totals),
+                    group=group(c),
+                    parent=parent(c),
                 )
                 for c in combos
             ],
@@ -922,6 +1020,17 @@ class KpiService:
                 )
                 for key, data in page
             ],
+            footer=self._footer(
+                ctx,
+                kpi,
+                level=level,
+                within=within,
+                period=chosen,
+                dims=dims,
+                keys={c: keys[c] for c in combos},
+                grain=grain,
+                correction=correction,
+            ),
             total_rows=len(ordered),
             offset=offset,
             limit=limit,
@@ -959,3 +1068,41 @@ class KpiService:
             correction=correction,
         )
         return kpi, dims, obs, prov
+
+
+def _price_base(period: str) -> str:
+    """Rótulo do período-base dos preços: "jan/2018", "T2 2026" ou "2024"."""
+    p = parse_period(period)
+    if p.grain == "mes":
+        return f"{MONTH_SHORT[p.first_month - 1]}/{p.year}"
+    return p.short_label
+
+
+def reference_months(corr: CorrectionConfig, period: str) -> list[str]:
+    """Meses cujo índice vale para o período (ADR-0020); vazio se não houver."""
+    if corr.reference == "months":
+        month = corr.reference_months.get(period)
+        return [month] if month else []
+    try:
+        return months_of(period)
+    except PeriodError:
+        return []
+
+
+def index_level(
+    corr: CorrectionConfig, chain: Mapping[str, Decimal], period: str
+) -> Decimal | None:
+    """Índice do período: o do mês, ou a média dos meses (todos precisam existir)."""
+    wanted = reference_months(corr, period)
+    got = [chain[m] for m in wanted if m in chain]
+    if not wanted or len(got) < len(wanted):
+        return None
+    return sum(got, Decimal(0)) / len(got)
+
+
+def correction_base(
+    corr: CorrectionConfig, general: Mapping[str, Decimal], periods: Iterable[str]
+) -> str | None:
+    """Período-base: o mais recente do KPI que o índice geral cobre (avança sozinho)."""
+    covered = [p for p in periods if index_level(corr, general, p) is not None]
+    return max(covered, key=lambda p: (parse_period(p).end, p)) if covered else None

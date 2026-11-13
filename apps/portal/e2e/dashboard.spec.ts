@@ -574,7 +574,22 @@ test("escala do mapa sem colapso e unidade nas colunas (DS 2.3.6)", async ({ pag
   await page.screenshot({ path: "test-results/escala-esperanca-vida-nordeste.png", fullPage: false });
   // Unidade no cabeçalho: POF de 1995 em % ("Total (%)").
   await page.goto("/dashboard?kpi=pof_despesa_distribuicao_antiga");
-  await expect(page.locator(".data-table thead")).toContainText("Total (%)");
+  await expect(page.locator(".data-table thead th").nth(1).locator(".th-unit")).toHaveText("%");
+});
+
+test("tabela em matriz (DS 2.3.9): grupos, totais de linha, linha de totais e base do %", async ({ page }) => {
+  await page.goto("/dashboard?kpi=populacao_residente&nivel=uf&dim=c86,c2&foco=regiao%3A2");
+  const table = page.locator(".data-table");
+  await expect(table.locator("thead")).toContainText("Branca");
+  await expect(table.locator("thead th").nth(2).locator(".th-unit")).toHaveText("pessoas (%)");
+  // Totais de linha (Total por sexo) e a linha de totais com o recorte.
+  await expect(table.locator("tbody tr").first().locator("td").first()).toContainText("Homens");
+  await expect(table.locator("tfoot")).toContainText("Total: Nordeste");
+  const select = page.locator(".share-base select");
+  await expect(select.locator("option")).toHaveText(["Território (linha)", "Grupo", "Coluna (Nordeste)", "Total geral"]);
+  // Coluna: o Nordeste é 100% da própria coluna.
+  await select.selectOption("column");
+  await expect(table.locator("tfoot td").first()).toContainText("(100,0%)");
 });
 
 test("POF corrigida pelo IPCA (ADR-0020): seletor, unidade e valores", async ({ page }) => {

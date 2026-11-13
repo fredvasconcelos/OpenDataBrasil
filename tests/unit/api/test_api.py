@@ -291,6 +291,8 @@ def test_map_detail_series_and_table(stack: dict[str, Any]) -> None:
 
     series = _get(stack, "/api/v1/kpis/populacao_residente/series?geography=brasil:1&dimensions=c2")
     assert [s["label"] for s in series["series"]] == ["Total", "Homens", "Mulheres"]
+    # O portal tira do gráfico a série de profundidade 0 (Total) quando há detalhe.
+    assert [s["depth"] for s in series["series"]] == [0, 1, 1]
     assert series["series"][0]["points"] == [
         {"period": "2010", "value": 190755799, "status": "valid"},
         {"period": "2022", "value": 203080756, "status": "valid"},
@@ -319,6 +321,33 @@ def test_map_detail_series_and_table(stack: dict[str, Any]) -> None:
     assert "uf:52" in [r["geography_key"] for r in located["rows"]]
     # Fora da tabela (outro nível): vale o offset pedido.
     assert _get(stack, base + "&offset=10&locate=regiao:1")["offset"] == 10
+
+
+def test_table_matrix_groups_row_totals_and_footer(stack: dict[str, Any]) -> None:
+    """Matriz (DS 2.3.9): grupos da 1ª dimensão, totais de linha e linha de totais."""
+    table = _get(
+        stack, "/api/v1/kpis/populacao_residente/table?level=uf&dimensions=c86,c2&limit=27"
+    )
+    cols = table["columns"]
+    total = cols[0]
+    assert (total["label"], total["depth"], total["parent"]) == ("Total", 0, None)
+    assert total["group"] == total["key"]
+    # Totais de linha: Total da cor ou raça por sexo, logo depois do Total.
+    assert [c["label"] for c in cols[1:3]] == ["Homens", "Mulheres"]
+    assert all(c["group"] == total["key"] and c["parent"] == total["key"] for c in cols[1:3])
+    # Cada cor ou raça é um grupo, com o sexo dentro; o pai é o grupo.
+    heads = [c for c in cols if c["depth"] == 1 and c["group"] == c["key"]]
+    assert heads
+    inner = [c for c in cols if c["depth"] == 2]
+    assert inner
+    assert all(c["parent"] == c["group"] for c in inner)
+    # Rodapé: o Brasil, com o valor publicado (e não a soma das UFs).
+    footer = table["footer"]
+    assert footer["geography_key"] == "brasil:1"
+    assert footer["cells"][total["key"]]["value"] == 203080756
+    within = _get(stack, "/api/v1/kpis/populacao_residente/table?level=uf&within=regiao:2&limit=27")
+    assert within["footer"]["geography_key"] == "regiao:2"
+    assert _get(stack, "/api/v1/kpis/populacao_residente/table?level=brasil")["footer"] is None
 
 
 def test_non_additive_kpi_has_no_shares(stack: dict[str, Any]) -> None:

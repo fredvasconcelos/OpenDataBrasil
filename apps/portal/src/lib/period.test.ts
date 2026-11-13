@@ -43,6 +43,18 @@ describe("timeTicks", () => {
     expect(ticks.at(-1)).toMatchObject({ label: "2026", anchor: "end" });
   });
 
+  it("com margem, centraliza as pontas e mantém os vizinhos (2002 e 2025)", () => {
+    const w = 1300;
+    const { ticks, step } = timeTicks(parsed, w, toX(w), 16, { start: 50, end: 30 });
+    expect(step).toBe(1);
+    expect(ticks[0]).toMatchObject({ label: "2001", anchor: "middle" });
+    expect(ticks.at(-1)).toMatchObject({ label: "2026", anchor: "middle" });
+    const labels = ticks.map((t) => t.label);
+    expect(labels).toContain("2002");
+    expect(labels).toContain("2025");
+    expect(labels).toHaveLength(26);
+  });
+
   it("usa passos redondos que cabem na largura, sem encostar nas pontas", () => {
     const { ticks, step } = timeTicks(parsed, 560, toX(560));
     expect(step).toBe(5);

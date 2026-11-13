@@ -2098,6 +2098,24 @@
           "depth": {
             "type": "integer",
             "title": "Depth"
+          },
+          "group": {
+            "type": "string",
+            "title": "Group",
+            "description": "Chave da coluna-grupo (primeira dimensão).",
+            "default": "total"
+          },
+          "parent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent",
+            "description": "Chave da combinação-mãe (% no grupo)."
           }
         },
         "type": "object",
@@ -3597,6 +3615,12 @@
             "type": "object",
             "title": "Categories"
           },
+          "depth": {
+            "type": "integer",
+            "title": "Depth",
+            "description": "Quantas dimensões estão detalhadas nesta série: 0 é o Total; o maior valor são as combinações mais detalhadas.",
+            "default": 0
+          },
           "points": {
             "items": {
               "$ref": "#/components/schemas/PointOut"
@@ -3794,6 +3818,16 @@
             },
             "type": "array",
             "title": "Rows"
+          },
+          "footer": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TableRowOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "total_rows": {
             "type": "integer",

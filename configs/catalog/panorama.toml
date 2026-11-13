@@ -554,7 +554,7 @@ kpis = [
 id = "custos_construcao"
 label = "Custos e insumos da construção"
 kpis = [
-  { id = "custo_m2", label = "Custo médio do metro quadrado da construção", tabela = "2296", pesquisa = "SINAPI", agregacao_tempo = "media" },
+  { id = "custo_m2", label = "Custo médio do metro quadrado da construção", tabela = "2296", pesquisa = "SINAPI", agregacao_tempo = "media", correcao = "ipca" },
   { id = "insumos_construcao", label = "Produção de insumos típicos da construção civil", tabela = "8886", pesquisa = "Pesquisa Industrial Mensal - Produção Física", agregacao_tempo = "media" },
 ]
 
@@ -597,7 +597,7 @@ id = "servicos_empresariais"
 label = "Serviços"
 kpis = [
   { id = "volume_servicos", label = "Volume de serviços", tabela = "5906", pesquisa = "Pesquisa Mensal de Serviços", referencia = { c11046 = "56726" }, agregacao_tempo = "media" },
-  { id = "servicos_nao_financeiros", label = "Resultados dos serviços empresariais não financeiros", tabela = "2581", pesquisa = "Pesquisa Anual de Serviços", filtros = ["atividade"] },
+  { id = "servicos_nao_financeiros", label = "Resultados dos serviços empresariais não financeiros", tabela = "2581", pesquisa = "Pesquisa Anual de Serviços", filtros = ["atividade"], correcao = "ipca" },
 ]
 
 [[temas.subtemas]]
@@ -670,8 +670,8 @@ filtros = ["atividade"]
 id = "pib_brasil"
 label = "PIB do Brasil"
 kpis = [
-  { id = "pib_per_capita", label = "PIB e PIB per capita", tabela = "6784", pesquisa = "Contas Nacionais Anuais" },
-  { id = "pib_trimestral", label = "PIB trimestral a preços correntes", tabela = "1846", pesquisa = "Contas Nacionais Trimestrais", referencia = { c11255 = "90707" }, agregacao_tempo = "soma" },
+  { id = "pib_per_capita", label = "PIB e PIB per capita", tabela = "6784", pesquisa = "Contas Nacionais Anuais", correcao = "ipca" },
+  { id = "pib_trimestral", label = "PIB trimestral a preços correntes", tabela = "1846", pesquisa = "Contas Nacionais Trimestrais", referencia = { c11255 = "90707" }, agregacao_tempo = "soma", correcao = "ipca" },
   { id = "variacao_pib_trimestral", label = "Taxa de variação do PIB trimestral", tabela = "5932", pesquisa = "Contas Nacionais Trimestrais", referencia = { c11255 = "90707" }, agregacao_tempo = "media" },
 ]
 
@@ -679,7 +679,7 @@ kpis = [
 id = "pib_municipios"
 label = "PIB dos municípios"
 kpis = [
-  { id = "pib_municipios", label = "PIB dos municípios e valor adicionado por atividade", tabela = "5938", pesquisa = "Produto Interno Bruto dos Municípios", filtros = ["atividade"] },
+  { id = "pib_municipios", label = "PIB dos municípios e valor adicionado por atividade", tabela = "5938", pesquisa = "Produto Interno Bruto dos Municípios", filtros = ["atividade"], correcao = "ipca" },
 ]
 
 [[temas.subtemas]]

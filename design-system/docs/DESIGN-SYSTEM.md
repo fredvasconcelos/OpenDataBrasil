@@ -235,3 +235,35 @@ SVG e PNG exportados devem levar as cores já calculadas (`resolveSvgColors`) e 
 - **Método:** recolhido em `details` "Como é calculado", em texto `caption`.
 - **Unidade:** "R$ de jan/2018" nas colunas; a legenda acrescenta o índice e o
   mês-base. A exportação leva a unidade e a correção nos metadados.
+
+## Ajustes da 2.3.8 (série temporal)
+
+- **Total com detalhe:** com "Detalhar por", o gráfico mostra só as combinações mais
+  detalhadas (campo `depth` da API). O Total, e com duas dimensões os subtotais, sai das
+  linhas, da legenda e da escala do eixo Y, porque é muito maior que as categorias e
+  achata as linhas. O Total continua na primeira linha do tooltip (sem marcador de cor,
+  com um filete embaixo), e todos continuam na tabela. As categorias têm o mesmo peso
+  de linha.
+- **Pontas do eixo:** o primeiro e o último período ficam centralizados no ponto quando
+  o rótulo cabe na margem; só se ancoram por dentro do gráfico quando não cabem. Assim
+  os vizinhos (2002 e 2025 numa série de 2001 a 2026) não somem.
+
+## Ajustes da 2.3.9 (tabela em matriz)
+
+- **Grupos:** uma coluna por categoria da primeira dimensão de "Detalhar por" (Total,
+  Branca, Preta…). Na célula do grupo, o valor do grupo em negrito e, embaixo, uma linha
+  por categoria das demais dimensões, com rótulo `caption` à esquerda e "valor (%)" à
+  direita. O grupo Total traz os totais de linha (o Total por sexo).
+- **Unidade:** na segunda linha do cabeçalho, em `caption`: "pessoas" ou, quando a
+  coluna mostra %, "pessoas (%)".
+- **Linha de totais:** no fim da tabela (`tfoot`), "Total: Nordeste" ou "Total:
+  Brasil", com o valor publicado pela fonte, não a soma das linhas da página (a soma não
+  vale para taxas e médias).
+- **Base do %:** `select` "% em relação a": Território (linha, padrão), Grupo (a
+  categoria dentro do seu grupo), Coluna (o território no total do recorte) e Total
+  geral. A explicação fica recolhida em "Como ler os %". Só em KPIs aditivos.
+- **Muitas linhas:** grupos com mais de 12 linhas internas começam recolhidos; o
+  cabeçalho tem "+ N detalhes" / "− recolher".
+- **Rolagem:** a tabela rola nos dois sentidos, com o cabeçalho e a primeira coluna
+  fixos.
+

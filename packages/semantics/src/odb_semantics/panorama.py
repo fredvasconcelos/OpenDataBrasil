@@ -83,6 +83,10 @@ class PanoramaKpi(_Strict):
     # Tabelas-irmãs (ADR-0018): a mesma variável com uma classificação a mais (cor ou
     # raça, idade, instrução...), que entra como detalhe do KPI.
     complementos: tuple[str, ...] = Field(default=(), max_length=12)
+    # Correção de valores em moeda (ADR-0020): "ipca" põe o "Corrigir por: IPCA geral",
+    # com o índice do próprio período (mês, ou média dos meses do trimestre ou do ano).
+    # Só para valores nominais: rendimentos já deflacionados pela fonte ficam de fora.
+    correcao: Literal["ipca"] | None = None
 
 
 class PanoramaExternal(_Strict):

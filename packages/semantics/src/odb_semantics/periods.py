@@ -116,6 +116,12 @@ def parse_period(code: str) -> Period:
     raise PeriodError(msg)
 
 
+def months_of(code: str) -> list[str]:
+    """Meses (``AAAAMmm``) que compõem um período: o próprio mês, 3, 6 ou 12."""
+    p = parse_period(code)
+    return [f"{p.year}M{m:02d}" for m in range(p.first_month, p.last_month + 1)]
+
+
 def coarser_grains(grain: str) -> tuple[str, ...]:
     """O grão e os menos detalhados que ele (mês → mês, trimestre, semestre, ano)."""
     return GRAINS[GRAINS.index(grain) :]

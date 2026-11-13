@@ -66,8 +66,16 @@ Estimativa de 2026-11-13, em 50 tabelas com município e detalhe:
 - **Swagger do dados.gov.br:** <https://dados.gov.br/swagger-ui/index.html> (documento
   em /v3/api-docs).
 
-- [ ] **C1 (ponto 6):** carga dos cruzamentos completos nos KPIs com detalhes
-  marginais; implementar os que couberem.
+- [ ] **C1 (ponto 6), aprovado em 2026-11-13:** cruzamento completo até UF em óbitos
+  (sexo × idade), nascidos vivos (idade da mãe × sexo), alfabetização (sexo × cor ou
+  raça × idade) e PNS (sexo × idade). Começa depois da C2, porque usa as mesmas
+  tabelas.
+  - **Desenho:** um conjunto a mais por KPI com todas as classificações cruzadas nos
+    níveis 1 a 3 (Brasil, região, UF); os detalhes marginais ficam só no município
+    (`extra_set_levels`), para não repetir as linhas de UF.
+  - **Portal:** `crossed_levels` no KPI. Nesses níveis, as dimensões se cruzam; no
+    município, continua uma por vez.
+  - **Município:** cruzamento só KPI a KPI, com a carga estimada antes (ponto 19).
 - [ ] **C2 (ponto 7): em andamento.**
   - **Feito no código:** `category_chunk` no conector, `ALL_MUNICIPAL` no gerador e
     testes verdes.
@@ -85,6 +93,7 @@ Estimativa de 2026-11-13, em 50 tabelas com município e detalhe:
     6. rodar os testes e marcar este item.
 - [ ] **C2 (ponto 7):** liberar o município em todas as séries (divisão das
   requisições por categoria) e otimizar o modelo para as consultas.
+- [ ] **C3 (ponto 17), levantamento feito:** 226 tabelas em [cruzamentos-acervo.md](../data_catalog/cruzamentos-acervo.md). Próximo passo: descritores do bloco 1 (sexo × idade, 87), carga e implementação.
 - [ ] **C3 (ponto 17):** levantar no acervo as tabelas com cruzamentos, avaliar a
   carga e implementar em blocos.
 
@@ -100,6 +109,14 @@ Estimativa de 2026-11-13, em 50 tabelas com município e detalhe:
   - licenças no fim;
   - RM e RIDE (DF) mais tarde.
 - [x] **D4:** feito (relatório, rodada 3). relatório de pontos críticos atualizado, com as perguntas novas.
+
+## Rodada 4 (2026-11-13, tarde): feito
+
+- [x] Eixo da série: pontas centralizadas (2002 e 2025 voltaram; 153 KPIs conferidos). DS 2.3.8.
+- [x] Série com detalhe: Total fora das linhas, da legenda e do eixo Y; fica no tooltip (`depth` na API). DS 2.3.8.
+- [x] Tabela em matriz: grupos, totais de linha, linha de totais, base do % e grupos recolhidos. DS 2.3.9. Alternativas para decidir no relatório (pontos 22 e 23).
+- [x] Correção pelo IPCA em mais 5 KPIs (ADR-0020, atualização).
+- [x] Backup da Bronze e do catálogo (`infrastructure/scripts/backup.sh`, runbook `backup.md`); primeiro backup conferido.
 
 ## Depois desta rodada (ordem do mantenedor, 2026-11-13)
 

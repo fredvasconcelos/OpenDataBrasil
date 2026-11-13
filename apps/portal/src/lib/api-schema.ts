@@ -429,6 +429,17 @@ export interface components {
             label: string;
             /** Depth */
             depth: number;
+            /**
+             * Group
+             * @description Chave da coluna-grupo (primeira dimensão).
+             * @default total
+             */
+            group: string;
+            /**
+             * Parent
+             * @description Chave da combinação-mãe (% no grupo).
+             */
+            parent?: string | null;
         };
         /**
          * CorrectionOut
@@ -992,6 +1003,12 @@ export interface components {
             categories: {
                 [key: string]: string;
             };
+            /**
+             * Depth
+             * @description Quantas dimensões estão detalhadas nesta série: 0 é o Total; o maior valor são as combinações mais detalhadas.
+             * @default 0
+             */
+            depth: number;
             /** Points */
             points: components["schemas"]["PointOut"][];
         };
@@ -1069,6 +1086,7 @@ export interface components {
             columns: components["schemas"]["ColumnOut"][];
             /** Rows */
             rows: components["schemas"]["TableRowOut"][];
+            footer?: components["schemas"]["TableRowOut"] | null;
             /** Total Rows */
             total_rows: number;
             /** Offset */

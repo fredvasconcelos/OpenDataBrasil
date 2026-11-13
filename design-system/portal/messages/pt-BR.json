@@ -122,7 +122,25 @@
     "next": "Próxima",
     "page": "{from}–{to} de {total}",
     "sortByName": "Ordenar por nome",
-    "sortByValue": "Ordenar por valor"
+    "sortByValue": "Ordenar por valor",
+    "footer": "Total: {name}",
+    "shareOf": "% em relação a",
+    "share": {
+      "row": "Território (linha)",
+      "group": "Grupo",
+      "column": "Coluna ({name})",
+      "overall": "Total geral"
+    },
+    "shareNote": {
+      "row": "Entre parênteses: % do Total do território (a linha).",
+      "group": "Entre parênteses: % do grupo em que a categoria está (ex.: Homens dentro de Branca); no grupo, % do Total do território.",
+      "column": "Entre parênteses: % que o território representa no total da coluna, a linha de totais no fim da tabela.",
+      "overall": "Entre parênteses: % do total geral, o Total da linha de totais no fim da tabela."
+    },
+    "shareNoteAll": "Os % podem ser calculados sobre o território, o grupo, a coluna ou o total geral (\"% em relação a\"). A linha de totais traz o valor publicado pela fonte para o recorte ou para o Brasil, não a soma das linhas da página.",
+    "shareHow": "Como ler os %",
+    "collapse": "− recolher",
+    "expand": "+ {count} detalhes"
   },
   "export": {
     "title": "Exportar",

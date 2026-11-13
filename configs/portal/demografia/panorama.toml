@@ -806,6 +806,7 @@ label = "Custos e insumos da construção"
 id = "custo_m2"
 label = "Custo médio do metro quadrado da construção"
 indicator = "custo_m2"
+corrections = [{ "id" = "ipca", "label" = "IPCA geral", "indicator" = "ipca_grupos_variacao_mensal", "reference" = "period", "note" = "Método (ADR-0020): valor × I(base) ÷ I(período), com I o número-índice encadeado das variações mensais do IPCA geral (tabelas 655, 2938, 1419 e 7060). Num mês, I é o índice do mês; num trimestre, semestre ou ano, a média do índice nos meses do período, a prática usual para deflacionar fluxos e médias do período. A base é o período mais recente do KPI coberto pelo índice e avança sozinha com dados novos. O índice começa em agosto de 1999: antes disso, e em anos incompletos, o valor corrigido fica sem valor. O resultado mede o poder de compra em bens de consumo, não o volume produzido: para volume, a fonte publica as variações em volume (Contas Nacionais) ou os números-índice (pesquisas mensais)." }]
 
 [[themes.subthemes.kpis]]
 id = "insumos_construcao"
@@ -867,6 +868,7 @@ id = "servicos_nao_financeiros"
 label = "Resultados dos serviços empresariais não financeiros"
 indicator = "servicos_nao_financeiros"
 dimensions = [{ "classification" = "c85", "partition" = "p103847", "label" = "Atividades" }]
+corrections = [{ "id" = "ipca", "label" = "IPCA geral", "indicator" = "ipca_grupos_variacao_mensal", "reference" = "period", "note" = "Método (ADR-0020): valor × I(base) ÷ I(período), com I o número-índice encadeado das variações mensais do IPCA geral (tabelas 655, 2938, 1419 e 7060). Num mês, I é o índice do mês; num trimestre, semestre ou ano, a média do índice nos meses do período, a prática usual para deflacionar fluxos e médias do período. A base é o período mais recente do KPI coberto pelo índice e avança sozinha com dados novos. O índice começa em agosto de 1999: antes disso, e em anos incompletos, o valor corrigido fica sem valor. O resultado mede o poder de compra em bens de consumo, não o volume produzido: para volume, a fonte publica as variações em volume (Contas Nacionais) ou os números-índice (pesquisas mensais)." }]
 
 [[themes.subthemes]]
 id = "turismo_transportes"
@@ -973,11 +975,13 @@ label = "PIB do Brasil"
 id = "pib_per_capita"
 label = "PIB e PIB per capita"
 indicator = "pib_per_capita"
+corrections = [{ "id" = "ipca", "label" = "IPCA geral", "indicator" = "ipca_grupos_variacao_mensal", "reference" = "period", "note" = "Método (ADR-0020): valor × I(base) ÷ I(período), com I o número-índice encadeado das variações mensais do IPCA geral (tabelas 655, 2938, 1419 e 7060). Num mês, I é o índice do mês; num trimestre, semestre ou ano, a média do índice nos meses do período, a prática usual para deflacionar fluxos e médias do período. A base é o período mais recente do KPI coberto pelo índice e avança sozinha com dados novos. O índice começa em agosto de 1999: antes disso, e em anos incompletos, o valor corrigido fica sem valor. O resultado mede o poder de compra em bens de consumo, não o volume produzido: para volume, a fonte publica as variações em volume (Contas Nacionais) ou os números-índice (pesquisas mensais)." }]
 
 [[themes.subthemes.kpis]]
 id = "pib_trimestral"
 label = "PIB trimestral a preços correntes"
 indicator = "pib_trimestral"
+corrections = [{ "id" = "ipca", "label" = "IPCA geral", "indicator" = "ipca_grupos_variacao_mensal", "reference" = "period", "note" = "Método (ADR-0020): valor × I(base) ÷ I(período), com I o número-índice encadeado das variações mensais do IPCA geral (tabelas 655, 2938, 1419 e 7060). Num mês, I é o índice do mês; num trimestre, semestre ou ano, a média do índice nos meses do período, a prática usual para deflacionar fluxos e médias do período. A base é o período mais recente do KPI coberto pelo índice e avança sozinha com dados novos. O índice começa em agosto de 1999: antes disso, e em anos incompletos, o valor corrigido fica sem valor. O resultado mede o poder de compra em bens de consumo, não o volume produzido: para volume, a fonte publica as variações em volume (Contas Nacionais) ou os números-índice (pesquisas mensais)." }]
 
 [[themes.subthemes.kpis]]
 id = "variacao_pib_trimestral"
@@ -992,6 +996,7 @@ label = "PIB dos municípios"
 id = "pib_municipios"
 label = "PIB dos municípios e valor adicionado por atividade"
 indicator = "pib_municipios"
+corrections = [{ "id" = "ipca", "label" = "IPCA geral", "indicator" = "ipca_grupos_variacao_mensal", "reference" = "period", "note" = "Método (ADR-0020): valor × I(base) ÷ I(período), com I o número-índice encadeado das variações mensais do IPCA geral (tabelas 655, 2938, 1419 e 7060). Num mês, I é o índice do mês; num trimestre, semestre ou ano, a média do índice nos meses do período, a prática usual para deflacionar fluxos e médias do período. A base é o período mais recente do KPI coberto pelo índice e avança sozinha com dados novos. O índice começa em agosto de 1999: antes disso, e em anos incompletos, o valor corrigido fica sem valor. O resultado mede o poder de compra em bens de consumo, não o volume produzido: para volume, a fonte publica as variações em volume (Contas Nacionais) ou os números-índice (pesquisas mensais)." }]
 
 [[themes.subthemes]]
 id = "investimento_poupanca"

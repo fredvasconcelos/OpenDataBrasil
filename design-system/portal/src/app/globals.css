@@ -482,6 +482,7 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
 .series-tip-head { font-weight: 900; margin-bottom: 4px; }
 .series-tip ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
 .series-tip li { display: flex; align-items: center; gap: 6px; }
+.series-tip-total { padding-bottom: 4px; margin-bottom: 2px; border-bottom: 1px solid var(--odbr-border); }
 .series-tip-dot { width: 8px; height: 8px; border-radius: 2px; flex: none; }
 .series-tip-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--odbr-text-muted); font-weight: 700; }
 .series-tip-value { margin-left: auto; font-size: 16px; font-weight: 900; }
@@ -787,3 +788,26 @@ mark { background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px; 
 .status-filter button { height: 36px; padding: 0 14px; border: none; border-radius: 9px; background: transparent; font: inherit; font-size: 13px; font-weight: 800; color: var(--odbr-text-muted); cursor: pointer; }
 .status-filter button:hover { color: var(--odbr-text); }
 .status-filter button[aria-pressed="true"] { background: var(--odbr-bg-surface); color: var(--odbr-text); box-shadow: var(--odbr-shadow-1); }
+
+/* Tabela em matriz (DS 2.3.9): grupo por categoria da 1ª dimensão, unidade sob o nome,
+   linha de totais no fim e primeira coluna fixa na rolagem horizontal. */
+.data-table .th-unit { display: block; font-size: var(--odbr-fs-caption); font-weight: 700; color: var(--odbr-text-muted); }
+.data-table th[scope="row"] { position: sticky; left: 0; z-index: 1; background: var(--odbr-bg-surface); }
+.data-table thead th:first-child { left: 0; z-index: 2; }
+.data-table tfoot th, .data-table tfoot td { background: var(--odbr-bg-subtle); color: var(--odbr-text); font-weight: 800; border-top: 2px solid var(--odbr-divider); }
+.data-table tfoot th { position: sticky; left: 0; z-index: 1; }
+.data-table.is-matrix td { vertical-align: top; }
+.data-table .cell-group { display: grid; gap: 2px; }
+.data-table .cell-line { display: flex; justify-content: flex-end; gap: 8px; }
+.data-table .cell-head { font-weight: 800; color: var(--odbr-text); }
+.data-table .cell-label { margin-right: auto; color: var(--odbr-text-muted); font-size: var(--odbr-fs-caption); font-weight: 700; }
+.data-table tbody tr:hover th[scope="row"] { background: var(--odbr-bg-hover); }
+.data-table tbody tr[aria-selected="true"] th[scope="row"] { background: var(--odbr-bg-selected); }
+.share-base { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; margin: 0 0 8px; font-size: var(--odbr-fs-small); }
+.share-base label { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; color: var(--odbr-text); }
+.share-base select { font: inherit; font-weight: 700; padding: 2px 6px; border: 1px solid var(--odbr-border); border-radius: var(--odbr-radius-sm); background: var(--odbr-bg-surface); color: var(--odbr-text); }
+.share-base details { font-weight: 700; color: var(--odbr-text-muted); }
+.share-base details summary { cursor: pointer; }
+.share-base details[open] p { position: absolute; z-index: 3; left: 0; right: 0; margin: 4px 0 0; padding: 8px 12px; background: var(--odbr-bg-surface); border: 1px solid var(--odbr-divider); border-radius: var(--odbr-radius-md); box-shadow: var(--odbr-shadow-md, 0 4px 12px rgb(0 0 0 / 12%)); font-weight: 400; color: var(--odbr-text-body); }
+.share-base select { height: auto; min-height: 0; padding: 2px 8px; }
+.data-table thead th .th-toggle { display: block; margin-left: auto; font-size: var(--odbr-fs-caption); font-weight: 700; color: var(--odbr-text-link, var(--odbr-text-active)); }

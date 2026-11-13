@@ -62,6 +62,15 @@ export function SeriesChart({ data }: { data: Series }) {
     return () => observer.disconnect();
   }, []);
 
+  // Com "Detalhar por", o gráfico mostra só as combinações mais detalhadas. O Total (e,
+  // com duas dimensões, os subtotais) sai das linhas, da legenda e da escala do eixo Y:
+  // é muito maior que as categorias e achata as linhas. O Total continua no tooltip, e
+  // todos continuam na tabela.
+  const deepest = Math.max(0, ...data.series.map((s) => s.depth ?? 0));
+  const total = deepest > 0 ? (data.series.find((s) => (s.depth ?? 0) === 0) ?? null) : null;
+  const plotted = deepest > 0 ? data.series.filter((s) => (s.depth ?? 0) === deepest) : data.series;
+  const single = plotted.length === 1;
+
   const raws = [...new Set(data.series.flatMap((s) => s.points.map((p) => p.period)))];
   const parsed = parsePeriods(raws);
   const periods: string[] = parsed ? parsed.map((p) => p.raw) : [...raws].sort();
@@ -79,7 +88,7 @@ export function SeriesChart({ data }: { data: Series }) {
     partsFit(slotWidth(parsed ?? [], W - 64 - M.right - 2 * PAD_X), (parsed?.[0] as ParsedPeriod).granularity);
   const bottom = withParts ? M.bottom + 18 : M.bottom;
 
-  const values = data.series.flatMap((s) => s.points.map((p) => p.value)).filter((v): v is number => v !== null);
+  const values = plotted.flatMap((s) => s.points.map((p) => p.value)).filter((v): v is number => v !== null);
   const [lo, hi] = extent(values);
   const y = scaleLinear()
     .domain([Math.min(0, lo ?? 0), hi ?? 1])
@@ -104,7 +113,7 @@ export function SeriesChart({ data }: { data: Series }) {
     xOf = (raw) => xt(byRaw.get(raw)?.t ?? first.t);
     // Ticks internos podem cair em períodos sem dado (ex.: 2010): posição pelo tempo.
     tickX = (tk) => xt(tk.t);
-    ticks = timeTicks(parsed, x1 - x0, (v) => xt(v)).ticks;
+    ticks = timeTicks(parsed, x1 - x0, (v) => xt(v), 16, { start: x0 - 2, end: W - x1 - 2 }).ticks;
     if (first.t === last.t) ticks = ticks.map((tk) => ({ ...tk, anchor: "middle" }));
     if (grouped) {
       axis = groupedAxis(parsed, x0, x1, (v) => xt(v), 8, withParts);
@@ -183,7 +192,7 @@ export function SeriesChart({ data }: { data: Series }) {
     .y0(base)
     .y1((p) => y(p.value ?? 0));
   const color = (i: number) => SERIES[i % SERIES.length] as string;
-  const hasGaps = data.series.some((s) => runs(s.points).dashed.length > 0);
+  const hasGaps = plotted.some((s) => runs(s.points).dashed.length > 0);
 
   // Hover: período mais próximo do ponteiro (no eixo de tempo, não no índice).
   const xs = periods.map((p) => xOf(p));
@@ -217,16 +226,19 @@ export function SeriesChart({ data }: { data: Series }) {
   const rows =
     period === null
       ? []
-      : data.series.map((s, i) => {
+      : [
+          ...(total ? [{ series: total, color: null }] : []),
+          ...plotted.map((s, i) => ({ series: s, color: color(i) as string | null })),
+        ].map(({ series: s, color: c }) => {
           const p = s.points.find((pt) => pt.period === period);
-          return { key: s.key, label: s.label, color: color(i), value: p?.value ?? null, status: p?.status ?? "absent" };
+          return { key: s.key, label: s.label, color: c, value: p?.value ?? null, status: p?.status ?? "absent" };
         });
   const anchor: XY | null =
     period === null
       ? null
       : {
           x: xOf(period),
-          y: Math.min(...rows.filter((r) => r.value !== null).map((r) => y(r.value as number)), H - bottom),
+          y: Math.min(...rows.filter((r) => r.color !== null && r.value !== null).map((r) => y(r.value as number)), H - bottom),
         };
 
   // Posiciona o tooltip depois de medir: direita do ponto → esquerda; acima → abaixo;
@@ -314,8 +326,8 @@ export function SeriesChart({ data }: { data: Series }) {
               </g>
             );
           })}
-          {data.series[0]
-            ? areaRuns(data.series[0].points).map((run) => (
+          {single && plotted[0]
+            ? areaRuns(plotted[0].points).map((run) => (
                 <path
                   key={`area-${run[0]?.period}`}
                   d={fill(run) ?? ""}
@@ -334,9 +346,9 @@ export function SeriesChart({ data }: { data: Series }) {
               strokeDasharray="3 3"
             />
           ) : null}
-          {data.series.map((s, i) => {
+          {plotted.map((s, i) => {
             const { solid, dashed } = runs(s.points);
-            const width = i === 0 ? 2.5 : 1.5;
+            const width = single ? 2.5 : 2;
             return (
               <g key={s.key}>
                 {dashed.map(([a, b]) => (
@@ -371,7 +383,7 @@ export function SeriesChart({ data }: { data: Series }) {
                         key={p.period}
                         cx={xOf(p.period)}
                         cy={y(p.value ?? 0)}
-                        r={(i === 0 ? 3.5 : 2.5) + (on ? 1.5 : 0)}
+                        r={(single ? 3.5 : 3) + (on ? 1.5 : 0)}
                         style={{ fill: on ? color(i) : CHART.surface, stroke: color(i), strokeWidth: 2 }}
                       />
                     );
@@ -396,8 +408,8 @@ export function SeriesChart({ data }: { data: Series }) {
             <div className="series-tip-head">{label(period)}</div>
             <ul>
               {shown.map((r) => (
-                <li key={r.key}>
-                  <span className="series-tip-dot" style={{ background: r.color }} aria-hidden="true" />
+                <li key={r.key} className={r.color === null ? "series-tip-total" : undefined}>
+                  <span className="series-tip-dot" style={{ background: r.color ?? "transparent" }} aria-hidden="true" />
                   {data.series.length > 1 ? <span className="series-tip-label">{r.label}</span> : null}
                   <span className="series-tip-value">{formatValue(r.value, r.status)}</span>
                 </li>
@@ -413,7 +425,7 @@ export function SeriesChart({ data }: { data: Series }) {
       </div>
       <figcaption className="small">
         <ul className="series-legend">
-          {data.series.map((s, i) => (
+          {plotted.map((s, i) => (
             <li key={s.key}>
               <span aria-hidden="true" style={{ width: 16, height: 3, borderRadius: 2, background: color(i) }} />
               {s.label}

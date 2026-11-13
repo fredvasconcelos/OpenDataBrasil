@@ -356,3 +356,50 @@ espaço vai quase todo para o vigente.
   - OpenTelemetry com verificação de consultas em produção.
 - **Próxima onda:** série histórica do Censo Demográfico (pedido de 2026-11-13) e, em
   seguida, a varredura do dados.gov.br (chave no `.env`, validada).
+
+## Rodada 4 (2026-11-13, tarde)
+
+### Respostas do mantenedor e o que foi feito
+
+| Ponto | Decisão | Feito |
+|---|---|---|
+| 19. Cruzamentos | até UF: de acordo; município KPI a KPI se a carga for por consulta | a carga é **uma vez por ciclo de atualização**, na ingestão; o portal só lê a Gold. Os 38 bilhões de valores seriam o tamanho da Gold e da Bronze, não um custo por consulta, e isso é que inviabiliza o cruzamento completo no município. Plano: cruzamento completo até UF (C1, depois da carga municipal) e, no município, só cruzamentos escolhidos KPI a KPI, com a carga estimada antes |
+| 20. Silver | backup só da Bronze; Silver e Gold se reconstroem | `infrastructure/scripts/backup.sh` (Bronze incremental + dump do catálogo, `--verify` confere o SHA-256 de cada artefato). Primeiro backup: 6.278 artefatos conferidos, 24 GB, em `./backups` (fora do Git; `ODB_BACKUP_DIR` no `.env` muda o destino). Runbook: [backup.md](../runbooks/backup.md) |
+| 21. IPCA em outros KPIs | onde houver base | custo do m², PIB anual, PIB trimestral, PIB dos municípios e PAS, com o índice do próprio período (mês ou média do ano). Rendimentos da PNAD ficam de fora, porque a fonte já os deflaciona. ADR-0020, atualização |
+| Eixo da série (6579) | 2002 e 2025 sumiam | as pontas centralizam quando cabem; conferido em 153 KPIs (DS 2.3.8) |
+| Total na série com detalhe (9606) | tirar das linhas, da legenda e do eixo Y | sai das linhas e da escala; fica no tooltip e na tabela (DS 2.3.8) |
+| Tabela em matriz (9606) | grupos pela hierarquia do detalhe, totais de linha e coluna, % com notas | feito (DS 2.3.9); ver abaixo |
+
+### 22. Tabela em matriz: impacto nos KPIs
+
+Conferido na API em 257 combinações (todos os KPIs, sem detalhe, com a primeira
+dimensão e com as duas primeiras quando o KPI permite cruzar): nenhuma falha.
+
+- **Linha de totais:** aparece em 213. Falta nos 44 em que não há nível acima (tabela
+  já no Brasil) ou o KPI não publica o nível do recorte.
+- **% só em KPIs aditivos.** Em taxas, médias e índices, a tabela mostra só os valores.
+- **Casos extremos (para decidir):**
+
+  | KPI | Grupos × linhas | O que acontece |
+  |---|---|---|
+  | POF 1987/1995, despesa (c201 × c210) | 12 × 76 | grupos começam recolhidos ("+ 76 detalhes") |
+  | POF 1987/1995, alimentação (c201 × c210alim) | 12 × 75 | idem |
+  | Produção das lavouras (c782) | 86 colunas | rolagem horizontal |
+  | Nascidos vivos (c232) | 62 colunas | idem |
+
+### 23. Outras formas de organizar a tabela (para decidir)
+
+1. **Cabeçalho em dois níveis (matriz do Power BI):** "Branca" sobre as subcolunas
+   "Total | Homens | Mulheres". Cada território ocupa uma linha só e cabe mais na
+   tela. Fica bom quando a segunda dimensão tem poucas categorias (sexo, situação).
+   Com idade (20 grupos) fica muito larga. Proposta: escolher automaticamente, com o
+   cabeçalho em dois níveis até 4 categorias internas e as linhas dentro da célula
+   acima disso.
+2. **Tabela transposta:** com um território só (clique no mapa), as categorias viram
+   linhas e os períodos ou territórios viram colunas. É a leitura natural da pirâmide
+   etária e da POF.
+3. **Tabela em tela cheia:** um botão que abre a tabela ocupando o painel inteiro. O
+   painel atual mostra 1 ou 2 territórios por vez quando as células têm várias linhas.
+4. **Ordenar por qualquer coluna:** hoje a ordem é pelo Total ou pelo nome. Ordenar
+   pelo valor ou pelo % de uma categoria (ex.: UFs pela % de pretos) exige um parâmetro
+   novo na API.

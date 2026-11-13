@@ -13,7 +13,7 @@ from __future__ import annotations
 import tomllib
 from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
@@ -58,12 +58,25 @@ class CorrectionConfig(_Strict):
     indicator: str = Field(pattern=_ID)
     group_classification: str = Field(default="c315", pattern=r"^[a-z][a-z0-9]{0,15}$")
     general: str = Field(default="7169", pattern=r"^\d+$")  # índice geral
-    # Período do KPI → mês de referência da pesquisa ("2018" → "2018M01").
-    reference_months: dict[str, str] = Field(min_length=1)
+    # Como achar o índice de cada período do KPI:
+    # - "months": um mês de referência por período, em ``reference_months`` (pesquisas
+    #   com data de referência própria, como a POF: "2018" → "2018M01");
+    # - "period": o próprio período. Mês: o índice do mês; trimestre, semestre e ano: a
+    #   média do índice nos meses do período (valores que são fluxos ou médias do
+    #   período, como o PIB anual ou o custo médio do m² no ano).
+    reference: Literal["months", "period"] = "months"
+    reference_months: dict[str, str] = Field(default_factory=dict)
     # Classificação do KPI cujas categorias têm grupo próprio, e categoria → grupo.
     dimension: str | None = Field(default=None, pattern=r"^[a-z][a-z0-9]{0,15}$")
     groups: dict[str, str] = Field(default_factory=dict)
     note: str = ""
+
+    @model_validator(mode="after")
+    def _reference_months(self) -> CorrectionConfig:
+        if self.reference == "months" and not self.reference_months:
+            msg = f"correção {self.id}: reference = 'months' exige reference_months"
+            raise ValueError(msg)
+        return self
 
 
 class KpiConfig(_Strict):

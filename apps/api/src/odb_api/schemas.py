@@ -355,6 +355,13 @@ class SeriesItemOut(_Out):
     key: str
     label: str
     categories: dict[str, str]
+    depth: int = Field(
+        0,
+        description=(
+            "Quantas dimensões estão detalhadas nesta série: 0 é o Total; o maior valor são"
+            " as combinações mais detalhadas."
+        ),
+    )
     points: list[PointOut]
 
 
@@ -376,6 +383,10 @@ class ColumnOut(_Out):
     key: str
     label: str
     depth: int
+    # Matriz (DS 2.3.9): coluna-grupo (categoria da primeira dimensão, ou o Total) e a
+    # combinação-mãe (a mesma com a última categoria detalhada trocada pelo Total).
+    group: str = Field("total", description="Chave da coluna-grupo (primeira dimensão).")
+    parent: str | None = Field(None, description="Chave da combinação-mãe (% no grupo).")
 
 
 class CellOut(_Out):
@@ -406,6 +417,9 @@ class TableOut(_Out):
     unit: str
     columns: list[ColumnOut]
     rows: list[TableRowOut]
+    # Totais da tabela: o território que agrega as linhas (o recorte, ou o Brasil), com o
+    # valor publicado pela fonte (não a soma das linhas, que não vale para taxas).
+    footer: TableRowOut | None = None
     total_rows: int
     offset: int
     limit: int

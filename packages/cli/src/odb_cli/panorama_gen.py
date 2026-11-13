@@ -1297,6 +1297,29 @@ def render_indicators(gen: Generated, scope: str) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
+# Correções de valores em moeda (ADR-0020) que o panorama pode pedir por item.
+CORRECTIONS: dict[str, dict[str, str]] = {
+    "ipca": {
+        "id": "ipca",
+        "label": "IPCA geral",
+        "indicator": "ipca_grupos_variacao_mensal",
+        "reference": "period",
+        "note": (
+            "Método (ADR-0020): valor × I(base) ÷ I(período), com I o número-índice"  # noqa: RUF001
+            " encadeado das variações mensais do IPCA geral (tabelas 655, 2938, 1419 e"
+            " 7060). Num mês, I é o índice do mês; num trimestre, semestre ou ano, a média"
+            " do índice nos meses do período, a prática usual para deflacionar fluxos e"
+            " médias do período. A base é o período mais recente do KPI coberto pelo índice"
+            " e avança sozinha com dados novos. O índice começa em agosto de 1999: antes"
+            " disso, e em anos incompletos, o valor corrigido fica sem valor. O resultado"
+            " mede o poder de compra em bens de consumo, não o volume produzido: para"
+            " volume, a fonte publica as variações em volume (Contas Nacionais) ou os"
+            " números-índice (pesquisas mensais)."
+        ),
+    }
+}
+
+
 def render_portal(gen: Generated, scope: str) -> str:
     """Fragmento do portal: temas e subtemas do panorama, KPIs com o id do item."""
     order = list(
@@ -1342,6 +1365,8 @@ def render_portal(gen: Generated, scope: str) -> str:
                 lines.append("exclusive_dimensions = true")
         if kpi.id in gen.map_share:
             lines.append(f"map_share = {_value(gen.map_share[kpi.id])}")
+        if kpi.correcao:
+            lines.append(f"corrections = [{_value(CORRECTIONS[kpi.correcao])}]")
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
