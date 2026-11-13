@@ -216,6 +216,42 @@ describe("SeriesChart", () => {
   });
 });
 
+describe("SeasonChart (Isolar período)", () => {
+  it("acumula cada mês entre os anos e marca as partes", async () => {
+    const { seasonBars, partOf } = await import("./SeasonChart");
+    expect(partOf("2025M08")).toBe("M08");
+    expect(partOf("2025T3")).toBe("T3");
+    const data = {
+      kpi_id: "k",
+      indicator_id: "i",
+      geography: { geography_key: "brasil:1", name: "Brasil", level_id: "brasil" },
+      unit: "Vítimas",
+      series: [
+        {
+          key: "total",
+          label: "Total",
+          full_label: "Total",
+          categories: {},
+          depth: 0,
+          points: [
+            { period: "2024M01", value: 100, status: "valid" },
+            { period: "2024M02", value: 90, status: "valid" },
+            { period: "2025M01", value: 110, status: "valid" },
+            { period: "2025M02", value: null, status: "absent" },
+          ],
+        },
+      ],
+      provenance: { release_id: "r", tables: [], derived: false, truncated: false },
+    } as unknown as Series;
+    const { bars } = seasonBars(data, "sum");
+    expect(bars.map((b) => [b.part, b.values[0], b.years[0]])).toEqual([
+      ["M01", 210, 2],
+      ["M02", 90, 1],
+    ]);
+    expect(seasonBars(data, "mean").bars[0]?.values[0]).toBe(105);
+  });
+});
+
 describe("DataTable", () => {
   const table: Table = {
     kpi_id: "k",

@@ -211,9 +211,9 @@ describe("state", () => {
 
   it("lê a URL validando KPI, nível, período, dimensões e território", () => {
     const s = readState(new URLSearchParams("kpi=pop&nivel=municipio&periodo=2010&dim=c2,c86,c99&territorio=uf:29"), nav);
-    expect(s).toEqual({ kpi: "pop", level: "municipio", grain: null, correction: null, period: "2010", dimensions: ["c86", "c2"], geography: "uf:29", focus: null });
+    expect(s).toEqual({ kpi: "pop", level: "municipio", grain: null, correction: null, period: "2010", dimensions: ["c86", "c2"], geography: "uf:29", focus: null, isolate: false });
     const bad = readState(new URLSearchParams("kpi=x&nivel=zzz&periodo=1999&territorio=uf;drop"), nav);
-    expect(bad).toEqual({ kpi: "pop", level: "uf", grain: null, correction: null, period: null, dimensions: [], geography: "brasil:1", focus: null });
+    expect(bad).toEqual({ kpi: "pop", level: "uf", grain: null, correction: null, period: null, dimensions: [], geography: "brasil:1", focus: null, isolate: false });
   });
 
   it("sem nível Brasil, abre no Total das áreas e nas regiões metropolitanas (ADR-0016)", () => {
@@ -273,10 +273,10 @@ describe("state", () => {
   });
 
   it("escreve só o que difere do padrão", () => {
-    expect(writeState({ kpi: "ti", level: "uf", grain: null, correction: null, period: null, dimensions: ["c2"], geography: "brasil:1", focus: null })).toBe(
+    expect(writeState({ kpi: "ti", level: "uf", grain: null, correction: null, period: null, dimensions: ["c2"], geography: "brasil:1", focus: null, isolate: false })).toBe(
       "kpi=ti&nivel=uf&dim=c2",
     );
-    expect(writeState({ kpi: "pop", level: "municipio", grain: null, correction: null, period: null, dimensions: [], geography: "brasil:1", focus: "uf:13" })).toBe(
+    expect(writeState({ kpi: "pop", level: "municipio", grain: null, correction: null, period: null, dimensions: [], geography: "brasil:1", focus: "uf:13", isolate: false })).toBe(
       "kpi=pop&nivel=municipio&foco=uf%3A13",
     );
   });

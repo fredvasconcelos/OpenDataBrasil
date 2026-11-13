@@ -94,6 +94,19 @@ class PanoramaKpi(_Strict):
     # geral: no Plano Diretor, o tamanho do município primeiro, para comparar "com" e
     # "sem plano" dentro de cada faixa.
     ordem_detalhes: tuple[str, ...] = ()
+    # Classificação de mês (cNNN da fonte) que vira o calendário (ponto 3 de
+    # 2026-11-13): o KPI anual perde o mês como detalhe, e o gerador cria
+    # "<id>_mensal", com ano, semestre, trimestre e mês.
+    mes_como_periodo: str | None = Field(default=None, pattern=r"^c\d{1,6}$")
+    # Grupos de categorias (configs/catalog/grupos/<nome>.toml): o detalhe mostra os
+    # grupos (soma dos produtos) e abre os produtos (ex.: lavouras por tipo).
+    grupos: str | None = Field(default=None, pattern=r"^[a-z][a-z0-9_]{0,40}$")
+    # Vários KPIs da mesma tabela, um por categoria de referência (ex.: um por tipo de
+    # rebanho na 3939, um por produto na 74): o dataset vira "ibge-sidra-<tabela>-<sufixo>".
+    sufixo: str | None = Field(default=None, pattern=r"^[a-z][a-z0-9_]{0,30}$")
+    # Unidade da categoria de referência, quando a variável muda de unidade entre
+    # categorias (a 74 publica leite em mil litros, ovos em mil dúzias, mel em kg).
+    unidade: str | None = None
     # Correção de valores em moeda (ADR-0020): "ipca" põe o "Corrigir por: IPCA geral",
     # com o índice do próprio período (mês, ou média dos meses do trimestre ou do ano).
     # Só para valores nominais: rendimentos já deflacionados pela fonte ficam de fora.

@@ -158,6 +158,10 @@ def _generation(config: Panorama, panorama: Path, raiz: Path, escopo: str) -> Ge
         existing_portal_kpis=list(portal),
         descriptors=descriptors,
         curated_classifications=curated_classes,
+        group_specs={
+            path.stem: tomllib.loads(path.read_text(encoding="utf-8"))
+            for path in sorted((panorama.parent / "grupos").glob("*.toml"))
+        },
         curated_order=order,
     )
 

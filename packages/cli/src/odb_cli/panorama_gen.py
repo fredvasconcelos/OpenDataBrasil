@@ -101,6 +101,14 @@ def pick_variable(kpi: PanoramaKpi, info: Mapping[str, Any]) -> tuple[dict[str, 
         if chosen is None:
             return None, "nenhuma variável além de coeficientes e distribuições"
     units = chosen.get("units") or []
+    if kpi.unidade:
+        # Unidade escolhida no panorama (a da categoria de referência).
+        # Sem unidade única no Total ("vide categorias", tabela 74): vale a do panorama, e a
+        # Gold confere a unidade publicada de cada linha.
+        if units and kpi.unidade not in units:
+            return None, f"variável {chosen['id']}: unidade {kpi.unidade} não publicada ({units})"
+        chosen = {**chosen, "units": [kpi.unidade]}
+        units = [kpi.unidade]
     if len(units) != 1:
         found = ", ".join(units) or "sem unidade no Total"
         return None, f"variável {chosen['id']}: unidade não é única ({found})"
@@ -119,10 +127,16 @@ def _reason(kpi: PanoramaKpi, info: Mapping[str, Any] | None, *, has_detail: boo
     return ""
 
 
-def _level_counts(info: Mapping[str, Any], descriptor: Mapping[str, Any] | None) -> dict[str, int]:
-    """Territórios por nível: os da verificação; sem eles (Total ".."), os do descritor."""
+def _level_counts(
+    info: Mapping[str, Any], descriptor: Mapping[str, Any] | None, *, from_descriptor: bool = False
+) -> dict[str, int]:
+    """Territórios por nível: os da verificação; sem eles (Total ".."), os do descritor.
+
+    ``from_descriptor``: sempre os do descritor (variável com unidade por categoria, como a
+    74: a verificação pelo Total não responde fora do Brasil).
+    """
     counts = {lv: int(n) for lv, n in (info.get("levels") or {}).items() if n}
-    if counts:
+    if counts and not from_descriptor:
         return counts
     return {
         f"n{lvl['Id']}": int(lvl.get("QuantidadeUnidadesAtivas") or 0)
@@ -796,13 +810,13 @@ def fixed_categories(
         label = cls["label"]
         if label == exclude:
             continue
-        default = cls["categories"][0] if len(cls.get("categories") or []) == 1 else None
-        if default is not None and default.get("name"):
-            fixed[label] = default["id"]
-            continue
         desc = by_name.get(label)
         cats: list[Mapping[str, Any]] = (desc or {}).get("Categorias") or []
         reference = (references or {}).get(f"c{desc['Id']}") if desc else None
+        default = cls["categories"][0] if len(cls.get("categories") or []) == 1 else None
+        if reference is None and default is not None and default.get("name"):
+            fixed[label] = default["id"]
+            continue
         if reference is not None:
             if reference not in {str(c["Id"]) for c in cats}:
                 missing.append(f"{label} (referência {reference} inexistente)")
@@ -869,6 +883,52 @@ def _register(
             entry["member"][c] = pid
     detail.partition = entry["member"][detail.edges[detail.total][0]]
     return ""
+
+
+# Unidades em que somar produtos faz sentido (área e valor; a quantidade muda de unidade).
+GROUPABLE_UNITS = frozenset({"Hectares", "Mil hectares", "Mil Reais", "Reais"})
+
+
+def apply_groups(
+    detail: Detail, spec: Mapping[str, Any] | None, variable: Mapping[str, Any]
+) -> tuple[list[dict[str, Any]], str]:
+    """Grupos de categorias (``configs/catalog/grupos``): hierarquia e soma por grupo.
+
+    O Total passa a ter os grupos como filhos, e cada grupo os seus produtos (os
+    ``subprodutos`` ficam abaixo do produto, sem entrar na soma). Devolve as regras de
+    soma (``aggregate``) e o motivo, se os grupos não se aplicam.
+    """
+    if spec is None:
+        return [], "grupos: arquivo não encontrado"
+    if spec.get("classification") != (detail.source_cid or detail.cid):
+        return [], f"grupos: classificação {spec.get('classification')} ≠ {detail.source_cid}"
+    if variable["units"][0] not in GROUPABLE_UNITS:
+        return [], f"grupos: unidade {variable['units'][0]} não soma entre produtos"
+    products = [c for c in detail.categories if c != detail.total]
+    listed = [p for g in spec["grupos"] for p in g["produtos"]]
+    subs = {c: list(v) for g in spec["grupos"] for c, v in (g.get("subprodutos") or {}).items()}
+    covered = set(listed) | {c for v in subs.values() for c in v}
+    if covered != set(products) or len(listed) != len(set(listed)):
+        missing = sorted(set(products) - covered)
+        extra = sorted(covered - set(products))
+        return [], f"grupos: produtos fora dos grupos {missing} ou inexistentes {extra}"
+    detail.edges = {
+        detail.total: [g["id"] for g in spec["grupos"]],
+        **{g["id"]: list(g["produtos"]) for g in spec["grupos"]},
+        **subs,
+    }
+    return (
+        [
+            {
+                "dimension": detail.name,
+                "target": g["id"],
+                "name": g["nome"],
+                "sources": list(g["produtos"]),
+            }
+            for g in spec["grupos"]
+        ],
+        "",
+    )
 
 
 def register_detail(
@@ -962,6 +1022,7 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
     descriptors: Mapping[str, Mapping[str, Any]] | None = None,
     curated_classifications: Mapping[str, CuratedClassification] | None = None,
     curated_order: Iterable[str] = (),
+    group_specs: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> Generated:
     """Configurações dos KPIs de Total elegíveis.
 
@@ -990,6 +1051,10 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
         why_total = ""
         if info is not None and info.get("status") == "ok":
             detail, why_total = plan_detail(kpi, info, descriptor)
+            if detail is not None and (detail.source_cid or detail.cid) in kpi.referencia:
+                # A referência fixa a categoria (ex.: um KPI por produto da 74, cada um com
+                # a sua unidade): a classificação deixa de ser detalhe.
+                why_total, detail = f"{detail.cid}: categoria de referência", None
         reason = _reason(kpi, info, has_detail=detail is not None)
         variable: dict[str, Any] | None = None
         if not reason and info is not None:
@@ -1000,17 +1065,21 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
         if kpi.id in taken:
             msg = f"{kpi.id}: identificador já usado por um indicador ou KPI curado"
             raise ValueError(msg)
-        if kpi.tabela in seen_tables:
-            msg = f"tabela {kpi.tabela} em mais de um KPI de Total: separe por variável à mão"
+        table_key = f"{kpi.tabela}-{kpi.sufixo.replace('_', '-')}" if kpi.sufixo else kpi.tabela
+        if table_key in seen_tables:
+            msg = f"tabela {kpi.tabela} em mais de um KPI de Total: use sufixo (um por categoria)"
             raise ValueError(msg)
-        seen_tables.add(kpi.tabela)
-        info = {**info, "levels": _level_counts(info, descriptor)}
+        seen_tables.add(table_key)
+        info = {
+            **info,
+            "levels": _level_counts(info, descriptor, from_descriptor=bool(kpi.unidade)),
+        }
         levels = _levels(info)
         if not levels:
             out.skipped.append((kpi.id, kpi.tabela, "nenhum nível Brasil, Região, UF ou Município"))
             continue
-        dataset_id = f"ibge-sidra-{kpi.tabela}"
-        fact_id = f"fact_sidra_{kpi.tabela}"
+        dataset_id = f"ibge-sidra-{table_key}"
+        fact_id = f"fact_sidra_{table_key.replace('-', '_')}"
         fixed, fixed_params, missing = fixed_categories(
             info, descriptor, detail.name if detail else None, kpi.referencia
         )
@@ -1061,6 +1130,13 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 detail = None
             elif allowed != tuple(levels):
                 detail.levels = allowed
+        group_plan: list[dict[str, Any]] = []
+        if detail is not None and kpi.grupos:
+            group_plan, group_why = apply_groups(
+                detail, (group_specs or {}).get(kpi.grupos), variable
+            )
+            if group_why:
+                out.complement_skipped.append((kpi.id, kpi.tabela, group_why))
         if detail is not None:
             conflict = register_detail(out, detail, kpi.tabela, curated)
             if conflict:
@@ -1181,9 +1257,17 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
         at = "; ".join(
             f"{label}: {names.get(label, {}).get(cat, cat)}" for label, cat in fixed.items()
         )
+        has_total = {
+            str(c["Nome"]): any(str(x.get("Nome")) == "Total" for x in c.get("Categorias") or [])
+            for c in (descriptor or {}).get("Classificacoes") or []
+        }
         reference_notes = [
             f"Valor de referência em {label}: {names.get(label, {}).get(cat, cat)} "
-            "(a classificação não tem Total; as categorias não se somam)."
+            + (
+                f"(um KPI por categoria: cada uma tem a sua unidade, {kpi.unidade} nesta)."
+                if kpi.unidade and has_total.get(label)
+                else "(a classificação não tem Total; as categorias não se somam)."
+            )
             for label, cat in fixed.items()
             if f"c{_class_id(descriptor, label)}" in kpi.referencia
         ]
@@ -1370,6 +1454,18 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                     entry["datasets"] = list(
                         dict.fromkeys(series_id if d in members else d for d in entry["datasets"])
                     )
+        if group_plan:
+            fact.setdefault("table_rules", {}).setdefault(kpi.tabela, {})["aggregate"] = group_plan
+        # Categoria de referência: só as linhas dela (outros KPIs da mesma tabela, com
+        # sufixo, leem a mesma Silver com outras categorias).
+        refs = {
+            label: [cat]
+            for label, cat in fixed.items()
+            if f"c{_class_id(descriptor, label)}" in kpi.referencia
+        }
+        if refs:
+            rules = fact.setdefault("table_rules", {}).setdefault(kpi.tabela, {})
+            rules.setdefault("keep_categories", {}).update(refs)
         out.facts.append(fact)
         caveats = [*reference_notes, *_caveats(kpi, info, levels, descriptor)]
         # A nota de método da regra vem da Gold (odb_semantics.periods); aqui, só a
@@ -1468,6 +1564,13 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 + ", ".join(LEVEL_LABELS[lv] for lv in out.crossed_levels.get(kpi.id, CROSS_LEVELS))
                 + ". Nos demais níveis, um detalhe por vez, com os demais no Total."
             )
+        if group_plan:
+            caveats.append(
+                "Grupos de produtos (portal): cada grupo é a soma dos seus produtos "
+                f'({len(group_plan)} grupos). Grãos seguem o grupo "Cereais, leguminosas e '
+                'oleaginosas" do LSPA/IBGE e a Safra de Grãos da Conab; os demais, as classes '
+                "da CNAE 2.0 (IBGE/Concla). Definição em configs/catalog/grupos."
+            )
         note = multi_source_note(
             kpi.tabela,
             descriptor,
@@ -1518,6 +1621,8 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
             }
         )
         out.portal.append((theme, sub, kpi))
+        if kpi.mes_como_periodo and detail is not None:
+            add_monthly(out, theme, sub, kpi, fact, detail, extras.details)
     return out
 
 
@@ -1627,6 +1732,91 @@ CORRECTIONS: dict[str, dict[str, str]] = {
         ),
     }
 }
+
+
+def add_monthly(  # noqa: PLR0917 - contexto da geração de um KPI
+    out: Generated,
+    theme: PanoramaTheme,
+    sub: PanoramaSubtheme,
+    kpi: PanoramaKpi,
+    fact: dict[str, Any],
+    detail: Detail,
+    extras: Sequence[Detail],
+) -> None:
+    """Mês como calendário (ponto 3 de 2026-11-13): o KPI mensal e o anual sem o mês.
+
+    A carga continua pedindo o mês (marginal). No KPI anual, a dimensão sai (só o Total
+    do mês). No KPI ``<id>_mensal``, cada mês vira o período "AAAAMmm", com os demais
+    detalhes no Total, e o ano volta pela soma dos meses (trimestre, semestre, ano e
+    "Isolar período" no portal).
+    """
+    month = next((d for d in extras if (d.source_cid or d.cid) == kpi.mes_como_periodo), None)
+    if month is None:
+        out.skipped.append(
+            (kpi.id, kpi.tabela, f"mes_como_periodo: {kpi.mes_como_periodo} não é detalhe")
+        )
+        return
+    others = [d for d in (detail, *extras) if d is not month]
+    fact["classifications"] = {
+        k: v for k, v in (fact.get("classifications") or {}).items() if k != month.cid
+    }
+    rules = fact.setdefault("table_rules", {}).setdefault(kpi.tabela, {})
+    rules.setdefault("keep_categories", {})[month.name] = [month.total]
+    if "fixed_categories" in fact:
+        fact["fixed_categories"][month.name] = month.total
+    else:
+        rules.setdefault("fixed_categories", {})[month.name] = month.total
+    out.extra_dimensions[kpi.id] = [
+        d for d in out.extra_dimensions.get(kpi.id, []) if d["classification"] != month.cid
+    ]
+    monthly_id = f"{kpi.id}_mensal"
+    out.facts.append(
+        {
+            "id": f"{fact['id']}_mensal",
+            "dataset": fact["dataset"],
+            "grain": "território x mês",
+            "description": f"{kpi.label} por mês de ocorrência (tabela SIDRA {kpi.tabela}).",
+            "table_rules": {
+                kpi.tabela: {
+                    "month_dimension": month.name,
+                    "keep_categories": {d.name: [d.total] for d in others},
+                    "fixed_categories": {d.name: d.total for d in others},
+                }
+            },
+        }
+    )
+    base = out.indicators[-1]
+    out.indicators.append(
+        {
+            **base,
+            "id": monthly_id,
+            "name": f"{base['name']} (por mês)",
+            "fact": f"{fact['id']}_mensal",
+            "concept": monthly_id,
+            "time_aggregation": "sum",
+            "caveats": [
+                f"Mês de ocorrência como calendário: cada mês da tabela {kpi.tabela} é um "
+                "período; o trimestre, o semestre e o ano são a soma dos meses. O mês "
+                '"Ignorado" fica fora (zero no Brasil e nas UFs nos anos conferidos: 2015, '
+                "2021 e 2024).",
+                *base.get("caveats", []),
+            ],
+        }
+    )
+    out.portal.append(
+        (
+            theme,
+            sub,
+            kpi.model_copy(
+                update={
+                    "id": monthly_id,
+                    "label": f"{kpi.label} por mês",
+                    "mes_como_periodo": None,
+                    "correcao": None,
+                }
+            ),
+        )
+    )
 
 
 def render_portal(gen: Generated, scope: str) -> str:

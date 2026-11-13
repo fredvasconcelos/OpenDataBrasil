@@ -4,8 +4,8 @@
  "acervo_sha256": "a9ec32ee30cf69c19f532e3a2b8d8b0f08384f2fc6509d7ad4d1cf8325b97c5c",
  "source_id": "ibge-sidra",
  "base_url": "https://apisidra.ibge.gov.br",
- "started_at": "2026-11-10T16:00:00.348452+00:00",
- "updated_at": "2026-11-10T16:28:44.216785+00:00",
+ "started_at": "2026-11-13T19:58:23.371385+00:00",
+ "updated_at": "2026-11-13T19:58:23.390670+00:00",
  "tables": [
   {
    "title": "População residente estimada",
@@ -522,108 +522,6 @@
      "status": 200,
      "sha256": "596ba1f027e7f11290e1ca0609b927ec2516744e50c5649934d38aff0c7aac2d",
      "size_bytes": 1494324,
-     "error": null
-    }
-   ]
-  },
-  {
-   "title": "População residente, por sexo, idade e forma de declaração da idade",
-   "checked_at": "2026-11-10T16:01:11.516578+00:00",
-   "table": "9514",
-   "status": "ok",
-   "error": null,
-   "base_level": "n1",
-   "variables": [
-    {
-     "id": "93",
-     "name": "População residente",
-     "units": [
-      "Pessoas"
-     ]
-    },
-    {
-     "id": "1000093",
-     "name": "População residente - percentual do total geral",
-     "units": [
-      "Percentual"
-     ]
-    }
-   ],
-   "period_label": "Ano",
-   "periods": [
-    "2022"
-   ],
-   "periods_complete": true,
-   "classifications": [
-    {
-     "label": "Sexo",
-     "categories": [
-      {
-       "id": "6794",
-       "name": "Total"
-      }
-     ]
-    },
-    {
-     "label": "Forma de declaração da idade",
-     "categories": [
-      {
-       "id": "113635",
-       "name": "Total"
-      }
-     ]
-    },
-    {
-     "label": "Idade",
-     "categories": [
-      {
-       "id": "100362",
-       "name": "Total"
-      }
-     ]
-    }
-   ],
-   "levels": {
-    "n1": 1,
-    "n2": 5,
-    "n3": 27,
-    "n7": null,
-    "n6": 5570
-   },
-   "requests": [
-    {
-     "url": "https://apisidra.ibge.gov.br/values/t/9514/n1/all/v/all/p/all",
-     "status": 200,
-     "sha256": "83ad34bfa8ce9b688a94c2b0497264d1e7d78c8bf33a6e5b8e76b0b049621a05",
-     "size_bytes": 1320,
-     "error": null
-    },
-    {
-     "url": "https://apisidra.ibge.gov.br/values/t/9514/n2/all/v/93/p/last%201",
-     "status": 200,
-     "sha256": "7881213a6eec79946738d1d9a707f63f91b9ece5611e89c433eac80cb279ffd5",
-     "size_bytes": 2454,
-     "error": null
-    },
-    {
-     "url": "https://apisidra.ibge.gov.br/values/t/9514/n3/all/v/93/p/last%201",
-     "status": 200,
-     "sha256": "bf970c4bcc1606ab876107815334ce9c9a75e7221cfcb82678e23fb891b068d6",
-     "size_bytes": 11081,
-     "error": null
-    },
-    {
-     "url": "https://apisidra.ibge.gov.br/values/t/9514/n7/all/v/93/p/last%201",
-     "status": 400,
-     "sha256": null,
-     "size_bytes": 0,
-     "error": "HTTP 400 em https://apisidra.ibge.gov.br/values/t/9514/n7/all/v/93/p/last%201: Parâmetro N7 (Nível territorial) incompatível com a tabela"
-    },
-    {
-     "url": "https://apisidra.ibge.gov.br/values/t/9514/n6/all/v/93/p/last%201",
-     "status": 200,
-     "sha256": "b318d20c880cb0fad726d246bb81c93211c32cb0a1970177200f8ff9f46119a0",
-     "size_bytes": 2154653,
      "error": null
     }
    ]
@@ -10625,6 +10523,242 @@
      "status": 200,
      "sha256": "ee4af2bb97081546215e8802559feffdd55a453894419b741a7a72103f195ff9",
      "size_bytes": 1633141,
+     "error": null
+    }
+   ]
+  },
+  {
+   "title": "Vacas ordenhadas",
+   "checked_at": "2026-11-13T19:57:09.800445+00:00",
+   "table": "94",
+   "status": "ok",
+   "error": null,
+   "base_level": "n1",
+   "variables": [
+    {
+     "id": "107",
+     "name": "Vacas ordenhadas",
+     "units": [
+      "Cabeças"
+     ]
+    }
+   ],
+   "period_label": "Ano",
+   "periods": [
+    "1974",
+    "1975",
+    "1976",
+    "1977",
+    "1978",
+    "1979",
+    "1980",
+    "1981",
+    "1982",
+    "1983",
+    "1984",
+    "1985",
+    "1986",
+    "1987",
+    "1988",
+    "1989",
+    "1990",
+    "1991",
+    "1992",
+    "1993",
+    "1994",
+    "1995",
+    "1996",
+    "1997",
+    "1998",
+    "1999",
+    "2000",
+    "2001",
+    "2002",
+    "2003",
+    "2004",
+    "2005",
+    "2006",
+    "2007",
+    "2008",
+    "2009",
+    "2010",
+    "2011",
+    "2012",
+    "2013",
+    "2014",
+    "2015",
+    "2016",
+    "2017",
+    "2018",
+    "2019",
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025"
+   ],
+   "periods_complete": true,
+   "classifications": [],
+   "levels": {
+    "n1": 1,
+    "n2": 5,
+    "n3": 27,
+    "n7": null,
+    "n6": 5476
+   },
+   "requests": [
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/94/n1/all/v/all/p/all",
+     "status": 200,
+     "sha256": "964429f8ce463ecac28f9d965ce89ef953414a1e59e8976b0c154c792656f51d",
+     "size_bytes": 12772,
+     "error": null
+    },
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/94/n2/all/v/107/p/last%201",
+     "status": 200,
+     "sha256": "16617d072eef9380aa93428ee4aab3588d23036c1a9c6a20b5fe1c90cd6bd156",
+     "size_bytes": 1595,
+     "error": null
+    },
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/94/n3/all/v/107/p/last%201",
+     "status": 200,
+     "sha256": "16bd0fb4e45616ea0c7ad8327429a97ac95d6c9df7b7ac4556d5bb6d2655a979",
+     "size_bytes": 7335,
+     "error": null
+    },
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/94/n7/all/v/107/p/last%201",
+     "status": 400,
+     "sha256": null,
+     "size_bytes": 0,
+     "error": "HTTP 400 em https://apisidra.ibge.gov.br/values/t/94/n7/all/v/107/p/last%201: Parâmetro N7 (Nível territorial) incompatível com a tabela"
+    },
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/94/n6/all/v/107/p/last%201",
+     "status": 200,
+     "sha256": "ca3a0e9abdd7c649d98f878582919247ae411af8c77a7e948c7041a1d069dd5e",
+     "size_bytes": 1424389,
+     "error": null
+    }
+   ]
+  },
+  {
+   "title": "Ovinos tosquiados",
+   "checked_at": "2026-11-13T19:57:29.236202+00:00",
+   "table": "95",
+   "status": "ok",
+   "error": null,
+   "base_level": "n1",
+   "variables": [
+    {
+     "id": "108",
+     "name": "Ovinos tosquiados nos estabelecimentos agropecuários",
+     "units": [
+      "Cabeças"
+     ]
+    }
+   ],
+   "period_label": "Ano",
+   "periods": [
+    "1974",
+    "1975",
+    "1976",
+    "1977",
+    "1978",
+    "1979",
+    "1980",
+    "1981",
+    "1982",
+    "1983",
+    "1984",
+    "1985",
+    "1986",
+    "1987",
+    "1988",
+    "1989",
+    "1990",
+    "1991",
+    "1992",
+    "1993",
+    "1994",
+    "1995",
+    "1996",
+    "1997",
+    "1998",
+    "1999",
+    "2000",
+    "2001",
+    "2002",
+    "2003",
+    "2004",
+    "2005",
+    "2006",
+    "2007",
+    "2008",
+    "2009",
+    "2010",
+    "2011",
+    "2012",
+    "2013",
+    "2014",
+    "2015",
+    "2016",
+    "2017",
+    "2018",
+    "2019",
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025"
+   ],
+   "periods_complete": true,
+   "classifications": [],
+   "levels": {
+    "n1": 1,
+    "n2": 3,
+    "n3": 6,
+    "n7": null,
+    "n6": 631
+   },
+   "requests": [
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/95/n1/all/v/all/p/all",
+     "status": 200,
+     "sha256": "2d863819cf482c5fd8d51d2a6a3c24ce9933eeb99f8300ffeca73fc3b4488845",
+     "size_bytes": 14659,
+     "error": null
+    },
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/95/n2/all/v/108/p/last%201",
+     "status": 200,
+     "sha256": "d0ebfe45284b6a04764cf8bac8d1350c1d8116b804fea7e3e5419b4bd865791b",
+     "size_bytes": 1767,
+     "error": null
+    },
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/95/n3/all/v/108/p/last%201",
+     "status": 200,
+     "sha256": "e5f087beb299d03f386dcb23a9804e02724cc7d9a89acdfaaeeb07a440e0a5ab",
+     "size_bytes": 8266,
+     "error": null
+    },
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/95/n7/all/v/108/p/last%201",
+     "status": 400,
+     "sha256": null,
+     "size_bytes": 0,
+     "error": "HTTP 400 em https://apisidra.ibge.gov.br/values/t/95/n7/all/v/108/p/last%201: Parâmetro N7 (Nível territorial) incompatível com a tabela"
+    },
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/95/n6/all/v/108/p/last%201",
+     "status": 200,
+     "sha256": "834925a7744a7701d069a72b0cadbc12b283040b873318b8e08b30e95052d08b",
+     "size_bytes": 1618943,
      "error": null
     }
    ]
@@ -21043,63 +21177,6 @@
      "sha256": null,
      "size_bytes": 0,
      "error": "HTTP 400 em https://apisidra.ibge.gov.br/values/t/6726/n6/all/v/9774/p/last%201: Parâmetro N6 (Nível territorial) incompatível com a tabela"
-    }
-   ]
-  },
-  {
-   "title": "Área dos biomas",
-   "checked_at": "2026-11-10T16:25:53.681609+00:00",
-   "table": "3926",
-   "status": "erro",
-   "error": "nenhum dos níveis ['n1', 'n2', 'n3', 'n7', 'n6'] aceito pela tabela",
-   "base_level": null,
-   "variables": [],
-   "period_label": null,
-   "periods": [],
-   "periods_complete": true,
-   "classifications": [],
-   "levels": {
-    "n1": null,
-    "n2": null,
-    "n3": null,
-    "n7": null,
-    "n6": null
-   },
-   "requests": [
-    {
-     "url": "https://apisidra.ibge.gov.br/values/t/3926/n1/all/v/all/p/all",
-     "status": 400,
-     "sha256": null,
-     "size_bytes": 0,
-     "error": "HTTP 400 em https://apisidra.ibge.gov.br/values/t/3926/n1/all/v/all/p/all: Parâmetro N1 (Nível territorial) incompatível com a tabela"
-    },
-    {
-     "url": "https://apisidra.ibge.gov.br/values/t/3926/n2/all/v/all/p/all",
-     "status": 400,
-     "sha256": null,
-     "size_bytes": 0,
-     "error": "HTTP 400 em https://apisidra.ibge.gov.br/values/t/3926/n2/all/v/all/p/all: Parâmetro N2 (Nível territorial) incompatível com a tabela"
-    },
-    {
-     "url": "https://apisidra.ibge.gov.br/values/t/3926/n3/all/v/all/p/all",
-     "status": 400,
-     "sha256": null,
-     "size_bytes": 0,
-     "error": "HTTP 400 em https://apisidra.ibge.gov.br/values/t/3926/n3/all/v/all/p/all: Parâmetro N3 (Nível territorial) incompatível com a tabela"
-    },
-    {
-     "url": "https://apisidra.ibge.gov.br/values/t/3926/n7/all/v/all/p/all",
-     "status": 400,
-     "sha256": null,
-     "size_bytes": 0,
-     "error": "HTTP 400 em https://apisidra.ibge.gov.br/values/t/3926/n7/all/v/all/p/all: Parâmetro N7 (Nível territorial) incompatível com a tabela"
-    },
-    {
-     "url": "https://apisidra.ibge.gov.br/values/t/3926/n6/all/v/all/p/all",
-     "status": 400,
-     "sha256": null,
-     "size_bytes": 0,
-     "error": "HTTP 400 em https://apisidra.ibge.gov.br/values/t/3926/n6/all/v/all/p/all: Parâmetro N6 (Nível territorial) incompatível com a tabela"
     }
    ]
   },

@@ -160,14 +160,16 @@ id = "nascimentos_obitos"
 label = "Nascimentos e óbitos"
 kpis = [
   { id = "nascidos_vivos", label = "Nascidos vivos", tabela = "2609", pesquisa = "Estatísticas do Registro Civil", filtros = ["sexo"], cruzar = [["c240", "c2"]] },
-  { id = "obitos", label = "Óbitos", tabela = "2654", pesquisa = "Estatísticas do Registro Civil", filtros = ["sexo", "idade"], cruzar = [["c2", "c260"]] },
+  { id = "obitos", label = "Óbitos", tabela = "2654", pesquisa = "Estatísticas do Registro Civil", filtros = ["sexo", "idade"], cruzar = [["c2", "c260"]], mes_como_periodo = "c244" },
+  { id = "obitos_mensal", label = "Óbitos por mês de ocorrência", tabela = "2654", pesquisa = "Estatísticas do Registro Civil", kpi = "obitos_mensal" },
 ]
 
 [[temas.subtemas]]
 id = "casamentos_divorcios"
 label = "Casamentos e divórcios"
 kpis = [
-  { id = "casamentos", label = "Casamentos", tabela = "4412", pesquisa = "Estatísticas do Registro Civil" },
+  { id = "casamentos", label = "Casamentos", tabela = "4412", pesquisa = "Estatísticas do Registro Civil", mes_como_periodo = "c244" },
+  { id = "casamentos_mensal", label = "Casamentos por mês de ocorrência", tabela = "4412", pesquisa = "Estatísticas do Registro Civil", kpi = "casamentos_mensal" },
   { id = "divorcios", label = "Divórcios", tabela = "1695", pesquisa = "Estatísticas do Registro Civil" },
 ]
 
@@ -477,7 +479,7 @@ filtros = ["produto", "especie"]
 id = "lavouras"
 label = "Lavouras"
 kpis = [
-  { id = "producao_lavouras", label = "Área, produção e valor das lavouras", tabela = "5457", pesquisa = "Produção Agrícola Municipal", filtros = ["produto"] },
+  { id = "producao_lavouras", label = "Área, produção e valor das lavouras", tabela = "5457", pesquisa = "Produção Agrícola Municipal", filtros = ["produto"], grupos = "lavouras" },
   { id = "safra_estimada", label = "Estimativa da safra (área, produção e rendimento)", tabela = "6588", pesquisa = "Levantamento Sistemático da Produção Agrícola", filtros = ["produto"], agregacao_tempo = "ultimo" },
 ]
 
@@ -486,7 +488,21 @@ id = "pecuaria"
 label = "Pecuária e produção animal"
 kpis = [
   { id = "efetivo_rebanhos", label = "Efetivo de bovinos", tabela = "3939", pesquisa = "Pesquisa da Pecuária Municipal", filtros = ["especie"], referencia = { c79 = "2670" } },
-  { id = "producao_origem_animal", label = "Produção de origem animal", tabela = "74", pesquisa = "Pesquisa da Pecuária Municipal", filtros = ["produto"] },
+  { id = "producao_origem_animal", label = "Produção de leite (PPM)", tabela = "74", pesquisa = "Pesquisa da Pecuária Municipal", referencia = { c80 = "2682" }, unidade = "Mil litros" },
+  { id = "producao_ovos_galinha", label = "Produção de ovos de galinha (PPM)", tabela = "74", pesquisa = "Pesquisa da Pecuária Municipal", referencia = { c80 = "2685" }, unidade = "Mil dúzias", sufixo = "ovos_galinha" },
+  { id = "producao_ovos_codorna", label = "Produção de ovos de codorna (PPM)", tabela = "74", pesquisa = "Pesquisa da Pecuária Municipal", referencia = { c80 = "2686" }, unidade = "Mil dúzias", sufixo = "ovos_codorna" },
+  { id = "producao_mel", label = "Produção de mel de abelha (PPM)", tabela = "74", pesquisa = "Pesquisa da Pecuária Municipal", referencia = { c80 = "2687" }, unidade = "Quilogramas", sufixo = "mel" },
+  { id = "producao_casulos", label = "Produção de casulos do bicho-da-seda (PPM)", tabela = "74", pesquisa = "Pesquisa da Pecuária Municipal", referencia = { c80 = "2683" }, unidade = "Quilogramas", sufixo = "casulos" },
+  { id = "producao_la", label = "Produção de lã (PPM)", tabela = "74", pesquisa = "Pesquisa da Pecuária Municipal", referencia = { c80 = "2684" }, unidade = "Quilogramas", sufixo = "la" },
+  { id = "efetivo_bubalinos", label = "Efetivo de bubalinos", tabela = "3939", pesquisa = "Pesquisa da Pecuária Municipal", referencia = { c79 = "2675" }, sufixo = "bubalinos" },
+  { id = "efetivo_equinos", label = "Efetivo de equinos", tabela = "3939", pesquisa = "Pesquisa da Pecuária Municipal", referencia = { c79 = "2672" }, sufixo = "equinos" },
+  { id = "efetivo_suinos", label = "Efetivo de suínos", tabela = "3939", pesquisa = "Pesquisa da Pecuária Municipal", referencia = { c79 = "32794" }, sufixo = "suinos" },
+  { id = "efetivo_caprinos", label = "Efetivo de caprinos", tabela = "3939", pesquisa = "Pesquisa da Pecuária Municipal", referencia = { c79 = "2681" }, sufixo = "caprinos" },
+  { id = "efetivo_ovinos", label = "Efetivo de ovinos", tabela = "3939", pesquisa = "Pesquisa da Pecuária Municipal", referencia = { c79 = "2677" }, sufixo = "ovinos" },
+  { id = "efetivo_galinaceos", label = "Efetivo de galináceos", tabela = "3939", pesquisa = "Pesquisa da Pecuária Municipal", referencia = { c79 = "32796" }, sufixo = "galinaceos" },
+  { id = "efetivo_codornas", label = "Efetivo de codornas", tabela = "3939", pesquisa = "Pesquisa da Pecuária Municipal", referencia = { c79 = "2680" }, sufixo = "codornas" },
+  { id = "vacas_ordenhadas", label = "Vacas ordenhadas", tabela = "94", pesquisa = "Pesquisa da Pecuária Municipal" },
+  { id = "ovinos_tosquiados", label = "Ovinos tosquiados", tabela = "95", pesquisa = "Pesquisa da Pecuária Municipal" },
   { id = "abate_bovinos", label = "Abate de bovinos", tabela = "1092", pesquisa = "Pesquisa Trimestral do Abate de Animais", variavel = "284", agregacao_tempo = "soma" },
   { id = "leite_adquirido", label = "Leite adquirido e industrializado", tabela = "1086", pesquisa = "Pesquisa Trimestral do Leite", variavel = "282", agregacao_tempo = "soma" },
   { id = "ovos_produzidos", label = "Produção de ovos de galinha", tabela = "7524", pesquisa = "Produção de Ovos de Galinha", variavel = "29", agregacao_tempo = "soma" },

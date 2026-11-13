@@ -33,9 +33,9 @@ def test_repository_panorama_is_valid() -> None:
     assert len(panorama.temas) == 20
     assert len(panorama.subthemes()) == 64
     # + POF de 1987 e 1995 (387, 400, 414; ADR-0016) e 3 séries compostas (ADR-0022).
-    assert len(panorama.items()) == 156
+    assert len(panorama.items()) == 172  # + mensais e PPM (2026-11-13)
     # + 9514 → 9606; + POF de 1987 e 1995 (387, 400, 414 e 417)
-    assert sum(k.kpi is not None for _, _, k in panorama.items()) == 20  # + 3 compostas
+    assert sum(k.kpi is not None for _, _, k in panorama.items()) == 22  # + 3 compostas + 2 mensais
     # Variáveis fixadas e KPIs cujo Total é só o universo (esperam as categorias).
     by_id = {k.id: k for _, _, k in panorama.items()}
     assert by_id["homicidios"].variavel == "13532"
@@ -68,6 +68,8 @@ def test_repository_panorama_covers_portal() -> None:
         for k in s.get("kpis", [])
     }
     assert "sinesp_homicidio_doloso" in kpis
+    # KPIs mensais: gerados a partir do item anual (mes_como_periodo), no fragmento gerado.
+    kpis.update({k: {} for k in ("obitos_mensal", "casamentos_mensal")})
     check_against_portal(load_panorama(PANORAMA), kpis)
     with pytest.raises(PanoramaConfigError, match="fora do panorama"):
         check_against_portal(load_panorama(PANORAMA), {**kpis, "novo": {}})

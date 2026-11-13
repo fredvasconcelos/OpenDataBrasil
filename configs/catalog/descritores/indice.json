@@ -6,6 +6,20 @@
   "sha256": "8e4dbb6e6284facffc238e21811550cdf366328b61a89ae966497100bc0c25d6",
   "size_bytes": 23651
  },
+ "94": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/94",
+  "retrieved_at": "2026-11-13T19:56:44.093236+00:00",
+  "status": "ok",
+  "sha256": "4605738ba029112280be0808b2fba6bfc1441b526baa2f74aa1e7d2caf6b68d2",
+  "size_bytes": 21610
+ },
+ "95": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/95",
+  "retrieved_at": "2026-11-13T19:56:48.450117+00:00",
+  "status": "ok",
+  "sha256": "0f4204ce8acd40ad39d00905a681a8a23df03ad624e083202d8ccdac49c70d24",
+  "size_bytes": 21649
+ },
  "136": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/136",
   "retrieved_at": "2026-11-13T14:38:47.074161+00:00",

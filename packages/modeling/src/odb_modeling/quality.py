@@ -381,6 +381,11 @@ def fidelity_diff(selected: pl.DataFrame, observations: pl.DataFrame) -> dict[st
             .iter_rows(named=True)
         }
 
+    # Linhas que a Gold deriva (regiões pela soma das UFs, §10.7) não vêm da Silver.
+    if "flags" in observations.columns:
+        observations = observations.filter(
+            ~pl.col("flags").list.contains("derived_region").fill_null(value=False)
+        )
     silver, gold = summary(selected), summary(observations)
     return {
         k: {"silver": str(silver.get(k)), "gold": str(gold.get(k))}

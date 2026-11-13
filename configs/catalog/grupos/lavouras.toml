@@ -1,0 +1,75 @@
+# Grupos de produtos das lavouras (pedido do mantenedor, 2026-11-13).
+#
+# A PAM (SIDRA 5457) publica 85 produtos sem agrupamento. Os grupos seguem fontes
+# oficiais:
+# - Grãos: o grupo "Cereais, leguminosas e oleaginosas" do LSPA/IBGE (descritor da
+#   tabela 6588, classificação c48, 2026-11-13) e os 15 produtos da Safra de Grãos da
+#   Conab (https://www.gov.br/conab/pt-br/atuacao/informacoes-agropecuarias/safras/
+#   safra-de-graos, 2026-11-13). Ervilha, fava e linho não são acompanhados pelo LSPA,
+#   mas são leguminosas e oleaginosas em grão: entram pela definição do grupo.
+# - Demais grupos: classes da CNAE 2.0 (IBGE/Concla), seção A, divisão 01: 01.13 cana,
+#   01.14 fumo, 01.12 e 01.39 fibras, 01.21 horticultura, 01.31 a 01.33 frutas,
+#   01.34 café, 01.35 cacau, 01.39 chá, mate e guaraná. Raízes e tubérculos
+#   (mandioca, batatas, inhame) reúnem as classes de lavoura temporária desses produtos.
+#
+# O grupo é a soma dos produtos (só em variáveis somáveis entre produtos: área e valor
+# da produção; a quantidade tem unidades diferentes, como mil frutos no abacaxi e no
+# coco). "Café (em grão) Total" já contém o arábica e o canephora: eles aparecem como
+# subitens, sem entrar na soma.
+
+classification = "c782"
+
+[[grupos]]
+id = "g_graos"
+nome = "Grãos (cereais, leguminosas e oleaginosas)"
+fonte = "LSPA/IBGE (tabela 6588, grupo 1) e Conab, Safra de Grãos"
+produtos = ["40099", "40101", "40102", "40103", "83390", "40108", "40109", "40112", "83395", "40114", "40118", "40122", "40124", "40125", "40127", "40128", "40110", "40111", "40116"]
+
+[[grupos]]
+id = "g_frutas"
+nome = "Frutas"
+fonte = "CNAE 2.0, classes 01.31, 01.32 e 01.33; frutas de lavoura temporária (abacaxi, melancia, melão, morango)"
+produtos = ["40129", "40092", "45982", "83399", "40131", "40136", "40330", "40142", "40143", "40145", "83400", "40148", "40149", "83401", "40151", "40152", "40260", "40261", "40262", "40263", "40264", "40120", "40121", "83396", "40265", "40267", "40268", "40271", "40274"]
+
+[[grupos]]
+id = "g_raizes"
+nome = "Raízes e tubérculos"
+fonte = "CNAE 2.0, lavoura temporária (mandioca, batatas e inhame)"
+produtos = ["40119", "40105", "40104", "83393"]
+
+[[grupos]]
+id = "g_hortalicas"
+nome = "Hortaliças"
+fonte = "CNAE 2.0, classe 01.21 (horticultura)"
+produtos = ["83388", "83389", "40100", "40107", "83391", "83392", "83394", "83397", "83398", "40126"]
+
+[[grupos]]
+id = "g_estimulantes"
+nome = "Café, cacau e outras estimulantes"
+fonte = "CNAE 2.0, classes 01.34 (café), 01.35 (cacau) e 01.39 (chá, erva-mate, guaraná)"
+produtos = ["40139", "40138", "40144", "40147", "40150"]
+subprodutos = { "40139" = ["40140", "40141"] }
+
+[[grupos]]
+id = "g_cana"
+nome = "Cana-de-açúcar"
+fonte = "CNAE 2.0, classe 01.13"
+produtos = ["40106"]
+
+[[grupos]]
+id = "g_fibras"
+nome = "Fibras"
+fonte = "CNAE 2.0, classes 01.12 e 01.39 (algodão arbóreo, juta, malva, rami, sisal)"
+produtos = ["40130", "40115", "40117", "40123", "40270"]
+
+[[grupos]]
+id = "g_fumo"
+nome = "Fumo"
+fonte = "CNAE 2.0, classe 01.14"
+produtos = ["40113"]
+
+[[grupos]]
+id = "g_outras"
+nome = "Outras lavouras"
+fonte = "Forrageiras (alfafa, cana para forragem), borracha, dendê, palmito, pimenta-do-reino, tungue e urucum"
+produtos = ["40329", "40331", "40137", "40468", "40146", "40266", "40269", "40272", "40273"]

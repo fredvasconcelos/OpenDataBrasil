@@ -56,6 +56,9 @@ FRAGMENT_KPIS = (
     "alfabetizacao_serie",
     "esgotamento_serie",
     "lixo_serie",
+    # Mês como calendário (gerados pelo panorama, fora do portal de teste).
+    "obitos_mensal",
+    "casamentos_mensal",
 )
 _panorama_text = re.sub(
     r"\nexternos = \[.*?\n\]\n", "\n", PANORAMA_REPO.read_text(encoding="utf-8"), flags=re.S

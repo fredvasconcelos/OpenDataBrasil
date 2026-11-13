@@ -199,6 +199,10 @@ class TableRule(_Strict):
     # Dimensão → categorias desta tabela que ficam (as demais linhas saem). Ex.: só a
     # idade "15 anos ou mais" da PNAD, quando a série não detalha a idade.
     keep_categories: dict[str, tuple[str, ...]] = Field(default_factory=dict)
+    # Classificação de mês (ex.: "Mês de ocorrência") que vira o período: cada mês do
+    # ano vira "AAAAMmm" e a dimensão sai; as linhas do Total e do mês "Ignorado" saem
+    # (o ano volta pela soma dos meses, ADR-0013).
+    month_dimension: str | None = None
 
     def transforms(self) -> bool:
         """A regra muda valores ou linhas (além de renomear e recodificar)?"""
@@ -211,6 +215,7 @@ class TableRule(_Strict):
             or self.aggregate
             or self.drop_categories
             or self.keep_categories
+            or self.month_dimension
         )
 
 
@@ -451,8 +456,10 @@ class SemanticCatalog(_Strict):
                     f"geometria {g.level}: derive_from {g.derive_from} precisa ser um nível "
                     "com malha oficial e descendente dele"
                 )
-        variables = [(i.dataset, i.variable) for i in self.indicators]
-        repeated_vars = sorted({v for v in variables if variables.count(v) > 1})
+        # A mesma variável pode servir mais de um indicador se cada um tem o seu fato
+        # (com regras próprias, como o mês virando o calendário); no mesmo fato, não.
+        variables = [(i.dataset, i.variable, i.fact) for i in self.indicators]
+        repeated_vars = sorted({v[:2] for v in variables if variables.count(v) > 1})
         if repeated_vars:
             problems.append(f"variável usada por mais de um indicador: {repeated_vars}")
         for fact_id, fact in facts.items():

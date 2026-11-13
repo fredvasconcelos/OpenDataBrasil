@@ -54,7 +54,7 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     ids = {i["id"]: i for i in gen.indicators}
     skipped = {k: why for k, _, why in gen.skipped}
     # A 9514 saiu (passou à 9606 curada); a 10061 entrou com uma classificação própria.
-    assert len(ids) == 127
+    assert len(ids) == 144  # + mensais, PPM (6 produtos da 74, 7 rebanhos, 94, 95)
     # Variável fixada no panorama e regra automática (sem coeficientes de variação).
     assert ids["homicidios"]["variable"] == "13532"
     assert ids["taxa_escolarizacao"]["variable"] == "10276"
@@ -73,7 +73,18 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     assert "requer categoria de referência" in skipped["emissoes_gee"]
     assert "já configurada" in skipped["despesa_familiar"]
     assert "aquisicao_alimentar" not in skipped  # curada (POF de 1987 e 1995, ADR-0016)
-    assert "unidade não é única" in skipped["producao_origem_animal"]
+    # A 74 publica cada produto na sua unidade: um KPI por produto (sufixo), com a
+    # unidade do panorama e só as linhas da categoria de referência.
+    assert ids["producao_mel"]["unit"] == "Quilogramas"
+    assert ids["producao_origem_animal"]["unit"] == "Mil litros"  # leite
+    mel = next(d for d in gen.datasets if d["id"] == "ibge-sidra-74-mel")["params"]
+    assert mel["classifications"] == {"c80": "2687"}
+    assert mel["territorial_levels"] == ["n1", "n2", "n3", "n6"]
+    fact = next(f for f in gen.facts if f["id"] == "fact_sidra_74_mel")
+    assert fact["table_rules"]["74"]["keep_categories"] == {
+        "Tipo de produto de origem animal": ["2687"]
+    }
+    assert ids["efetivo_suinos"]["dataset"] == "ibge-sidra-3939-suinos"
     assert "casamentos" in ids
     # Total + %: a dimensão principal vira classificação do fato; as demais ficam fixas.
     # Com a edição de 2010 (9841, ADR-0021), a 9543 vira série.
@@ -99,14 +110,17 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
         "c86",
         "c287t9543",
     ]
-    # Óbitos: sexo (Total 0 no Registro Civil: classificação própria), mês, local e idade
-    # como detalhes marginais, até UF.
+    # Óbitos: sexo (Total 0 no Registro Civil: classificação própria), local e idade
+    # como detalhes marginais; o mês virou o calendário do KPI obitos_mensal.
     assert [d["classification"] for d in gen.extra_dimensions["obitos"]] == [
         "c2t2654",
-        "c244",
         "c257",
         "c260",
     ]
+    mensal = next(i for i in gen.indicators if i["id"] == "obitos_mensal")
+    assert mensal["time_aggregation"] == "sum"
+    rule = next(f for f in gen.facts if f["id"] == "fact_sidra_2654_mensal")["table_rules"]["2654"]
+    assert rule["month_dimension"] == "Mês de ocorrência"
     # Tabelas-irmãs (ADR-0018): hipertensão (4418) ganha cor ou raça, idade, instrução,
     # rendimento e força de trabalho das irmãs 4419 a 4423, numa série com a base.
     assert gen.complements["hipertensao"] == ["4421", "4419", "4420", "4422", "4423"]
@@ -229,7 +243,7 @@ def test_rendered_fragments_load_with_the_curated_configs(tmp_path: Path) -> Non
     series = {d.silver.get("series") for d in sources.datasets.values()} - {None}
     assert all(d in sources.datasets or d in series for d in catalog.datasets())
     assert {k.indicator for k in portal.kpis()} <= {i.id for i in catalog.indicators}
-    assert len(portal.kpis()) == 14 + 127  # 14 curados no arquivo principal + 127 gerados
+    assert len(portal.kpis()) == 14 + 144  # 14 curados no arquivo principal + 144 gerados
 
 
 def test_repository_fragments_are_up_to_date() -> None:
@@ -305,11 +319,11 @@ def test_gerar_command_writes_three_fragments(tmp_path: Path) -> None:
         path.unlink()
     result = CliRunner().invoke(app, ["panorama", "gerar", "--raiz", str(tmp_path)])
     assert result.exit_code == 0, result.output
-    assert "127 KPIs gerados (178 tabelas), 77 com categorias" in result.output
-    assert "50 com detalhes marginais (117 classificações a mais)" in result.output
+    assert "144 KPIs gerados (193 tabelas), 77 com categorias" in result.output
+    assert "50 com detalhes marginais (115 classificações a mais)" in result.output
     assert "15 com tabelas-irmãs (49 tabelas)" in result.output  # ADR-0018
     data = tomllib.loads((tmp_path / "sources" / "ibge-panorama.toml").read_text("utf-8"))
-    assert len(data["datasets"]) == 178  # 127 bases + 49 irmãs (ADR-0018) + 2 edições (ADR-0021)
+    assert len(data["datasets"]) == 193  # 142 bases + 49 irmãs (ADR-0018) + 2 edições (ADR-0021)
     assert "institution" not in data
 
 
@@ -383,7 +397,7 @@ def test_proposal_of_main_dimension_from_descriptors() -> None:
     assert rows["efetivo_rebanhos"]["has_total"] is False
     assert "Bovino" in rows["efetivo_rebanhos"]["categories"]
     doc = render_proposal(list(rows.values()), {"ipca"})
-    assert doc.count("\n| ") == 156 + 1  # cabeçalho + 156 KPIs
+    assert doc.count("\n| ") == 172 + 1  # cabeçalho + 172 KPIs
     assert "c1480 Existência de Plano Diretor" in doc
 
 

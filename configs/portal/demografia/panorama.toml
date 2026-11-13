@@ -4,7 +4,7 @@
 
 config_version = "1.0.0"
 scope = "demografia"
-dimension_order = ["c86", "c2", "sexosim", "sexosinesp", "c287", "c339", "c12190", "c11558h", "c67h", "c201", "c210", "c210alim", "c214", "c215", "c2083", "c232", "c1836", "c664", "c345", "c460", "c63", "c338", "c845", "c1821", "c825", "c921", "c11558", "c921t7461", "c67", "c67t6736", "c1568", "c1568t10061", "c86t5845", "c58", "c12258", "c1", "c556", "c12404", "c688", "c422", "c427", "c937", "c782", "c48", "c18", "c12716", "c1835", "c734", "c829", "c716", "c12899", "c12762", "c11065", "c85", "c892", "c956", "c12762t9949", "c696", "c543", "c1480", "c1346", "c1329", "c1328", "c2t2609", "c240", "c2t2654", "c244", "c257", "c260", "c244t4412", "c665", "c666", "c667", "c269", "c274", "c275", "c293", "c287t9543", "c58t7113", "c86t7125", "c86t7270", "c58t7126", "c58t10061", "c58t10295", "c58t7973", "c1568t7974", "c653t7976", "c58t4419", "c1568t4420", "c652t4422", "c653t4423", "c58t4488", "c1568t4489", "c652t4491", "c653t4492", "c58t4179", "c1568t4181", "c653t4182", "c58t7727", "c1568t7728", "c653t7730", "c58t7741", "c1568t7742", "c653t7744", "c58t4949", "c1568t4950", "c652t4953", "c653t4952", "c58t5058", "c653t5065", "c652t8288", "c1568t8290", "c58t4277", "c58t6356", "c58t6358", "c58t6378", "c4908", "c86t8715", "c1568t8717", "c1393t8724", "c58t8504", "c1568t8507", "c58t8023", "c1568t8024", "c653t8026", "c12529", "c218", "c12517", "c12564", "c12771", "c370", "c12446", "c1347"]
+dimension_order = ["c86", "c2", "sexosim", "sexosinesp", "c287", "c339", "c12190", "c11558h", "c67h", "c201", "c210", "c210alim", "c214", "c215", "c2083", "c232", "c1836", "c664", "c345", "c460", "c63", "c338", "c845", "c1821", "c825", "c921", "c11558", "c921t7461", "c67", "c67t6736", "c1568", "c1568t10061", "c86t5845", "c58", "c12258", "c1", "c556", "c12404", "c688", "c422", "c427", "c937", "c782", "c48", "c18", "c12716", "c1835", "c734", "c829", "c716", "c12899", "c12762", "c11065", "c85", "c892", "c956", "c12762t9949", "c696", "c543", "c1480", "c1346", "c1329", "c1328", "c2t2609", "c240", "c2t2654", "c257", "c260", "c665", "c666", "c667", "c269", "c274", "c275", "c293", "c287t9543", "c58t7113", "c86t7125", "c86t7270", "c58t7126", "c58t10061", "c58t10295", "c58t7973", "c1568t7974", "c653t7976", "c58t4419", "c1568t4420", "c652t4422", "c653t4423", "c58t4488", "c1568t4489", "c652t4491", "c653t4492", "c58t4179", "c1568t4181", "c653t4182", "c58t7727", "c1568t7728", "c653t7730", "c58t7741", "c1568t7742", "c653t7744", "c58t4949", "c1568t4950", "c652t4953", "c653t4952", "c58t5058", "c653t5065", "c652t8288", "c1568t8290", "c58t4277", "c58t6356", "c58t6358", "c58t6378", "c4908", "c86t8715", "c1568t8717", "c1393t8724", "c58t8504", "c1568t8507", "c58t8023", "c1568t8024", "c653t8026", "c12529", "c218", "c12517", "c12564", "c12771", "c370", "c12446", "c1347"]
 
 [[themes]]
 id = "populacao"
@@ -78,10 +78,15 @@ crossed_levels = ["brasil", "regiao", "uf"]
 id = "obitos"
 label = "Óbitos"
 indicator = "obitos"
-dimensions = [{ "classification" = "c1836", "partition" = "p0", "label" = "Natureza do óbito" }, { "classification" = "c2t2654", "partition" = "p0", "label" = "Sexo" }, { "classification" = "c244", "partition" = "p0", "label" = "Mês de ocorrência" }, { "classification" = "c257", "partition" = "p0", "label" = "Local de ocorrência" }, { "classification" = "c260", "partition" = "p0", "label" = "Idade do(a) falecido(a)" }]
+dimensions = [{ "classification" = "c1836", "partition" = "p0", "label" = "Natureza do óbito" }, { "classification" = "c2t2654", "partition" = "p0", "label" = "Sexo" }, { "classification" = "c257", "partition" = "p0", "label" = "Local de ocorrência" }, { "classification" = "c260", "partition" = "p0", "label" = "Idade do(a) falecido(a)" }]
 exclusive_dimensions = true
 crossed = [["c2t2654", "c260"]]
 crossed_levels = ["brasil", "regiao", "uf"]
+
+[[themes.subthemes.kpis]]
+id = "obitos_mensal"
+label = "Óbitos por mês"
+indicator = "obitos_mensal"
 
 [[themes.subthemes]]
 id = "casamentos_divorcios"
@@ -91,8 +96,13 @@ label = "Casamentos e divórcios"
 id = "casamentos"
 label = "Casamentos"
 indicator = "casamentos"
-dimensions = [{ "classification" = "c664", "partition" = "p0", "label" = "Estado civil do primeiro cônjuge" }, { "classification" = "c244t4412", "partition" = "p0", "label" = "Mês de ocorrência" }, { "classification" = "c665", "partition" = "p0", "label" = "Estado civil do segundo cônjuge" }, { "classification" = "c666", "partition" = "p0", "label" = "Grupo de idade do primeiro cônjuge" }, { "classification" = "c667", "partition" = "p0", "label" = "Grupo de idade do segundo cônjuge" }]
+dimensions = [{ "classification" = "c664", "partition" = "p0", "label" = "Estado civil do primeiro cônjuge" }, { "classification" = "c665", "partition" = "p0", "label" = "Estado civil do segundo cônjuge" }, { "classification" = "c666", "partition" = "p0", "label" = "Grupo de idade do primeiro cônjuge" }, { "classification" = "c667", "partition" = "p0", "label" = "Grupo de idade do segundo cônjuge" }]
 exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "casamentos_mensal"
+label = "Casamentos por mês"
+indicator = "casamentos_mensal"
 
 [[themes.subthemes.kpis]]
 id = "divorcios"
@@ -691,6 +701,81 @@ label = "Pecuária e produção animal"
 id = "efetivo_rebanhos"
 label = "Efetivo de bovinos"
 indicator = "efetivo_rebanhos"
+
+[[themes.subthemes.kpis]]
+id = "producao_origem_animal"
+label = "Produção de leite (PPM)"
+indicator = "producao_origem_animal"
+
+[[themes.subthemes.kpis]]
+id = "producao_ovos_galinha"
+label = "Produção de ovos de galinha (PPM)"
+indicator = "producao_ovos_galinha"
+
+[[themes.subthemes.kpis]]
+id = "producao_ovos_codorna"
+label = "Produção de ovos de codorna (PPM)"
+indicator = "producao_ovos_codorna"
+
+[[themes.subthemes.kpis]]
+id = "producao_mel"
+label = "Produção de mel de abelha (PPM)"
+indicator = "producao_mel"
+
+[[themes.subthemes.kpis]]
+id = "producao_casulos"
+label = "Produção de casulos do bicho-da-seda (PPM)"
+indicator = "producao_casulos"
+
+[[themes.subthemes.kpis]]
+id = "producao_la"
+label = "Produção de lã (PPM)"
+indicator = "producao_la"
+
+[[themes.subthemes.kpis]]
+id = "efetivo_bubalinos"
+label = "Efetivo de bubalinos"
+indicator = "efetivo_bubalinos"
+
+[[themes.subthemes.kpis]]
+id = "efetivo_equinos"
+label = "Efetivo de equinos"
+indicator = "efetivo_equinos"
+
+[[themes.subthemes.kpis]]
+id = "efetivo_suinos"
+label = "Efetivo de suínos"
+indicator = "efetivo_suinos"
+
+[[themes.subthemes.kpis]]
+id = "efetivo_caprinos"
+label = "Efetivo de caprinos"
+indicator = "efetivo_caprinos"
+
+[[themes.subthemes.kpis]]
+id = "efetivo_ovinos"
+label = "Efetivo de ovinos"
+indicator = "efetivo_ovinos"
+
+[[themes.subthemes.kpis]]
+id = "efetivo_galinaceos"
+label = "Efetivo de galináceos"
+indicator = "efetivo_galinaceos"
+
+[[themes.subthemes.kpis]]
+id = "efetivo_codornas"
+label = "Efetivo de codornas"
+indicator = "efetivo_codornas"
+
+[[themes.subthemes.kpis]]
+id = "vacas_ordenhadas"
+label = "Vacas ordenhadas"
+indicator = "vacas_ordenhadas"
+
+[[themes.subthemes.kpis]]
+id = "ovinos_tosquiados"
+label = "Ovinos tosquiados"
+indicator = "ovinos_tosquiados"
 
 [[themes.subthemes.kpis]]
 id = "abate_bovinos"

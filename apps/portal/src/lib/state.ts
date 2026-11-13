@@ -14,6 +14,8 @@ export interface DashboardState {
   geography: string;
   /** Recorte do mapa (ampliação seletiva): só ele se subdivide no nível exibido. */
   focus: string | null;
+  /** "Isolar período" (DS 2.3.14): a parte do ano acumulada entre os anos (barras). */
+  isolate: boolean;
 }
 
 const GEOGRAPHY_KEY = /^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$/;
@@ -68,6 +70,9 @@ export function readState(params: URLSearchParams, nav: Navigation): DashboardSt
     kpi: kpi?.kpi_id ?? null,
     level: chosen,
     grain,
+    // Só com grão menor que o ano (mês, trimestre ou semestre).
+    isolate:
+      params.get("isolar") === "1" && grains.length > 1 && (grain ?? grains[0]?.grain ?? "ano") !== "ano",
     correction,
     period: period && periods.includes(period) ? period : null,
     // Dimensões marginais (exclusive_dimensions): uma por vez.
@@ -108,6 +113,7 @@ export function writeState(state: DashboardState): string {
   if (state.dimensions.length) params.set("dim", state.dimensions.join(","));
   if (state.geography !== DEFAULT_GEOGRAPHY) params.set("territorio", state.geography);
   if (state.focus) params.set("foco", state.focus);
+  if (state.isolate) params.set("isolar", "1");
   return params.toString();
 }
 

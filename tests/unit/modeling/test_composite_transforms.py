@@ -133,3 +133,32 @@ def test_keep_categories_filters_rows() -> None:
         _frame(rows), _catalog(TableRule(keep_categories={DIM: ("2795",)}), "7113")
     )
     assert out["classification_key"].to_list() == [f"{DIM}=2795"]
+
+
+def test_month_dimension_becomes_monthly_period() -> None:
+    """Óbitos (2654): "Mês de ocorrência" vira o período; Total e Ignorado saem."""
+    month = "Mês de ocorrência"
+
+    def row(cat: str, name: str, value: float) -> dict[str, Any]:
+        r = _row("2654", "1", "0", value)
+        r["period"] = "2021"
+        r["classifications"] = [
+            {"dimension": month, "category_id": cat, "category_name": name},
+            {"dimension": DIM, "category_id": "0", "category_name": "Total"},
+        ]
+        return r
+
+    rows = [
+        row("0", "Total", 30),
+        row("5593", "Agosto", 12),
+        row("5594", "Setembro", 18),
+        row("9", "Ignorado", 0),
+    ]
+    out = model.apply_table_transforms(
+        _frame(rows), _catalog(TableRule(month_dimension=month), "2654")
+    )
+    assert sorted(zip(out["period"], out["value"].cast(float), strict=True)) == [
+        ("2021M08", 12.0),
+        ("2021M09", 18.0),
+    ]
+    assert all(month not in k for k in out["classification_key"])

@@ -25,7 +25,7 @@ def test_validar_reports_counts() -> None:
     )
     assert result.exit_code == 0, result.output
     # 12 curados com `kpi`, a 9605 e a 6715 pelo id do item, 92 KPIs de Total gerados.
-    assert "20 temas, 64 subtemas, 156 KPIs (149 publicados, 7 planejados)" in result.output
+    assert "20 temas, 64 subtemas, 172 KPIs (166 publicados, 6 planejados)" in result.output
 
 
 def test_render_catalog_flags_coverage() -> None:
@@ -57,7 +57,7 @@ def test_render_catalog_flags_coverage() -> None:
     assert "último período 2008" in row
     assert "não verificada: timeout" in doc
     assert "não verificada" in doc
-    assert "1 de 149 tabelas verificadas" in doc  # POF de 1987 e 1995 (387, 400, 414)
+    assert "1 de 151 tabelas verificadas" in doc  # + PPM 94 e 95 (2026-11-13)
 
 
 def test_verificar_writes_resumable_json(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

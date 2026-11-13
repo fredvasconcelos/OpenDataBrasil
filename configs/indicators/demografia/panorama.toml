@@ -1635,7 +1635,77 @@ total = "0"
 [[classifications.partitions]]
 id = "p0"
 label = "Produto das lavouras temporárias e permanentes"
-categories = ["40129", "40092", "83388", "45982", "83399", "40329", "83389", "40130", "40099", "40100", "40101", "40102", "40103", "40131", "40136", "40104", "40105", "40137", "40468", "40138", "40139", "40140", "40141", "40330", "40106", "40331", "83390", "40142", "40143", "40107", "83391", "40108", "40109", "40144", "83392", "40145", "83400", "40146", "40147", "40110", "40111", "40112", "40148", "40113", "83395", "40114", "40149", "83401", "40150", "83393", "40115", "40151", "40152", "40116", "40260", "40117", "40261", "40118", "40119", "40262", "40263", "40264", "40120", "40121", "40122", "83394", "83396", "40265", "40266", "40267", "40268", "40269", "83397", "40123", "83398", "40270", "40124", "40125", "40271", "40126", "40127", "40128", "40272", "40273", "40274"]
+categories = ["g_graos", "g_frutas", "g_raizes", "g_hortalicas", "g_estimulantes", "g_cana", "g_fibras", "g_fumo", "g_outras"]
+exhaustive = false
+
+[[classifications.partitions]]
+id = "pg_graos"
+label = "Produto das lavouras temporárias e permanentes"
+parent = "g_graos"
+categories = ["40099", "40101", "40102", "40103", "83390", "40108", "40109", "40112", "83395", "40114", "40118", "40122", "40124", "40125", "40127", "40128", "40110", "40111", "40116"]
+exhaustive = false
+
+[[classifications.partitions]]
+id = "pg_frutas"
+label = "Produto das lavouras temporárias e permanentes"
+parent = "g_frutas"
+categories = ["40129", "40092", "45982", "83399", "40131", "40136", "40330", "40142", "40143", "40145", "83400", "40148", "40149", "83401", "40151", "40152", "40260", "40261", "40262", "40263", "40264", "40120", "40121", "83396", "40265", "40267", "40268", "40271", "40274"]
+exhaustive = false
+
+[[classifications.partitions]]
+id = "pg_raizes"
+label = "Produto das lavouras temporárias e permanentes"
+parent = "g_raizes"
+categories = ["40119", "40105", "40104", "83393"]
+exhaustive = false
+
+[[classifications.partitions]]
+id = "pg_hortalicas"
+label = "Produto das lavouras temporárias e permanentes"
+parent = "g_hortalicas"
+categories = ["83388", "83389", "40100", "40107", "83391", "83392", "83394", "83397", "83398", "40126"]
+exhaustive = false
+
+[[classifications.partitions]]
+id = "pg_estimulantes"
+label = "Produto das lavouras temporárias e permanentes"
+parent = "g_estimulantes"
+categories = ["40139", "40138", "40144", "40147", "40150"]
+exhaustive = false
+
+[[classifications.partitions]]
+id = "pg_cana"
+label = "Produto das lavouras temporárias e permanentes"
+parent = "g_cana"
+categories = ["40106"]
+exhaustive = false
+
+[[classifications.partitions]]
+id = "pg_fibras"
+label = "Produto das lavouras temporárias e permanentes"
+parent = "g_fibras"
+categories = ["40130", "40115", "40117", "40123", "40270"]
+exhaustive = false
+
+[[classifications.partitions]]
+id = "pg_fumo"
+label = "Produto das lavouras temporárias e permanentes"
+parent = "g_fumo"
+categories = ["40113"]
+exhaustive = false
+
+[[classifications.partitions]]
+id = "pg_outras"
+label = "Produto das lavouras temporárias e permanentes"
+parent = "g_outras"
+categories = ["40329", "40331", "40137", "40468", "40146", "40266", "40269", "40272", "40273"]
+exhaustive = false
+
+[[classifications.partitions]]
+id = "p40139"
+label = "Produto das lavouras temporárias e permanentes"
+parent = "40139"
+categories = ["40140", "40141"]
 exhaustive = false
 
 [[classifications]]
@@ -2251,6 +2321,7 @@ dataset = "ibge-sidra-7362"
 grain = "território (Brasil, Grande Região, UF) x ano"
 description = "Esperança de vida ao nascer (projeção para 2026): tabela SIDRA 7362 (Esperança de vida ao nascer e Taxa de mortalidade infantil, por sexo), no Total."
 fixed_categories = { "Sexo" = "6794", "Ano" = "49042" }
+table_rules = { "7362" = { "keep_categories" = { "Ano" = ["49042"] } } }
 
 [[facts]]
 id = "fact_sidra_3727"
@@ -2280,16 +2351,32 @@ id = "fact_sidra_2654"
 dataset = "ibge-sidra-2654"
 grain = "território (Brasil, Grande Região, UF, Município) x ano x natureza do óbito | sexo | mês de ocorrência | local de ocorrência | idade do(a) falecido(a)"
 description = "Óbitos: tabela SIDRA 2654 (Óbitos, ocorridos no ano, por mês de ocorrência, natureza do óbito, sexo, idade, local de ocorrência e lugar de residência do falecido), por natureza do óbito."
-classifications = { "c1836" = "c1836_category_key", "c2t2654" = "c2t2654_category_key", "c244" = "c244_category_key", "c257" = "c257_category_key", "c260" = "c260_category_key" }
-fixed_categories = {}
+classifications = { "c1836" = "c1836_category_key", "c2t2654" = "c2t2654_category_key", "c257" = "c257_category_key", "c260" = "c260_category_key" }
+fixed_categories = { "Mês de ocorrência" = "0" }
+table_rules = { "2654" = { "keep_categories" = { "Mês de ocorrência" = ["0"] } } }
+
+[[facts]]
+id = "fact_sidra_2654_mensal"
+dataset = "ibge-sidra-2654"
+grain = "território x mês"
+description = "Óbitos por mês de ocorrência (tabela SIDRA 2654)."
+table_rules = { "2654" = { "month_dimension" = "Mês de ocorrência", "keep_categories" = { "Natureza do óbito" = ["0"], "Sexo" = ["0"], "Local de ocorrência" = ["0"], "Idade do(a) falecido(a)" = ["0"] }, "fixed_categories" = { "Natureza do óbito" = "0", "Sexo" = "0", "Local de ocorrência" = "0", "Idade do(a) falecido(a)" = "0" } } }
 
 [[facts]]
 id = "fact_sidra_4412"
 dataset = "ibge-sidra-4412"
 grain = "território (Brasil, Grande Região, UF, Município) x ano x estado civil do primeiro cônjuge | mês de ocorrência | estado civil do segundo cônjuge | grupo de idade do primeiro cônjuge | grupo de idade do segundo cônjuge"
 description = "Casamentos: tabela SIDRA 4412 (Casamentos, por mês de ocorrência, estado civil dos cônjuges, grupos de idade dos cônjuges e lugar do registro), por estado civil do primeiro cônjuge."
-classifications = { "c664" = "c664_category_key", "c244t4412" = "c244t4412_category_key", "c665" = "c665_category_key", "c666" = "c666_category_key", "c667" = "c667_category_key" }
-fixed_categories = {}
+classifications = { "c664" = "c664_category_key", "c665" = "c665_category_key", "c666" = "c666_category_key", "c667" = "c667_category_key" }
+fixed_categories = { "Mês de ocorrência" = "0" }
+table_rules = { "4412" = { "keep_categories" = { "Mês de ocorrência" = ["0"] } } }
+
+[[facts]]
+id = "fact_sidra_4412_mensal"
+dataset = "ibge-sidra-4412"
+grain = "território x mês"
+description = "Casamentos por mês de ocorrência (tabela SIDRA 4412)."
+table_rules = { "4412" = { "month_dimension" = "Mês de ocorrência", "keep_categories" = { "Estado civil do primeiro cônjuge" = ["0"], "Estado civil do segundo cônjuge" = ["0"], "Grupo de idade do primeiro cônjuge" = ["0"], "Grupo de idade do segundo cônjuge" = ["0"] }, "fixed_categories" = { "Estado civil do primeiro cônjuge" = "0", "Estado civil do segundo cônjuge" = "0", "Grupo de idade do primeiro cônjuge" = "0", "Grupo de idade do segundo cônjuge" = "0" } } }
 
 [[facts]]
 id = "fact_sidra_1695"
@@ -2446,6 +2533,7 @@ dataset = "ibge-sidra-7141"
 grain = "território (Brasil, Grande Região, UF) x ano"
 description = "Frequência escolar líquida no ensino fundamental: tabela SIDRA 7141 (Taxa ajustada de frequência escolar líquida, por sexo e faixa etária ideal por curso frequentado), no Total."
 fixed_categories = { "Sexo" = "6794", "Faixa etária ideal por curso frequentado" = "47815" }
+table_rules = { "7141" = { "keep_categories" = { "Faixa etária ideal por curso frequentado" = ["47815"] } } }
 
 [[facts]]
 id = "fact_sidra_7189"
@@ -2798,6 +2886,7 @@ grain = "território (Brasil, Grande Região, UF, Município) x ano x produto da
 description = "Área, produção e valor das lavouras: tabela SIDRA 5457 (Área plantada ou destinada à colheita, área colhida, quantidade produzida, rendimento médio e valor da produção das lavouras temporárias e permanentes), por produto das lavouras temporárias e permanentes."
 classifications = { "c782" = "c782_category_key" }
 fixed_categories = {}
+table_rules = { "5457" = { "aggregate" = [{ "dimension" = "Produto das lavouras temporárias e permanentes", "target" = "g_graos", "name" = "Grãos (cereais, leguminosas e oleaginosas)", "sources" = ["40099", "40101", "40102", "40103", "83390", "40108", "40109", "40112", "83395", "40114", "40118", "40122", "40124", "40125", "40127", "40128", "40110", "40111", "40116"] }, { "dimension" = "Produto das lavouras temporárias e permanentes", "target" = "g_frutas", "name" = "Frutas", "sources" = ["40129", "40092", "45982", "83399", "40131", "40136", "40330", "40142", "40143", "40145", "83400", "40148", "40149", "83401", "40151", "40152", "40260", "40261", "40262", "40263", "40264", "40120", "40121", "83396", "40265", "40267", "40268", "40271", "40274"] }, { "dimension" = "Produto das lavouras temporárias e permanentes", "target" = "g_raizes", "name" = "Raízes e tubérculos", "sources" = ["40119", "40105", "40104", "83393"] }, { "dimension" = "Produto das lavouras temporárias e permanentes", "target" = "g_hortalicas", "name" = "Hortaliças", "sources" = ["83388", "83389", "40100", "40107", "83391", "83392", "83394", "83397", "83398", "40126"] }, { "dimension" = "Produto das lavouras temporárias e permanentes", "target" = "g_estimulantes", "name" = "Café, cacau e outras estimulantes", "sources" = ["40139", "40138", "40144", "40147", "40150"] }, { "dimension" = "Produto das lavouras temporárias e permanentes", "target" = "g_cana", "name" = "Cana-de-açúcar", "sources" = ["40106"] }, { "dimension" = "Produto das lavouras temporárias e permanentes", "target" = "g_fibras", "name" = "Fibras", "sources" = ["40130", "40115", "40117", "40123", "40270"] }, { "dimension" = "Produto das lavouras temporárias e permanentes", "target" = "g_fumo", "name" = "Fumo", "sources" = ["40113"] }, { "dimension" = "Produto das lavouras temporárias e permanentes", "target" = "g_outras", "name" = "Outras lavouras", "sources" = ["40329", "40331", "40137", "40468", "40146", "40266", "40269", "40272", "40273"] }] } }
 
 [[facts]]
 id = "fact_sidra_6588"
@@ -2813,6 +2902,125 @@ dataset = "ibge-sidra-3939"
 grain = "território (Brasil, Grande Região, UF, Município) x ano"
 description = "Efetivo de bovinos: tabela SIDRA 3939 (Efetivo dos rebanhos, por tipo de rebanho), no Total."
 fixed_categories = { "Tipo de rebanho" = "2670" }
+table_rules = { "3939" = { "keep_categories" = { "Tipo de rebanho" = ["2670"] } } }
+
+[[facts]]
+id = "fact_sidra_74"
+dataset = "ibge-sidra-74"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Produção de leite (PPM): tabela SIDRA 74 (Produção de origem animal, por tipo de produto), no Total."
+fixed_categories = { "Tipo de produto de origem animal" = "2682" }
+table_rules = { "74" = { "keep_categories" = { "Tipo de produto de origem animal" = ["2682"] } } }
+
+[[facts]]
+id = "fact_sidra_74_ovos_galinha"
+dataset = "ibge-sidra-74-ovos-galinha"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Produção de ovos de galinha (PPM): tabela SIDRA 74 (Produção de origem animal, por tipo de produto), no Total."
+fixed_categories = { "Tipo de produto de origem animal" = "2685" }
+table_rules = { "74" = { "keep_categories" = { "Tipo de produto de origem animal" = ["2685"] } } }
+
+[[facts]]
+id = "fact_sidra_74_ovos_codorna"
+dataset = "ibge-sidra-74-ovos-codorna"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Produção de ovos de codorna (PPM): tabela SIDRA 74 (Produção de origem animal, por tipo de produto), no Total."
+fixed_categories = { "Tipo de produto de origem animal" = "2686" }
+table_rules = { "74" = { "keep_categories" = { "Tipo de produto de origem animal" = ["2686"] } } }
+
+[[facts]]
+id = "fact_sidra_74_mel"
+dataset = "ibge-sidra-74-mel"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Produção de mel de abelha (PPM): tabela SIDRA 74 (Produção de origem animal, por tipo de produto), no Total."
+fixed_categories = { "Tipo de produto de origem animal" = "2687" }
+table_rules = { "74" = { "keep_categories" = { "Tipo de produto de origem animal" = ["2687"] } } }
+
+[[facts]]
+id = "fact_sidra_74_casulos"
+dataset = "ibge-sidra-74-casulos"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Produção de casulos do bicho-da-seda (PPM): tabela SIDRA 74 (Produção de origem animal, por tipo de produto), no Total."
+fixed_categories = { "Tipo de produto de origem animal" = "2683" }
+table_rules = { "74" = { "keep_categories" = { "Tipo de produto de origem animal" = ["2683"] } } }
+
+[[facts]]
+id = "fact_sidra_74_la"
+dataset = "ibge-sidra-74-la"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Produção de lã (PPM): tabela SIDRA 74 (Produção de origem animal, por tipo de produto), no Total."
+fixed_categories = { "Tipo de produto de origem animal" = "2684" }
+table_rules = { "74" = { "keep_categories" = { "Tipo de produto de origem animal" = ["2684"] } } }
+
+[[facts]]
+id = "fact_sidra_3939_bubalinos"
+dataset = "ibge-sidra-3939-bubalinos"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Efetivo de bubalinos: tabela SIDRA 3939 (Efetivo dos rebanhos, por tipo de rebanho), no Total."
+fixed_categories = { "Tipo de rebanho" = "2675" }
+table_rules = { "3939" = { "keep_categories" = { "Tipo de rebanho" = ["2675"] } } }
+
+[[facts]]
+id = "fact_sidra_3939_equinos"
+dataset = "ibge-sidra-3939-equinos"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Efetivo de equinos: tabela SIDRA 3939 (Efetivo dos rebanhos, por tipo de rebanho), no Total."
+fixed_categories = { "Tipo de rebanho" = "2672" }
+table_rules = { "3939" = { "keep_categories" = { "Tipo de rebanho" = ["2672"] } } }
+
+[[facts]]
+id = "fact_sidra_3939_suinos"
+dataset = "ibge-sidra-3939-suinos"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Efetivo de suínos: tabela SIDRA 3939 (Efetivo dos rebanhos, por tipo de rebanho), no Total."
+fixed_categories = { "Tipo de rebanho" = "32794" }
+table_rules = { "3939" = { "keep_categories" = { "Tipo de rebanho" = ["32794"] } } }
+
+[[facts]]
+id = "fact_sidra_3939_caprinos"
+dataset = "ibge-sidra-3939-caprinos"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Efetivo de caprinos: tabela SIDRA 3939 (Efetivo dos rebanhos, por tipo de rebanho), no Total."
+fixed_categories = { "Tipo de rebanho" = "2681" }
+table_rules = { "3939" = { "keep_categories" = { "Tipo de rebanho" = ["2681"] } } }
+
+[[facts]]
+id = "fact_sidra_3939_ovinos"
+dataset = "ibge-sidra-3939-ovinos"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Efetivo de ovinos: tabela SIDRA 3939 (Efetivo dos rebanhos, por tipo de rebanho), no Total."
+fixed_categories = { "Tipo de rebanho" = "2677" }
+table_rules = { "3939" = { "keep_categories" = { "Tipo de rebanho" = ["2677"] } } }
+
+[[facts]]
+id = "fact_sidra_3939_galinaceos"
+dataset = "ibge-sidra-3939-galinaceos"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Efetivo de galináceos: tabela SIDRA 3939 (Efetivo dos rebanhos, por tipo de rebanho), no Total."
+fixed_categories = { "Tipo de rebanho" = "32796" }
+table_rules = { "3939" = { "keep_categories" = { "Tipo de rebanho" = ["32796"] } } }
+
+[[facts]]
+id = "fact_sidra_3939_codornas"
+dataset = "ibge-sidra-3939-codornas"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Efetivo de codornas: tabela SIDRA 3939 (Efetivo dos rebanhos, por tipo de rebanho), no Total."
+fixed_categories = { "Tipo de rebanho" = "2680" }
+table_rules = { "3939" = { "keep_categories" = { "Tipo de rebanho" = ["2680"] } } }
+
+[[facts]]
+id = "fact_sidra_94"
+dataset = "ibge-sidra-94"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Vacas ordenhadas: tabela SIDRA 94 (Vacas ordenhadas), no Total."
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_95"
+dataset = "ibge-sidra-95"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Ovinos tosquiados: tabela SIDRA 95 (Ovinos tosquiados), no Total."
+fixed_categories = {}
 
 [[facts]]
 id = "fact_sidra_1092"
@@ -2883,6 +3091,7 @@ dataset = "ibge-sidra-8888"
 grain = "território (Brasil, Grande Região, UF) x mes"
 description = "Produção física industrial: tabela SIDRA 8888 (Produção Física Industrial, por seções e atividades industriais), no Total."
 fixed_categories = { "Seções e atividades industriais (CNAE 2.0)" = "129314" }
+table_rules = { "8888" = { "keep_categories" = { "Seções e atividades industriais (CNAE 2.0)" = ["129314"] } } }
 
 [[facts]]
 id = "fact_sidra_10457"
@@ -2919,6 +3128,7 @@ dataset = "ibge-sidra-8757"
 grain = "território (Brasil, UF) x mes"
 description = "Volume de vendas de materiais de construção: tabela SIDRA 8757 (Índice e variação da receita nominal e do volume de vendas de materiais de construção (2022 = 100)), no Total."
 fixed_categories = { "Tipos de índice" = "56732" }
+table_rules = { "8757" = { "keep_categories" = { "Tipos de índice" = ["56732"] } } }
 
 [[facts]]
 id = "fact_sidra_2296"
@@ -2940,6 +3150,7 @@ dataset = "ibge-sidra-8880"
 grain = "território (Brasil, UF) x mes"
 description = "Volume de vendas no varejo: tabela SIDRA 8880 (Índice e variação da receita nominal e do volume de vendas no comércio varejista (2022 = 100)), no Total."
 fixed_categories = { "Tipos de índice" = "56734" }
+table_rules = { "8880" = { "keep_categories" = { "Tipos de índice" = ["56734"] } } }
 
 [[facts]]
 id = "fact_sidra_8881"
@@ -2947,6 +3158,7 @@ dataset = "ibge-sidra-8881"
 grain = "território (Brasil, UF) x mes"
 description = "Volume de vendas no varejo ampliado: tabela SIDRA 8881 (Índice e variação da receita nominal e do volume de vendas no comércio varejista ampliado (2022 = 100)), no Total."
 fixed_categories = { "Tipos de índice" = "56736" }
+table_rules = { "8881" = { "keep_categories" = { "Tipos de índice" = ["56736"] } } }
 
 [[facts]]
 id = "fact_sidra_10646"
@@ -2969,6 +3181,7 @@ dataset = "ibge-sidra-5906"
 grain = "território (Brasil, UF) x mes"
 description = "Volume de serviços: tabela SIDRA 5906 (Índice e variação da receita nominal e do volume de serviços (2022 = 100)), no Total."
 fixed_categories = { "Tipos de índice" = "56726" }
+table_rules = { "5906" = { "keep_categories" = { "Tipos de índice" = ["56726"] } } }
 
 [[facts]]
 id = "fact_sidra_2581"
@@ -2984,6 +3197,7 @@ dataset = "ibge-sidra-8694"
 grain = "território (Brasil, UF) x mes"
 description = "Volume das atividades turísticas: tabela SIDRA 8694 (Índice e variação da receita nominal e do volume das atividades turísticas (2022 = 100)), no Total."
 fixed_categories = { "Tipos de índice" = "56728" }
+table_rules = { "8694" = { "keep_categories" = { "Tipos de índice" = ["56728"] } } }
 
 [[facts]]
 id = "fact_sidra_7204"
@@ -3073,6 +3287,7 @@ dataset = "ibge-sidra-1846"
 grain = "território (Brasil) x trimestre"
 description = "PIB trimestral a preços correntes: tabela SIDRA 1846 (Valores a preços correntes), no Total."
 fixed_categories = { "Setores e subsetores" = "90707" }
+table_rules = { "1846" = { "keep_categories" = { "Setores e subsetores" = ["90707"] } } }
 
 [[facts]]
 id = "fact_sidra_5932"
@@ -3080,6 +3295,7 @@ dataset = "ibge-sidra-5932"
 grain = "território (Brasil) x trimestre"
 description = "Taxa de variação do PIB trimestral: tabela SIDRA 5932 (Taxa de variação do índice de volume trimestral), no Total."
 fixed_categories = { "Setores e subsetores" = "90707" }
+table_rules = { "5932" = { "keep_categories" = { "Setores e subsetores" = ["90707"] } } }
 
 [[facts]]
 id = "fact_sidra_5938"
@@ -3303,6 +3519,21 @@ path = ["Registro civil", "Nascimentos e óbitos"]
 caveats = ["Detalhes por Natureza do óbito, Sexo, Mês de ocorrência, Local de ocorrência, Idade do(a) falecido(a): um de cada vez, com os demais no Total (a fonte permite os cruzamentos, mas eles multiplicariam as consultas).", "Nota da tabela 2654: A categoria \"Hospital\" para a classificação \"Local de ocorrência\" inclui os estabelecimentos de saúde sem internação.", "Valores como a fonte publica, já arredondados: a soma das categorias pode diferir do Total em poucas unidades. A plataforma não ajusta os valores.", "Cruzamentos completos (Sexo × Idade do(a) falecido(a)) em Brasil, Grande Região, UF. Nos demais níveis, um detalhe por vez, com os demais no Total."]
 
 [[indicators]]
+id = "obitos_mensal"
+name = "Número de óbitos ocorridos no ano (por mês)"
+description = "Número de óbitos ocorridos no ano (Estatísticas do Registro Civil, tabela SIDRA 2654). Tabela sem classificações. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
+dataset = "ibge-sidra-2654"
+variable = "343"
+fact = "fact_sidra_2654_mensal"
+column = "valor"
+unit = "Pessoas"
+additivity = "additive"
+concept = "obitos_mensal"
+path = ["Registro civil", "Nascimentos e óbitos"]
+caveats = ["Mês de ocorrência como calendário: cada mês da tabela 2654 é um período; o trimestre, o semestre e o ano são a soma dos meses. O mês \"Ignorado\" fica fora (zero no Brasil e nas UFs nos anos conferidos: 2015, 2021 e 2024).", "Detalhes por Natureza do óbito, Sexo, Mês de ocorrência, Local de ocorrência, Idade do(a) falecido(a): um de cada vez, com os demais no Total (a fonte permite os cruzamentos, mas eles multiplicariam as consultas).", "Nota da tabela 2654: A categoria \"Hospital\" para a classificação \"Local de ocorrência\" inclui os estabelecimentos de saúde sem internação.", "Valores como a fonte publica, já arredondados: a soma das categorias pode diferir do Total em poucas unidades. A plataforma não ajusta os valores.", "Cruzamentos completos (Sexo × Idade do(a) falecido(a)) em Brasil, Grande Região, UF. Nos demais níveis, um detalhe por vez, com os demais no Total."]
+time_aggregation = "sum"
+
+[[indicators]]
 id = "casamentos"
 name = "Número de casamentos"
 description = "Número de casamentos (Estatísticas do Registro Civil, tabela SIDRA 4412). Tabela sem classificações. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
@@ -3315,6 +3546,21 @@ additivity = "additive"
 concept = "casamentos"
 path = ["Registro civil", "Casamentos e divórcios"]
 caveats = ["Detalhes por Estado civil do primeiro cônjuge, Mês de ocorrência, Estado civil do segundo cônjuge, Grupo de idade do primeiro cônjuge, Grupo de idade do segundo cônjuge: um de cada vez, com os demais no Total (a fonte permite os cruzamentos, mas eles multiplicariam as consultas).", "Nota da tabela 4412: Para os casamentos entre cônjuges masculino e feminino considerou-se como primeiro cônjuge o homem e segundo cônjuge a mulher.", "Valores como a fonte publica, já arredondados: a soma das categorias pode diferir do Total em poucas unidades. A plataforma não ajusta os valores."]
+
+[[indicators]]
+id = "casamentos_mensal"
+name = "Número de casamentos (por mês)"
+description = "Número de casamentos (Estatísticas do Registro Civil, tabela SIDRA 4412). Tabela sem classificações. Fonte: IBGE - Pesquisa Estatísticas do Registro Civil."
+dataset = "ibge-sidra-4412"
+variable = "4993"
+fact = "fact_sidra_4412_mensal"
+column = "valor"
+unit = "Unidades"
+additivity = "additive"
+concept = "casamentos_mensal"
+path = ["Registro civil", "Casamentos e divórcios"]
+caveats = ["Mês de ocorrência como calendário: cada mês da tabela 4412 é um período; o trimestre, o semestre e o ano são a soma dos meses. O mês \"Ignorado\" fica fora (zero no Brasil e nas UFs nos anos conferidos: 2015, 2021 e 2024).", "Detalhes por Estado civil do primeiro cônjuge, Mês de ocorrência, Estado civil do segundo cônjuge, Grupo de idade do primeiro cônjuge, Grupo de idade do segundo cônjuge: um de cada vez, com os demais no Total (a fonte permite os cruzamentos, mas eles multiplicariam as consultas).", "Nota da tabela 4412: Para os casamentos entre cônjuges masculino e feminino considerou-se como primeiro cônjuge o homem e segundo cônjuge a mulher.", "Valores como a fonte publica, já arredondados: a soma das categorias pode diferir do Total em poucas unidades. A plataforma não ajusta os valores."]
+time_aggregation = "sum"
 
 [[indicators]]
 id = "divorcios"
@@ -4228,7 +4474,7 @@ unit = "Hectares"
 additivity = "additive"
 concept = "producao_lavouras"
 path = ["Agropecuária", "Lavouras"]
-caveats = ["Nota da tabela 5457: 1 - Os municípios sem informação para pelo menos um produto da lavoura não aparecem nas listas;", "Nota da tabela 5457: 2 - A partir do ano de 2001 as quantidades produzidas dos produtos abacate, banana, caqui, figo, goiaba, laranja, limão, maçã, mamão, manga, maracujá, marmelo, melancia, melão, pera, pêssego e tangerina passam a ser expressas em toneladas. Nos anos anteriores eram expressas em mil frutos, com exceção da banana, que era expressa em mil cachos. O rendimento médio passa a ser expresso em Kg/ha. Nos anos anteriores era expresso em frutos/ha, com exceção da banana, que era expressa em cachos/ha.", "Nota da tabela 5457: 3 - Veja em https://sidra.ibge.gov.br/content/documentos/pam/AlteracoesUnidadesMedidaFrutas.pdf um documento com as alterações de unidades de medida das frutíferas ocorridas em 2001 e a tabela de conversão fruto x quilograma.", "Nota da tabela 5457: 4 - Até 2001, café (em coco), a partir de 2002, café (beneficiado ou em grão).", "Nota da tabela 5457: 5 - Os produtos girassol e triticale só apresentam informação a partir de 2005.", "Nota da tabela 5457: 6 - As quantidades produzidas de abacaxi e de coco-da-baía são expressas em mil frutos e o rendimento médio em frutos/ha.", "Nota da tabela 5457: 7 - Valores para a categoria Total indisponíveis para as variáveis Quantidade produzida e Rendimento médio, pois as unidades de medida diferem para determinados produtos.", "Nota da tabela 5457: 8 - Subentende a possibilidade de cultivos sucessivos ou simultâneos (simples, associados e/ou intercalados) no mesmo ano e no mesmo local, podendo, por isto, a área informada da cultura exceder a área geográfica do município.", "Mais 6 notas na tabela oficial (SIDRA 5457).", "Valores como a fonte publica, já arredondados: a soma das categorias pode diferir do Total em poucas unidades. A plataforma não ajusta os valores."]
+caveats = ["Nota da tabela 5457: 1 - Os municípios sem informação para pelo menos um produto da lavoura não aparecem nas listas;", "Nota da tabela 5457: 2 - A partir do ano de 2001 as quantidades produzidas dos produtos abacate, banana, caqui, figo, goiaba, laranja, limão, maçã, mamão, manga, maracujá, marmelo, melancia, melão, pera, pêssego e tangerina passam a ser expressas em toneladas. Nos anos anteriores eram expressas em mil frutos, com exceção da banana, que era expressa em mil cachos. O rendimento médio passa a ser expresso em Kg/ha. Nos anos anteriores era expresso em frutos/ha, com exceção da banana, que era expressa em cachos/ha.", "Nota da tabela 5457: 3 - Veja em https://sidra.ibge.gov.br/content/documentos/pam/AlteracoesUnidadesMedidaFrutas.pdf um documento com as alterações de unidades de medida das frutíferas ocorridas em 2001 e a tabela de conversão fruto x quilograma.", "Nota da tabela 5457: 4 - Até 2001, café (em coco), a partir de 2002, café (beneficiado ou em grão).", "Nota da tabela 5457: 5 - Os produtos girassol e triticale só apresentam informação a partir de 2005.", "Nota da tabela 5457: 6 - As quantidades produzidas de abacaxi e de coco-da-baía são expressas em mil frutos e o rendimento médio em frutos/ha.", "Nota da tabela 5457: 7 - Valores para a categoria Total indisponíveis para as variáveis Quantidade produzida e Rendimento médio, pois as unidades de medida diferem para determinados produtos.", "Nota da tabela 5457: 8 - Subentende a possibilidade de cultivos sucessivos ou simultâneos (simples, associados e/ou intercalados) no mesmo ano e no mesmo local, podendo, por isto, a área informada da cultura exceder a área geográfica do município.", "Mais 6 notas na tabela oficial (SIDRA 5457).", "Valores como a fonte publica, já arredondados: a soma das categorias pode diferir do Total em poucas unidades. A plataforma não ajusta os valores.", "Grupos de produtos (portal): cada grupo é a soma dos seus produtos (9 grupos). Grãos seguem o grupo \"Cereais, leguminosas e oleaginosas\" do LSPA/IBGE e a Safra de Grãos da Conab; os demais, as classes da CNAE 2.0 (IBGE/Concla). Definição em configs/catalog/grupos."]
 
 [[indicators]]
 id = "safra_estimada"
@@ -4258,6 +4504,216 @@ additivity = "additive"
 concept = "efetivo_rebanhos"
 path = ["Agropecuária", "Pecuária e produção animal"]
 caveats = ["Valor de referência em Tipo de rebanho: Bovino (a classificação não tem Total; as categorias não se somam).", "Nota da tabela 3939: 1 - Os municípios sem informação para pelo menos um efetivo de rebanho não aparecem nas listas.", "Nota da tabela 3939: 2 - Efetivos dos rebanhos em 31/12.", "Nota da tabela 3939: 3 - Os dados sobre matrizes de suínos só estão disponíveis a partir de 2013.", "Nota da tabela 3939: 4 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "producao_origem_animal"
+name = "Produção de origem animal"
+description = "Produção de origem animal (Pesquisa da Pecuária Municipal, tabela SIDRA 74). Recorte: Tipo de produto de origem animal: Leite. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-74"
+variable = "106"
+fact = "fact_sidra_74"
+column = "valor"
+unit = "Mil litros"
+additivity = "non_additive"
+concept = "producao_origem_animal"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de produto de origem animal: Leite (um KPI por categoria: cada uma tem a sua unidade, Mil litros nesta).", "Nota da tabela 74: 1 - Os municípios sem informação para pelo menos um produto de origem animal não aparecem nas listas.", "Nota da tabela 74: 2 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "producao_ovos_galinha"
+name = "Produção de origem animal"
+description = "Produção de origem animal (Pesquisa da Pecuária Municipal, tabela SIDRA 74). Recorte: Tipo de produto de origem animal: Ovos de galinha. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-74-ovos-galinha"
+variable = "106"
+fact = "fact_sidra_74_ovos_galinha"
+column = "valor"
+unit = "Mil dúzias"
+additivity = "non_additive"
+concept = "producao_ovos_galinha"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de produto de origem animal: Ovos de galinha (um KPI por categoria: cada uma tem a sua unidade, Mil dúzias nesta).", "Nota da tabela 74: 1 - Os municípios sem informação para pelo menos um produto de origem animal não aparecem nas listas.", "Nota da tabela 74: 2 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "producao_ovos_codorna"
+name = "Produção de origem animal"
+description = "Produção de origem animal (Pesquisa da Pecuária Municipal, tabela SIDRA 74). Recorte: Tipo de produto de origem animal: Ovos de codorna. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-74-ovos-codorna"
+variable = "106"
+fact = "fact_sidra_74_ovos_codorna"
+column = "valor"
+unit = "Mil dúzias"
+additivity = "non_additive"
+concept = "producao_ovos_codorna"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de produto de origem animal: Ovos de codorna (um KPI por categoria: cada uma tem a sua unidade, Mil dúzias nesta).", "Nota da tabela 74: 1 - Os municípios sem informação para pelo menos um produto de origem animal não aparecem nas listas.", "Nota da tabela 74: 2 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "producao_mel"
+name = "Produção de origem animal"
+description = "Produção de origem animal (Pesquisa da Pecuária Municipal, tabela SIDRA 74). Recorte: Tipo de produto de origem animal: Mel de abelha. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-74-mel"
+variable = "106"
+fact = "fact_sidra_74_mel"
+column = "valor"
+unit = "Quilogramas"
+additivity = "non_additive"
+concept = "producao_mel"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de produto de origem animal: Mel de abelha (um KPI por categoria: cada uma tem a sua unidade, Quilogramas nesta).", "Nota da tabela 74: 1 - Os municípios sem informação para pelo menos um produto de origem animal não aparecem nas listas.", "Nota da tabela 74: 2 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "producao_casulos"
+name = "Produção de origem animal"
+description = "Produção de origem animal (Pesquisa da Pecuária Municipal, tabela SIDRA 74). Recorte: Tipo de produto de origem animal: Casulos do bicho-da-seda. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-74-casulos"
+variable = "106"
+fact = "fact_sidra_74_casulos"
+column = "valor"
+unit = "Quilogramas"
+additivity = "non_additive"
+concept = "producao_casulos"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de produto de origem animal: Casulos do bicho-da-seda (um KPI por categoria: cada uma tem a sua unidade, Quilogramas nesta).", "Nota da tabela 74: 1 - Os municípios sem informação para pelo menos um produto de origem animal não aparecem nas listas.", "Nota da tabela 74: 2 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "producao_la"
+name = "Produção de origem animal"
+description = "Produção de origem animal (Pesquisa da Pecuária Municipal, tabela SIDRA 74). Recorte: Tipo de produto de origem animal: Lã. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-74-la"
+variable = "106"
+fact = "fact_sidra_74_la"
+column = "valor"
+unit = "Quilogramas"
+additivity = "non_additive"
+concept = "producao_la"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de produto de origem animal: Lã (um KPI por categoria: cada uma tem a sua unidade, Quilogramas nesta).", "Nota da tabela 74: 1 - Os municípios sem informação para pelo menos um produto de origem animal não aparecem nas listas.", "Nota da tabela 74: 2 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "efetivo_bubalinos"
+name = "Efetivo dos rebanhos"
+description = "Efetivo dos rebanhos (Pesquisa da Pecuária Municipal, tabela SIDRA 3939). Recorte: Tipo de rebanho: Bubalino. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-3939-bubalinos"
+variable = "105"
+fact = "fact_sidra_3939_bubalinos"
+column = "valor"
+unit = "Cabeças"
+additivity = "additive"
+concept = "efetivo_bubalinos"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de rebanho: Bubalino (a classificação não tem Total; as categorias não se somam).", "Nota da tabela 3939: 1 - Os municípios sem informação para pelo menos um efetivo de rebanho não aparecem nas listas.", "Nota da tabela 3939: 2 - Efetivos dos rebanhos em 31/12.", "Nota da tabela 3939: 3 - Os dados sobre matrizes de suínos só estão disponíveis a partir de 2013.", "Nota da tabela 3939: 4 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "efetivo_equinos"
+name = "Efetivo dos rebanhos"
+description = "Efetivo dos rebanhos (Pesquisa da Pecuária Municipal, tabela SIDRA 3939). Recorte: Tipo de rebanho: Equino. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-3939-equinos"
+variable = "105"
+fact = "fact_sidra_3939_equinos"
+column = "valor"
+unit = "Cabeças"
+additivity = "additive"
+concept = "efetivo_equinos"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de rebanho: Equino (a classificação não tem Total; as categorias não se somam).", "Nota da tabela 3939: 1 - Os municípios sem informação para pelo menos um efetivo de rebanho não aparecem nas listas.", "Nota da tabela 3939: 2 - Efetivos dos rebanhos em 31/12.", "Nota da tabela 3939: 3 - Os dados sobre matrizes de suínos só estão disponíveis a partir de 2013.", "Nota da tabela 3939: 4 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "efetivo_suinos"
+name = "Efetivo dos rebanhos"
+description = "Efetivo dos rebanhos (Pesquisa da Pecuária Municipal, tabela SIDRA 3939). Recorte: Tipo de rebanho: Suíno - total. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-3939-suinos"
+variable = "105"
+fact = "fact_sidra_3939_suinos"
+column = "valor"
+unit = "Cabeças"
+additivity = "additive"
+concept = "efetivo_suinos"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de rebanho: Suíno - total (a classificação não tem Total; as categorias não se somam).", "Nota da tabela 3939: 1 - Os municípios sem informação para pelo menos um efetivo de rebanho não aparecem nas listas.", "Nota da tabela 3939: 2 - Efetivos dos rebanhos em 31/12.", "Nota da tabela 3939: 3 - Os dados sobre matrizes de suínos só estão disponíveis a partir de 2013.", "Nota da tabela 3939: 4 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "efetivo_caprinos"
+name = "Efetivo dos rebanhos"
+description = "Efetivo dos rebanhos (Pesquisa da Pecuária Municipal, tabela SIDRA 3939). Recorte: Tipo de rebanho: Caprino. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-3939-caprinos"
+variable = "105"
+fact = "fact_sidra_3939_caprinos"
+column = "valor"
+unit = "Cabeças"
+additivity = "additive"
+concept = "efetivo_caprinos"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de rebanho: Caprino (a classificação não tem Total; as categorias não se somam).", "Nota da tabela 3939: 1 - Os municípios sem informação para pelo menos um efetivo de rebanho não aparecem nas listas.", "Nota da tabela 3939: 2 - Efetivos dos rebanhos em 31/12.", "Nota da tabela 3939: 3 - Os dados sobre matrizes de suínos só estão disponíveis a partir de 2013.", "Nota da tabela 3939: 4 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "efetivo_ovinos"
+name = "Efetivo dos rebanhos"
+description = "Efetivo dos rebanhos (Pesquisa da Pecuária Municipal, tabela SIDRA 3939). Recorte: Tipo de rebanho: Ovino. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-3939-ovinos"
+variable = "105"
+fact = "fact_sidra_3939_ovinos"
+column = "valor"
+unit = "Cabeças"
+additivity = "additive"
+concept = "efetivo_ovinos"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de rebanho: Ovino (a classificação não tem Total; as categorias não se somam).", "Nota da tabela 3939: 1 - Os municípios sem informação para pelo menos um efetivo de rebanho não aparecem nas listas.", "Nota da tabela 3939: 2 - Efetivos dos rebanhos em 31/12.", "Nota da tabela 3939: 3 - Os dados sobre matrizes de suínos só estão disponíveis a partir de 2013.", "Nota da tabela 3939: 4 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "efetivo_galinaceos"
+name = "Efetivo dos rebanhos"
+description = "Efetivo dos rebanhos (Pesquisa da Pecuária Municipal, tabela SIDRA 3939). Recorte: Tipo de rebanho: Galináceos - total. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-3939-galinaceos"
+variable = "105"
+fact = "fact_sidra_3939_galinaceos"
+column = "valor"
+unit = "Cabeças"
+additivity = "additive"
+concept = "efetivo_galinaceos"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de rebanho: Galináceos - total (a classificação não tem Total; as categorias não se somam).", "Nota da tabela 3939: 1 - Os municípios sem informação para pelo menos um efetivo de rebanho não aparecem nas listas.", "Nota da tabela 3939: 2 - Efetivos dos rebanhos em 31/12.", "Nota da tabela 3939: 3 - Os dados sobre matrizes de suínos só estão disponíveis a partir de 2013.", "Nota da tabela 3939: 4 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "efetivo_codornas"
+name = "Efetivo dos rebanhos"
+description = "Efetivo dos rebanhos (Pesquisa da Pecuária Municipal, tabela SIDRA 3939). Recorte: Tipo de rebanho: Codornas. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-3939-codornas"
+variable = "105"
+fact = "fact_sidra_3939_codornas"
+column = "valor"
+unit = "Cabeças"
+additivity = "additive"
+concept = "efetivo_codornas"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de rebanho: Codornas (a classificação não tem Total; as categorias não se somam).", "Nota da tabela 3939: 1 - Os municípios sem informação para pelo menos um efetivo de rebanho não aparecem nas listas.", "Nota da tabela 3939: 2 - Efetivos dos rebanhos em 31/12.", "Nota da tabela 3939: 3 - Os dados sobre matrizes de suínos só estão disponíveis a partir de 2013.", "Nota da tabela 3939: 4 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "vacas_ordenhadas"
+name = "Vacas ordenhadas"
+description = "Vacas ordenhadas (Pesquisa da Pecuária Municipal, tabela SIDRA 94). Tabela sem classificações. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-94"
+variable = "107"
+fact = "fact_sidra_94"
+column = "valor"
+unit = "Cabeças"
+additivity = "non_additive"
+concept = "vacas_ordenhadas"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Nota da tabela 94: 1 - Os municípios sem informação para vacas ordenhadas não aparecem nas listas.", "Nota da tabela 94: 2 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "ovinos_tosquiados"
+name = "Ovinos tosquiados nos estabelecimentos agropecuários"
+description = "Ovinos tosquiados nos estabelecimentos agropecuários (Pesquisa da Pecuária Municipal, tabela SIDRA 95). Tabela sem classificações. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-95"
+variable = "108"
+fact = "fact_sidra_95"
+column = "valor"
+unit = "Cabeças"
+additivity = "non_additive"
+concept = "ovinos_tosquiados"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Nota da tabela 95: 1 - Os municípios sem informação para ovinos tosquiados não aparecem nas listas.", "Nota da tabela 95: 2 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
 
 [[indicators]]
 id = "abate_bovinos"

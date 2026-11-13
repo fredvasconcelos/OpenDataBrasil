@@ -3514,6 +3514,394 @@ transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
 
 [[datasets]]
+id = "ibge-sidra-74"
+source = "ibge-sidra"
+official_id = "74"
+title = "Produção de origem animal, por tipo de produto"
+description = "Tabela SIDRA 74, variável 106 (Produção de origem animal), no Total das classificações (Tipo de produto de origem animal: Leite). KPI de panorama 'Produção de leite (PPM)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/74"
+
+[datasets.params]
+table = "74"
+variables = ["106"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c80" = "2682" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-74-ovos-galinha"
+source = "ibge-sidra"
+official_id = "74"
+title = "Produção de origem animal, por tipo de produto"
+description = "Tabela SIDRA 74, variável 106 (Produção de origem animal), no Total das classificações (Tipo de produto de origem animal: Ovos de galinha). KPI de panorama 'Produção de ovos de galinha (PPM)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/74"
+
+[datasets.params]
+table = "74"
+variables = ["106"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c80" = "2685" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-74-ovos-codorna"
+source = "ibge-sidra"
+official_id = "74"
+title = "Produção de origem animal, por tipo de produto"
+description = "Tabela SIDRA 74, variável 106 (Produção de origem animal), no Total das classificações (Tipo de produto de origem animal: Ovos de codorna). KPI de panorama 'Produção de ovos de codorna (PPM)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/74"
+
+[datasets.params]
+table = "74"
+variables = ["106"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c80" = "2686" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-74-mel"
+source = "ibge-sidra"
+official_id = "74"
+title = "Produção de origem animal, por tipo de produto"
+description = "Tabela SIDRA 74, variável 106 (Produção de origem animal), no Total das classificações (Tipo de produto de origem animal: Mel de abelha). KPI de panorama 'Produção de mel de abelha (PPM)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/74"
+
+[datasets.params]
+table = "74"
+variables = ["106"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c80" = "2687" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-74-casulos"
+source = "ibge-sidra"
+official_id = "74"
+title = "Produção de origem animal, por tipo de produto"
+description = "Tabela SIDRA 74, variável 106 (Produção de origem animal), no Total das classificações (Tipo de produto de origem animal: Casulos do bicho-da-seda). KPI de panorama 'Produção de casulos do bicho-da-seda (PPM)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/74"
+
+[datasets.params]
+table = "74"
+variables = ["106"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c80" = "2683" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-74-la"
+source = "ibge-sidra"
+official_id = "74"
+title = "Produção de origem animal, por tipo de produto"
+description = "Tabela SIDRA 74, variável 106 (Produção de origem animal), no Total das classificações (Tipo de produto de origem animal: Lã). KPI de panorama 'Produção de lã (PPM)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/74"
+
+[datasets.params]
+table = "74"
+variables = ["106"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c80" = "2684" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-3939-bubalinos"
+source = "ibge-sidra"
+official_id = "3939"
+title = "Efetivo dos rebanhos, por tipo de rebanho"
+description = "Tabela SIDRA 3939, variável 105 (Efetivo dos rebanhos), no Total das classificações (Tipo de rebanho: Bubalino). KPI de panorama 'Efetivo de bubalinos' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/3939"
+
+[datasets.params]
+table = "3939"
+variables = ["105"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c79" = "2675" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-3939-equinos"
+source = "ibge-sidra"
+official_id = "3939"
+title = "Efetivo dos rebanhos, por tipo de rebanho"
+description = "Tabela SIDRA 3939, variável 105 (Efetivo dos rebanhos), no Total das classificações (Tipo de rebanho: Equino). KPI de panorama 'Efetivo de equinos' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/3939"
+
+[datasets.params]
+table = "3939"
+variables = ["105"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c79" = "2672" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-3939-suinos"
+source = "ibge-sidra"
+official_id = "3939"
+title = "Efetivo dos rebanhos, por tipo de rebanho"
+description = "Tabela SIDRA 3939, variável 105 (Efetivo dos rebanhos), no Total das classificações (Tipo de rebanho: Suíno - total). KPI de panorama 'Efetivo de suínos' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/3939"
+
+[datasets.params]
+table = "3939"
+variables = ["105"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c79" = "32794" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-3939-caprinos"
+source = "ibge-sidra"
+official_id = "3939"
+title = "Efetivo dos rebanhos, por tipo de rebanho"
+description = "Tabela SIDRA 3939, variável 105 (Efetivo dos rebanhos), no Total das classificações (Tipo de rebanho: Caprino). KPI de panorama 'Efetivo de caprinos' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/3939"
+
+[datasets.params]
+table = "3939"
+variables = ["105"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c79" = "2681" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-3939-ovinos"
+source = "ibge-sidra"
+official_id = "3939"
+title = "Efetivo dos rebanhos, por tipo de rebanho"
+description = "Tabela SIDRA 3939, variável 105 (Efetivo dos rebanhos), no Total das classificações (Tipo de rebanho: Ovino). KPI de panorama 'Efetivo de ovinos' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/3939"
+
+[datasets.params]
+table = "3939"
+variables = ["105"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c79" = "2677" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-3939-galinaceos"
+source = "ibge-sidra"
+official_id = "3939"
+title = "Efetivo dos rebanhos, por tipo de rebanho"
+description = "Tabela SIDRA 3939, variável 105 (Efetivo dos rebanhos), no Total das classificações (Tipo de rebanho: Galináceos - total). KPI de panorama 'Efetivo de galináceos' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/3939"
+
+[datasets.params]
+table = "3939"
+variables = ["105"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c79" = "32796" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-3939-codornas"
+source = "ibge-sidra"
+official_id = "3939"
+title = "Efetivo dos rebanhos, por tipo de rebanho"
+description = "Tabela SIDRA 3939, variável 105 (Efetivo dos rebanhos), no Total das classificações (Tipo de rebanho: Codornas). KPI de panorama 'Efetivo de codornas' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/3939"
+
+[datasets.params]
+table = "3939"
+variables = ["105"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c79" = "2680" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-94"
+source = "ibge-sidra"
+official_id = "94"
+title = "Vacas ordenhadas"
+description = "Tabela SIDRA 94, variável 107 (Vacas ordenhadas), no Total das classificações. KPI de panorama 'Vacas ordenhadas' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/94"
+
+[datasets.params]
+table = "94"
+variables = ["107"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-95"
+source = "ibge-sidra"
+official_id = "95"
+title = "Ovinos tosquiados"
+description = "Tabela SIDRA 95, variável 108 (Ovinos tosquiados nos estabelecimentos agropecuários), no Total das classificações. KPI de panorama 'Ovinos tosquiados' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/95"
+
+[datasets.params]
+table = "95"
+variables = ["108"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 790
+min_rows = 1
+max_rows = 790
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
 id = "ibge-sidra-1092"
 source = "ibge-sidra"
 official_id = "1092"

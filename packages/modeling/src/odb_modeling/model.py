@@ -305,6 +305,52 @@ def _aggregated(part: pl.DataFrame, rule: TableRule) -> pl.DataFrame:
     return pl.concat(out, how="vertical_relaxed") if out else part.clear()
 
 
+MONTH_NAMES_PT = (
+    "janeiro",
+    "fevereiro",
+    "março",
+    "abril",
+    "maio",
+    "junho",
+    "julho",
+    "agosto",
+    "setembro",
+    "outubro",
+    "novembro",
+    "dezembro",
+)
+
+
+def _month_to_period(part: pl.DataFrame, dimension: str) -> pl.DataFrame:
+    """Mês como classificação → período mensal "AAAAMmm" (a dimensão sai).
+
+    Ficam só as linhas de um dos 12 meses (pelo nome da categoria); o Total e o mês
+    "Ignorado" saem. O ano volta pela soma dos meses (``time_aggregation = "sum"``).
+    """
+    name = (
+        pl.col("classifications")
+        .list.eval(
+            pl.element()
+            .filter(pl.element().struct.field("dimension") == dimension)
+            .struct.field("category_name")
+        )
+        .list.first()
+        .str.to_lowercase()
+        .str.strip_chars()
+    )
+    number = name.replace_strict(
+        {m: f"{i:02d}" for i, m in enumerate(MONTH_NAMES_PT, start=1)}, default=None
+    )
+    out = part.with_columns(number.alias("_month")).filter(pl.col("_month").is_not_null())
+    out = out.with_columns(
+        (pl.col("period").str.slice(0, 4) + pl.lit("M") + pl.col("_month")).alias("period"),
+        pl.col("classifications").list.eval(
+            pl.element().filter(pl.element().struct.field("dimension") != dimension)
+        ),
+    ).drop("_month")
+    return _with_key(out)
+
+
 def apply_table_transforms(selected: pl.DataFrame, catalog: SemanticCatalog) -> pl.DataFrame:
     """Transformações das séries compostas de fontes distintas (ADR-0022).
 
@@ -335,6 +381,8 @@ def apply_table_transforms(selected: pl.DataFrame, catalog: SemanticCatalog) -> 
             part = part.filter(pl.col("territorial_level").is_in(list(rule.levels)))
         if rule.exclude_periods:
             part = part.filter(~pl.col("period").is_in(list(rule.exclude_periods)))
+        if rule.month_dimension:
+            part = _month_to_period(part, rule.month_dimension)
         for dimension, codes in rule.keep_categories.items():
             part = part.filter(_category_in(dimension).is_in(list(codes)).fill_null(value=False))
         value = pl.col("value").cast(pl.Float64)

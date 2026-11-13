@@ -22,6 +22,9 @@ interface Props {
   onLevel: (level: string) => void;
   onPeriod: (period: string) => void;
   onGrain: (grain: string | null) => void;
+  /** "Isolar período": barras por parte do ano, acumuladas entre os anos. */
+  isolate?: boolean;
+  onIsolate?: (isolate: boolean) => void;
   correction?: string | null;
   onCorrection?: (correction: string | null) => void;
   /** Volta os filtros ao estado inicial do indicador (desativado se já estiverem nele). */
@@ -51,6 +54,8 @@ export function Sidebar({
   onLevel,
   onPeriod,
   onGrain,
+  isolate = false,
+  onIsolate,
   onClear,
   canClear,
 }: Props) {
@@ -86,6 +91,17 @@ export function Sidebar({
                 </label>
               ))}
               {grain ? <p className="grain-note">{t(`grainNotes.${kpi.time_aggregation ?? "sum"}`)}</p> : null}
+              {onIsolate ? (
+                <label className="check isolate">
+                  <input
+                    type="checkbox"
+                    checked={isolate}
+                    disabled={(grain ?? timeGrains(kpi)[0]?.grain) === "ano"}
+                    onChange={(e) => onIsolate(e.target.checked)}
+                  />
+                  {t("dashboard.isolate")}
+                </label>
+              ) : null}
             </fieldset>
           ) : null}
           {kpi.corrections?.length ? (
