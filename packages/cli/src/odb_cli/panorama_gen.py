@@ -1299,7 +1299,11 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                     "period_discovery_level": levels[0],
                     "estimated_values_per_period": rows,
                     "min_rows": 1,
-                    "max_rows": rows,
+                    # Sem detalhe, o teto conta todos os municípios: o SIDRA pode devolver
+                    # os 5.570 com "..." onde a verificação contou só os com valor (95).
+                    "max_rows": rows
+                    if detail is not None
+                    else max(rows, sum(MAX_ROWS_PER_LEVEL[lv] for lv in levels) * per_year),
                     "refresh_recent_periods": 1,
                     **(
                         {"period_type": period_type, "group_periods_by_year": True}

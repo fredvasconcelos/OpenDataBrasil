@@ -450,7 +450,7 @@ territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
 estimated_values_per_period = 820
 min_rows = 1
-max_rows = 820
+max_rows = 5633
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -475,7 +475,7 @@ territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
 estimated_values_per_period = 820
 min_rows = 1
-max_rows = 820
+max_rows = 5633
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -1026,7 +1026,7 @@ territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
 estimated_values_per_period = 260
 min_rows = 1
-max_rows = 260
+max_rows = 22532
 refresh_recent_periods = 1
 period_type = "trimestre"
 group_periods_by_year = true
@@ -1106,7 +1106,7 @@ territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
 estimated_values_per_period = 260
 min_rows = 1
-max_rows = 260
+max_rows = 22532
 refresh_recent_periods = 1
 period_type = "trimestre"
 group_periods_by_year = true
@@ -3894,7 +3894,7 @@ territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
 estimated_values_per_period = 790
 min_rows = 1
-max_rows = 790
+max_rows = 5633
 refresh_recent_periods = 1
 
 [datasets.silver]
