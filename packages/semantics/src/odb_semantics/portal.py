@@ -75,6 +75,8 @@ class DimensionConfig(_Strict):
     classification: str = Field(pattern=r"^[a-z][a-z0-9]{0,15}$")
     partition: str = Field(pattern=_ID)
     label: str
+    # Níveis em que a fonte publica esta classificação (vazio: todos os do KPI).
+    levels: tuple[str, ...] = ()
 
 
 class CorrectionConfig(_Strict):

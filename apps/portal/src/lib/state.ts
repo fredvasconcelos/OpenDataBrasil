@@ -73,7 +73,12 @@ export function readState(params: URLSearchParams, nav: Navigation): DashboardSt
     // Dimensões marginais (exclusive_dimensions): uma por vez.
     // Cruzamentos completos (C1): até UF, as dimensões de um mesmo grupo se cruzam.
     dimensions: (() => {
-      const asked = nav.dimension_order.filter((d) => dims.includes(d));
+      // Detalhe que a fonte não publica neste nível (ex.: situação na PNS, só Brasil) sai.
+      const atLevel = (d: string) => {
+        const lv = kpi?.dimensions.find((x) => x.classification_id === d)?.levels ?? [];
+        return !lv.length || lv.includes(chosen ?? "");
+      };
+      const asked = nav.dimension_order.filter((d) => dims.includes(d) && atLevel(d));
       return kpi?.exclusive_dimensions && !canCross(kpi, asked, chosen) ? asked.slice(0, 1) : asked;
     })(),
     // Território de um nível que o KPI não publica (ex.: o Brasil nas POF antigas) volta ao inicial.

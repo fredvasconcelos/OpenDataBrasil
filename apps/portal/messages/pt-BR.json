@@ -96,7 +96,9 @@
     "dimensionsCrossed": "Neste nível, cruzam-se {groups}; os demais detalhes, um por vez.",
     "dimensionsCrossedElsewhere": "Neste nível, um detalhe por vez; os cruzamentos existem em Brasil, região e UF.",
     "sourceChange": "Mudança de fonte (veja as notas)",
-    "seriesSource": "Fonte do ponto: tabela {table}"
+    "seriesSource": "Fonte do ponto: tabela {table}",
+    "dimensionOnly": "só {levels}",
+    "dimensionOnlyAt": "A fonte publica este detalhe só em: {levels}. Mude o nível territorial para vê-lo."
   },
   "grainNotes": {
     "sum": "Soma dos períodos publicados (valor derivado). Período com parte sem dado fica sem valor.",

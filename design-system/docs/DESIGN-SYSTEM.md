@@ -309,3 +309,11 @@ SVG e PNG exportados devem levar as cores já calculadas (`resolveSvgColors`) e 
   a legenda "Mudança de fonte (veja as notas)". O tooltip mostra "Fonte do ponto:
   tabela N".
 
+## Ajustes da 2.3.13 (detalhe só em alguns níveis)
+
+- Quando a fonte publica um detalhe só em alguns níveis (nota da tabela: "disponível
+  apenas para o nível territorial Brasil"), a opção de "Detalhar por" fica
+  desabilitada nos demais, em texto `text-muted`, com "só Brasil" (ou "só Brasil,
+  Grande Região, UF") ao lado e a explicação no `title`. Um detalhe pedido na URL num
+  nível sem ele é ignorado. Antes, a tabela mostrava só o Total, sem aviso.
+

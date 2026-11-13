@@ -560,6 +560,11 @@ export interface components {
             total_category_key: string;
             /** Categories */
             categories: components["schemas"]["CategoryOut"][];
+            /**
+             * Levels
+             * @default []
+             */
+            levels: string[];
         };
         /**
          * ErrorBody

@@ -73,13 +73,13 @@ class Generated:
     classifications: dict[str, dict[str, Any]] = field(default_factory=dict)
     # Partições novas em classificações curadas: cid → {pid: partição}.
     extensions: dict[str, dict[str, dict[str, Any]]] = field(default_factory=dict)
-    dimensions: dict[str, dict[str, str]] = field(default_factory=dict)
+    dimensions: dict[str, dict[str, Any]] = field(default_factory=dict)
     map_share: dict[str, str] = field(default_factory=dict)  # KPI → categoria do mapa (%)
     crossed: dict[str, list[list[str]]] = field(default_factory=dict)  # KPI → grupos (C1)
     total_only: list[tuple[str, str, str]] = field(default_factory=list)
     # Detalhes marginais (ADR-0016): KPI → dimensões além da principal, e as
     # classificações que ficaram no Total, com o motivo (para o relatório).
-    extra_dimensions: dict[str, list[dict[str, str]]] = field(default_factory=dict)
+    extra_dimensions: dict[str, list[dict[str, Any]]] = field(default_factory=dict)
     extra_skipped: list[tuple[str, str, str]] = field(default_factory=list)
     # Ordem de aninhamento das configurações curadas do portal (vem antes da gerada).
     curated_order: list[str] = field(default_factory=list)
@@ -606,6 +606,8 @@ def plan_complements(  # noqa: PLR0917 - contexto da geração de um KPI
     return out
 
 
+# Nível SIDRA → nível do portal (os do panorama).
+PORTAL_LEVEL_IDS = {"n1": "brasil", "n2": "regiao", "n3": "uf", "n6": "municipio"}
 CROSS_LEVELS = ("n1", "n2", "n3")
 CROSS_LEVEL_IDS = {"n1": "brasil", "n2": "regiao", "n3": "uf"}
 
@@ -1398,10 +1400,28 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 f"As categorias de {detail.name} podem se sobrepor (a fonte não permite somá-las): "
                 "o percentual de cada uma é em relação ao Total, e a soma pode passar de 100%.",
             )
+        # Níveis de cada dimensão (nota da tabela, volume): o portal desabilita a opção
+        # nos outros níveis em vez de mostrar uma tabela vazia (ex.: situação do
+        # domicílio da PNS, só no Brasil).
+        dim_levels: list[tuple[Detail, tuple[str, ...]]] = []
+        if detail is not None:
+            dim_levels.append((detail, detail.levels or tuple(levels)))
+        for i, extra in enumerate(extras.details):
+            own = extras.per_set[i] if i < len(extras.per_set) and extras.per_set[i] else ()
+            dim_levels.append((extra, own or extras.levels or tuple(levels)))
+        dim_levels += [(c.detail, tuple(c.levels)) for c in comps]
         dims_shown = [
-            {"classification": d.cid, "partition": d.partition, "label": d.name}
-            for d in (detail, *extras.details, *(c.detail for c in comps))
-            if d is not None
+            {
+                "classification": d.cid,
+                "partition": d.partition,
+                "label": d.name,
+                **(
+                    {"levels": [PORTAL_LEVEL_IDS.get(lv, lv) for lv in lvs]}
+                    if set(lvs) != set(levels)
+                    else {}
+                ),
+            }
+            for d, lvs in dim_levels
         ]
         if dims_shown:
             out.dimensions[kpi.id] = dims_shown[0]

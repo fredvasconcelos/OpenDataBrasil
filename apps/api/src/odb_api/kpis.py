@@ -232,6 +232,7 @@ class KpiService:
                     label=self._short.dimension(dim.classification) or dim.label,
                     full_label=dim.label,
                     partition_id=dim.partition,
+                    levels=list(dim.levels),
                     total_category_key=self._gold.total_category(ctx, dim.classification)[
                         "category_key"
                     ],

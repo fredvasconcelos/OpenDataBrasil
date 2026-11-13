@@ -169,6 +169,8 @@ class DimensionOut(_Out):
     partition_id: str
     total_category_key: str
     categories: list[CategoryOut]
+    # Níveis com o detalhe; vazio: todos os do KPI (ex.: situação na PNS, só Brasil).
+    levels: list[str] = []
 
 
 class KpiSourceOut(_Out):

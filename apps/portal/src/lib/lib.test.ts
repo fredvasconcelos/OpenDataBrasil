@@ -172,7 +172,7 @@ describe("state", () => {
     periods,
     levels,
     map_levels: levels.filter((l) => l !== "terra_indigena"),
-    dimensions: dims.map((d) => ({ classification_id: d, label: d, full_label: d, partition_id: d, total_category_key: `${d}:0`, categories: [] })),
+    dimensions: dims.map((d) => ({ classification_id: d, label: d, full_label: d, partition_id: d, total_category_key: `${d}:0`, categories: [], levels: [] as string[] })),
     exclusive_dimensions: false,
     crossed: [],
     crossed_levels: [],
@@ -279,6 +279,15 @@ describe("state", () => {
     expect(writeState({ kpi: "pop", level: "municipio", grain: null, correction: null, period: null, dimensions: [], geography: "brasil:1", focus: "uf:13" })).toBe(
       "kpi=pop&nivel=municipio&foco=uf%3A13",
     );
+  });
+
+  it("detalhe só em alguns níveis (nota da tabela) sai do estado nos demais", () => {
+    const diab = kpi("diabetes", ["c86", "c2"], ["brasil", "uf"], ["2019"]);
+    diab.dimensions[1] = { ...diab.dimensions[1]!, levels: ["brasil"] };
+    const t0 = nav.themes[0]!;
+    const only: Navigation = { ...nav, themes: [{ ...t0, subthemes: [{ ...t0.subthemes[0]!, kpis: [diab as Kpi] }] }] };
+    expect(readState(new URLSearchParams("kpi=diabetes&nivel=uf&dim=c2"), only).dimensions).toEqual([]);
+    expect(readState(new URLSearchParams("kpi=diabetes&nivel=brasil&dim=c2"), only).dimensions).toEqual(["c2"]);
   });
 });
 

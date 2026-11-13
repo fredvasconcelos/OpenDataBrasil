@@ -132,29 +132,46 @@ export function Sidebar({
                     : t("dashboard.dimensionsExclusive")}
                 </p>
               ) : null}
-              {kpi.dimensions.map((d) => (
-                <label
-                  key={d.classification_id}
-                  className="check"
-                  title={d.full_label && d.full_label !== d.label ? d.full_label : undefined}
-                >
-                  <input
-                    type="checkbox"
-                    checked={dimensions.includes(d.classification_id)}
-                    onChange={(e) => {
-                      // Dimensões marginais: marcar uma desmarca as outras, salvo quando o
-                      // grupo se cruza nesse nível (C1, até UF).
-                      const keep =
-                        !kpi.exclusive_dimensions || canCross(kpi, [...dimensions, d.classification_id], level);
-                      const next = new Set(keep ? dimensions : []);
-                      if (e.target.checked) next.add(d.classification_id);
-                      else next.delete(d.classification_id);
-                      onDimensions(nav.dimension_order.filter((x) => next.has(x)));
-                    }}
-                  />
-                  {d.label}
-                </label>
-              ))}
+              {kpi.dimensions.map((d) => {
+                // A fonte só publica alguns detalhes em certos níveis (nota da tabela):
+                // fora deles, a opção fica desabilitada e diz onde existe.
+                const only = d.levels?.length && !d.levels.includes(level) ? d.levels : null;
+                return (
+                  <label
+                    key={d.classification_id}
+                    className={`check${only ? " is-unavailable" : ""}`}
+                    title={
+                      only
+                        ? t("dashboard.dimensionOnlyAt", { levels: only.map((l) => t(`levels.${l}`)).join(", ") })
+                        : d.full_label && d.full_label !== d.label
+                          ? d.full_label
+                          : undefined
+                    }
+                  >
+                    <input
+                      type="checkbox"
+                      disabled={Boolean(only)}
+                      checked={!only && dimensions.includes(d.classification_id)}
+                      onChange={(e) => {
+                        // Dimensões marginais: marcar uma desmarca as outras, salvo quando o
+                        // grupo se cruza nesse nível (C1, até UF).
+                        const keep =
+                          !kpi.exclusive_dimensions || canCross(kpi, [...dimensions, d.classification_id], level);
+                        const next = new Set(keep ? dimensions : []);
+                        if (e.target.checked) next.add(d.classification_id);
+                        else next.delete(d.classification_id);
+                        onDimensions(nav.dimension_order.filter((x) => next.has(x)));
+                      }}
+                    />
+                    {d.label}
+                    {only ? (
+                      <span className="check-note">
+                        {t("dashboard.dimensionOnly", { levels: only.map((l) => t(`levels.${l}`)).join(", ") })}
+                      </span>
+                    ) : null}
+                  </label>
+                );
+              })}
             </fieldset>
           ) : null}
           <button type="button" className="clear" onClick={onClear} disabled={!canClear}>

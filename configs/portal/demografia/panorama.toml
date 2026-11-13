@@ -204,7 +204,7 @@ map_share = "46290"
 id = "esgotamento_pnad"
 label = "Domicílios por tipo de esgotamento sanitário"
 indicator = "esgotamento_pnad"
-dimensions = [{ "classification" = "c11558", "partition" = "p46292_t7192", "label" = "Tipo de esgotamento sanitário" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }]
+dimensions = [{ "classification" = "c11558", "partition" = "p46292_t7192", "label" = "Tipo de esgotamento sanitário" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil", "regiao", "uf"] }]
 exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
@@ -228,7 +228,7 @@ map_share = "2520"
 id = "destino_lixo_pnad"
 label = "Domicílios por destino do lixo"
 indicator = "destino_lixo_pnad"
-dimensions = [{ "classification" = "c67t6736", "partition" = "p10972", "label" = "Destino do lixo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }]
+dimensions = [{ "classification" = "c67t6736", "partition" = "p10972", "label" = "Destino do lixo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil", "regiao", "uf"] }]
 exclusive_dimensions = true
 
 [[themes]]
@@ -361,7 +361,7 @@ exclusive_dimensions = true
 id = "pobreza_linha_nacional"
 label = "Proporção da população abaixo da linha de pobreza nacional"
 indicator = "pobreza_linha_nacional"
-dimensions = [{ "classification" = "c86t5845", "partition" = "p95251", "label" = "Cor ou raça" }]
+dimensions = [{ "classification" = "c86t5845", "partition" = "p95251", "label" = "Cor ou raça", "levels" = ["brasil"] }]
 
 [[themes.subthemes]]
 id = "trabalho_infantil_cuidados"
@@ -399,21 +399,21 @@ map_share = "104864"
 id = "doenca_cronica"
 label = "Pessoas com pelo menos uma doença crônica"
 indicator = "doenca_cronica"
-dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t7973", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t7974", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t7976", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t7973", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t7974", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t7976", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
 exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "hipertensao"
 label = "Diagnóstico de hipertensão arterial"
 indicator = "hipertensao"
-dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t4419", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4420", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c652t4422", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita" }, { "classification" = "c653t4423", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t4419", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4420", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c652t4422", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita" }, { "classification" = "c653t4423", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
 exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "diabetes"
 label = "Diagnóstico de diabetes"
 indicator = "diabetes"
-dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t4488", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4489", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c652t4491", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita" }, { "classification" = "c653t4492", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t4488", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4489", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c652t4491", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita" }, { "classification" = "c653t4492", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
 exclusive_dimensions = true
 
 [[themes.subthemes]]
@@ -424,28 +424,28 @@ label = "Hábitos e fatores de risco"
 id = "fumantes"
 label = "Fumantes atuais de tabaco"
 indicator = "fumantes"
-dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t4179", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4181", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t4182", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t4179", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4181", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t4182", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
 exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "consumo_abusivo_alcool"
 label = "Consumo abusivo de álcool"
 indicator = "consumo_abusivo_alcool"
-dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t7727", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t7728", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t7730", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t7727", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t7728", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t7730", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
 exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "insuficientemente_ativos"
 label = "Pessoas insuficientemente ativas"
 indicator = "insuficientemente_ativos"
-dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t7741", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t7742", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t7744", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t7741", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t7742", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t7744", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
 exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "excesso_peso"
 label = "Excesso de peso ou obesidade"
 indicator = "excesso_peso"
-dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }]
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil", "regiao"] }]
 exclusive_dimensions = true
 
 [[themes.subthemes]]
@@ -456,14 +456,14 @@ label = "Acesso a serviços de saúde"
 id = "plano_saude"
 label = "Pessoas com plano de saúde"
 indicator = "plano_saude"
-dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t4949", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4950", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c652t4953", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita" }, { "classification" = "c653t4952", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t4949", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4950", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c652t4953", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita" }, { "classification" = "c653t4952", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
 exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "consulta_medica"
 label = "Consultaram médico nos últimos 12 meses"
 indicator = "consulta_medica"
-dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t5058", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c653t5065", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t5058", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c653t5065", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência", "levels" = ["brasil", "regiao"] }]
 exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
@@ -479,14 +479,14 @@ label = "Saúde materno-infantil"
 id = "pre_natal"
 label = "Mulheres que realizaram pré-natal"
 indicator = "pre_natal"
-dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c652t8288", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita" }, { "classification" = "c1568t8290", "partition" = "p120704", "label" = "Nível de instrução" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c652t8288", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita", "levels" = ["brasil"] }, { "classification" = "c1568t8290", "partition" = "p120704", "label" = "Nível de instrução" }]
 exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "aleitamento_exclusivo"
 label = "Aleitamento materno exclusivo (menos de 6 meses)"
 indicator = "aleitamento_exclusivo"
-dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }]
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }]
 
 [[themes.subthemes]]
 id = "mortalidade"
@@ -575,7 +575,7 @@ label = "Alimentação e segurança alimentar"
 id = "seguranca_alimentar"
 label = "Domicílios por situação de segurança alimentar"
 indicator = "seguranca_alimentar"
-dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c12404", "partition" = "p109106", "label" = "Situação de segurança alimentar existente no domicílio" }]
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil", "regiao"] }, { "classification" = "c12404", "partition" = "p109106", "label" = "Situação de segurança alimentar existente no domicílio" }]
 exclusive_dimensions = true
 map_share = "109098"
 
@@ -591,7 +591,7 @@ label = "Internet"
 id = "domicilios_internet"
 label = "Domicílios com utilização da internet"
 indicator = "domicilios_internet"
-dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c688", "partition" = "p33298", "label" = "Existência de utilização da Internet no domicílio" }]
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil", "regiao"] }, { "classification" = "c688", "partition" = "p33298", "label" = "Existência de utilização da Internet no domicílio" }]
 exclusive_dimensions = true
 map_share = "48534"
 
@@ -619,7 +619,7 @@ map_share = "11327"
 id = "domicilios_televisao"
 label = "Domicílios com televisão"
 indicator = "domicilios_televisao"
-dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c937", "partition" = "p48455", "label" = "Existência de televisão no domicílio" }]
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil", "regiao"] }, { "classification" = "c937", "partition" = "p48455", "label" = "Existência de televisão no domicílio" }]
 exclusive_dimensions = true
 map_share = "48456"
 
@@ -653,7 +653,7 @@ exclusive_dimensions = true
 id = "violencia"
 label = "Pessoas que sofreram violência nos últimos 12 meses"
 indicator = "violencia"
-dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t8023", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t8024", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t8026", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t8023", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t8024", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t8026", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência", "levels" = ["brasil", "regiao", "uf"] }]
 exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
@@ -1085,7 +1085,7 @@ label = "Planejamento e meio ambiente"
 id = "plano_diretor"
 label = "Municípios com Plano Diretor"
 indicator = "plano_diretor"
-dimensions = [{ "classification" = "c1480", "partition" = "p58278", "label" = "Existência de Plano Diretor" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município" }]
+dimensions = [{ "classification" = "c1480", "partition" = "p58278", "label" = "Existência de Plano Diretor" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município", "levels" = ["brasil", "regiao", "uf"] }]
 exclusive_dimensions = true
 map_share = "58279"
 
@@ -1102,7 +1102,7 @@ label = "Riscos e desastres"
 id = "plano_seca"
 label = "Municípios atingidos pela seca e com plano de contingência"
 indicator = "plano_seca"
-dimensions = [{ "classification" = "c1346", "partition" = "p57247", "label" = "Ocorrência de seca nos últimos 4 anos" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município" }, { "classification" = "c1347", "partition" = "p57252", "label" = "Plano de Contingência e/ou Prevenção para a seca" }]
+dimensions = [{ "classification" = "c1346", "partition" = "p57247", "label" = "Ocorrência de seca nos últimos 4 anos" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município", "levels" = ["brasil", "regiao", "uf"] }, { "classification" = "c1347", "partition" = "p57252", "label" = "Plano de Contingência e/ou Prevenção para a seca", "levels" = ["brasil", "regiao", "uf"] }]
 exclusive_dimensions = true
 map_share = "57248"
 
@@ -1114,7 +1114,7 @@ label = "Políticas sociais"
 id = "planos_municipais_sociais"
 label = "Municípios com planos municipais nas áreas sociais"
 indicator = "planos_municipais_sociais"
-dimensions = [{ "classification" = "c1329", "partition" = "p57146", "label" = "Existência de Plano Municipal" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município" }]
+dimensions = [{ "classification" = "c1329", "partition" = "p57146", "label" = "Existência de Plano Municipal" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município", "levels" = ["brasil", "regiao", "uf"] }]
 exclusive_dimensions = true
 map_share = "15608"
 
@@ -1122,6 +1122,6 @@ map_share = "15608"
 id = "conselhos_municipais_sociais"
 label = "Municípios com conselhos municipais nas áreas sociais"
 indicator = "conselhos_municipais_sociais"
-dimensions = [{ "classification" = "c1328", "partition" = "p57131", "label" = "Existência de Conselho Municipal" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município" }]
+dimensions = [{ "classification" = "c1328", "partition" = "p57131", "label" = "Existência de Conselho Municipal" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município", "levels" = ["brasil", "regiao", "uf"] }]
 exclusive_dimensions = true
 map_share = "77667"

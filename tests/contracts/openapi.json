@@ -2406,6 +2406,14 @@
             },
             "type": "array",
             "title": "Categories"
+          },
+          "levels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Levels",
+            "default": []
           }
         },
         "type": "object",

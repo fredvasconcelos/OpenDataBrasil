@@ -829,3 +829,5 @@ mark { background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px; 
 .table-info dd { margin: 0; }
 .data-table thead th { white-space: normal; vertical-align: bottom; min-width: 9ch; max-width: 22ch; overflow-wrap: break-word; }
 .data-table thead th:first-child { max-width: none; }
+.sidebar .check.is-unavailable { color: var(--odbr-text-muted); cursor: not-allowed; }
+.sidebar .check .check-note { margin-left: 6px; font-size: var(--odbr-fs-caption); font-weight: 700; color: var(--odbr-text-muted); }
