@@ -431,6 +431,18 @@ export interface components {
             depth: number;
         };
         /**
+         * CorrectionOut
+         * @description Correção disponível para o KPI ("Corrigir por", ADR-0020).
+         */
+        CorrectionOut: {
+            /** Correction Id */
+            correction_id: string;
+            /** Label */
+            label: string;
+            /** Note */
+            note: string;
+        };
+        /**
          * DatasetOut
          * @description Dataset do catálogo.
          */
@@ -548,6 +560,8 @@ export interface components {
             dimensions?: string[];
             /** Grain */
             grain?: ("mes" | "trimestre" | "semestre" | "ano") | null;
+            /** Correction */
+            correction?: string | null;
             /**
              * Format
              * @default csv
@@ -698,6 +712,11 @@ export interface components {
              * @default false
              */
             exclusive_dimensions: boolean;
+            /**
+             * Corrections
+             * @default []
+             */
+            corrections: components["schemas"]["CorrectionOut"][];
             /** Caveats */
             caveats: string[];
             /**
@@ -706,7 +725,7 @@ export interface components {
              */
             time_grains: components["schemas"]["TimeGrainOut"][];
             /** Time Aggregation */
-            time_aggregation?: ("sum" | "mean" | "last") | null;
+            time_aggregation?: ("sum" | "mean" | "last" | "compound") | null;
             source: components["schemas"]["KpiSourceOut"];
         };
         /**
@@ -864,6 +883,12 @@ export interface components {
              * @default false
              */
             truncated: boolean;
+            /** Correction */
+            correction?: string | null;
+            /** Correction Label */
+            correction_label?: string | null;
+            /** Price Base */
+            price_base?: string | null;
         };
         /**
          * QueryIn
@@ -1952,6 +1977,8 @@ export interface operations {
                 within?: string | null;
                 /** @description Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos). */
                 grain?: ("mes" | "trimestre" | "semestre" | "ano") | null;
+                /** @description Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo. */
+                correction?: string | null;
             };
             header?: never;
             path: {
@@ -2026,6 +2053,8 @@ export interface operations {
                 period?: string | null;
                 /** @description Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos). */
                 grain?: ("mes" | "trimestre" | "semestre" | "ano") | null;
+                /** @description Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo. */
+                correction?: string | null;
                 /** @description Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2. */
                 dimensions?: string[] | null;
             };
@@ -2100,6 +2129,8 @@ export interface operations {
                 geography: string;
                 /** @description Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos). */
                 grain?: ("mes" | "trimestre" | "semestre" | "ano") | null;
+                /** @description Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo. */
+                correction?: string | null;
                 /** @description Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2. */
                 dimensions?: string[] | null;
             };
@@ -2180,6 +2211,8 @@ export interface operations {
                 order?: "asc" | "desc";
                 /** @description Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos). */
                 grain?: ("mes" | "trimestre" | "semestre" | "ano") | null;
+                /** @description Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo. */
+                correction?: string | null;
                 offset?: number;
                 limit?: number;
                 /** @description Território a localizar: devolve a página que o contém (ignora offset). */

@@ -224,12 +224,23 @@ TIME_AGGREGATION_SQL = {
     "sum": "sum(o.value)",
     "mean": "avg(o.value)",
     "last": "arg_max(o.value, o.period)",
+    # Variações percentuais encadeadas: (Π(1 + v/100) - 1) x 100. Uma variação ≤ -100%
+    # não existe num índice de preços; o ln falharia, então o valor fica nulo.
+    "compound": (
+        "CASE WHEN min(o.value) > -100 THEN (exp(sum(ln(1 + o.value / 100))) - 1) * 100 END"
+    ),
 }
-TIME_AGGREGATION_STATUS = {"sum": "derived_sum", "mean": "derived_mean", "last": "derived_last"}
+TIME_AGGREGATION_STATUS = {
+    "sum": "derived_sum",
+    "mean": "derived_mean",
+    "last": "derived_last",
+    "compound": "derived_compound",
+}
 TIME_AGGREGATION_LABELS = {
     "sum": "somados",
     "mean": "pela média",
     "last": "pelo último período",
+    "compound": "pela composição das variações",
 }
 
 

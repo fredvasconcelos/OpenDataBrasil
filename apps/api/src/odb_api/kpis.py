@@ -25,6 +25,7 @@ from odb_api.schemas import (
     CategoryOut,
     CellOut,
     ColumnOut,
+    CorrectionOut,
     DetailNodeOut,
     DetailOut,
     DimensionOut,
@@ -55,8 +56,9 @@ from odb_semantics import (
     plan_query,
     resolve_links,
 )
-from odb_semantics.periods import GRAIN_LABELS, complete_periods_at, periods_at
+from odb_semantics.periods import GRAIN_LABELS, MONTH_SHORT, complete_periods_at, periods_at
 from odb_semantics.portal import (
+    CorrectionConfig,
     KpiConfig,
     PortalConfig,
     PortalConfigError,
@@ -130,6 +132,8 @@ class KpiService:
         self._page_max = page_max
         # dataset → (sigla da instituição, sistema), das fontes configuradas.
         self._provenance = dict(provenance or {})
+        # (release, indicador do índice) → grupo → mês → índice encadeado (ADR-0020).
+        self._indexes: dict[tuple[str, str], dict[str, dict[str, Decimal]]] = {}
         # release → KPIs com problema contra ele (ADR-0015).
         self._unavailable: dict[str, dict[str, list[str]]] = {}
 
@@ -244,6 +248,10 @@ class KpiService:
             ],
             dimensions=self._dimension_out(ctx, kpi),
             exclusive_dimensions=kpi.exclusive_dimensions,
+            corrections=[
+                CorrectionOut(correction_id=c.id, label=c.label, note=c.note)
+                for c in kpi.corrections
+            ],
             caveats=list(meta["caveats"] or ()),
             time_grains=self._time_grains(kpi, meta),
             time_aggregation=(
@@ -415,6 +423,7 @@ class KpiService:
         dims: Sequence[str],
         max_rows: int,
         grain: str | None = None,
+        correction: str | None = None,
     ) -> tuple[list[Observation], Provenance]:
         query = IndicatorQuery(
             indicators=(kpi.indicator,),
@@ -444,9 +453,118 @@ class KpiService:
                     status=row["value_status"],
                 )
             )
-        return out, provenance(
+        prov = provenance(
             ctx, plan.aliases.values(), derived=plan.derived, truncated=result.truncated
         )
+        if correction:
+            out, prov = self._corrected(ctx, kpi, correction, out, dims=dims, prov=prov)
+        return out, prov
+
+    # ------------------------------------------------------------- correção de preços
+
+    def _correction(self, kpi: KpiConfig, correction_id: str) -> CorrectionConfig:
+        corr = next((c for c in kpi.corrections if c.id == correction_id), None)
+        if corr is None:
+            known = [c.id for c in kpi.corrections]
+            msg = f"{kpi.id}: correção {correction_id!r} indisponível (disponíveis: {known})"
+            raise SemanticError(msg)
+        return corr
+
+    def _price_index(
+        self, ctx: ReleaseContext, corr: CorrectionConfig
+    ) -> dict[str, dict[str, Decimal]]:
+        """Grupo do índice → mês → número-índice encadeado (base: o primeiro mês = 1)."""
+        key = (ctx.release_id, corr.indicator)
+        if key not in self._indexes:
+            query = IndicatorQuery(
+                indicators=(corr.indicator,),
+                level="brasil",
+                breakdown={corr.group_classification: None},
+            )
+            plan = plan_query(query, self._gold.indicator_meta(ctx))
+            result = self._gold.run_plan(ctx, plan, max_rows=100_000)
+            by_group: dict[str, list[tuple[str, Decimal]]] = {}
+            for r in result.rows:
+                row = dict(zip(result.columns, r, strict=True))
+                if row["value"] is None:
+                    continue
+                group = str(row["breakdown_key"]).split(":", 1)[-1]
+                by_group.setdefault(group, []).append((row["period"], Decimal(row["value"])))
+            indexes: dict[str, dict[str, Decimal]] = {}
+            for group, points in by_group.items():
+                level, chain = Decimal(1), {}
+                for month, change in sorted(points):
+                    level *= 1 + change / 100
+                    chain[month] = level
+                indexes[group] = chain
+            self._indexes[key] = indexes
+        return self._indexes[key]
+
+    def _corrected(
+        self,
+        ctx: ReleaseContext,
+        kpi: KpiConfig,
+        correction_id: str,
+        obs: list[Observation],
+        *,
+        dims: Sequence[str],
+        prov: Provenance,
+    ) -> tuple[list[Observation], Provenance]:
+        """Valores a preços do mês de referência do período mais recente (ADR-0020).
+
+        fator = I(mês-base) ÷ I(mês de referência do período), com I o índice encadeado
+        das variações mensais do grupo (ou do índice geral). Sem o fator (mês fora da
+        série do índice), o valor fica sem valor.
+        """
+        corr = self._correction(kpi, correction_id)
+        periods = list(self._gold.indicators(ctx)[kpi.indicator]["periods"] or ())
+        dated = [p for p in periods if p in corr.reference_months]
+        if not dated:
+            msg = f"{kpi.id}: nenhum período com mês de referência para {corr.id}"
+            raise SemanticError(msg)
+        base_month = corr.reference_months[max(dated)]
+        indexes = self._price_index(ctx, corr)
+        position = dims.index(corr.dimension) if corr.dimension in dims else None
+        out = []
+        categories = self._gold.categories(ctx)
+
+        def group_of(key: str) -> str:
+            # O grupo da categoria ou do ancestral mais próximo que tiver grupo.
+            seen: set[str] = set()
+            while key and key not in seen:
+                seen.add(key)
+                code = key.split(":", 1)[-1]
+                if code in corr.groups:
+                    return corr.groups[code]
+                key = str((categories.get(key) or {}).get("parent_category_key") or "")
+            return corr.general
+
+        for o in obs:
+            group = corr.general
+            if position is not None and corr.groups:
+                group = group_of(o.combo[position])
+            chain = indexes.get(group, {})
+            month = corr.reference_months.get(o.period)
+            start, end = chain.get(month or ""), chain.get(base_month)
+            value = o.value
+            status = o.status
+            if value is not None:
+                if start is None or end is None:
+                    value, status = None, "not_available"
+                else:
+                    value = value * end / start
+            out.append(Observation(o.geography_key, o.name, o.period, o.combo, value, status))
+        year, month_num = base_month.split("M")
+        base = f"{MONTH_SHORT[int(month_num) - 1]}/{year}"
+        prov = prov.model_copy(
+            update={
+                "derived": True,
+                "correction": corr.id,
+                "correction_label": corr.label,
+                "price_base": base,
+            }
+        )
+        return out, prov
 
     def _combos(self, ctx: ReleaseContext, kpi: KpiConfig, dims: Sequence[str]) -> list[Combo]:
         """Combinações em pré-ordem: Total, depois cada categoria e seus filhos."""
@@ -495,6 +613,7 @@ class KpiService:
         period: str | None,
         within: str | None,
         grain: str | None = None,
+        correction: str | None = None,
     ) -> MapOut:
         """Valor do KPI em cada território do nível: o Total ou, com ``map_share``, o %
         de uma categoria no Total (KPIs cujo Total é só o universo)."""
@@ -513,6 +632,7 @@ class KpiService:
             dims=(),
             max_rows=50_000,
             grain=grain,
+            correction=correction,
         )
         return MapOut(
             kpi_id=kpi.id,
@@ -586,6 +706,7 @@ class KpiService:
         period: str | None,
         dimensions: Sequence[str],
         grain: str | None = None,
+        correction: str | None = None,
     ) -> DetailOut:
         """Sub-KPIs aninhados de um território (tooltip)."""
         kpi = self.kpi(ctx, kpi_id)
@@ -602,6 +723,7 @@ class KpiService:
             dims=dims,
             max_rows=10_000,
             grain=grain,
+            correction=correction,
         )
         meta = self._gold.indicators(ctx)[kpi.indicator]
         additive = meta["additivity"] == "additive"
@@ -658,6 +780,7 @@ class KpiService:
         geography: str,
         dimensions: Sequence[str],
         grain: str | None = None,
+        correction: str | None = None,
     ) -> SeriesOut:
         """Todos os períodos de um território, por combinação de categorias."""
         kpi = self.kpi(ctx, kpi_id)
@@ -673,6 +796,7 @@ class KpiService:
             dims=dims,
             max_rows=50_000,
             grain=grain,
+            correction=correction,
         )
         by_combo: dict[Combo, list[Observation]] = {}
         for o in obs:
@@ -717,6 +841,7 @@ class KpiService:
         limit: int,
         locate: str | None = None,
         grain: str | None = None,
+        correction: str | None = None,
     ) -> TableOut:
         """Territórios do nível, com o Total e as combinações de categorias.
 
@@ -738,6 +863,7 @@ class KpiService:
             dims=dims,
             max_rows=200_000,
             grain=grain,
+            correction=correction,
         )
         combos = self._combos(ctx, kpi, dims)
         totals = [self._gold.total_category(ctx, d)["category_key"] for d in dims]
@@ -813,6 +939,7 @@ class KpiService:
         dimensions: Sequence[str],
         max_rows: int,
         grain: str | None = None,
+        correction: str | None = None,
     ) -> tuple[KpiConfig, list[str], list[Observation], Provenance]:
         """Observações para exportação (formato longo)."""
         kpi = self.kpi(ctx, kpi_id)
@@ -829,5 +956,6 @@ class KpiService:
             dims=dims,
             max_rows=max_rows + 1,
             grain=grain,
+            correction=correction,
         )
         return kpi, dims, obs, prov

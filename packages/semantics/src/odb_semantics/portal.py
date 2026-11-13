@@ -42,6 +42,30 @@ class DimensionConfig(_Strict):
     label: str
 
 
+class CorrectionConfig(_Strict):
+    """Correção de valores em moeda por um índice de preços (ADR-0020).
+
+    O fator de um período é o acumulado do índice entre o mês de referência dele e o do
+    período mais recente do KPI (que avança sozinho com dados novos):
+    fator = Π(1 + v_m/100) dos meses depois da referência do período até a do mais recente.
+    Com ``dimension`` e ``groups``, cada categoria usa o grupo do índice correspondente
+    (ex.: alimentação → Alimentação e bebidas); as demais, o índice geral.
+    """
+
+    id: str = Field(pattern=r"^[a-z][a-z0-9_]{0,31}$")
+    label: str
+    # Indicador da Gold com a variação mensal do índice (% ao mês), por grupo (c315).
+    indicator: str = Field(pattern=_ID)
+    group_classification: str = Field(default="c315", pattern=r"^[a-z][a-z0-9]{0,15}$")
+    general: str = Field(default="7169", pattern=r"^\d+$")  # índice geral
+    # Período do KPI → mês de referência da pesquisa ("2018" → "2018M01").
+    reference_months: dict[str, str] = Field(min_length=1)
+    # Classificação do KPI cujas categorias têm grupo próprio, e categoria → grupo.
+    dimension: str | None = Field(default=None, pattern=r"^[a-z][a-z0-9]{0,15}$")
+    groups: dict[str, str] = Field(default_factory=dict)
+    note: str = ""
+
+
 class KpiConfig(_Strict):
     """KPI do portal: um indicador da Gold e suas dimensões expostas."""
 
@@ -58,6 +82,8 @@ class KpiConfig(_Strict):
     # Níveis com mapa, se diferentes dos que têm geometria. Vazio: sem mapa (POF de
     # 1987 e 1995: só Brasília e Goiânia teriam cor na malha municipal, ADR-0016).
     map_levels: tuple[str, ...] | None = None
+    # Correções de valores em moeda por índice de preços (ADR-0020): "Corrigir por".
+    corrections: tuple[CorrectionConfig, ...] = ()
 
     @model_validator(mode="after")
     def _share(self) -> KpiConfig:
@@ -201,6 +227,8 @@ def release_problems(
             else:
                 continue
             problems.setdefault(kpi.id, []).append(problem)
+    for kpi_id, missing in _correction_problems(config, indicators).items():
+        problems.setdefault(kpi_id, []).extend(missing)
     if panorama is not None:
         links = resolve_links(panorama, (k.id for k in config.kpis()))
         for _, _, item in panorama.items():
@@ -213,6 +241,20 @@ def release_problems(
                     f"tabela {item.tabela} no panorama ({item.id}), {published} na Gold"
                 )
     return problems
+
+
+def _correction_problems(
+    config: PortalConfig, indicators: Mapping[str, Mapping[str, Any]]
+) -> dict[str, list[str]]:
+    """Correções cujo índice de preços não está no release (ADR-0020)."""
+    out: dict[str, list[str]] = {}
+    for kpi in config.kpis():
+        for corr in kpi.corrections:
+            if corr.indicator not in indicators:
+                out.setdefault(kpi.id, []).append(
+                    f"índice da correção {corr.id} ({corr.indicator}) não publicado no release"
+                )
+    return out
 
 
 def describe_problems(problems: Mapping[str, Sequence[str]]) -> str:

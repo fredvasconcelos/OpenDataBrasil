@@ -1145,6 +1145,25 @@
               "title": "Grain"
             },
             "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos)."
+          },
+          {
+            "name": "correction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,31}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo.",
+              "title": "Correction"
+            },
+            "description": "Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo."
           }
         ],
         "responses": {
@@ -1286,6 +1305,25 @@
             "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos)."
           },
           {
+            "name": "correction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,31}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo.",
+              "title": "Correction"
+            },
+            "description": "Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo."
+          },
+          {
             "name": "dimensions",
             "in": "query",
             "required": false,
@@ -1425,6 +1463,25 @@
               "title": "Grain"
             },
             "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos)."
+          },
+          {
+            "name": "correction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,31}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo.",
+              "title": "Correction"
+            },
+            "description": "Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo."
           },
           {
             "name": "dimensions",
@@ -1632,6 +1689,25 @@
               "title": "Grain"
             },
             "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos)."
+          },
+          {
+            "name": "correction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,31}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo.",
+              "title": "Correction"
+            },
+            "description": "Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo."
           },
           {
             "name": "offset",
@@ -2033,6 +2109,30 @@
         "title": "ColumnOut",
         "description": "Coluna da tabela (uma combinação de categorias)."
       },
+      "CorrectionOut": {
+        "properties": {
+          "correction_id": {
+            "type": "string",
+            "title": "Correction Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "correction_id",
+          "label",
+          "note"
+        ],
+        "title": "CorrectionOut",
+        "description": "Correção disponível para o KPI (\"Corrigir por\", ADR-0020)."
+      },
       "DatasetOut": {
         "properties": {
           "dataset_id": {
@@ -2365,6 +2465,18 @@
               }
             ],
             "title": "Grain"
+          },
+          "correction": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{0,31}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correction"
           },
           "format": {
             "type": "string",
@@ -2737,6 +2849,14 @@
             "title": "Exclusive Dimensions",
             "default": false
           },
+          "corrections": {
+            "items": {
+              "$ref": "#/components/schemas/CorrectionOut"
+            },
+            "type": "array",
+            "title": "Corrections",
+            "default": []
+          },
           "caveats": {
             "items": {
               "type": "string"
@@ -2759,7 +2879,8 @@
                 "enum": [
                   "sum",
                   "mean",
-                  "last"
+                  "last",
+                  "compound"
                 ]
               },
               {
@@ -3174,6 +3295,39 @@
             "type": "boolean",
             "title": "Truncated",
             "default": false
+          },
+          "correction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correction"
+          },
+          "correction_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correction Label"
+          },
+          "price_base": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Base"
           }
         },
         "type": "object",

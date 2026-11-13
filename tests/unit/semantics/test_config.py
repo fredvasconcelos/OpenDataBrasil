@@ -219,7 +219,13 @@ def test_repository_scope_with_fragments_matches_sources() -> None:
     # A POF em série (ADR-0016): três edições num fato, com regras para a 2309.
     fact = catalog.fact("fact_pof_household_expense")
     assert fact.dataset == "ibge-pof-despesa-familiar"
-    assert fact.table_rules["2309"].missing_as_total == ("c339",)
+    # As faixas de 2002 entram como "Classes de rendimento" (renomeadas), e 18 tipos de
+    # despesa de 2002 passam aos códigos equivalentes de 2008 e 2018.
+    rule = fact.table_rules["2309"]
+    assert "Classes de rendimento total e variação patrimonial mensal familiar" in (
+        rule.rename_dimensions.values()
+    )
+    assert rule.recode_categories["Tipos de despesa"]["103567"] == "8012"  # viagens
 
 
 def test_fragment_extends_curated_classification(tmp_path: Path) -> None:

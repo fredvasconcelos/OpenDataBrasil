@@ -554,7 +554,7 @@ id = "ibge-sidra-2309"
 source = "ibge-sidra"
 official_id = "2309"
 title = "Despesa monetária e não monetária média mensal familiar - valor e distribuição - por classes de rendimento monetário e não monetário mensal familiar e tipos de despesa"
-description = "POF 2002-2003 (período 2002): despesa média mensal familiar (1201, Reais) e distribuição (1204, %) por tipos de despesa (c12190, 89 categorias). Só o Total da situação do domicílio (c1) e das classes de rendimento monetário e não monetário (c12191), outro conceito de rendimento que o da c339. Brasil e Grandes Regiões. Códigos do descritor oficial (/DescritoresTabela/t/2309, 2026-11-12)."
+description = "POF 2002-2003 (período 2002): despesa média mensal familiar (1201, Reais) e distribuição (1204, %) por tipos de despesa (c12190, 89 categorias). Situação do domicílio (c1) só no Total; classes de rendimento monetário e não monetário (c12191, 10 faixas e o Total), outro conceito que o da c339, que entram como 'Classes de rendimento' no fato (ADR-0016). Brasil e Grandes Regiões. Códigos do descritor oficial (/DescritoresTabela/t/2309, 2026-11-12)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -564,11 +564,11 @@ reference_url = "https://sidra.ibge.gov.br/tabela/2309"
 table = "2309"
 variables = ["1201", "1204"]
 territorial_levels = ["n1", "n2"]
-classifications = { "c1" = "6795", "c12191" = "103411", "c12190" = "all" }
-# 89 tipos x 6 territórios x 2 variáveis.
-estimated_values_per_period = 1068
-min_rows = 1068
-max_rows = 1068
+classifications = { "c1" = "6795", "c12191" = "all", "c12190" = "all" }
+# 11 classes (com o Total) x 89 tipos x 6 territórios x 2 variáveis.
+estimated_values_per_period = 11748
+min_rows = 11748
+max_rows = 11748
 refresh_recent_periods = 1
 
 [datasets.silver]
@@ -690,3 +690,125 @@ refresh_recent_periods = 1
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+
+# ------------------------------------------------------------------ IPCA por grupo (ADR-0020)
+
+[[datasets]]
+id = "ibge-sidra-655"
+source = "ibge-sidra"
+official_id = "655"
+title = "IPCA - Variação mensal, para o índice geral e grupos de produtos e serviços (1999-08 a 2006-06)"
+description = "IPCA, variação mensal (63) do índice geral e dos 9 grupos (c315: 7169 e 7170 a 7786, mesmos códigos em 655, 2938, 1419 e 7060), no Brasil. Série ibge-ipca-grupos (ADR-0016): insumo da correção da POF pelo IPCA por grupo (ADR-0020). Códigos do descritor oficial (/DescritoresTabela/t/655, 2026-11-13)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/655"
+
+[datasets.params]
+table = "655"
+variables = ["63"]
+territorial_levels = ["n1"]
+classifications = { "c315" = "7169,7170,7445,7486,7558,7625,7660,7712,7766,7786" }
+period_type = "mes"
+group_periods_by_year = true
+# 10 categorias x 12 meses no Brasil.
+estimated_values_per_period = 120
+min_rows = 1
+max_rows = 120
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-ipca-grupos"
+series_order = 1
+
+[[datasets]]
+id = "ibge-sidra-2938"
+source = "ibge-sidra"
+official_id = "2938"
+title = "IPCA - Variação mensal, para o índice geral e grupos de produtos e serviços (2006-07 a 2011-12)"
+description = "IPCA, variação mensal (63) do índice geral e dos 9 grupos (c315: 7169 e 7170 a 7786, mesmos códigos em 655, 2938, 1419 e 7060), no Brasil. Série ibge-ipca-grupos (ADR-0016): insumo da correção da POF pelo IPCA por grupo (ADR-0020). Códigos do descritor oficial (/DescritoresTabela/t/2938, 2026-11-13)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/2938"
+
+[datasets.params]
+table = "2938"
+variables = ["63"]
+territorial_levels = ["n1"]
+classifications = { "c315" = "7169,7170,7445,7486,7558,7625,7660,7712,7766,7786" }
+period_type = "mes"
+group_periods_by_year = true
+# 10 categorias x 12 meses no Brasil.
+estimated_values_per_period = 120
+min_rows = 1
+max_rows = 120
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-ipca-grupos"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-1419"
+source = "ibge-sidra"
+official_id = "1419"
+title = "IPCA - Variação mensal, para o índice geral e grupos de produtos e serviços (2012-01 a 2019-12)"
+description = "IPCA, variação mensal (63) do índice geral e dos 9 grupos (c315: 7169 e 7170 a 7786, mesmos códigos em 655, 2938, 1419 e 7060), no Brasil. Série ibge-ipca-grupos (ADR-0016): insumo da correção da POF pelo IPCA por grupo (ADR-0020). Códigos do descritor oficial (/DescritoresTabela/t/1419, 2026-11-13)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/1419"
+
+[datasets.params]
+table = "1419"
+variables = ["63"]
+territorial_levels = ["n1"]
+classifications = { "c315" = "7169,7170,7445,7486,7558,7625,7660,7712,7766,7786" }
+period_type = "mes"
+group_periods_by_year = true
+# 10 categorias x 12 meses no Brasil.
+estimated_values_per_period = 120
+min_rows = 1
+max_rows = 120
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-ipca-grupos"
+series_order = 3
+
+[[datasets]]
+id = "ibge-sidra-7060"
+source = "ibge-sidra"
+official_id = "7060"
+title = "IPCA - Variação mensal, para o índice geral e grupos de produtos e serviços (2020-01 a atual)"
+description = "IPCA, variação mensal (63) do índice geral e dos 9 grupos (c315: 7169 e 7170 a 7786, mesmos códigos em 655, 2938, 1419 e 7060), no Brasil. Série ibge-ipca-grupos (ADR-0016): insumo da correção da POF pelo IPCA por grupo (ADR-0020). Códigos do descritor oficial (/DescritoresTabela/t/7060, 2026-11-13)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/7060"
+
+[datasets.params]
+table = "7060"
+variables = ["63"]
+territorial_levels = ["n1"]
+classifications = { "c315" = "7169,7170,7445,7486,7558,7625,7660,7712,7766,7786" }
+period_type = "mes"
+group_periods_by_year = true
+# 10 categorias x 12 meses no Brasil.
+estimated_values_per_period = 120
+min_rows = 1
+max_rows = 120
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-ipca-grupos"
+series_order = 4

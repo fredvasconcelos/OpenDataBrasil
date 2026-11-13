@@ -171,6 +171,7 @@ describe("state", () => {
     map_levels: levels.filter((l) => l !== "terra_indigena"),
     dimensions: dims.map((d) => ({ classification_id: d, label: d, partition_id: d, total_category_key: `${d}:0`, categories: [] })),
     exclusive_dimensions: false,
+    corrections: [],
     caveats: [],
     time_grains,
     source: { dataset_id: "d", source_table_id: "1", source_variable_id: "1", source_variable_name: null, reference_url: null, license_id: null },
@@ -205,9 +206,9 @@ describe("state", () => {
 
   it("lê a URL validando KPI, nível, período, dimensões e território", () => {
     const s = readState(new URLSearchParams("kpi=pop&nivel=municipio&periodo=2010&dim=c2,c86,c99&territorio=uf:29"), nav);
-    expect(s).toEqual({ kpi: "pop", level: "municipio", grain: null, period: "2010", dimensions: ["c86", "c2"], geography: "uf:29", focus: null });
+    expect(s).toEqual({ kpi: "pop", level: "municipio", grain: null, correction: null, period: "2010", dimensions: ["c86", "c2"], geography: "uf:29", focus: null });
     const bad = readState(new URLSearchParams("kpi=x&nivel=zzz&periodo=1999&territorio=uf;drop"), nav);
-    expect(bad).toEqual({ kpi: "pop", level: "uf", grain: null, period: null, dimensions: [], geography: "brasil:1", focus: null });
+    expect(bad).toEqual({ kpi: "pop", level: "uf", grain: null, correction: null, period: null, dimensions: [], geography: "brasil:1", focus: null });
   });
 
   it("sem nível Brasil, abre no Total das áreas e nas regiões metropolitanas (ADR-0016)", () => {
@@ -267,10 +268,10 @@ describe("state", () => {
   });
 
   it("escreve só o que difere do padrão", () => {
-    expect(writeState({ kpi: "ti", level: "uf", grain: null, period: null, dimensions: ["c2"], geography: "brasil:1", focus: null })).toBe(
+    expect(writeState({ kpi: "ti", level: "uf", grain: null, correction: null, period: null, dimensions: ["c2"], geography: "brasil:1", focus: null })).toBe(
       "kpi=ti&nivel=uf&dim=c2",
     );
-    expect(writeState({ kpi: "pop", level: "municipio", grain: null, period: null, dimensions: [], geography: "brasil:1", focus: "uf:13" })).toBe(
+    expect(writeState({ kpi: "pop", level: "municipio", grain: null, correction: null, period: null, dimensions: [], geography: "brasil:1", focus: "uf:13" })).toBe(
       "kpi=pop&nivel=municipio&foco=uf%3A13",
     );
   });

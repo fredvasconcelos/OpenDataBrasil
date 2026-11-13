@@ -67,3 +67,18 @@ Os 6 KPIs do Sinesp continuam com a soma da ADR-0013.
   pontos críticos.
 - **Último valor para a safra:** o ano é a estimativa de dezembro. Enquanto dezembro
   não sai, o ano fica incompleto.
+
+## Atualização (2026-11-13, pontos 14 e 15 do relatório)
+
+- **Composição (`compound`):** IPCA, INPC e IPCA-15 passaram a usar a variação mensal
+  (variáveis 63, 44 e 355), e o IPP a variação sobre o mês anterior (1396).
+  - O período maior é a composição (Π(1 + vᵢ/100) − 1) × 100, que é como o IBGE obtém
+    a variação acumulada, equivalente à razão dos números-índice.
+  - Conferência: o ano dá a inflação oficial (IPCA: 5,78% em 2022, 4,62% em 2023,
+    4,83% em 2024 e 4,26% em 2025).
+  - O acumulado em 12 meses deixou de ser o KPI; continua na tabela 1737.
+- **Taxas pela média:** desocupação, investimento, poupança e variação trimestral do
+  PIB passaram a ter ano e semestre pela média dos trimestres, com a ressalva de que
+  não é a taxa oficial do período.
+- **Nota de método:** a nota de cada regra vem da Gold para todos os indicadores que
+  agregam no tempo, inclusive os curados (Sinesp).

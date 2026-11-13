@@ -28,6 +28,18 @@ class Provenance(_Out):
     tables: list[TableVersionOut]
     derived: bool = False
     truncated: bool = False
+    # Correção por índice de preços aplicada (ADR-0020): id, rótulo e mês-base.
+    correction: str | None = None
+    correction_label: str | None = None
+    price_base: str | None = None
+
+
+class CorrectionOut(_Out):
+    """Correção disponível para o KPI ("Corrigir por", ADR-0020)."""
+
+    correction_id: str
+    label: str
+    note: str
 
 
 class ErrorBody(_Out):
@@ -198,11 +210,13 @@ class KpiOut(_Out):
     dimensions: list[DimensionOut]
     # Dimensões marginais: detalhar uma por vez (ADR-0016).
     exclusive_dimensions: bool = False
+    # Correções por índice de preços (ADR-0020); vazio: só o valor nominal.
+    corrections: list[CorrectionOut] = []
     caveats: list[str]
     # O primeiro é o grão publicado; os demais são somas (só fluxos). Vazio sem períodos.
     time_grains: list[TimeGrainOut] = []
     # Como os grãos maiores saem do publicado: "sum", "mean" ou "last" (ADR-0017).
-    time_aggregation: Literal["sum", "mean", "last"] | None = None
+    time_aggregation: Literal["sum", "mean", "last", "compound"] | None = None
     source: KpiSourceOut
 
 
@@ -454,4 +468,6 @@ class ExportIn(BaseModel):
     periods: list[str] = Field(default_factory=list, max_length=50)
     dimensions: list[str] = Field(default_factory=list, max_length=6)
     grain: Grain | None = None
+    # Correção por índice de preços (ADR-0020), ex.: "ipca", "ipca_grupo".
+    correction: str | None = Field(default=None, pattern=r"^[a-z][a-z0-9_]{0,31}$")
     format: ExportFormat = "csv"

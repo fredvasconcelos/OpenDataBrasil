@@ -227,3 +227,11 @@ SVG e PNG exportados devem levar as cores já calculadas (`resolveSvgColors`) e 
 - **Legenda de índice:** "Índice (base = 100)", com a base tirada do nome da variável.
 - **Rótulos limpos:** sem a numeração de tópicos da fonte; a hierarquia aparece pelo
   recuo.
+
+## Ajustes da 2.3.7 ("Corrigir por")
+
+- **Seletor:** grupo de rádios "Corrigir por" (Nominal, IPCA geral, IPCA por grupo de
+  despesa) entre "Período por" e "Período", só em KPIs em moeda com correções.
+- **Método:** recolhido em `details` "Como é calculado", em texto `caption`.
+- **Unidade:** "R$ de jan/2018" nas colunas; a legenda acrescenta o índice e o
+  mês-base. A exportação leva a unidade e a correção nos metadados.

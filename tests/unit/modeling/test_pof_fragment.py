@@ -57,7 +57,7 @@ def test_expense_hierarchy_from_descriptor_reaches_gold(tmp_path: Path) -> None:
     cats = pl.read_delta(build.tables["dim_category"].storage_uri).filter(
         pl.col("classification_id") == "c12190"
     )
-    assert cats.height == 93 + 18  # as 18 categorias próprias da POF 2002-2003
+    assert cats.height == 93  # as 18 de 2002 viraram as equivalentes de 2008 e 2018
     food = cats.filter(pl.col("category_id") == "103539").row(0, named=True)
     assert food["name"] == "2.1.1 Alimentação"
     assert food["parent_category_key"] == "c12190:103538"  # 2.1 Despesas de consumo

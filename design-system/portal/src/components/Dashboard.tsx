@@ -126,9 +126,10 @@ export function Dashboard({ nav }: { nav: Navigation }) {
             period: state.period,
             within: focus,
             grain: state.grain,
+            correction: state.correction,
           })
       : null,
-    [kpiId, state.level, state.period, focus, state.grain],
+    [kpiId, state.level, state.period, focus, state.grain, state.correction],
     retry,
   );
   // Trilha do recorte (ex.: Norte › Amazonas), pelos territórios pais publicados na Gold.
@@ -155,9 +156,10 @@ export function Dashboard({ nav }: { nav: Navigation }) {
             geography: state.geography,
             dimensions: state.dimensions,
             grain: state.grain,
+            correction: state.correction,
           })
       : null,
-    [kpiId, state.geography, state.dimensions.join(), state.grain],
+    [kpiId, state.geography, state.dimensions.join(), state.grain, state.correction],
     retry,
   );
   const table = useAsync(
@@ -174,12 +176,14 @@ export function Dashboard({ nav }: { nav: Navigation }) {
             locate: sort.locate,
             limit: 50,
             grain: state.grain,
+            correction: state.correction,
           })
       : null,
     [
       kpiId,
       state.level,
       state.grain,
+      state.correction,
       state.period,
       focus,
       state.dimensions.join(),
@@ -266,7 +270,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
   const canUp = Boolean(focus) || previousLevel(ladder, state.level) !== null;
 
   const detailKey = (geo: string) =>
-    `${kpiId}|${state.grain ?? ""}|${state.period ?? ""}|${state.dimensions.join()}|${geo}`;
+    `${kpiId}|${state.grain ?? ""}|${state.correction ?? ""}|${state.period ?? ""}|${state.dimensions.join()}|${geo}`;
   const onHover = (
     key: string | null,
     name: string,
@@ -288,6 +292,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
           period: state.period,
           dimensions: state.dimensions,
           grain: state.grain,
+          correction: state.correction,
         })
         .then((d) => setDetails((all) => ({ ...all, [cacheKey]: d })))
         .catch(() => undefined);
@@ -336,6 +341,10 @@ export function Dashboard({ nav }: { nav: Navigation }) {
   const caption = `${kpi.label} · ${scope} · ${periodLabel} · Fonte: IBGE, tabela ${kpi.source.source_table_id} · release ${nav.release_id}`;
   const legendKey = legendTitleKey(kpi.unit);
   // KPIs cujo Total é só o universo: o mapa mostra o % de uma categoria (map_share).
+  // Correção por índice de preços (ADR-0020): "R$ de jan/2018 · IPCA geral".
+  const priced = values.data?.provenance.correction
+    ? ` · ${values.data.provenance.correction_label}, preços de ${values.data.provenance.price_base}`
+    : "";
   const legendTitle =
     values.data?.measure === "share" && values.data.measure_label
       ? values.data.measure_label
@@ -357,12 +366,14 @@ export function Dashboard({ nav }: { nav: Navigation }) {
         nav={nav}
         kpi={kpi}
         dimensions={state.dimensions}
-        onKpi={(id) => update({ kpi: id, dimensions: [], period: null, grain: null })}
+        onKpi={(id) => update({ kpi: id, dimensions: [], period: null, grain: null, correction: null })}
         onDimensions={(dims) => update({ dimensions: dims })}
         level={state.level}
         period={period}
         grain={state.grain}
         onGrain={(grain) => update({ grain, period: null })}
+        correction={state.correction}
+        onCorrection={(correction) => update({ correction })}
         onLevel={(level) =>
           update({
             level,
@@ -416,7 +427,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
                 onUp={up}
                 onReset={reset}
                 label={caption}
-                legendTitle={legendTitle}
+                legendTitle={`${legendTitle}${priced}`}
               >
                 <nav
                   className="map-trail"
@@ -476,6 +487,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
               period={period}
               dimensions={state.dimensions}
               grain={state.grain as "mes" | "trimestre" | "semestre" | "ano" | null}
+              correction={state.correction}
             />
           </div>
 

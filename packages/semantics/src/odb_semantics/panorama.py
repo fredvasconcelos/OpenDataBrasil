@@ -79,7 +79,7 @@ class PanoramaKpi(_Strict):
     # Agregação no tempo (ADR-0017) para KPIs mensais e trimestrais: "soma" (fluxos),
     # "media" (números-índice, médias por período) ou "ultimo" (acumulados em 12
     # meses, estimativas revisadas). Sem o campo, só o grão publicado.
-    agregacao_tempo: Literal["soma", "media", "ultimo"] | None = None
+    agregacao_tempo: Literal["soma", "media", "ultimo", "composicao"] | None = None
     # Tabelas-irmãs (ADR-0018): a mesma variável com uma classificação a mais (cor ou
     # raça, idade, instrução...), que entra como detalhe do KPI.
     complementos: tuple[str, ...] = Field(default=(), max_length=12)

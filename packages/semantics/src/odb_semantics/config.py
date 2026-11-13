@@ -158,6 +158,13 @@ class TableRule(_Strict):
     # Classificações do fato que a tabela não tem: o valor é do universo inteiro e
     # entra no Total delas (a POF 2002 não tem a c339; o valor é de todas as famílias).
     missing_as_total: tuple[str, ...] = ()
+    # Dimensão da Silver com outro nome nesta tabela → nome da dimensão do fato. Ex.: as
+    # classes de rendimento da POF 2002 (outro conceito, c12191) entram como "Classes de
+    # rendimento" do fato, com categorias próprias.
+    rename_dimensions: dict[str, str] = Field(default_factory=dict)
+    # Dimensão (já renomeada) → {código nesta tabela: código equivalente do fato}. Ex.:
+    # "Viagens" (2002) → "Viagens esporádicas" (2008 e 2018). Registrar nas notas.
+    recode_categories: dict[str, dict[str, str]] = Field(default_factory=dict)
 
 
 class FactConfig(_Strict):
@@ -240,7 +247,9 @@ class IndicatorConfig(_Strict):
     #   e médias por período (rendimento médio, massa mensal, pessoas ocupadas);
     # - "last": acumulados em 12 meses e estimativas revisadas (o ano é o último mês).
     # Taxas sem regra oficial de agregação (desocupação, investimento) não declaram.
-    time_aggregation: Literal["sum", "mean", "last"] | None = None
+    # - "compound": variações percentuais encadeadas, (Π(1 + v/100) - 1) x 100 (o
+    #   acumulado de um índice de preços a partir das variações mensais).
+    time_aggregation: Literal["sum", "mean", "last", "compound"] | None = None
 
 
 def _dimension_scope_problems(classifications: Sequence[Classification]) -> list[str]:

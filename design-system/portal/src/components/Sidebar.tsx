@@ -22,6 +22,8 @@ interface Props {
   onLevel: (level: string) => void;
   onPeriod: (period: string) => void;
   onGrain: (grain: string | null) => void;
+  correction?: string | null;
+  onCorrection?: (correction: string | null) => void;
   /** Volta os filtros ao estado inicial do indicador (desativado se já estiverem nele). */
   onClear: () => void;
   canClear: boolean;
@@ -44,6 +46,8 @@ export function Sidebar({
   level,
   period,
   grain,
+  correction = null,
+  onCorrection = () => undefined,
   onLevel,
   onPeriod,
   onGrain,
@@ -82,6 +86,28 @@ export function Sidebar({
                 </label>
               ))}
               {grain ? <p className="grain-note">{t(`grainNotes.${kpi.time_aggregation ?? "sum"}`)}</p> : null}
+            </fieldset>
+          ) : null}
+          {kpi.corrections?.length ? (
+            <fieldset className="corrections">
+              <legend>{t("dashboard.correction")}</legend>
+              {[{ correction_id: null, label: t("dashboard.nominal"), note: "" }, ...kpi.corrections].map((c) => (
+                <label key={c.correction_id ?? "nominal"} className="check">
+                  <input
+                    type="radio"
+                    name="correcao"
+                    checked={correction === c.correction_id}
+                    onChange={() => onCorrection(c.correction_id)}
+                  />
+                  {c.label}
+                </label>
+              ))}
+              {correction ? (
+                <details className="method">
+                  <summary>{t("dashboard.howCalculated")}</summary>
+                  <p>{kpi.corrections.find((c) => c.correction_id === correction)?.note}</p>
+                </details>
+              ) : null}
             </fieldset>
           ) : null}
           <label className="field">

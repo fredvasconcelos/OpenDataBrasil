@@ -648,16 +648,16 @@ filtros = ["grupo_produto", "atividade"]
 id = "precos_consumidor"
 label = "Inflação ao consumidor"
 kpis = [
-  { id = "ipca", label = "IPCA", tabela = "1737", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo", variavel = "2265", periodo_inicial = "1998", agregacao_tempo = "ultimo" },
-  { id = "inpc", label = "INPC", tabela = "1736", pesquisa = "Índice Nacional de Preços ao Consumidor", variavel = "2292", agregacao_tempo = "ultimo" },
-  { id = "ipca15", label = "IPCA-15", tabela = "3065", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo 15", variavel = "1120", agregacao_tempo = "ultimo" },
+  { id = "ipca", label = "IPCA", tabela = "1737", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo", variavel = "63", periodo_inicial = "1998", agregacao_tempo = "composicao" },
+  { id = "inpc", label = "INPC", tabela = "1736", pesquisa = "Índice Nacional de Preços ao Consumidor", variavel = "44", agregacao_tempo = "composicao" },
+  { id = "ipca15", label = "IPCA-15", tabela = "3065", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo 15", variavel = "355", agregacao_tempo = "composicao" },
 ]
 
 [[temas.subtemas]]
 id = "precos_produtor"
 label = "Preços ao produtor"
 kpis = [
-  { id = "ipp", label = "Índice de Preços ao Produtor", tabela = "6904", pesquisa = "Índice de Preços ao Produtor", filtros = ["atividade"], variavel = "1394", agregacao_tempo = "ultimo" },
+  { id = "ipp", label = "Índice de Preços ao Produtor", tabela = "6904", pesquisa = "Índice de Preços ao Produtor", filtros = ["atividade"], variavel = "1396", agregacao_tempo = "composicao" },
 ]
 
 # ======================================================================= 18

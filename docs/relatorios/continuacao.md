@@ -28,15 +28,15 @@ Ponto de partida: commit `db711cc` (release local `7e2eb607`).
 
 ### Bloco B: preços e POF
 
-- [ ] **B1 (ponto 15):** IPCA, INPC, IPCA-15 e IPP pela composição das variações
+- [x] **B1 (ponto 15):** feito (`compound`; IPCA anual = oficial). IPCA, INPC, IPCA-15 e IPP pela composição das variações
   mensais, Π(1 + v) − 1, que é o método do IBGE para o acumulado. Com referências
   nas notas.
-- [ ] **B2 (ponto 2):** faixas de 2002 (c12191) como "Classes de rendimento" da
+- [x] **B2 (ponto 2):** feito (`rename_dimensions` na 2309). faixas de 2002 (c12191) como "Classes de rendimento" da
   2309, com a nota do conceito e da decisão.
-- [ ] **B3 (ponto 3):** equivalência das categorias de 2002 com as de 2008 e 2018
+- [x] **B3 (ponto 3):** feito (`recode_categories`, 18 equivalências nas notas). equivalência das categorias de 2002 com as de 2008 e 2018
   (por exemplo, "Viagens" e "Viagens esporádicas"), conferida nas notas
   metodológicas, e registro nas notas.
-- [ ] **B4 (ponto 1), achados de 2026-11-13:**
+- [x] **B4 (ponto 1), achados de 2026-11-13:**
   - IPCA por grupo em cadeia: 655 (de 1999-08 a 2006-06), 2938 (de 2006-07 a
     2011-12), 1419 (de 2012 a 2019) e 7060 (2020 em diante);
   - variável 63 (variação mensal), c315 com o índice geral (7169) e os 9 grupos (7170,
@@ -45,7 +45,7 @@ Ponto de partida: commit `db711cc` (release local `7e2eb607`).
   - entra como série SIDRA (ADR-0016), no nível Brasil;
   - fator de cada edição: Π(1 + v/100) dos meses entre a data de referência da edição
     (15/01/2003, 15/01/2009, 15/01/2018) e a da edição mais recente.
-- [ ] **B4 (ponto 1):** POF "a preços de" (o último período da série, que avança
+- [x] **B4 (ponto 1):** feito (ADR-0020, DS 2.3.7; fator = razão do número-índice oficial). Release `2442267a`. POF "a preços de" (o último período da série, que avança
   sozinho), pelo IPCA geral e pelo IPCA por grupo de despesa, com o seletor "Corrigir
   por" (Nominal, IPCA geral, IPCA por grupo) e fórmulas nas notas. Gráficos,
   tooltips e tabelas acompanham.
@@ -65,7 +65,7 @@ Ponto de partida: commit `db711cc` (release local `7e2eb607`).
   a conferência manual.
 - [ ] **D2 (ponto 12):** avaliação da Bronze. Comparar o peso de guardar tudo (FTP
   externo para curadoria) com o de guardar só a vigente.
-- [ ] **D3 (pontos 9, 10, 12 e 5):** registros:
+- [ ] **D3 (pontos 9, 10, 12 e 5):** a chave do dados.gov.br está no `.env` (`ODB_DADOSGOV_API_KEY`, validada com HTTP 200 em 2026-11-13); a varredura começa depois desta rodada. registros:
   - dados.gov.br no fim;
   - teste de carga e OpenTelemetry no fim do projeto;
   - licenças no fim;

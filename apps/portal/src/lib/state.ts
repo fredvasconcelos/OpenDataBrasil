@@ -7,6 +7,8 @@ export interface DashboardState {
   level: string;
   /** Grão de tempo somado a partir do publicado (ADR-0013); null: o publicado. */
   grain: string | null;
+  /** Correção por índice de preços (ADR-0020): id de `kpi.corrections`; null = nominal. */
+  correction: string | null;
   period: string | null;
   dimensions: string[];
   geography: string;
@@ -57,6 +59,8 @@ export function readState(params: URLSearchParams, nav: Navigation): DashboardSt
   // O grão publicado (o primeiro) não vai na URL: null.
   const grain = requested && grains.slice(1).some((g) => g.grain === requested) ? requested : null;
   const periods = kpi ? grainPeriods(kpi, grain).periods : [];
+  const asked = params.get("correcao");
+  const correction = asked && kpi?.corrections?.some((c) => c.correction_id === asked) ? asked : null;
   const geography = params.get("territorio");
   const focus = params.get("foco");
   const chosen = level && kpi?.levels.includes(level) ? level : defaultLevel(levels);
@@ -64,6 +68,7 @@ export function readState(params: URLSearchParams, nav: Navigation): DashboardSt
     kpi: kpi?.kpi_id ?? null,
     level: chosen,
     grain,
+    correction,
     period: period && periods.includes(period) ? period : null,
     // Dimensões marginais (exclusive_dimensions): uma por vez.
     dimensions: nav.dimension_order.filter((d) => dims.includes(d)).slice(0, kpi?.exclusive_dimensions ? 1 : undefined),
@@ -89,6 +94,7 @@ export function writeState(state: DashboardState): string {
   if (state.kpi) params.set("kpi", state.kpi);
   params.set("nivel", state.level);
   if (state.grain) params.set("grao", state.grain);
+  if (state.correction) params.set("correcao", state.correction);
   if (state.period) params.set("periodo", state.period);
   if (state.dimensions.length) params.set("dim", state.dimensions.join(","));
   if (state.geography !== DEFAULT_GEOGRAPHY) params.set("territorio", state.geography);

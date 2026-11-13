@@ -552,11 +552,12 @@ test("detalhes marginais (ADR-0016): uma dimensão por vez e POF antiga sem Bras
   await expect(page.getByRole("heading", { name: /Total das áreas da POF/ })).toBeVisible();
 });
 
-test("agregação no tempo (ADR-0017): índice pela média, IPCA pelo último mês", async ({ page }) => {
+test("agregação no tempo (ADR-0017): índice pela média, IPCA pela composição", async ({ page }) => {
   await page.goto("/dashboard?kpi=vendas_materiais&grao=ano&periodo=2024");
   await expect(page.getByText(/Média dos períodos publicados/)).toBeVisible();
   await page.goto("/dashboard?kpi=ipca&grao=ano&periodo=2024");
-  await expect(page.getByText(/Valor do último período publicado/)).toBeVisible();
+  // Variação mensal composta: o ano é a inflação do ano (4,83% em 2024).
+  await expect(page.getByText(/Composição das variações mensais/)).toBeVisible();
   await expect(page.locator(".data-table tbody")).toContainText("4,83");
 });
 
@@ -574,4 +575,16 @@ test("escala do mapa sem colapso e unidade nas colunas (DS 2.3.6)", async ({ pag
   // Unidade no cabeçalho: POF de 1995 em % ("Total (%)").
   await page.goto("/dashboard?kpi=pof_despesa_distribuicao_antiga");
   await expect(page.locator(".data-table thead")).toContainText("Total (%)");
+});
+
+test("POF corrigida pelo IPCA (ADR-0020): seletor, unidade e valores", async ({ page }) => {
+  await page.goto("/dashboard?kpi=despesa_familiar&nivel=regiao&periodo=2002");
+  const group = page.getByRole("group", { name: "Corrigir por" });
+  await expect(group).toBeVisible();
+  await group.getByRole("radio", { name: "IPCA geral" }).click();
+  await expect(page).toHaveURL(/correcao=ipca(&|$)/);
+  await expect(page.locator(".data-table thead")).toContainText("R$ de jan/2018");
+  await page.getByText("Como é calculado").click();
+  await expect(page.getByText(/Método \(ADR-0020\)/).first()).toBeVisible();
+  await page.screenshot({ path: "test-results/pof-corrigir-por.png", fullPage: false });
 });

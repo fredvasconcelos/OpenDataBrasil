@@ -20,7 +20,9 @@ interface Props {
 
 export function DataTable({ data, additive = false, selected, sort, order, onSort, onPage, onSelect }: Props) {
   // Unidade no cabeçalho de cada coluna: "Total (%)", "Alimentação (R$)" (DS 2.3.6).
-  const unit = unitShort(data.unit);
+  const unit = data.provenance.price_base
+    ? `${unitShort(data.unit)} de ${data.provenance.price_base}`
+    : unitShort(data.unit);
   const totalKey = data.columns[0]?.key;
   const t = useTranslations("table");
   const from = data.total_rows ? data.offset + 1 : 0;

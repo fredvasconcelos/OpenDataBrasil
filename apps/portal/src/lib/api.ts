@@ -78,15 +78,15 @@ export const api = {
   kpi: (id: string) => get<Kpi>(`/kpis/${encodeURIComponent(id)}`),
   map: (
     kpi: string,
-    p: { level: string; period?: string | null; within?: string | null; grain?: string | null },
+    p: { level: string; period?: string | null; within?: string | null; grain?: string | null; correction?: string | null },
   ) =>
     get<MapData>(`/kpis/${encodeURIComponent(kpi)}/map${query(p)}`),
   detail: (
     kpi: string,
-    p: { geography: string; period?: string | null; dimensions: readonly string[]; grain?: string | null },
+    p: { geography: string; period?: string | null; dimensions: readonly string[]; grain?: string | null; correction?: string | null },
   ) =>
     get<Detail>(`/kpis/${encodeURIComponent(kpi)}/detail${query(p)}`),
-  series: (kpi: string, p: { geography: string; dimensions: readonly string[]; grain?: string | null }) =>
+  series: (kpi: string, p: { geography: string; dimensions: readonly string[]; grain?: string | null; correction?: string | null }) =>
     get<Series>(`/kpis/${encodeURIComponent(kpi)}/series${query(p)}`),
   table: (
     kpi: string,
@@ -102,6 +102,7 @@ export const api = {
       locate?: string | null;
       limit: number;
       grain?: string | null;
+      correction?: string | null;
     },
   ) => get<Table>(`/kpis/${encodeURIComponent(kpi)}/table${query(p)}`),
   geography: (key: string) => get<Geography>(`/geographies/${encodeURIComponent(key)}`),
@@ -114,6 +115,7 @@ export const api = {
     periods: string[];
     dimensions: string[];
     grain?: "mes" | "trimestre" | "semestre" | "ano" | null;
+    correction?: string | null;
     format: ExportFormat;
   }): Promise<{ blob: Blob; filename: string }> {
     const response = await fetch(`${base()}/exports`, {

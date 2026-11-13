@@ -1,0 +1,46 @@
+# IPCA: variação mensal do índice geral e dos 9 grupos, de agosto de 1999 até hoje, em
+# série de quatro tabelas (655, 2938, 1419, 7060; ADR-0016), no Brasil. Insumo da
+# correção da POF pelo IPCA (ADR-0020); não é KPI do portal. Os códigos dos grupos
+# (c315) são os mesmos nas quatro estruturas de ponderação.
+
+config_version = "1.0.0"
+scope = "demografia"
+
+[[classifications]]
+id = "c315"
+name = "Geral, grupo, subgrupo, item e subitem"
+silver_dimension = "Geral, grupo, subgrupo, item e subitem"
+total = "7169"
+
+[[classifications.partitions]]
+id = "grupos_ipca"
+label = "Grupos do IPCA"
+categories = ["7170", "7445", "7486", "7558", "7625", "7660", "7712", "7766", "7786"]
+exhaustive = false
+summable = false
+note = "Variações dos grupos não se somam: o índice geral é a média ponderada pelos pesos de cada mês."
+
+[[facts]]
+id = "fact_ipca_group_monthly"
+dataset = "ibge-ipca-grupos"
+grain = "Brasil x mês x grupo do IPCA"
+description = "Variação mensal do IPCA, índice geral e grupos (tabelas 655, 2938, 1419 e 7060)."
+classifications = { "c315" = "ipca_group_category_key" }
+
+[[indicators]]
+id = "ipca_grupos_variacao_mensal"
+name = "IPCA - Variação mensal, índice geral e grupos"
+description = "Variação mensal do IPCA (%), índice geral e 9 grupos de produtos e serviços, de agosto de 1999 em diante, no Brasil."
+dataset = "ibge-ipca-grupos"
+variable = "63"
+fact = "fact_ipca_group_monthly"
+column = "monthly_change_pct"
+unit = "%"
+additivity = "non_additive"
+concept = "ipca_variacao_mensal_grupo"
+path = ["Preços e inflação", "Índices de preços ao consumidor"]
+time_aggregation = "compound"
+caveats = [
+    "Série de quatro tabelas, uma por estrutura de ponderação do IPCA: 655 (ago/1999 a jun/2006), 2938 (jul/2006 a dez/2011), 1419 (2012 a 2019) e 7060 (2020 em diante). Os grupos têm os mesmos códigos nas quatro.",
+    "Usada para corrigir os valores da POF pelo IPCA (ADR-0020).",
+]

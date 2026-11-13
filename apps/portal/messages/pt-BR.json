@@ -90,12 +90,16 @@
     "searchEmptyTitle": "Nenhum indicador para “{q}”",
     "searchEmptyHint": "A busca ignora acentos e maiúsculas. Tente outra palavra ou o número da tabela.",
     "searchTable": "Tabela {id}",
-    "grain": "Período por"
+    "grain": "Período por",
+    "correction": "Corrigir por",
+    "nominal": "Nominal (valores da época)",
+    "howCalculated": "Como é calculado"
   },
   "grainNotes": {
     "sum": "Soma dos períodos publicados (valor derivado). Período com parte sem dado fica sem valor.",
     "mean": "Média dos períodos publicados (valor derivado), como o IBGE faz com os números-índice anuais. Período com parte sem dado fica sem valor.",
-    "last": "Valor do último período publicado (por exemplo, o acumulado em 12 meses de dezembro). Período incompleto fica sem valor."
+    "last": "Valor do último período publicado (por exemplo, o acumulado em 12 meses de dezembro). Período incompleto fica sem valor.",
+    "compound": "Composição das variações mensais, (Π(1 + v/100) − 1) × 100: a variação acumulada no período, como o IBGE calcula. Período incompleto fica sem valor."
   },
   "levels": {
     "brasil": "Brasil",

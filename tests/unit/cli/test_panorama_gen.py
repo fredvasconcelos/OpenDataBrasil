@@ -122,7 +122,9 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     assert ids["hipertensao"]["dataset"] == "ibge-serie-4418"
     # Agregação no tempo declarada no panorama (ADR-0017).
     assert ids["vendas_materiais"]["time_aggregation"] == "mean"
-    assert ids["ipca"]["time_aggregation"] == "last"
+    # IPCA pela variação mensal composta (ponto 15): o ano é a inflação do ano.
+    assert ids["ipca"]["time_aggregation"] == "compound"
+    assert ids["ipca"]["variable"] == "63"
     assert ids["abate_bovinos"]["time_aggregation"] == "sum"
     # Taxas: média com a ressalva de que não é a taxa oficial do período (ponto 14).
     assert ids["taxas_desocupacao"]["time_aggregation"] == "mean"
@@ -182,7 +184,7 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     assert ids["taxa_escolarizacao"]["additivity"] == "non_additive"
     # Mensal e trimestral: um ano por requisição, com o tipo do período.
     ipca = next(d for d in gen.datasets if d["official_id"] == "1737")
-    assert ids["ipca"]["variable"] == "2265"  # variação acumulada em 12 meses
+    assert ids["ipca"]["variable"] == "63"  # variação mensal (ponto 15)
     assert ipca["params"]["period_type"] == "mes"
     assert ipca["params"]["group_periods_by_year"] is True
     assert ipca["params"]["max_rows"] == 12

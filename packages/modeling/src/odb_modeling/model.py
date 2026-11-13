@@ -201,6 +201,24 @@ def select_silver(
     return selected
 
 
+def _renamed(rename: Mapping[str, str], recode: Mapping[str, Mapping[str, str]]) -> pl.Expr:
+    """Struct da classificação com a dimensão renomeada e o código recodificado."""
+    element = pl.element()
+    dimension = element.struct.field("dimension")
+    if rename:
+        dimension = dimension.replace(dict(rename))
+    category = element.struct.field("category_id")
+    for dim, mapping in recode.items():
+        category = (
+            pl.when(dimension == dim).then(category.replace(dict(mapping))).otherwise(category)
+        )
+    return pl.struct(
+        dimension.alias("dimension"),
+        category.alias("category_id"),
+        element.struct.field("category_name").alias("category_name"),
+    )
+
+
 def strip_fixed_categories(
     selected: pl.DataFrame, catalog: SemanticCatalog
 ) -> tuple[pl.DataFrame, dict[str, dict[str, list[str]]]]:
@@ -266,6 +284,9 @@ def strip_fixed_categories(
             ]
             here = (pl.col("fact_table") == fact.id) & (pl.col("table_id") == table)
             value = pl.col("classifications")
+            renamed = bool(rule and (rule.rename_dimensions or rule.recode_categories))
+            if rule and renamed:
+                value = value.list.eval(_renamed(rule.rename_dimensions, rule.recode_categories))
             if fixed:
                 value = value.list.eval(
                     pl.element().filter(~pl.element().struct.field("dimension").is_in(list(fixed)))
@@ -274,7 +295,7 @@ def strip_fixed_categories(
                 value = value.list.concat(
                     pl.lit(implicit, dtype=selected.schema["classifications"])
                 )
-            if fixed or implicit:
+            if fixed or implicit or renamed:
                 adjusted = pl.when(here).then(value).otherwise(adjusted)
     return selected.with_columns(adjusted.alias("classifications")), problems
 

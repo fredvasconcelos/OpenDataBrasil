@@ -4677,10 +4677,10 @@ caveats = []
 
 [[indicators]]
 id = "ipca"
-name = "IPCA - Variação acumulada em 12 meses"
-description = "IPCA - Variação acumulada em 12 meses (Índice Nacional de Preços ao Consumidor Amplo, tabela SIDRA 1737). Tabela sem classificações. Fonte: IBGE - Índice Nacional de Preços ao Consumidor Amplo."
+name = "IPCA - Variação mensal"
+description = "IPCA - Variação mensal (Índice Nacional de Preços ao Consumidor Amplo, tabela SIDRA 1737). Tabela sem classificações. Fonte: IBGE - Índice Nacional de Preços ao Consumidor Amplo."
 dataset = "ibge-sidra-1737"
-variable = "2265"
+variable = "63"
 fact = "fact_sidra_1737"
 column = "valor"
 unit = "%"
@@ -4689,14 +4689,14 @@ concept = "ipca"
 path = ["Preços", "Inflação ao consumidor"]
 caveats = ["Nota da tabela 1737: 1 - Período de coleta ajustado ao mês civil (do primeiro ao trigésimo dia de cada mês), para os meses anteriores a março de 1986."]
 first_period = "1998"
-time_aggregation = "last"
+time_aggregation = "compound"
 
 [[indicators]]
 id = "inpc"
-name = "INPC - Variação acumulada em 12 meses"
-description = "INPC - Variação acumulada em 12 meses (Índice Nacional de Preços ao Consumidor, tabela SIDRA 1736). Tabela sem classificações. Fonte: IBGE - Índice Nacional de Preços ao Consumidor."
+name = "INPC - Variação mensal"
+description = "INPC - Variação mensal (Índice Nacional de Preços ao Consumidor, tabela SIDRA 1736). Tabela sem classificações. Fonte: IBGE - Índice Nacional de Preços ao Consumidor."
 dataset = "ibge-sidra-1736"
-variable = "2292"
+variable = "44"
 fact = "fact_sidra_1736"
 column = "valor"
 unit = "%"
@@ -4704,14 +4704,14 @@ additivity = "non_additive"
 concept = "inpc"
 path = ["Preços", "Inflação ao consumidor"]
 caveats = ["Nota da tabela 1736: 1 - Período de coleta ajustado ao mês civil (do primeiro ao trigésimo dia de cada mês), para os meses anteriores a março de 1986."]
-time_aggregation = "last"
+time_aggregation = "compound"
 
 [[indicators]]
 id = "ipca15"
-name = "IPCA15 - Variação acumulada em 12 meses"
-description = "IPCA15 - Variação acumulada em 12 meses (Índice Nacional de Preços ao Consumidor Amplo 15, tabela SIDRA 3065). Tabela sem classificações. Fonte: IBGE - Índice Nacional de Preços ao Consumidor Amplo 15."
+name = "IPCA15 - Variação mensal"
+description = "IPCA15 - Variação mensal (Índice Nacional de Preços ao Consumidor Amplo 15, tabela SIDRA 3065). Tabela sem classificações. Fonte: IBGE - Índice Nacional de Preços ao Consumidor Amplo 15."
 dataset = "ibge-sidra-3065"
-variable = "1120"
+variable = "355"
 fact = "fact_sidra_3065"
 column = "valor"
 unit = "%"
@@ -4719,14 +4719,14 @@ additivity = "non_additive"
 concept = "ipca15"
 path = ["Preços", "Inflação ao consumidor"]
 caveats = []
-time_aggregation = "last"
+time_aggregation = "compound"
 
 [[indicators]]
 id = "ipp"
-name = "IPP - Variação mês/mesmo mês do ano anterior (M/M-12)"
-description = "IPP - Variação mês/mesmo mês do ano anterior (M/M-12) (Índice de Preços ao Produtor, tabela SIDRA 6904). Tabela sem classificações. Fonte: IBGE - Índice de Preços ao Produtor."
+name = "IPP - Variação mês/mês imediatamente anterior (M/M-1)"
+description = "IPP - Variação mês/mês imediatamente anterior (M/M-1) (Índice de Preços ao Produtor, tabela SIDRA 6904). Tabela sem classificações. Fonte: IBGE - Índice de Preços ao Produtor."
 dataset = "ibge-sidra-6904"
-variable = "1394"
+variable = "1396"
 fact = "fact_sidra_6904"
 column = "valor"
 unit = "%"
@@ -4734,7 +4734,7 @@ additivity = "non_additive"
 concept = "ipp"
 path = ["Preços", "Preços ao produtor"]
 caveats = ["As categorias de Grandes categorias econômicas podem se sobrepor (a fonte não permite somá-las): o percentual de cada uma é em relação ao Total, e a soma pode passar de 100%."]
-time_aggregation = "last"
+time_aggregation = "compound"
 
 [[indicators]]
 id = "pib_per_capita"

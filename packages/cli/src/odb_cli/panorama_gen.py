@@ -322,7 +322,7 @@ def _detail_of(
 
 MUNICIPAL_SIZE = "Classe de tamanho da população"
 # Agregação no tempo declarada no panorama (ADR-0017) → catálogo semântico e nota.
-TIME_AGGREGATION = {"soma": "sum", "media": "mean", "ultimo": "last"}
+TIME_AGGREGATION = {"soma": "sum", "media": "mean", "ultimo": "last", "composicao": "compound"}
 RATE_MEAN_NOTE = (
     "Taxa: a média das taxas dos períodos é uma aproximação, não a taxa oficial do período "
     "maior. A oficial divide os totais do período inteiro (por exemplo, desocupados ÷ força "

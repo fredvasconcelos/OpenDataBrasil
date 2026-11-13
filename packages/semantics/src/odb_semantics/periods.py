@@ -181,4 +181,13 @@ TIME_AGGREGATION_NOTES = {
         "Método: trimestre, semestre e ano são o valor do último período publicado (valor "
         "derivado, ADR-0017); para um acumulado em 12 meses, o de dezembro é o do ano."
     ),
+    "compound": (
+        "Método: trimestre, semestre e ano são a composição das variações mensais, "
+        "(Π(1 + vᵢ/100) - 1) x 100 (valor derivado, ADR-0017). É como o IBGE obtém a "
+        "variação acumulada de um índice de preços (equivale à razão dos números-índice "
+        "do fim e do início do período); confere com a variação acumulada no ano "
+        "publicada na própria tabela (ex.: IPCA, tabela 1737, variável 69). Referência: "
+        "IBGE, Sistema Nacional de Índices de Preços ao Consumidor: métodos de cálculo "
+        "(série Relatórios Metodológicos)."
+    ),
 }

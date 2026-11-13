@@ -4288,7 +4288,7 @@ id = "ibge-sidra-1737"
 source = "ibge-sidra"
 official_id = "1737"
 title = "IPCA - Série histórica com número-índice, variação mensal e variações acumuladas em 3 meses, em 6 meses, no ano e em 12 meses (a partir de dezembro/1979)"
-description = "Tabela SIDRA 1737, variável 2265 (IPCA - Variação acumulada em 12 meses), no Total das classificações. KPI de panorama 'IPCA' (ADR-0010)."
+description = "Tabela SIDRA 1737, variável 63 (IPCA - Variação mensal), no Total das classificações. KPI de panorama 'IPCA' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "mensal"
@@ -4296,7 +4296,7 @@ reference_url = "https://sidra.ibge.gov.br/tabela/1737"
 
 [datasets.params]
 table = "1737"
-variables = ["2265"]
+variables = ["63"]
 territorial_levels = ["n1"]
 period_discovery_level = "n1"
 estimated_values_per_period = 12
@@ -4315,7 +4315,7 @@ id = "ibge-sidra-1736"
 source = "ibge-sidra"
 official_id = "1736"
 title = "INPC - Série histórica com número-índice, variação mensal e variações acumuladas em 3 meses, em 6 meses, no ano e em 12 meses (a partir de abril/1979)"
-description = "Tabela SIDRA 1736, variável 2292 (INPC - Variação acumulada em 12 meses), no Total das classificações. KPI de panorama 'INPC' (ADR-0010)."
+description = "Tabela SIDRA 1736, variável 44 (INPC - Variação mensal), no Total das classificações. KPI de panorama 'INPC' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "mensal"
@@ -4323,7 +4323,7 @@ reference_url = "https://sidra.ibge.gov.br/tabela/1736"
 
 [datasets.params]
 table = "1736"
-variables = ["2292"]
+variables = ["44"]
 territorial_levels = ["n1"]
 period_discovery_level = "n1"
 estimated_values_per_period = 12
@@ -4342,7 +4342,7 @@ id = "ibge-sidra-3065"
 source = "ibge-sidra"
 official_id = "3065"
 title = "IPCA15 - Série histórica com número-índice, variação mensal e variações acumuladas em 3 meses, em 6 meses, no ano e em 12 meses (a partir de maio/2000)"
-description = "Tabela SIDRA 3065, variável 1120 (IPCA15 - Variação acumulada em 12 meses), no Total das classificações. KPI de panorama 'IPCA-15' (ADR-0010)."
+description = "Tabela SIDRA 3065, variável 355 (IPCA15 - Variação mensal), no Total das classificações. KPI de panorama 'IPCA-15' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "mensal"
@@ -4350,7 +4350,7 @@ reference_url = "https://sidra.ibge.gov.br/tabela/3065"
 
 [datasets.params]
 table = "3065"
-variables = ["1120"]
+variables = ["355"]
 territorial_levels = ["n1"]
 period_discovery_level = "n1"
 estimated_values_per_period = 12
@@ -4369,7 +4369,7 @@ id = "ibge-sidra-6904"
 source = "ibge-sidra"
 official_id = "6904"
 title = "Índice de Preços ao Produtor, por tipo de índice e grandes categorias econômicas (dezembro de 2018 = 100)"
-description = "Tabela SIDRA 6904, variável 1394 (IPP - Variação mês/mesmo mês do ano anterior (M/M-12)), no Total das classificações. KPI de panorama 'Índice de Preços ao Produtor' (ADR-0010)."
+description = "Tabela SIDRA 6904, variável 1396 (IPP - Variação mês/mês imediatamente anterior (M/M-1)), no Total das classificações. KPI de panorama 'Índice de Preços ao Produtor' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "mensal"
@@ -4377,7 +4377,7 @@ reference_url = "https://sidra.ibge.gov.br/tabela/6904"
 
 [datasets.params]
 table = "6904"
-variables = ["1394"]
+variables = ["1396"]
 territorial_levels = ["n1"]
 period_discovery_level = "n1"
 estimated_values_per_period = 72

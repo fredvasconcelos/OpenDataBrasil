@@ -31,6 +31,13 @@ GrainQ = Annotated[
     Grain | None,
     Query(description="Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos)."),
 ]
+CorrectionQ = Annotated[
+    str | None,
+    Query(
+        pattern=r"^[a-z][a-z0-9_]{0,31}$",
+        description="Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo.",
+    ),
+]
 
 
 @router.get("/portal/navigation", response_model=NavigationOut, summary="Navegação do portal")
@@ -60,9 +67,12 @@ def kpi_map(
     period: Period = None,
     within: Within = None,
     grain: GrainQ = None,
+    correction: CorrectionQ = None,
 ) -> MapOut:
     """Total do KPI em cada território do nível."""
-    return d.kpis.map(ctx, kpi_id, level=level, period=period, within=within, grain=grain)
+    return d.kpis.map(
+        ctx, kpi_id, level=level, period=period, within=within, grain=grain, correction=correction
+    )
 
 
 @router.get("/kpis/{kpi_id}/detail", response_model=DetailOut, summary="Detalhe (tooltip)")
@@ -74,19 +84,34 @@ def kpi_detail(
     dims: Dims,
     period: Period = None,
     grain: GrainQ = None,
+    correction: CorrectionQ = None,
 ) -> DetailOut:
     """Sub-KPIs aninhados de um território, na ordem das dimensões do portal."""
     return d.kpis.detail(
-        ctx, kpi_id, geography=geography, period=period, dimensions=dims, grain=grain
+        ctx,
+        kpi_id,
+        geography=geography,
+        period=period,
+        dimensions=dims,
+        grain=grain,
+        correction=correction,
     )
 
 
 @router.get("/kpis/{kpi_id}/series", response_model=SeriesOut, summary="Série temporal")
 def kpi_series(
-    d: Deps, ctx: Ctx, kpi_id: KpiId, geography: Geography, dims: Dims, grain: GrainQ = None
+    d: Deps,
+    ctx: Ctx,
+    kpi_id: KpiId,
+    geography: Geography,
+    dims: Dims,
+    grain: GrainQ = None,
+    correction: CorrectionQ = None,
 ) -> SeriesOut:
     """Todos os períodos publicados de um território (ou somados no grão pedido)."""
-    return d.kpis.series(ctx, kpi_id, geography=geography, dimensions=dims, grain=grain)
+    return d.kpis.series(
+        ctx, kpi_id, geography=geography, dimensions=dims, grain=grain, correction=correction
+    )
 
 
 @router.get("/kpis/{kpi_id}/table", response_model=TableOut, summary="Tabela")
@@ -101,6 +126,7 @@ def kpi_table(
     sort: Annotated[Literal["value", "name"], Query()] = "value",
     order: Annotated[Literal["asc", "desc"], Query()] = "desc",
     grain: GrainQ = None,
+    correction: CorrectionQ = None,
     offset: Annotated[int, Query(ge=0)] = 0,
     limit: Annotated[int, Query(ge=1, le=10_000)] = 100,
     locate: Annotated[
@@ -125,6 +151,7 @@ def kpi_table(
         limit=limit,
         locate=locate,
         grain=grain,
+        correction=correction,
     )
 
 
@@ -149,6 +176,7 @@ def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
         dimensions=body.dimensions,
         max_rows=limit,
         grain=body.grain,
+        correction=body.correction,
     )
     if len(obs) > limit:
         msg = f"a exportação passa do limite de {limit} linhas; aplique filtros"
@@ -168,7 +196,11 @@ def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
         labels=labels,
         category_names={k: c["name"] for k, c in categories.items()},
         ufs=ufs,
-        unit=indicator["unit"],
+        unit=(
+            f"{indicator['unit']} a preços de {prov.price_base} ({prov.correction_label})"
+            if prov.correction
+            else indicator["unit"]
+        ),
     )
     found = d.catalog.datasets(indicator["dataset_id"])
     meta = exports.metadata(
@@ -182,6 +214,7 @@ def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
             "within": body.within,
             "periods": body.periods or "todos",
             "dimensions": dims,
+            "correction": body.correction,
         },
         provenance=prov,
         rows=data.height,

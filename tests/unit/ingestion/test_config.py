@@ -36,6 +36,11 @@ def test_repository_sources_are_valid() -> None:
         "ibge-sidra-400",
         "ibge-sidra-414",
         "ibge-sidra-417",
+        # IPCA por grupo em série (655, 2938, 1419, 7060): correção da POF (ADR-0020).
+        "ibge-sidra-655",
+        "ibge-sidra-2938",
+        "ibge-sidra-1419",
+        "ibge-sidra-7060",
     }
     # O fragmento gerado do panorama só acrescenta datasets SIDRA.
     datasus = {d for d in catalog.datasets if d.startswith("datasus-")}

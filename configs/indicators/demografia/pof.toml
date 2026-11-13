@@ -32,9 +32,9 @@ total = "7999"
 id = "classes_rendimento"
 label = "Classes de rendimento"
 # 2018 (SM de R$ 954) e depois 2008 (SM de R$ 415): cada período só tem as suas.
-categories = ["47558", "47559", "47560", "47561", "47562", "47563", "47564", "8000", "8001", "8002", "8003", "8004", "8005", "8006"]
+categories = ["47558", "47559", "47560", "47561", "47562", "47563", "47564", "8000", "8001", "8002", "8003", "8004", "8005", "8006", "103412", "103413", "103414", "103415", "103416", "103417", "103418", "103419", "103420", "103421"]
 exhaustive = false
-note = "As faixas mudam a cada edição da POF: em salários mínimos, são até 2, de 2 a 3, de 3 a 6, de 6 a 10, de 10 a 15, de 15 a 25 e mais de 25 SM (SM de R$ 954 na POF 2017-2018 e de R$ 415 na 2008-2009). A POF 2002-2003 usa outro conceito de rendimento e só entra no Total. A despesa média do Total não é a soma das médias das classes."
+note = "As faixas mudam a cada edição da POF: em 2008 e 2018, até 2, de 2 a 3, de 3 a 6, de 6 a 10, de 10 a 15, de 15 a 25 e mais de 25 SM (SM de R$ 954 na POF 2017-2018 e de R$ 415 na 2008-2009). Em 2002, as 10 faixas (até R$ 400 a mais de R$ 6.000) são da classificação de rendimento monetário e não monetário (tabela 2309), outro conceito: não incluem a variação patrimonial. A despesa média do Total não é a soma das médias das classes."
 
 [[classifications]]
 id = "c12190"
@@ -66,7 +66,7 @@ exhaustive = false
 id = "d2_1_2_habitacao"
 label = "2.1.2 Habitação"
 parent = "103540"
-categories = ["103541", "8009", "8017", "8024", "8025", "8026", "111442", "8027", "103542", "103549", "103550", "103551", "103552", "103553"]
+categories = ["103541", "8009", "8017", "8024", "8025", "8026", "111442", "8027"]
 exhaustive = false
 
 [[classifications.partitions]]
@@ -94,7 +94,7 @@ exhaustive = false
 id = "d2_1_4_transporte"
 label = "2.1.4 Transporte"
 parent = "103561"
-categories = ["103562", "103563", "103564", "8011", "103566", "8012", "103568", "103565", "103567"]
+categories = ["103562", "103563", "103564", "8011", "103566", "8012", "103568"]
 exhaustive = false
 
 [[classifications.partitions]]
@@ -108,21 +108,21 @@ exhaustive = false
 id = "d2_1_6_assistencia_a_saude"
 label = "2.1.6 Assistência à saude"
 parent = "103574"
-categories = ["103575", "103576", "103577", "103578", "8013", "103580", "103581", "103582", "103583", "103584", "103579"]
+categories = ["103575", "103576", "103577", "103578", "8013", "103580", "103581", "103582", "103583", "103584"]
 exhaustive = false
 
 [[classifications.partitions]]
 id = "d2_1_7_educacao"
 label = "2.1.7 Educação"
 parent = "103585"
-categories = ["103586", "103587", "8014", "103589", "103590", "103591", "103588"]
+categories = ["103586", "103587", "8014", "103589", "103590", "103591"]
 exhaustive = false
 
 [[classifications.partitions]]
 id = "d2_1_8_recreacao_e_cultura"
 label = "2.1.8 Recreação e cultura"
 parent = "103592"
-categories = ["103593", "103594", "8015", "8016", "103597", "103595", "103596"]
+categories = ["103593", "103594", "8015", "8016", "103597"]
 exhaustive = false
 
 [[classifications.partitions]]
@@ -160,13 +160,6 @@ parent = "103622"
 categories = ["103623", "103624"]
 exhaustive = false
 
-[[classifications.partitions]]
-id = "d2_1_2_2_servicos_e_taxas_2002"
-label = "2.1.2.2 Serviços e taxas (POF 2002-2003)"
-parent = "103542"
-categories = ["103543", "103544", "103545", "103546", "103547", "103548"]
-exhaustive = false
-
 [[facts]]
 id = "fact_pof_household_expense"
 dataset = "ibge-pof-despesa-familiar"
@@ -177,8 +170,16 @@ classifications = { "c339" = "income_class_category_key", "c12190" = "expense_ty
 # POF 2002-2003: situação do domicílio e classe de rendimento próprias, só no Total;
 # a c339 não existe na tabela, e o valor (de todas as famílias) entra no Total dela.
 [facts.table_rules.2309]
-fixed_categories = { "Situação do domicílio" = "6795", "Classes de rendimento monetário e não monetário mensal familiar" = "103411" }
-missing_as_total = ["c339"]
+fixed_categories = { "Situação do domicílio" = "6795" }
+# Faixas de 2002 (c12191, rendimento monetário e não monetário) como "Classes de
+# rendimento" do fato, com categorias próprias; o Total vira o da c339.
+rename_dimensions = { "Classes de rendimento monetário e não monetário mensal familiar" = "Classes de rendimento total e variação patrimonial mensal familiar" }
+
+# Tipos de despesa de 2002 com código próprio → equivalentes de 2008 e 2018 (nome e
+# posição na árvore; as renomeadas são aproximadas e estão nas notas).
+[facts.table_rules.2309.recode_categories]
+"Classes de rendimento total e variação patrimonial mensal familiar" = { "103411" = "7999" }
+"Tipos de despesa" = { "103542" = "8017", "103543" = "8018", "103544" = "8019", "103545" = "8020", "103546" = "8022", "103547" = "8010", "103548" = "8023", "103549" = "8024", "103550" = "8025", "103551" = "8026", "103552" = "111442", "103553" = "8027", "103565" = "8011", "103567" = "8012", "103579" = "8013", "103588" = "8014", "103595" = "8015", "103596" = "8016" }
 
 [[indicators]]
 id = "despesa_familiar"
@@ -196,8 +197,8 @@ caveats = [
     "Valor médio por família: médias de regiões ou de classes de rendimento não se somam.",
     "Três edições: 2002 (POF 2002-2003), 2008 (POF 2008-2009) e 2018 (POF 2017-2018). Os valores estão em reais da data de referência de cada pesquisa, sem correção pela inflação: a comparação entre edições é nominal.",
     "A POF 2002-2003 só tem Brasil e Grandes Regiões; as UFs começam em 2008.",
-    "Classes de rendimento só em 2008 e 2018, com faixas diferentes em reais (as mesmas em salários mínimos). Em 2002, só o Total: a tabela 2309 usa outro conceito de rendimento.",
-    "Alguns tipos de despesa mudaram entre 2002 e 2008 (habitação, transporte, saúde, educação e recreação): os de 2002 com código próprio só têm valor em 2002.",
+    "Classes de rendimento: em 2008 e 2018, 7 faixas que equivalem às mesmas faixas de salário mínimo (2 a 25 SM); em 2002, 10 faixas da classificação de rendimento monetário e não monetário (tabela 2309), outro conceito, sem a variação patrimonial. Decisão do mantenedor (2026-11-13): as faixas de 2002 entram como 'Classes de rendimento' com essa ressalva, e cada edição mostra só as suas.",
+    "Tipos de despesa harmonizados (decisão do mantenedor, 2026-11-13): 18 categorias de 2002 com código próprio passam aos códigos equivalentes de 2008 e 2018, pelo nome e pela posição na árvore. Iguais no nome: serviços e taxas, energia elétrica, telefone fixo e celular, gás doméstico, água e esgoto, outros, manutenção do lar, artigos de limpeza, mobiliários e artigos do lar, eletrodomésticos, consertos de artigos do lar. Renomeadas, com equivalência aproximada (o conteúdo pode ter mudado): manutenção de veículo próprio → manutenção e acessórios; viagens → viagens esporádicas; tratamento ambulatorial → tratamento médico e ambulatorial; outros cursos → outros cursos e atividades; periódicos, livros e revistas → não didáticos; diversões e esportes → recreações e esportes. As notas das tabelas 2309, 1594 e 6715 não tratam da comparabilidade entre edições.",
 ]
 
 [[indicators]]

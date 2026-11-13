@@ -63,9 +63,10 @@ interface DataProps {
   dimensions: string[];
   /** Grão de tempo somado (ADR-0013); null: os valores publicados. */
   grain?: "mes" | "trimestre" | "semestre" | "ano" | null;
+  correction?: string | null;
 }
 
-export function DataExport({ kpiId, level, within = null, period, dimensions, grain = null }: DataProps) {
+export function DataExport({ kpiId, level, within = null, period, dimensions, grain = null, correction = null }: DataProps) {
   const { busy, error, run, t } = useExportRun();
   return (
     <Group label={t("download")} busy={busy} error={error} running={t("running")}>
@@ -83,6 +84,7 @@ export function DataExport({ kpiId, level, within = null, period, dimensions, gr
                 periods: period ? [period] : [],
                 dimensions,
                 grain,
+                correction,
                 format: f.id,
               });
               saveBlob(blob, filename);
