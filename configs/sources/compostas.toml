@@ -1,0 +1,23 @@
+# Séries compostas de fontes distintas (ADR-0022): a série lista os membros, e cada
+# membro continua servindo o próprio indicador. Ordem: o último é a referência da série
+# (tabela, link e licença). As transformações ficam em
+# configs/indicators/demografia/compostas.toml (table_rules).
+config_version = "1.0.0"
+
+[[series]]
+id = "composta-esgoto"
+members = ["ibge-sidra-6805", "ibge-sidra-7192"]
+title = "Esgotamento sanitário: PNAD Contínua (2019 a 2025, até UF) e Censo 2022 (municípios)"
+description = "PNAD Contínua anual (7192) em Brasil, regiões e UFs; Censo Demográfico 2022 (6805) nos municípios, com as categorias da PNAD."
+
+[[series]]
+id = "composta-lixo"
+members = ["ibge-sidra-6892", "ibge-sidra-6736"]
+title = "Destino do lixo: PNAD Contínua (2016 a 2025, até UF) e Censo 2022 (municípios)"
+description = "PNAD Contínua anual (6736) em Brasil, regiões e UFs; Censo Demográfico 2022 (6892) nos municípios, em três grupos comuns."
+
+[[series]]
+id = "composta-alfabetizacao"
+members = ["ibge-sidra-9841", "ibge-sidra-9543", "ibge-sidra-7113"]
+title = "Taxa de alfabetização (15 anos ou mais): Censos 2010 e 2022 e PNAD Contínua (2016 a 2025)"
+description = "Censo 2010 (9841) até UF; PNAD Contínua anual (7113, 100 menos a taxa de analfabetismo) até UF de 2016 a 2025; Censo 2022 (9543) nos municípios."

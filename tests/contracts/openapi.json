@@ -3328,6 +3328,17 @@
           "status": {
             "type": "string",
             "title": "Status"
+          },
+          "source_table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Table Id"
           }
         },
         "type": "object",

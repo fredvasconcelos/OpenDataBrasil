@@ -91,6 +91,8 @@ class Observation:
     combo: Combo
     value: Decimal | None
     status: str
+    # Tabela de origem (séries compostas, ADR-0022: a fonte pode mudar no tempo).
+    source: str | None = None
 
 
 def to_float(value: Decimal | None) -> float | None:
@@ -476,6 +478,7 @@ class KpiService:
                     combo=tuple(parts[d] for d in dims),
                     value=row["value"],
                     status=row["value_status"],
+                    source=row.get("source_table_id"),
                 )
             )
         prov = provenance(
@@ -585,7 +588,9 @@ class KpiService:
                 else:
                     # A média no tempo (ADR-0017) chega como float do DuckDB.
                     value = Decimal(str(value)) * end / start
-            out.append(Observation(o.geography_key, o.name, o.period, o.combo, value, status))
+            out.append(
+                Observation(o.geography_key, o.name, o.period, o.combo, value, status, o.source)
+            )
         base_ref = (
             reference_months(corr, base_period)[0] if corr.reference == "months" else base_period
         )
@@ -916,7 +921,12 @@ class KpiService:
                 categories=dict(zip(dims, combo, strict=True)),
                 depth=sum(c != t for c, t in zip(combo, totals, strict=True)),
                 points=[
-                    PointOut(period=o.period, value=to_float(o.value), status=o.status)
+                    PointOut(
+                        period=o.period,
+                        value=to_float(o.value),
+                        status=o.status,
+                        source_table_id=o.source,
+                    )
                     for o in sorted(by_combo[combo], key=lambda x: x.period)
                 ],
             )

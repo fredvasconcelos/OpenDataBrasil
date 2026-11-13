@@ -52,6 +52,10 @@ FRAGMENT_KPIS = (
     "pof_despesa_alimentacao_antiga",
     "pof_despesa_distribuicao_antiga",
     "pof_recebimento_distribuicao_antiga",
+    # Séries compostas de fontes distintas (ADR-0022), fragmento compostas.toml.
+    "alfabetizacao_serie",
+    "esgotamento_serie",
+    "lixo_serie",
 )
 _panorama_text = re.sub(
     r"\nexternos = \[.*?\n\]\n", "\n", PANORAMA_REPO.read_text(encoding="utf-8"), flags=re.S
@@ -294,8 +298,8 @@ def test_map_detail_series_and_table(stack: dict[str, Any]) -> None:
     # O portal tira do gráfico a série de profundidade 0 (Total) quando há detalhe.
     assert [s["depth"] for s in series["series"]] == [0, 1, 1]
     assert series["series"][0]["points"] == [
-        {"period": "2010", "value": 190755799, "status": "valid"},
-        {"period": "2022", "value": 203080756, "status": "valid"},
+        {"period": "2010", "value": 190755799, "status": "valid", "source_table_id": "9606"},
+        {"period": "2022", "value": 203080756, "status": "valid", "source_table_id": "9606"},
     ]
 
     table = _get(stack, "/api/v1/kpis/pessoas_quilombolas/table?level=uf&dimensions=c2&limit=27")

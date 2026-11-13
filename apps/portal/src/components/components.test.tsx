@@ -154,6 +154,34 @@ describe("SeriesChart", () => {
     expect(screen.queryByRole("tooltip")).toBeNull();
   });
 
+  it("marca a mudança de fonte numa série composta (ADR-0022)", () => {
+    const data = {
+      ...series([2010, 2016, 2017]),
+      series: [
+        {
+          key: "total",
+          label: "Brasil",
+          categories: {},
+          points: [
+            { period: "2010", value: 90.4, status: "valid", source_table_id: "9841" },
+            { period: "2016", value: 92.8, status: "valid", source_table_id: "7113" },
+            { period: "2017", value: 93.0, status: "valid", source_table_id: "7113" },
+          ],
+        },
+      ],
+    } as unknown as Series;
+    const { container } = wrap(<SeriesChart data={data} />);
+    expect(container.querySelectorAll(".series-source-change")).toHaveLength(1);
+    expect(container.querySelector(".series-legend")?.textContent).toContain("Mudança de fonte");
+    fireEvent.keyDown(container.querySelector("svg") as SVGSVGElement, { key: "Home" });
+    expect(screen.getByRole("tooltip").textContent).toContain("Fonte do ponto: tabela 9841");
+  });
+
+  it("série de uma fonte só não marca mudança", () => {
+    const { container } = wrap(<SeriesChart data={series([2019, 2020, 2021])} />);
+    expect(container.querySelector(".series-source-change")).toBeNull();
+  });
+
   it("com detalhe, tira o Total das linhas, da legenda e do eixo Y, mas mantém no tooltip", () => {
     const cat = (key: string, label: string, v: number) => ({
       key,

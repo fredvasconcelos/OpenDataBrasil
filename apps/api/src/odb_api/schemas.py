@@ -361,6 +361,8 @@ class PointOut(_Out):
     period: str
     value: float | None
     status: str
+    # Tabela de origem do ponto (séries compostas de fontes distintas, ADR-0022).
+    source_table_id: str | None = None
 
 
 class SeriesItemOut(_Out):

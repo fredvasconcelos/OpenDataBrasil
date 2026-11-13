@@ -29,6 +29,7 @@ from odb_modeling.contracts import (
 )
 from odb_processing.contracts import Contract
 from odb_semantics import LEVELS, FactConfig, IndicatorConfig, SemanticCatalog
+from odb_semantics.config import TableRule
 from odb_semantics.periods import (
     TIME_AGGREGATION_NOTES,
     ancestor,
@@ -134,7 +135,7 @@ def indicator_map(catalog: SemanticCatalog, datasets: Mapping[str, DatasetInfo])
         [
             {
                 "table_id": table,
-                "variable_id": i.variable,
+                "variable_id": catalog.source_variable(i, table),
                 "indicator_id": i.id,
                 "dataset_id": i.dataset,
                 "fact_table": i.fact,
@@ -217,6 +218,132 @@ def _renamed(rename: Mapping[str, str], recode: Mapping[str, Mapping[str, str]])
         category.alias("category_id"),
         element.struct.field("category_name").alias("category_name"),
     )
+
+
+def _with_key(frame: pl.DataFrame) -> pl.DataFrame:
+    """Recalcula ``classification_key`` ("dimensão=categoria;...") das classificações."""
+    pair = (
+        pl.element().struct.field("dimension")
+        + pl.lit("=")
+        + pl.element().struct.field("category_id")
+    )
+    return frame.with_columns(
+        pl.col("classifications").list.eval(pair).list.join(";").alias("classification_key")
+    )
+
+
+def _category_in(dimension: str) -> pl.Expr:
+    """Categoria da linha numa dimensão (nula se a dimensão não aparecer)."""
+    return (
+        pl.col("classifications")
+        .list.eval(
+            pl.element()
+            .filter(pl.element().struct.field("dimension") == dimension)
+            .struct.field("category_id")
+        )
+        .list.first()
+    )
+
+
+def _aggregated(part: pl.DataFrame, rule: TableRule) -> pl.DataFrame:
+    """Linhas novas: cada categoria-alvo como soma das categorias de origem (ADR-0022)."""
+    out = []
+    for agg in rule.aggregate:
+        src = part.filter(_category_in(agg.dimension).is_in(list(agg.sources)))
+        if src.is_empty():
+            continue
+        target = pl.struct(
+            pl.lit(agg.dimension).alias("dimension"),
+            pl.lit(agg.target).alias("category_id"),
+            pl.lit(agg.name).alias("category_name"),
+        )
+        swapped = src.with_columns(
+            pl.col("classifications").list.eval(
+                pl.when(pl.element().struct.field("dimension") == agg.dimension)
+                .then(target)
+                .otherwise(pl.element())
+            )
+        )
+        swapped = _with_key(swapped)
+        quantitative = pl.col("value_status").is_in(["valid", "rounded_zero", "true_zero"])
+        keys = [
+            c
+            for c in swapped.columns
+            if c
+            not in {
+                "classifications",
+                "value_raw",
+                "value",
+                "value_status",
+                "value_decimals",
+                "bronze_artifact_id",
+                "bronze_checksum_sha256",
+            }
+        ]
+        summed = swapped.group_by(keys, maintain_order=True).agg(
+            pl.col("classifications").first(),
+            pl.col("value").sum(),
+            # Soma só com todas as partes publicadas; senão, sem valor.
+            quantitative.all().alias("_complete"),
+            pl.col("value_decimals").max(),
+            pl.col("bronze_artifact_id").first(),
+            pl.col("bronze_checksum_sha256").first(),
+        )
+        summed = summed.with_columns(
+            pl.when(pl.col("_complete")).then(pl.col("value")).otherwise(None).alias("value"),
+            pl.when(pl.col("_complete"))
+            .then(pl.lit("valid"))
+            .otherwise(pl.lit("not_available"))
+            .alias("value_status"),
+            pl.lit(None, dtype=pl.String).alias("value_raw"),
+        ).drop("_complete")
+        out.append(summed.select(part.columns))
+    return pl.concat(out, how="vertical_relaxed") if out else part.clear()
+
+
+def apply_table_transforms(selected: pl.DataFrame, catalog: SemanticCatalog) -> pl.DataFrame:
+    """Transformações das séries compostas de fontes distintas (ADR-0022).
+
+    Por tabela da série (``table_rules``): níveis usados, escala, complemento, unidade,
+    categorias somadas e retiradas. Roda antes de ``strip_fixed_categories``, que
+    depois renomeia e recodifica.
+    """
+    if "table_id" not in selected.columns or "fact_table" not in selected.columns:
+        return selected
+    rules = [
+        (fact, table, rule)
+        for fact in catalog.facts
+        for table, rule in fact.table_rules.items()
+        if rule.transforms()
+    ]
+    if not rules:
+        return selected
+    handled = pl.lit(value=False)
+    parts = []
+    dtype = selected.schema["value"]
+    for fact, table, rule in rules:
+        here = (pl.col("fact_table") == fact.id) & (pl.col("table_id") == table)
+        handled = handled | here
+        part = selected.filter(here)
+        if part.is_empty():
+            continue
+        if rule.levels:
+            part = part.filter(pl.col("territorial_level").is_in(list(rule.levels)))
+        if rule.exclude_periods:
+            part = part.filter(~pl.col("period").is_in(list(rule.exclude_periods)))
+        value = pl.col("value").cast(pl.Float64)
+        if rule.scale != 1.0:
+            value = value * rule.scale
+        if rule.complement is not None:
+            value = pl.lit(rule.complement) - value
+        part = part.with_columns(value.round(6).cast(dtype).alias("value"))
+        if rule.unit:
+            part = part.with_columns(pl.lit(rule.unit).alias("unit_name"))
+        extra = _aggregated(part, rule)
+        for dimension, codes in rule.drop_categories.items():
+            part = part.filter(~_category_in(dimension).is_in(list(codes)).fill_null(value=False))
+        parts.extend([part, extra])
+    return pl.concat([selected.filter(~handled), *parts], how="vertical_relaxed")
 
 
 def strip_fixed_categories(

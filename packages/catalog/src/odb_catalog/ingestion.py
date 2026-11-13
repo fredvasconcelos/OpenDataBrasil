@@ -344,14 +344,11 @@ def series_rows(catalog: SourceCatalog) -> list[dict[str, Any]]:
     tem um dataset real com esse id (a página das notas); a POF não: a entrada vem
     do membro mais recente (maior ``silver.series_order``), sem ingestão própria.
     """
-    members: dict[str, list[Any]] = {}
-    for ds in catalog.datasets.values():
-        series = ds.silver.get("series")
-        if series and series not in catalog.datasets:
-            members.setdefault(str(series), []).append(ds)
+    ids = {str(ds.silver["series"]) for ds in catalog.datasets.values() if ds.silver.get("series")}
+    ids |= set(catalog.series)  # séries compostas declaradas (ADR-0022)
     rows = []
-    for series_id, group in sorted(members.items()):
-        group.sort(key=lambda d: (int(d.silver.get("series_order", 0)), d.id))
+    for series_id in sorted(ids - set(catalog.datasets)):
+        group = [catalog.datasets[m] for m in catalog.series_of(series_id)]
         last = group[-1]
         config = {"series_members": [d.id for d in group]}
         tables = ", ".join(d.official_id or d.id for d in group)

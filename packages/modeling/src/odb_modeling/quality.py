@@ -88,7 +88,7 @@ def input_checks(
         found = [
             r
             for t in datasets[ind.dataset].source_tables
-            if (r := present.get((t, ind.variable))) is not None
+            if (r := present.get((t, catalog.source_variable(ind, t)))) is not None
         ]
         if not found:
             missing.append(ind.id)

@@ -10,6 +10,7 @@ const kpi = (over: Partial<Kpi> & Pick<Kpi, "kpi_id" | "label">): Kpi =>
     description: "",
     unit: "Pessoas",
     additivity: "additive",
+    category_shares: true,
     periods: ["2022"],
     levels: ["brasil", "uf"],
     map_levels: ["uf"],

@@ -6,7 +6,7 @@ mais as revisões da beta) e mantêm todas as classes, rótulos e `aria-*` de qu
 
 ## Novidades da v2.3 (sobre a v2.1)
 
-> Versão do pacote: **2.3.11** (arquivo `VERSION`; ajustes da 2.3.1 a 2.3.11 na seção "Ajustes depois da 2.3.0"). Telas de referência em `reference/`.
+> Versão do pacote: **2.3.12** (arquivo `VERSION`; ajustes da 2.3.1 a 2.3.12 na seção "Ajustes depois da 2.3.0"). Telas de referência em `reference/`.
 >
 > **O que a API ainda não fornece (não inventado):** o canvas mostra indicadores
 > "em preparação" e o filtro de situação; o contrato `/navigation` só traz indicadores
@@ -88,6 +88,7 @@ anteriores a estes ajustes e ainda não os mostram.
 | Versão | Item | Onde | Regra |
 |---|---|---|---|
 | 2.3.1 | Busca da barra lateral fixa | `Sidebar.tsx` (`.tree-head`), `globals.css` | Título "Temas e indicadores", campo e resumo ficam fixos no topo da área que rola (a barra até 1599 px; o cartão da árvore em tela cheia). O fundo cobre a árvore que passa por baixo e o recuo de cima; `scroll-padding-top` mantém à vista o item focado pelo teclado. "Filtros" não é fixo. Captura: `reference/screens/busca-barra-lateral-fixa.png`. Especificação: `docs/DESIGN-SYSTEM.md`, "Páginas (v2.3)" |
+| 2.3.12 | % em contagens; mudança de fonte | `Dashboard.tsx` (`kpi.category_shares`), `SeriesChart.tsx` (`.series-source-change`, `source_table_id`), `messages/pt-BR.json` (`dashboard.sourceChange`, `seriesSource`) | O % das categorias aparece em todo indicador somável **ou** de quantidade (pessoas, unidades, mil unidades, toneladas…), como as estimativas da PNAD; taxas, médias, índices e per capita seguem sem %. Séries compostas de fontes distintas (ADR-0022): linha vertical tracejada onde a tabela de origem muda, legenda "Mudança de fonte (veja as notas)" e, no tooltip, "Fonte do ponto: tabela N" |
 | 2.3.11 | Rótulos curtos e informação da tabela | `configs/portal/rotulos.toml` (API: `label` curto e `full_label`/`full_name` oficial), `DataTable.tsx` (`InfoIcon`, `.table-info`), `icons.tsx` (`InfoIcon`), `Sidebar.tsx` (`title` com o nome completo; dica dos cruzamentos por grupo), `globals.css` (cabeçalhos com quebra, `.info-button`) | Princípio 80/20: nomes longos da fonte viram rótulos curtos curados (até ~35 caracteres; o termo comum na frente: "Rede geral: forma principal") em Detalhar por, colunas, série, tooltip e legenda do mapa. O nome oficial fica no ⓘ "Sobre esta tabela" (unidade, nomes completos das colunas, como ler os %, linha de totais), no `title` e nas exportações. "% em relação a" vira "Calcular % por". Cabeçalhos quebram linha (9 a 22 ch). Captura: `reference/screens/tabela-rotulos-curtos.png` |
 | 2.3.10 | Método no rodapé; tooltip da série | `KpiInfo.tsx` (`.meta-body`, `.method-list`, prop `correction`), `Sidebar.tsx` (sem `details.method`), `SeriesChart.tsx` (`additive`, `.share`), `globals.css`, `messages/pt-BR.json` (`meta.method`, `correctedBy`, `inUse`, `timeAggregation`) | "Como é calculado" sai da barra lateral. O rodapé ganha a seção **Método** ("Sobre este indicador · Método · Limitações (n)"): as correções por índice de preços, com a em uso primeiro e marcada "(em uso)", e a regra de agregação no tempo. Na tela cheia, o rodapé aberto vira um painel opaco acima da linha da fonte (máx. 60vh, com rolagem), sem empurrar o painel. Tooltip da série: valores em `fs-small`/800 (antes 16px/900), rótulos em `caption`, e o % do Total do período em cada categoria (KPIs aditivos), como na tabela. Capturas: `reference/screens/rodape-metodo.png`, `serie-tooltip-percentual.png` |
 | 2.3.9 | Tabela em matriz | `DataTable.tsx` (`groupColumns`, `shareBase`, `COLLAPSE_AFTER`), API `ColumnOut.group`/`.parent` e `TableOut.footer`, `messages/pt-BR.json` (`table.share*`, `footer`, `expand`, `collapse`), `globals.css` (`.cell-group`, `.th-unit`, `.share-base`, `tfoot`) | Colunas agrupadas pela categoria da primeira dimensão (Total, Branca, Preta…); dentro da célula do grupo, o valor do grupo em negrito e, embaixo, as categorias das demais dimensões ("Homens 1.318.946 (47,6%)"). O grupo Total traz os totais de linha (Total por sexo). A unidade fica na segunda linha do cabeçalho ("pessoas", "pessoas (%)"). No fim, a linha de totais com o valor publicado do recorte ou do Brasil (não a soma da página). "% em relação a" (`select`): Território (linha, padrão), Grupo, Coluna (o recorte) e Total geral; método em "Como ler os %". % só em KPIs aditivos. Grupos com mais de 12 linhas começam recolhidos ("+ N detalhes"). Primeira coluna fixa na rolagem horizontal. Captura: `reference/screens/tabela-matriz.png` |
@@ -140,7 +141,7 @@ design-system/
 ├── tokens/
 │   ├── tokens.css            ← variáveis CSS (claro, dark, prefers-color-scheme)
 │   └── tokens.json           ← os mesmos valores em JSON (para outras ferramentas)
-├── VERSION                   ← 2.3.11
+├── VERSION                   ← 2.3.12
 ├── reference/                ← telas do canvas (fontes) e capturas dos componentes
 ├── assets/brand/             ← logos em SVG (texto convertido em curvas) e ícones PNG
 ├── assets/icons/             ← github.svg (Bootstrap Icons, MIT) + licença

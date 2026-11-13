@@ -913,6 +913,8 @@ export interface components {
             value: number | null;
             /** Status */
             status: string;
+            /** Source Table Id */
+            source_table_id?: string | null;
         };
         /**
          * Provenance

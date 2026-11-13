@@ -223,6 +223,7 @@ label = "Esgotamento sanitário"
 kpis = [
   { id = "esgotamento_censo", label = "Domicílios por tipo de esgotamento sanitário (Censo)", tabela = "6805", pesquisa = "Censo Demográfico", requer_categoria = true },
   { id = "esgotamento_pnad", label = "Domicílios por tipo de esgotamento sanitário", tabela = "7192", pesquisa = "PNAD Contínua anual", filtros = ["situacao"] },
+  { id = "esgotamento_serie", label = "Esgotamento sanitário (PNAD e Censo)", tabela = "7192", pesquisa = "PNAD Contínua anual e Censo Demográfico", kpi = "esgotamento_serie" },
   { id = "servico_esgoto_municipios", label = "Municípios com rede coletora de esgoto", tabela = "7461", pesquisa = "Pesquisa Nacional de Saneamento Básico" },
 ]
 
@@ -232,6 +233,7 @@ label = "Coleta de lixo"
 kpis = [
   { id = "destino_lixo_censo", label = "Domicílios por destino do lixo (Censo)", tabela = "6892", pesquisa = "Censo Demográfico", requer_categoria = true },
   { id = "destino_lixo_pnad", label = "Domicílios por destino do lixo", tabela = "6736", pesquisa = "PNAD Contínua anual", filtros = ["situacao"] },
+  { id = "lixo_serie", label = "Destino do lixo (PNAD e Censo)", tabela = "6736", pesquisa = "PNAD Contínua anual e Censo Demográfico", kpi = "lixo_serie" },
 ]
 
 # ======================================================================= 5
@@ -246,6 +248,7 @@ label = "Alfabetização"
 kpis = [
   { id = "taxa_alfabetizacao_censo", label = "Taxa de alfabetização (15 anos ou mais, Censo)", tabela = "9543", pesquisa = "Censo Demográfico", filtros = ["sexo", "cor_raca", "idade"], cruzar = [["c2", "c86", "c287"]], edicoes = ["9841"] },
   { id = "taxa_analfabetismo", label = "Taxa de analfabetismo (15 anos ou mais)", tabela = "7113", pesquisa = "PNAD Contínua anual", filtros = ["sexo", "idade"], complementos = ["7125"] },
+  { id = "alfabetizacao_serie", label = "Taxa de alfabetização (Censos e PNAD)", tabela = "7113", pesquisa = "Censo Demográfico e PNAD Contínua anual", kpi = "alfabetizacao_serie" },
 ]
 
 [[temas.subtemas]]

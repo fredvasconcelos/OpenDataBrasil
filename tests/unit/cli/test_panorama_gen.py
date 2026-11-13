@@ -383,7 +383,7 @@ def test_proposal_of_main_dimension_from_descriptors() -> None:
     assert rows["efetivo_rebanhos"]["has_total"] is False
     assert "Bovino" in rows["efetivo_rebanhos"]["categories"]
     doc = render_proposal(list(rows.values()), {"ipca"})
-    assert doc.count("\n| ") == 153 + 1  # cabeçalho + 153 KPIs
+    assert doc.count("\n| ") == 156 + 1  # cabeçalho + 156 KPIs
     assert "c1480 Existência de Plano Diretor" in doc
 
 

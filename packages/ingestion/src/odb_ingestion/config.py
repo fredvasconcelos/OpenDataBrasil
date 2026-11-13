@@ -98,6 +98,20 @@ class DatasetConfig(_Strict):
         return hashlib.sha256(canonical.encode()).hexdigest()
 
 
+class SeriesConfig(_Strict):
+    """Série composta declarada (ADR-0022): datasets de fontes ou tabelas distintas.
+
+    Diferente de ``silver.series`` (o dataset diz a que série pertence), aqui a série
+    lista os membros, e um dataset pode servir o próprio indicador e várias séries
+    compostas. A ordem da lista é a ``series_order`` (o último é o mais recente).
+    """
+
+    id: str = Field(pattern=r"^[a-z][a-z0-9-]{2,99}$")
+    members: tuple[str, ...] = Field(min_length=2)
+    title: str
+    description: str = ""
+
+
 class SourcesFile(_Strict):
     """Conteúdo de um arquivo de configuração de fontes."""
 
@@ -109,6 +123,7 @@ class SourcesFile(_Strict):
     licenses: tuple[LicenseConfig, ...] = ()
     sources: tuple[SourceConfig, ...] = ()
     datasets: tuple[DatasetConfig, ...] = ()
+    series: tuple[SeriesConfig, ...] = ()
 
     @model_validator(mode="after")
     def _fragment(self) -> SourcesFile:
@@ -129,6 +144,7 @@ class SourceCatalog:
         self.sources: dict[str, SourceConfig] = {}
         self.datasets: dict[str, DatasetConfig] = {}
         self.source_institution: dict[str, str] = {}
+        self.series: dict[str, SeriesConfig] = {}
         for f in self.files:
             if f.institution is not None:
                 self._add(self.institutions, f.institution.id, f.institution, "instituição")
@@ -140,12 +156,19 @@ class SourceCatalog:
                 self._add(self.sources, src.id, src, "fonte")
             for ds in f.datasets:
                 self._add(self.datasets, ds.id, ds, "dataset")
+            for ser in f.series:
+                self._add(self.series, ser.id, ser, "série")
         for ds in self.datasets.values():
             if ds.source not in self.sources:
                 msg = f"dataset {ds.id}: fonte desconhecida {ds.source!r}"
                 raise ConfigError(msg)
             if ds.license not in self.licenses:
                 msg = f"dataset {ds.id}: licença desconhecida {ds.license!r}"
+                raise ConfigError(msg)
+        for ser in self.series.values():
+            unknown = [m for m in ser.members if m not in self.datasets]
+            if unknown or ser.id in self.datasets:
+                msg = f"série {ser.id}: membros desconhecidos {unknown} ou id de dataset"
                 raise ConfigError(msg)
 
     @staticmethod
@@ -162,6 +185,22 @@ class SourceCatalog:
         except KeyError as exc:
             msg = f"dataset não configurado: {dataset_id}"
             raise ConfigError(msg) from exc
+
+    def series_of(self, series_id: str) -> list[str]:
+        """Membros de uma série, em ordem (o último é o mais recente); vazio se não for.
+
+        Vale para as duas formas: a série composta declarada (``[[series]]``,
+        ADR-0022) e a série por ``silver.series`` + ``series_order`` (ADR-0016).
+        """
+        if series_id in self.series:
+            return list(self.series[series_id].members)
+        members = [d for d in self.datasets.values() if d.silver.get("series") == series_id]
+        members.sort(key=lambda d: (int(d.silver.get("series_order", 0)), d.id))
+        return [d.id for d in members]
+
+    def series_order(self, series_id: str, dataset_id: str) -> int:
+        """Posição do membro na série (1, 2, ...)."""
+        return self.series_of(series_id).index(dataset_id) + 1
 
     def datasets_of(self, source_id: str) -> list[DatasetConfig]:
         """Datasets de uma fonte, na ordem de declaração."""

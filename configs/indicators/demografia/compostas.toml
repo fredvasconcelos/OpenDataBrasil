@@ -1,0 +1,174 @@
+# Séries compostas de fontes distintas (ADR-0022, decisão do mantenedor de 2026-11-13).
+#
+# Regra: uma fonte por território e período. A PNAD Contínua fica com Brasil, Grandes
+# Regiões e UFs nos anos dela; o Censo, com os municípios em 2022 (e, na alfabetização,
+# com 2010 até UF). As transformações de cada tabela estão nas table_rules; a análise
+# das diferenças entre as fontes, em docs/data_catalog/fontes-comparaveis.md.
+config_version = "1.0.0"
+scope = "demografia"
+
+# Tipo de esgotamento nas categorias da PNAD (nota da 7192: "Outro tipo" inclui fossa
+# rudimentar, vala, rio, lago ou mar e outras formas).
+[[classifications]]
+id = "c11558h"
+name = "Tipo de esgotamento sanitário (harmonizado)"
+silver_dimension = "Tipo de esgotamento sanitário"
+total = "46292"
+datasets = ["composta-esgoto"]
+
+[[classifications.partitions]]
+id = "esgoto_grupos"
+label = "Tipo de esgotamento sanitário"
+categories = ["47930", "47931", "47936", "119522"]
+exhaustive = true
+
+# Destino do lixo em três grupos comuns (códigos do Censo).
+[[classifications]]
+id = "c67h"
+name = "Destino do lixo (harmonizado)"
+silver_dimension = "Destino do lixo"
+total = "10972"
+datasets = ["composta-lixo"]
+
+[[classifications.partitions]]
+id = "lixo_grupos"
+label = "Destino do lixo"
+categories = ["2520", "72122", "1091"]
+exhaustive = true
+
+[[facts]]
+id = "fact_composta_esgoto"
+dataset = "composta-esgoto"
+grain = "território x ano x tipo de esgotamento (harmonizado) | situação do domicílio"
+description = "Domicílios por tipo de esgotamento sanitário: PNAD Contínua até UF e Censo 2022 nos municípios (ADR-0022)."
+classifications = { "c11558h" = "c11558h_category_key", "c1" = "c1_category_key" }
+
+# Censo 2022, só municípios: "Outro tipo" somado; Total sem os domicílios sem banheiro
+# (fora do universo da PNAD); agregados e categorias somadas saem.
+[facts.table_rules.6805]
+levels = ["6"]
+missing_as_total = ["c1"]
+drop_categories = { "Tipo de esgotamento sanitário" = ["46292", "46290", "92861", "72113", "92858", "72114", "72115"] }
+recode_categories = { "Tipo de esgotamento sanitário" = { "72110" = "47930", "72111" = "47931", "72112" = "47936" } }
+aggregate = [
+    { dimension = "Tipo de esgotamento sanitário", target = "119522", name = "Outro tipo", sources = ["72113", "92858", "72114", "72115"] },
+    { dimension = "Tipo de esgotamento sanitário", target = "46292", name = "Total", sources = ["72110", "72111", "72112", "72113", "92858", "72114", "72115"] },
+]
+
+# PNAD Contínua, Brasil, regiões e UFs (sem capitais, RM e RIDE), em unidades.
+[facts.table_rules.7192]
+variable = "9986"
+levels = ["1", "2", "3"]
+scale = 1000
+unit = "Unidades"
+
+[[facts]]
+id = "fact_composta_lixo"
+dataset = "composta-lixo"
+grain = "território x ano x destino do lixo (harmonizado) | situação do domicílio"
+description = "Domicílios por destino do lixo: PNAD Contínua até UF e Censo 2022 nos municípios (ADR-0022)."
+classifications = { "c67h" = "c67h_category_key", "c1" = "c1_category_key" }
+
+# Censo 2022, só municípios: coletado (com as duas formas), queimado e "Outro destino" =
+# enterrado + terreno baldio + outro.
+[facts.table_rules.6892]
+levels = ["6"]
+missing_as_total = ["c1"]
+drop_categories = { "Destino do lixo" = ["72120", "72121", "72123", "72124", "1091"] }
+aggregate = [
+    { dimension = "Destino do lixo", target = "1091", name = "Outro destino", sources = ["72123", "72124", "1091"] },
+]
+
+# PNAD Contínua: coleta direta + caçamba = coletado; queimado no código do Censo.
+[facts.table_rules.6736]
+variable = "162"
+levels = ["1", "2", "3"]
+scale = 1000
+unit = "Unidades"
+drop_categories = { "Destino do lixo" = ["4661", "92864"] }
+recode_categories = { "Destino do lixo" = { "1087" = "72122" } }
+aggregate = [
+    { dimension = "Destino do lixo", target = "2520", name = "Coletado", sources = ["4661", "92864"] },
+]
+
+[[facts]]
+id = "fact_composta_alfabetizacao"
+dataset = "composta-alfabetizacao"
+grain = "território x ano x sexo"
+description = "Taxa de alfabetização das pessoas de 15 anos ou mais: Censos 2010 e 2022 e PNAD Contínua (ADR-0022)."
+classifications = { "c2" = "c2_category_key" }
+
+# Censo 2010 até UF (o 2022 vem da 9543).
+[facts.table_rules.9841]
+exclude_periods = ["2022"]
+fixed_categories = { "Idade" = "100362", "Quesito de declaração indígena" = "60024", "Localização do domicílio" = "32776" }
+
+# Censo 2022, só municípios (Brasil, regiões e UFs ficam com a PNAD).
+[facts.table_rules.9543]
+levels = ["6"]
+fixed_categories = { "Cor ou raça" = "95251", "Idade" = "100362" }
+
+# PNAD Contínua: alfabetização = 100 - analfabetismo, Brasil, regiões e UFs.
+[facts.table_rules.7113]
+variable = "10267"
+levels = ["1", "2", "3"]
+complement = 100
+unit = "%"
+fixed_categories = { "Grupo de idade" = "2795" }
+
+[[indicators]]
+id = "esgotamento_serie"
+name = "Domicílios por tipo de esgotamento sanitário (PNAD e Censo)"
+description = "Domicílios por tipo de esgotamento sanitário: PNAD Contínua anual (tabela 7192) em Brasil, Grandes Regiões e UFs, de 2019 a 2025, e Censo Demográfico 2022 (tabela 6805) nos municípios, nas categorias da PNAD."
+dataset = "composta-esgoto"
+variable = "381"
+fact = "fact_composta_esgoto"
+column = "valor"
+unit = "Unidades"
+additivity = "non_additive"
+concept = "esgotamento_serie"
+path = ["Saneamento básico", "Esgotamento sanitário"]
+caveats = [
+    "Fontes distintas (ADR-0022): esta série combina a PNAD Contínua anual (tabela 7192, Brasil, Grandes Regiões e UFs, 2019 a 2025) e o Censo Demográfico 2022 (tabela 6805, municípios). Ela foi construída para permitir uma leitura contínua, com as categorias harmonizadas; os métodos diferem (amostra × recenseamento).",
+    "Em 2022, as duas fontes diferem no Brasil: rede geral ou fossa ligada à rede é 69,3% na PNAD e 64,7% no Censo. Por isso, a soma dos municípios (Censo) não reproduz o valor da UF (PNAD).",
+    "Censo harmonizado: \"Outro tipo\" = fossa rudimentar ou buraco + vala + rio, lago, córrego ou mar + outra forma, como a PNAD define. Os domicílios sem banheiro nem sanitário (0,5% no Censo) ficam fora, porque a PNAD conta só os domicílios com banheiro, sanitário ou buraco para dejeções.",
+    "PNAD: estimativas publicadas em milhares de domicílios, convertidas para unidades (x 1.000); têm coeficiente de variação. Situação do domicílio só na PNAD (Brasil, Grandes Regiões e UFs). Os anos de 2016 a 2018 estão na tabela 6735, com outra captação, e não entram.",
+]
+
+[[indicators]]
+id = "lixo_serie"
+name = "Domicílios por destino do lixo (PNAD e Censo)"
+description = "Domicílios por destino do lixo: PNAD Contínua anual (tabela 6736) em Brasil, Grandes Regiões e UFs, de 2016 a 2025, e Censo Demográfico 2022 (tabela 6892) nos municípios, em três grupos comuns."
+dataset = "composta-lixo"
+variable = "381"
+fact = "fact_composta_lixo"
+column = "valor"
+unit = "Unidades"
+additivity = "non_additive"
+concept = "lixo_serie"
+path = ["Saneamento básico", "Coleta de lixo"]
+caveats = [
+    "Fontes distintas (ADR-0022): esta série combina a PNAD Contínua anual (tabela 6736, Brasil, Grandes Regiões e UFs, 2016 a 2025) e o Censo Demográfico 2022 (tabela 6892, municípios). Ela foi construída para permitir uma leitura contínua, com as categorias harmonizadas; os métodos diferem (amostra × recenseamento).",
+    "Em 2022, as duas fontes diferem no Brasil: lixo coletado é 92,2% na PNAD e 91,7% no Censo. A soma dos municípios (Censo) não reproduz o valor da UF (PNAD).",
+    "Grupos comuns: Coletado (PNAD: coleta direta + caçamba; Censo: coletado no domicílio + caçamba), Queimado na propriedade, e Outro destino (Censo: enterrado na propriedade + terreno baldio, encosta ou área pública + outro destino).",
+    "PNAD: estimativas publicadas em milhares de domicílios, convertidas para unidades (x 1.000); têm coeficiente de variação. Situação do domicílio só na PNAD.",
+]
+
+[[indicators]]
+id = "alfabetizacao_serie"
+name = "Taxa de alfabetização, 15 anos ou mais (Censos e PNAD)"
+description = "Taxa de alfabetização das pessoas de 15 anos ou mais: Censo 2010 (tabela 9841) até UF, PNAD Contínua anual (tabela 7113, 100 menos a taxa de analfabetismo) até UF de 2016 a 2025, e Censo 2022 (tabela 9543) nos municípios."
+dataset = "composta-alfabetizacao"
+variable = "2513"
+fact = "fact_composta_alfabetizacao"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+concept = "alfabetizacao_serie"
+path = ["Educação", "Alfabetização"]
+caveats = [
+    "Fontes distintas (ADR-0022): esta série combina o Censo Demográfico 2010 (tabela 9841, Brasil, Grandes Regiões e UFs), a PNAD Contínua anual (tabela 7113, Brasil, Grandes Regiões e UFs, 2016 a 2025) e o Censo 2022 (tabela 9543, municípios). Ela foi construída para permitir uma leitura contínua; os métodos diferem (amostra × recenseamento).",
+    "PNAD: a tabela publica a taxa de analfabetismo; aqui ela entra como alfabetização = 100 - analfabetismo, o complemento exato para o mesmo universo (15 anos ou mais).",
+    "Em 2022, as fontes diferem no Brasil: alfabetização de 94,4% na PNAD e 93,0% no Censo. Até UF, 2022 vem da PNAD; nos municípios, do Censo.",
+    "Detalhe só por sexo, comum às fontes: idade e cor ou raça têm recortes diferentes em cada uma (veja os KPIs de cada fonte).",
+]

@@ -157,12 +157,12 @@ docker compose --profile test run --rm tests pytest -q   # + portal (vitest) e e
 ## Séries compostas de fontes distintas (ADR-0022, decisão de 2026-11-13)
 
 - [x] Regra e nota automática no gerador ("Fontes distintas").
-- [ ] Transformações de escala (mil unidades → unidades) e de complemento (100 − x) na
-  regra da tabela, com teste.
-- [ ] Marcar a troca de fonte no gráfico de evolução e no tooltip.
-- [ ] Primeiras séries: esgoto (6805 + 7192), lixo (6892 + 6736) e alfabetização
-  (9543 + 9841 + 7113). Plano em
-  [fontes-comparaveis.md](../data_catalog/fontes-comparaveis.md).
+- [x] Transformações na regra da tabela (escala, complemento, níveis, períodos,
+  soma e retirada de categorias), com testes.
+- [x] Troca de fonte marcada no gráfico de evolução e no tooltip.
+- [x] Séries: esgoto (6805 + 7192), lixo (6892 + 6736) e alfabetização
+  (9841 + 9543 + 7113). O Censo nos municípios completa depois da carga municipal
+  (C2), no build pós-carga.
 
 ## Depois que a carga municipal (C2) terminar: roteiro
 

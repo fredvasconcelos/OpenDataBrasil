@@ -30,7 +30,7 @@ const TIP_PAD = 4;
 const TIP_MAX_ROWS = 8;
 const PAD_X = 12;
 
-type Point = { period: string; value: number | null; status?: string };
+type Point = { period: string; value: number | null; status?: string; source_table_id?: string | null };
 type XY = { x: number; y: number };
 
 // Evolução temporal (Design System ODBr, seção 9 · Séries).
@@ -193,6 +193,25 @@ export function SeriesChart({ data, additive = false }: { data: Series; additive
     .y1((p) => y(p.value ?? 0));
   const color = (i: number) => SERIES[i % SERIES.length] as string;
   const hasGaps = plotted.some((s) => runs(s.points).dashed.length > 0);
+  // Séries compostas de fontes distintas (ADR-0022): onde a tabela de origem muda.
+  const sources = new Set(
+    data.series.flatMap((s) => s.points.map((p) => p.source_table_id).filter((x): x is string => Boolean(x))),
+  );
+  const sourceChanges = (() => {
+    if (sources.size < 2) return [] as number[];
+    const xsAt = new Set<number>();
+    for (const s of plotted) {
+      let prev: Point | null = null;
+      for (const p of sorted(s.points)) {
+        if (p.value === null) continue;
+        if (prev && prev.source_table_id && p.source_table_id && prev.source_table_id !== p.source_table_id) {
+          xsAt.add((xOf(prev.period) + xOf(p.period)) / 2);
+        }
+        prev = p;
+      }
+    }
+    return [...xsAt];
+  })();
 
   // Hover: período mais próximo do ponteiro (no eixo de tempo, não no índice).
   const xs = periods.map((p) => xOf(p));
@@ -231,7 +250,14 @@ export function SeriesChart({ data, additive = false }: { data: Series; additive
           ...plotted.map((s, i) => ({ series: s, color: color(i) as string | null })),
         ].map(({ series: s, color: c }) => {
           const p = s.points.find((pt) => pt.period === period);
-          return { key: s.key, label: s.label, color: c, value: p?.value ?? null, status: p?.status ?? "absent" };
+          return {
+            key: s.key,
+            label: s.label,
+            color: c,
+            value: p?.value ?? null,
+            status: p?.status ?? "absent",
+            source: p?.source_table_id ?? null,
+          };
         });
   const anchor: XY | null =
     period === null
@@ -341,6 +367,18 @@ export function SeriesChart({ data, additive = false }: { data: Series; additive
                 />
               ))
             : null}
+          {sourceChanges.map((x) => (
+            <line
+              key={`src-${x}`}
+              className="series-source-change"
+              x1={x}
+              x2={x}
+              y1={M.top}
+              y2={H - bottom}
+              strokeDasharray="3 3"
+              style={{ stroke: CHART.label, strokeWidth: 1.5 }}
+            />
+          ))}
           {period !== null && anchor ? (
             <line
               className="series-guide"
@@ -426,6 +464,9 @@ export function SeriesChart({ data, additive = false }: { data: Series; additive
             </ul>
             {hidden > 0 ? <div className="series-tip-more">{t("seriesMore", { count: hidden })}</div> : null}
             <div className="series-tip-unit">{unit}</div>
+            {sources.size > 1 && rows.find((r) => r.source)?.source ? (
+              <div className="series-tip-unit">{t("seriesSource", { table: rows.find((r) => r.source)?.source ?? "" })}</div>
+            ) : null}
           </div>
         ) : null}
         <span className="sr-only" aria-live="polite">
@@ -440,6 +481,14 @@ export function SeriesChart({ data, additive = false }: { data: Series; additive
               {s.label}
             </li>
           ))}
+          {sourceChanges.length ? (
+            <li className="series-legend-gap">
+              <svg width="4" height="14" aria-hidden="true">
+                <line x1="2" y1="1" x2="2" y2="13" strokeDasharray="3 3" style={{ stroke: CHART.label, strokeWidth: 1.5 }} />
+              </svg>
+              {t("sourceChange")}
+            </li>
+          ) : null}
           {hasGaps ? (
             <li className="series-legend-gap">
               <svg width="16" height="4" aria-hidden="true">

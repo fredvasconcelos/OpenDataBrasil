@@ -62,6 +62,9 @@ def provenance(sources: SourceCatalog) -> dict[str, tuple[str, str | None]]:
         series = dataset.silver.get("series")
         if series:
             out.setdefault(str(series), out[dataset_id])
+    # Séries compostas (ADR-0022): a proveniência do membro mais recente.
+    for series_id, ser in sources.series.items():
+        out.setdefault(series_id, out[ser.members[-1]])
     return out
 
 

@@ -113,13 +113,13 @@ def test_grain_sql_sums_complete_periods_only() -> None:
     con = duckdb.connect()
     con.execute(
         "CREATE TABLE obs AS SELECT * FROM (VALUES "
-        "('vitimas','uf:29','uf','2025M01','none',1.0,'valid','Vítimas',[]::VARCHAR[]),"
-        "('vitimas','uf:29','uf','2025M02','none',2.0,'valid','Vítimas',[]::VARCHAR[]),"
-        "('vitimas','uf:29','uf','2025M03','none',0.0,'true_zero','Vítimas',[]::VARCHAR[]),"
-        "('vitimas','uf:29','uf','2025M04','none',5.0,'valid','Vítimas',[]::VARCHAR[]),"
-        "('vitimas','uf:29','uf','2025M05','none',NULL,'not_available','Vítimas',[]::VARCHAR[])"
+        "('vitimas','uf:29','uf','2025M01','none',1.0,'valid','Vítimas',[]::VARCHAR[],'t1'),"
+        "('vitimas','uf:29','uf','2025M02','none',2.0,'valid','Vítimas',[]::VARCHAR[],'t1'),"
+        "('vitimas','uf:29','uf','2025M03','none',0.0,'true_zero','Vítimas',[]::VARCHAR[],'t1'),"
+        "('vitimas','uf:29','uf','2025M04','none',5.0,'valid','Vítimas',[]::VARCHAR[],'t1'),"
+        "('vitimas','uf:29','uf','2025M05','none',NULL,'not_available','Vítimas',[]::VARCHAR[],'t1')"
         ") AS t(indicator_id, geography_key, level_id, period, breakdown_key, value, "
-        "value_status, unit, flags)"
+        "value_status, unit, flags, source_table_id)"
     )
     con.execute("CREATE TABLE geo AS SELECT 'uf:29' AS geography_key, 'Bahia' AS name")
     con.execute(
@@ -155,11 +155,11 @@ def test_time_aggregation_rules(rule: str, value: float, status: str) -> None:
     con = duckdb.connect()
     con.execute(
         "CREATE TABLE obs AS SELECT * FROM (VALUES "
-        "('x','uf:29','uf','2025M01','none',1.0,'valid','u',[]::VARCHAR[]),"
-        "('x','uf:29','uf','2025M02','none',2.0,'valid','u',[]::VARCHAR[]),"
-        "('x','uf:29','uf','2025M03','none',0.0,'true_zero','u',[]::VARCHAR[])"
+        "('x','uf:29','uf','2025M01','none',1.0,'valid','u',[]::VARCHAR[],'t1'),"
+        "('x','uf:29','uf','2025M02','none',2.0,'valid','u',[]::VARCHAR[],'t1'),"
+        "('x','uf:29','uf','2025M03','none',0.0,'true_zero','u',[]::VARCHAR[],'t1')"
         ") AS t(indicator_id, geography_key, level_id, period, breakdown_key, value, "
-        "value_status, unit, flags)"
+        "value_status, unit, flags, source_table_id)"
     )
     con.execute("CREATE TABLE geo AS SELECT 'uf:29' AS geography_key, 'Bahia' AS name")
     con.execute(

@@ -144,6 +144,20 @@ class Classification(_Strict):
         return frozenset({self.total, *(c for p in self.partitions for c in p.categories)})
 
 
+class AggregateRule(_Strict):
+    """Categoria-alvo como soma de categorias da tabela (ADR-0022).
+
+    Ex.: "Outro tipo" (código da PNAD) = fossa rudimentar + vala + rio + outra forma
+    (códigos do Censo). As categorias somadas continuam, a menos que saiam em
+    ``drop_categories``.
+    """
+
+    dimension: str
+    target: str = Field(pattern=r"^[0-9A-Za-z_\-]{1,32}$")
+    name: str
+    sources: tuple[str, ...] = Field(min_length=1)
+
+
 class TableRule(_Strict):
     """Regras de uma tabela de origem de um fato em série (ADR-0016).
 
@@ -165,6 +179,35 @@ class TableRule(_Strict):
     # Dimensão (já renomeada) → {código nesta tabela: código equivalente do fato}. Ex.:
     # "Viagens" (2002) → "Viagens esporádicas" (2008 e 2018). Registrar nas notas.
     recode_categories: dict[str, dict[str, str]] = Field(default_factory=dict)
+    # Séries compostas de fontes distintas (ADR-0022), aplicadas antes das regras acima:
+    # - ``variable``: código da variável nesta tabela, se diferente do indicador;
+    # - ``levels``: níveis SIDRA usados desta tabela ("6" = município); vazio: todos;
+    # - ``scale``: multiplica o valor (mil unidades → unidades: 1000);
+    # - ``complement``: troca o valor por complement - valor (analfabetismo → alfabetização);
+    # - ``unit``: unidade publicada depois da transformação (a do indicador);
+    # - ``aggregate``: soma categorias numa categoria-alvo, sem retirar as somadas;
+    # - ``drop_categories``: dimensão → categorias desta tabela que saem do fato.
+    variable: str | None = Field(default=None, pattern=r"^\d{1,8}$")
+    levels: tuple[str, ...] = ()
+    # Períodos desta tabela que ficam fora (o ano coberto por outra fonte da série).
+    exclude_periods: tuple[str, ...] = ()
+    scale: float = Field(default=1.0, gt=0)
+    complement: float | None = None
+    unit: str | None = None
+    aggregate: tuple[AggregateRule, ...] = ()
+    drop_categories: dict[str, tuple[str, ...]] = Field(default_factory=dict)
+
+    def transforms(self) -> bool:
+        """A regra muda valores ou linhas (além de renomear e recodificar)?"""
+        return bool(
+            self.levels
+            or self.exclude_periods
+            or self.scale != 1.0
+            or self.complement is not None
+            or self.unit
+            or self.aggregate
+            or self.drop_categories
+        )
 
 
 class FactConfig(_Strict):
@@ -419,6 +462,11 @@ class SemanticCatalog(_Strict):
                 return f
         msg = f"fato inexistente: {fact_id}"
         raise SemanticConfigError(msg)
+
+    def source_variable(self, indicator: IndicatorConfig, table: str) -> str:
+        """Código da variável do indicador numa tabela da série (ADR-0022: pode mudar)."""
+        rule = self.fact(indicator.fact).table_rules.get(table)
+        return rule.variable if rule and rule.variable else indicator.variable
 
     def indicators_of(self, fact_id: str) -> list[IndicatorConfig]:
         """Indicadores (medidas) de um fato, na ordem do arquivo."""

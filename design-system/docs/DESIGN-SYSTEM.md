@@ -298,3 +298,14 @@ SVG e PNG exportados devem levar as cores já calculadas (`resolveSvgColors`) e 
 - **Cruzamentos:** a dica de "Detalhar por" diz quais detalhes se cruzam no nível
   ("Neste nível, cruzam-se Sexo × Idade; os demais detalhes, um por vez").
 
+## Ajustes da 2.3.12 (% em contagens e mudança de fonte)
+
+- **% das categorias:** aparece na tabela, no tooltip do mapa e no da série em todo
+  indicador somável ou de quantidade (pessoas, unidades, mil unidades, domicílios,
+  toneladas, reais totais), mesmo quando a fonte não deixa somar entre territórios
+  (estimativas da PNAD). Taxas, médias, índices e valores per capita seguem sem %.
+- **Mudança de fonte:** nas séries compostas (ADR-0022), uma linha vertical tracejada
+  (1,5 px, cor de rótulo) entre o último ponto de uma fonte e o primeiro da outra, com
+  a legenda "Mudança de fonte (veja as notas)". O tooltip mostra "Fonte do ponto:
+  tabela N".
+

@@ -94,7 +94,9 @@
     "correction": "Corrigir por",
     "nominal": "Nominal (valores da época)",
     "dimensionsCrossed": "Neste nível, cruzam-se {groups}; os demais detalhes, um por vez.",
-    "dimensionsCrossedElsewhere": "Neste nível, um detalhe por vez; os cruzamentos existem em Brasil, região e UF."
+    "dimensionsCrossedElsewhere": "Neste nível, um detalhe por vez; os cruzamentos existem em Brasil, região e UF.",
+    "sourceChange": "Mudança de fonte (veja as notas)",
+    "seriesSource": "Fonte do ponto: tabela {table}"
   },
   "grainNotes": {
     "sum": "Soma dos períodos publicados (valor derivado). Período com parte sem dado fica sem valor.",

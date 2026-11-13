@@ -213,6 +213,7 @@ def test_repository_scope_with_fragments_matches_sources() -> None:
     catalog = load_scope(REPO_INDICATORS, "demografia")
     sources = load_sources(REPO_INDICATORS.parent / "sources")
     series = {d.silver.get("series") for d in sources.datasets.values()} - {None}
+    series |= set(sources.series)  # séries compostas declaradas (ADR-0022)
     missing = [d for d in catalog.datasets() if d not in sources.datasets and d not in series]
     assert not missing
     assert "despesa_familiar" in {i.id for i in catalog.indicators}

@@ -204,11 +204,8 @@ class GoldBuilder:
         Uma série reúne datasets que publicam a mesma tabela em arquivos separados (o
         Sinesp VDE tem um dataset por ano): o catálogo semântico aponta para a série.
         """
-        return sorted(
-            d
-            for d in self._sources.datasets
-            if self._sources.dataset(d).silver.get("series") == dataset_id
-        )
+        # Ordem da série (``series_order`` ou a lista da série composta, ADR-0022).
+        return self._sources.series_of(dataset_id)
 
     def _member_datasets(self, dataset_id: str) -> list[str]:
         return self.series_members(dataset_id) or [dataset_id]
@@ -255,6 +252,11 @@ class GoldBuilder:
             msg = f"{series_id}: membros da série com licenças diferentes"
             raise GoldBuildError(msg)
         if transformers == {"sidra_observation"}:
+            if series_id in self._sources.series:  # composta: a ordem é a da lista
+                configs = [
+                    c.model_copy(update={"silver": {**c.silver, "series_order": i}})
+                    for i, c in enumerate(configs, start=1)
+                ]
             return self._sidra_series_info(series_id, configs)
         if transformers != {"sinesp_vde"}:
             msg = f"{series_id}: a Gold desta versão aceita séries do Sinesp VDE e do SIDRA"
@@ -502,7 +504,10 @@ class GoldBuilder:
                     .collect(engine="streaming")
                 )
                 selected, fixed_problems = model.strip_fixed_categories(
-                    model.select_silver(silver, part, self._catalog), self._catalog
+                    model.apply_table_transforms(
+                        model.select_silver(silver, part, self._catalog), self._catalog
+                    ),
+                    self._catalog,
                 )
                 del silver
                 observations = model.build_observations(
