@@ -164,6 +164,19 @@ docker compose --profile test run --rm tests pytest -q   # + portal (vitest) e e
   (9841 + 9543 + 7113). O Censo nos municípios completa depois da carga municipal
   (C2), no build pós-carga.
 
+## Rodada 5 (2026-11-13, noite)
+
+- [x] Sinesp: regiões pela soma das UFs, ano parcial, feminicídio sem sexo (ADR-0023).
+- [x] Plano Diretor (5882): tamanho × existência cruzados até UF.
+- [x] Óbitos e casamentos por mês (calendário) e "Isolar período" (DS 2.3.14).
+- [x] Lavouras em 9 grupos (5457); ícones de agropecuária (22).
+- [x] PPM: um KPI por produto da 74, por rebanho da 3939, e as tabelas 94 e 95. **A
+  carga está em andamento**; depois, Gold, ativação e conferência visual.
+- [ ] Aquicultura (3940): verificar o descritor (unidades por produto: kg e milheiros)
+  e decidir os produtos.
+- [ ] Claude Design: o mantenedor roda `/design-sync` para criar o projeto e enviar o
+  design system 2.3.14 (a sessão `cse_…` citada não é acessível daqui).
+
 ## Cubo completo (cruzamentos em tudo): avaliado, adiado (2026-11-13)
 
 O mantenedor pediu os cruzamentos em todos os KPIs, inclusive no município, e depois
