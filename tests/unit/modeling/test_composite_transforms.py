@@ -97,6 +97,7 @@ def test_sum_without_all_parts_has_no_value() -> None:
     other = out.filter(pl.col("classification_key") == f"{DIM}=119522").row(0, named=True)
     assert other["value"] is None
     assert other["value_status"] == "not_available"
+    assert other["value_raw"] == "..."
 
 
 def test_scale_unit_and_complement() -> None:
@@ -124,3 +125,11 @@ def test_excluded_periods_leave_the_year_to_the_other_source() -> None:
         _frame(rows), _catalog(TableRule(exclude_periods=("2022",)), "7113")
     )
     assert out["period"].to_list() == ["2023"]
+
+
+def test_keep_categories_filters_rows() -> None:
+    rows = [_row("7113", "1", "2795", 5.6), _row("7113", "1", "3302", 16.0)]
+    out = model.apply_table_transforms(
+        _frame(rows), _catalog(TableRule(keep_categories={DIM: ("2795",)}), "7113")
+    )
+    assert out["classification_key"].to_list() == [f"{DIM}=2795"]

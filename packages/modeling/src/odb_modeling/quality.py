@@ -67,9 +67,19 @@ def input_checks(
             "dimensões de categoria fixa com outra categoria ou ausentes na Silver",
         )
     )
+    # Por indicador: a mesma tabela pode servir um indicador na unidade publicada e uma
+    # série composta convertida (ADR-0022: mil unidades → unidades).
+    by = (
+        ["indicator_id", "table_id", "variable_id"]
+        if "indicator_id" in selected.columns
+        else [
+            "table_id",
+            "variable_id",
+        ]
+    )
     present = {
-        (r["table_id"], r["variable_id"]): r
-        for r in selected.group_by("table_id", "variable_id")
+        tuple(r[c] for c in by): r
+        for r in selected.group_by(*by)
         .agg(
             # Sem valor ("...", não disponível), a fonte não informa unidade: só os
             # valores publicados definem a unidade da variável.
@@ -88,7 +98,14 @@ def input_checks(
         found = [
             r
             for t in datasets[ind.dataset].source_tables
-            if (r := present.get((t, catalog.source_variable(ind, t)))) is not None
+            if (
+                r := present.get(
+                    (ind.id, t, catalog.source_variable(ind, t))
+                    if len(by) == 3  # noqa: PLR2004 - chave com o indicador
+                    else (t, catalog.source_variable(ind, t))
+                )
+            )
+            is not None
         ]
         if not found:
             missing.append(ind.id)

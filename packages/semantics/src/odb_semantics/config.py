@@ -196,6 +196,9 @@ class TableRule(_Strict):
     unit: str | None = None
     aggregate: tuple[AggregateRule, ...] = ()
     drop_categories: dict[str, tuple[str, ...]] = Field(default_factory=dict)
+    # Dimensão → categorias desta tabela que ficam (as demais linhas saem). Ex.: só a
+    # idade "15 anos ou mais" da PNAD, quando a série não detalha a idade.
+    keep_categories: dict[str, tuple[str, ...]] = Field(default_factory=dict)
 
     def transforms(self) -> bool:
         """A regra muda valores ou linhas (além de renomear e recodificar)?"""
@@ -207,6 +210,7 @@ class TableRule(_Strict):
             or self.unit
             or self.aggregate
             or self.drop_categories
+            or self.keep_categories
         )
 
 

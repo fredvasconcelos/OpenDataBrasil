@@ -101,11 +101,13 @@ classifications = { "c2" = "c2_category_key" }
 # Censo 2010 até UF (o 2022 vem da 9543).
 [facts.table_rules.9841]
 exclude_periods = ["2022"]
+keep_categories = { "Idade" = ["100362"], "Quesito de declaração indígena" = ["60024"], "Localização do domicílio" = ["32776"] }
 fixed_categories = { "Idade" = "100362", "Quesito de declaração indígena" = "60024", "Localização do domicílio" = "32776" }
 
 # Censo 2022, só municípios (Brasil, regiões e UFs ficam com a PNAD).
 [facts.table_rules.9543]
 levels = ["6"]
+keep_categories = { "Cor ou raça" = ["95251"], "Idade" = ["100362"] }
 fixed_categories = { "Cor ou raça" = "95251", "Idade" = "100362" }
 
 # PNAD Contínua: alfabetização = 100 - analfabetismo, Brasil, regiões e UFs.
@@ -114,6 +116,7 @@ variable = "10267"
 levels = ["1", "2", "3"]
 complement = 100
 unit = "%"
+keep_categories = { "Grupo de idade" = ["2795"] }
 fixed_categories = { "Grupo de idade" = "2795" }
 
 [[indicators]]

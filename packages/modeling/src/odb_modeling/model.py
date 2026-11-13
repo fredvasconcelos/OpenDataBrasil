@@ -295,7 +295,11 @@ def _aggregated(part: pl.DataFrame, rule: TableRule) -> pl.DataFrame:
             .then(pl.lit("valid"))
             .otherwise(pl.lit("not_available"))
             .alias("value_status"),
-            pl.lit(None, dtype=pl.String).alias("value_raw"),
+            # Valor bruto da soma (texto, como a fonte publica); "..." sem todas as partes.
+            pl.when(pl.col("_complete"))
+            .then(pl.col("value").cast(pl.String))
+            .otherwise(pl.lit("..."))
+            .alias("value_raw"),
         ).drop("_complete")
         out.append(summed.select(part.columns))
     return pl.concat(out, how="vertical_relaxed") if out else part.clear()
@@ -331,6 +335,8 @@ def apply_table_transforms(selected: pl.DataFrame, catalog: SemanticCatalog) -> 
             part = part.filter(pl.col("territorial_level").is_in(list(rule.levels)))
         if rule.exclude_periods:
             part = part.filter(~pl.col("period").is_in(list(rule.exclude_periods)))
+        for dimension, codes in rule.keep_categories.items():
+            part = part.filter(_category_in(dimension).is_in(list(codes)).fill_null(value=False))
         value = pl.col("value").cast(pl.Float64)
         if rule.scale != 1.0:
             value = value * rule.scale
