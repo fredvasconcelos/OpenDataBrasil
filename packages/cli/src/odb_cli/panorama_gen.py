@@ -1669,6 +1669,12 @@ def render_portal(gen: Generated, scope: str) -> str:
         if dim:
             dims = [dim, *gen.extra_dimensions.get(kpi.id, [])]
             dims.sort(key=lambda d: order.index(d["classification"]))
+            if kpi.ordem_detalhes:
+                # Ordem própria do KPI (cNNN da fonte); as demais seguem a geral.
+                first = {c: i for i, c in enumerate(kpi.ordem_detalhes)}
+                dims.sort(
+                    key=lambda d: first.get(re.sub(r"t\d+$", "", d["classification"]), len(first))
+                )
             lines.append(f"dimensions = [{', '.join(_value(d) for d in dims)}]")
             if len(dims) > 1:
                 lines.append("exclusive_dimensions = true")

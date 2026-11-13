@@ -1087,9 +1087,11 @@ label = "Planejamento e meio ambiente"
 id = "plano_diretor"
 label = "Municípios com Plano Diretor"
 indicator = "plano_diretor"
-dimensions = [{ "classification" = "c1480", "partition" = "p58278", "label" = "Existência de Plano Diretor" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município", "levels" = ["brasil", "regiao", "uf"] }]
+dimensions = [{ "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município", "levels" = ["brasil", "regiao", "uf"] }, { "classification" = "c1480", "partition" = "p58278", "label" = "Existência de Plano Diretor" }]
 exclusive_dimensions = true
 map_share = "58279"
+crossed = [["c1480", "c12446"]]
+crossed_levels = ["brasil", "regiao", "uf"]
 
 [[themes.subthemes.kpis]]
 id = "legislacao_ambiental"

@@ -90,6 +90,10 @@ class PanoramaKpi(_Strict):
     # "c260") que vêm cruzadas em Brasil, Grandes Regiões e UFs; no município, os
     # detalhes continuam marginais.
     cruzar: tuple[tuple[str, ...], ...] = ()
+    # Ordem dos detalhes deste KPI (cNNN da fonte), quando a leitura pede outra que a
+    # geral: no Plano Diretor, o tamanho do município primeiro, para comparar "com" e
+    # "sem plano" dentro de cada faixa.
+    ordem_detalhes: tuple[str, ...] = ()
     # Correção de valores em moeda (ADR-0020): "ipca" põe o "Corrigir por: IPCA geral",
     # com o índice do próprio período (mês, ou média dos meses do trimestre ou do ano).
     # Só para valores nominais: rendimentos já deflacionados pela fonte ficam de fora.

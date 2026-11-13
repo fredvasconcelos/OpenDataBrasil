@@ -532,9 +532,10 @@ def test_rate_limiter() -> None:
 
 def test_portal_config_is_checked(tmp_path: Path, stack: dict[str, Any]) -> None:
     text = (PORTAL_DIR / "demografia.toml").read_text(encoding="utf-8")
-    bad_order = text.replace('dimension_order = ["c86", "c2",', 'dimension_order = ["c2", "c86",')
-    (tmp_path / "demografia.toml").write_text(bad_order, encoding="utf-8")
-    with pytest.raises(PortalConfigError, match="fora da ordem"):
+    # A ordem dos detalhes é a do KPI; uma dimensão fora de dimension_order é erro.
+    unknown = text.replace('dimension_order = ["c86", "c2",', 'dimension_order = ["c2",')
+    (tmp_path / "demografia.toml").write_text(unknown, encoding="utf-8")
+    with pytest.raises(PortalConfigError, match="fora de dimension_order"):
         load_portal(tmp_path, "demografia")
     (tmp_path / "outro.toml").write_text(text, encoding="utf-8")
     with pytest.raises(PortalConfigError, match="difere"):

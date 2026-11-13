@@ -441,3 +441,12 @@ def test_crossing_only_where_all_details_exist() -> None:
     assert params["cross_sets"] == [{"c86": "2776,2777,2779", "c1": "1,2"}]
     assert params["cross_levels"] == ["n1"]
     assert 'crossed_levels = ["brasil"]' in render_portal(gen, "demografia")
+
+
+def test_plano_diretor_crosses_size_first() -> None:
+    """Plano Diretor (5882): tamanho do município primeiro, cruzado com a existência."""
+    gen = _generate()
+    portal = render_portal(gen, "demografia")
+    block = portal[portal.index('id = "plano_diretor"') :].split("[[themes", 1)[0]
+    assert block.index('"c12446"') < block.index('"c1480"')
+    assert 'crossed_levels = ["brasil", "regiao", "uf"]' in block

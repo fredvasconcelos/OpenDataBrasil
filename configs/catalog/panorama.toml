@@ -742,7 +742,7 @@ filtros = ["tamanho_municipio"]
 id = "planejamento_municipal"
 label = "Planejamento e meio ambiente"
 kpis = [
-  { id = "plano_diretor", label = "Municípios com Plano Diretor", tabela = "5882", pesquisa = "Pesquisa de Informações Básicas Municipais", filtros = ["tamanho_municipio"], requer_categoria = true },
+  { id = "plano_diretor", label = "Municípios com Plano Diretor", tabela = "5882", pesquisa = "Pesquisa de Informações Básicas Municipais", filtros = ["tamanho_municipio"], requer_categoria = true, cruzar = [["c1480", "c12446"]], ordem_detalhes = ["c12446", "c1480"] },
   { id = "legislacao_ambiental", label = "Municípios com legislação ambiental", tabela = "5608", pesquisa = "Indicadores de Desenvolvimento Sustentável", variavel = "6299" },
 ]
 

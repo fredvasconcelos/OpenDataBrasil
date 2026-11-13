@@ -777,8 +777,21 @@ class KpiService:
     def _share_map(
         self, ctx: ReleaseContext, kpi: KpiConfig, *, level: str, period: str, within: str | None
     ) -> MapOut:
-        """Participação (%) da categoria ``map_share`` no Total da primeira dimensão."""
-        dim = kpi.dimensions[0].classification
+        """Participação (%) da categoria ``map_share`` no Total da sua dimensão.
+
+        A dimensão é a que contém a categoria (não precisa ser a primeira: no Plano
+        Diretor, o detalhe começa pelo tamanho do município, e o mapa pinta o % "Com
+        Plano Diretor").
+        """
+        cats = self._gold.categories(ctx)
+        dim = next(
+            (
+                d.classification
+                for d in kpi.dimensions
+                if f"{d.classification}:{kpi.map_share}" in cats
+            ),
+            kpi.dimensions[0].classification,
+        )
         total_key = self._gold.total_category(ctx, dim)["category_key"]
         share_key = f"{dim}:{kpi.map_share}"
         if share_key not in self._gold.categories(ctx):

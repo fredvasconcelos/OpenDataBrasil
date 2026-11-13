@@ -189,10 +189,10 @@ class PortalConfig(_Strict):
         for kpi in self.kpis():
             dims = [d.classification for d in kpi.dimensions]
             unknown = [d for d in dims if d not in self.dimension_order]
+            # A ordem dos detalhes é a do KPI (a API ordena por ela); dimension_order só
+            # lista as conhecidas e ordena a URL.
             if unknown:
                 problems.append(f"{kpi.id}: dimensões fora de dimension_order: {unknown}")
-            elif dims != sorted(dims, key=self.dimension_order.index):
-                problems.append(f"{kpi.id}: dimensões fora da ordem {list(self.dimension_order)}")
         if problems:
             raise ValueError("; ".join(problems))
         return self

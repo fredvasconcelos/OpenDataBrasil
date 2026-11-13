@@ -4754,6 +4754,7 @@ refresh_recent_periods = 1
 classifications = { "c1480" = "all" }
 extra_sets = [{ "c1480" = "58278", "c12446" = "110088,110089,110090,110091,110092,110093,110094" }]
 extra_levels = ["n1", "n2", "n3"]
+cross_sets = [{ "c1480" = "58279,58280,58281,58282,58283,58284", "c12446" = "110088,110089,110090,110091,110092,110093,110094" }]
 
 [datasets.silver]
 transformer = "sidra_observation"

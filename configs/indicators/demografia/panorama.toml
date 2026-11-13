@@ -4935,7 +4935,7 @@ unit = "Unidades"
 additivity = "non_additive"
 concept = "plano_diretor"
 path = ["Gestão pública municipal", "Planejamento e meio ambiente"]
-caveats = ["Detalhes por Existência de Plano Diretor, Classe de tamanho da população do município: um de cada vez, com os demais no Total (a fonte permite os cruzamentos, mas eles multiplicariam as consultas). Os detalhes além de Existência de Plano Diretor vêm até Brasil, Grande Região, UF."]
+caveats = ["Detalhes por Existência de Plano Diretor, Classe de tamanho da população do município: um de cada vez, com os demais no Total (a fonte permite os cruzamentos, mas eles multiplicariam as consultas). Os detalhes além de Existência de Plano Diretor vêm até Brasil, Grande Região, UF.", "Cruzamentos completos (Existência de Plano Diretor × Classe de tamanho da população do município) em Brasil, Grande Região, UF. Nos demais níveis, um detalhe por vez, com os demais no Total."]
 
 [[indicators]]
 id = "legislacao_ambiental"
