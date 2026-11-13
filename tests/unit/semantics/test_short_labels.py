@@ -26,6 +26,6 @@ def test_category_keys_are_exact_and_missing_file_is_empty(tmp_path: Path) -> No
     assert labels.category("c67:4661") is None  # sem queda para a origem: códigos colidem
     assert load_short_labels(tmp_path / "nao-existe.toml") == ShortLabels()
     bad = tmp_path / "rotulos.toml"
-    bad.write_text('[dimensoes]\nc1 = 3\n', encoding="utf-8")
+    bad.write_text("[dimensoes]\nc1 = 3\n", encoding="utf-8")
     with pytest.raises(PortalConfigError):
         load_short_labels(bad)

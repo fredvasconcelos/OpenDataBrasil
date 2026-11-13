@@ -172,6 +172,28 @@ def official_notes(descriptor: Mapping[str, Any] | None) -> list[str]:
     return html_lines((descriptor or {}).get("Nota"))
 
 
+def multi_source_note(
+    base: str,
+    descriptor: Mapping[str, Any] | None,
+    members: Mapping[str, Mapping[str, Any]],
+) -> str:
+    """Nota de fontes distintas (ADR-0022), quando a série junta pesquisas diferentes."""
+    surveys: dict[str, list[str]] = {}
+    for table, desc in {base: descriptor or {}, **members}.items():
+        name = str(desc.get("Pesquisa") or "").strip()
+        if name:
+            surveys.setdefault(name, []).append(table)
+    if len(surveys) < 2:  # noqa: PLR2004 - uma pesquisa só: nada a avisar
+        return ""
+    parts = "; ".join(f"{name} (tabela {', '.join(t)})" for name, t in surveys.items())
+    return (
+        f"Fontes distintas (ADR-0022): esta série combina {parts}. Ela foi construída para "
+        "permitir uma leitura contínua, com a mesma variável e as categorias harmonizadas; "
+        "os métodos das pesquisas diferem, e a passagem de uma fonte para outra pode "
+        "mudar o nível da série sem mudança real."
+    )
+
+
 def official_source(descriptor: Mapping[str, Any] | None) -> str:
     """Campo ``Fonte`` do descritor em texto puro, sem ponto final (a descrição põe o seu)."""
     return " ".join(html_lines((descriptor or {}).get("Fonte"))).rstrip(" .")
@@ -1403,6 +1425,13 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 f"Cruzamentos completos ({groups}) em Brasil, Grandes Regiões e UFs. "
                 "No município, um detalhe por vez, com os demais no Total."
             )
+        note = multi_source_note(
+            kpi.tabela,
+            descriptor,
+            {t: descriptors[t] for t in (*(c.table for c in comps), *(e.table for e in eds))},
+        )
+        if note:
+            caveats.insert(0, note)
         for ed in eds:
             where = ", ".join(LEVEL_LABELS.get(lv, lv) for lv in ed.levels)
             caveats.insert(

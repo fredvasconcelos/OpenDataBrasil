@@ -3,7 +3,11 @@
 Pergunta do mantenedor (2026-11-13): juntar em uma série a 6805 (Censo 2022, esgoto) e a
 7192 (PNAD Contínua anual, esgoto, 2019 a 2025), e procurar outros casos.
 
-## Conclusão: não juntar numa série única; comparar lado a lado
+> **Atualização (2026-11-13):** o mantenedor decidiu permitir séries compostas quando as
+> fontes se complementam, com nota de fontes distintas (ADR-0022). A análise abaixo
+> continua valendo como a lista das diferenças que cada nota precisa explicar.
+
+## Análise: as fontes diferem no mesmo ano
 
 As duas pesquisas medem o mesmo assunto de formas diferentes:
 - o Censo é um recenseamento de todos os domicílios, com resultados até o município;
@@ -26,7 +30,18 @@ Uma série única mostraria uma quebra falsa: em 2022, a cobertura de esgoto "ca
 "compatível mediante transformação documentada" no melhor dos casos, e nunca como a
 mesma série.
 
-## Proposta (para aprovação)
+## Como cada par vira série composta (ADR-0022)
+
+| Par | Fonte por período | Transformações | Na nota |
+|---|---|---|---|
+| Esgoto (6805 × 7192) | PNAD em 2016–2025 (UF); Censo em 2022 no município | escala (mil unidades → unidades); categorias em 4 grupos (abaixo) | universo da PNAD sem os 0,5% sem banheiro; 4,6 p.p. de diferença em 2022 |
+| Lixo (6892 × 6736) | idem | escala; "Coletado" = coleta direta + caçamba; "Outro" = enterrado + terreno baldio + outro | 0,5 p.p. em 2022 |
+| Alfabetização (9543 + 9841 × 7113) | Censo em 2010 e 2022; PNAD nos demais anos | complemento (100 − analfabetismo) | 1,4 p.p. em 2022; a PNAD não tem cor ou raça nessa tabela |
+
+Faltam, para fazer: as transformações de escala e de complemento na regra da tabela
+e a marcação da troca de fonte no gráfico (ADR-0022, decisões 3 e 6).
+
+## Proposta anterior (comparação lado a lado)
 
 1. **Ligar os KPIs pares:** "Também medido por: PNAD Contínua (2016 a 2025)" no KPI do
    Censo, e o inverso, com o link para o outro.

@@ -419,3 +419,16 @@ def test_crossings_up_to_uf() -> None:
     assert 'crossed = [["c2t2654", "c260"]]' in portal
     ind = next(i for i in gen.indicators if i["id"] == "obitos")
     assert any("Cruzamentos completos" in c for c in ind["caveats"])
+
+
+def test_multi_source_note_only_when_surveys_differ() -> None:
+    """ADR-0022: a nota de fontes distintas aparece só quando a série junta pesquisas."""
+    from odb_cli.panorama_gen import multi_source_note  # noqa: PLC0415
+
+    censo = {"Pesquisa": "Censo Demográfico"}
+    pnad = {"Pesquisa": "Pesquisa Nacional por Amostra de Domicílios Contínua anual"}
+    assert multi_source_note("6805", censo, {"9841": censo}) == ""
+    note = multi_source_note("6805", censo, {"7192": pnad})
+    assert "Fontes distintas (ADR-0022)" in note
+    assert "Censo Demográfico (tabela 6805)" in note
+    assert "Contínua anual (tabela 7192)" in note
