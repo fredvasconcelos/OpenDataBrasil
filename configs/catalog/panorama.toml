@@ -244,7 +244,7 @@ filtros = ["sexo", "idade", "cor_raca", "situacao", "instrucao"]
 id = "alfabetizacao"
 label = "Alfabetização"
 kpis = [
-  { id = "taxa_alfabetizacao_censo", label = "Taxa de alfabetização (15 anos ou mais, Censo)", tabela = "9543", pesquisa = "Censo Demográfico", filtros = ["sexo", "cor_raca", "idade"], cruzar = [["c2", "c86", "c287"]] },
+  { id = "taxa_alfabetizacao_censo", label = "Taxa de alfabetização (15 anos ou mais, Censo)", tabela = "9543", pesquisa = "Censo Demográfico", filtros = ["sexo", "cor_raca", "idade"], cruzar = [["c2", "c86", "c287"]], edicoes = ["9841"] },
   { id = "taxa_analfabetismo", label = "Taxa de analfabetismo (15 anos ou mais)", tabela = "7113", pesquisa = "PNAD Contínua anual", filtros = ["sexo", "idade"], complementos = ["7125"] },
 ]
 

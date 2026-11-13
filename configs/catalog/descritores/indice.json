@@ -1399,6 +1399,13 @@
   "sha256": "857fbf36e5c8881819dcb49c4a4698ffe8a4a1656848b365f0372b05c900cf93",
   "size_bytes": 4692
  },
+ "9841": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/9841",
+  "retrieved_at": "2026-11-13T14:49:29.151387+00:00",
+  "status": "ok",
+  "sha256": "9ab9a59c3d07c042e3a804b8c1b416b34ac5c4e8437c52fa449c345d712b9194",
+  "size_bytes": 23622
+ },
  "9883": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/9883",
   "retrieved_at": "2026-11-11T09:04:36.499499+00:00",

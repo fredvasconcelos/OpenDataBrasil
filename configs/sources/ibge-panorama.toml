@@ -726,6 +726,37 @@ category_chunk = 7
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-9543"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-9841"
+source = "ibge-sidra"
+official_id = "9841"
+title = "Taxa de alfabetização da população, total e indígena, de 15 anos ou mais de idade, por sexo, idade, quesito de declaração e localização do domicílio"
+description = "Outra edição da 9543 (ADR-0021): variável 2513 em 2010, os anos que a 9543 não tem. KPI de panorama 'Taxa de alfabetização (15 anos ou mais, Censo)'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/9841"
+
+[datasets.params]
+table = "9841"
+variables = ["2513"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5940
+min_rows = 1
+max_rows = 5940
+refresh_recent_periods = 0
+periods = ["2010"]
+classifications = { "c2" = "6794,4,5", "c287" = "100362,93086,6572,6573,6574,6575,6576,93087,6577,6578,6579,6580,6581,2999,6582,6656,6657,6658,6659,6583,6584,6585,6586,6587,9482,6588,6589,6590,6591,6592,6593,6594,6595,6596,6597,9483,6598,6599,6600,6601,6602,6603,6604,6605,6606,6607,9484,6608,6609,6610,6611,6612,6613,6614,6615,6616,6617,3000,9486,113623", "c1714" = "60024", "c2661" = "32776" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-9543"
+series_order = 1
 
 [[datasets]]
 id = "ibge-sidra-7113"

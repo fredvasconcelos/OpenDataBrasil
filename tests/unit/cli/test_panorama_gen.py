@@ -76,7 +76,9 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     assert "unidade não é única" in skipped["producao_origem_animal"]
     assert "casamentos" in ids
     # Total + %: a dimensão principal vira classificação do fato; as demais ficam fixas.
-    fact = next(f for f in gen.facts if f["dataset"] == "ibge-sidra-9543")
+    # Com a edição de 2010 (9841, ADR-0021), a 9543 vira série.
+    fact = next(f for f in gen.facts if f["id"] == "fact_sidra_9543")
+    assert fact["dataset"] == "ibge-serie-9543"
     # Sexo (principal, curada), cor ou raça e idade (detalhes marginais, ADR-0016). A idade
     # da 9543 tem faixas próprias: classificação c287t9543 (ADR-0014).
     assert fact["classifications"] == {
@@ -84,7 +86,10 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
         "c86": "c86_category_key",
         "c287t9543": "c287t9543_category_key",
     }
-    assert not {"Sexo", "Cor ou raça", "Idade"} & set(fact["fixed_categories"])
+    assert not {"Sexo", "Cor ou raça", "Idade"} & set(
+        fact["table_rules"]["9543"]["fixed_categories"]
+    )
+    assert fact["table_rules"]["9841"]["missing_as_total"] == ["c86"]
     alfab = next(d for d in gen.datasets if d["official_id"] == "9543")["params"]
     # Requisição extra: sexo no Total, cor ou raça sem o Total (já vem na principal).
     assert alfab["extra_sets"][0] == {"c2": "6794", "c86": "2776,2777,2778,2779,2780"}
@@ -300,11 +305,11 @@ def test_gerar_command_writes_three_fragments(tmp_path: Path) -> None:
         path.unlink()
     result = CliRunner().invoke(app, ["panorama", "gerar", "--raiz", str(tmp_path)])
     assert result.exit_code == 0, result.output
-    assert "127 KPIs gerados (177 tabelas), 77 com categorias" in result.output
+    assert "127 KPIs gerados (178 tabelas), 77 com categorias" in result.output
     assert "50 com detalhes marginais (117 classificações a mais)" in result.output
     assert "15 com tabelas-irmãs (49 tabelas)" in result.output  # ADR-0018
     data = tomllib.loads((tmp_path / "sources" / "ibge-panorama.toml").read_text("utf-8"))
-    assert len(data["datasets"]) == 177  # 127 bases + 49 irmãs (ADR-0018) + 1 edição (ADR-0021)
+    assert len(data["datasets"]) == 178  # 127 bases + 49 irmãs (ADR-0018) + 2 edições (ADR-0021)
     assert "institution" not in data
 
 
@@ -414,4 +419,3 @@ def test_crossings_up_to_uf() -> None:
     assert 'crossed = [["c2t2654", "c260"]]' in portal
     ind = next(i for i in gen.indicators if i["id"] == "obitos")
     assert any("Cruzamentos completos" in c for c in ind["caveats"])
-
