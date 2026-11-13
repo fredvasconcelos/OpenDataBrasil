@@ -81,7 +81,7 @@ export function Sidebar({
                   {t(`grains.${g.grain}`)}
                 </label>
               ))}
-              {grain ? <p className="grain-note">{t("dashboard.grainNote")}</p> : null}
+              {grain ? <p className="grain-note">{t(`grainNotes.${kpi.time_aggregation ?? "sum"}`)}</p> : null}
             </fieldset>
           ) : null}
           <label className="field">
@@ -97,13 +97,15 @@ export function Sidebar({
           {kpi.dimensions.length ? (
             <fieldset>
               <legend>{t("dashboard.dimensions")}</legend>
+              {kpi.exclusive_dimensions ? <p className="hint">{t("dashboard.dimensionsExclusive")}</p> : null}
               {kpi.dimensions.map((d) => (
                 <label key={d.classification_id} className="check">
                   <input
                     type="checkbox"
                     checked={dimensions.includes(d.classification_id)}
                     onChange={(e) => {
-                      const next = new Set(dimensions);
+                      // Dimensões marginais: marcar uma desmarca as outras (sem cruzamentos).
+                      const next = new Set(kpi.exclusive_dimensions ? [] : dimensions);
                       if (e.target.checked) next.add(d.classification_id);
                       else next.delete(d.classification_id);
                       onDimensions(nav.dimension_order.filter((x) => next.has(x)));

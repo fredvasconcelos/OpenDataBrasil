@@ -1,0 +1,174 @@
+# POF 1987-1988 e 1995-1996 (ADR-0016, opção A do mantenedor em 2026-11-12):
+# tabelas SIDRA 387 (distribuição da despesa), 400 (despesa com alimentação),
+# 414 (recebimento) e 417 (aquisição alimentar per capita, que também tem 2002 e
+# 2008).
+#
+# As pesquisas cobriam só as regiões metropolitanas de Belém, Fortaleza, Recife,
+# Salvador, Belo Horizonte, Rio de Janeiro, São Paulo, Curitiba e Porto Alegre,
+# Brasília e Goiânia ("Total das áreas"). Não há nível Brasil nem UF, e os
+# valores das tabelas 387, 400 e 414 são só percentuais. Por isso ficam numa série
+# separada da POF nacional (2002 em diante).
+#
+# Curado a partir dos descritores oficiais (configs/catalog/descritores/t387.json,
+# t400.json, t414.json e t417.json). Os tipos de despesa e as origens do recebimento
+# não têm hierarquia no descritor (todos no mesmo nível): ficam numa partição única,
+# sem inventar a árvore. A 400 tem raiz própria ("Despesa em alimentação") e usa a
+# classificação c210alim (ADR-0014), com o mesmo rótulo.
+
+config_version = "1.0.0"
+scope = "demografia"
+
+[[classifications]]
+id = "c201"
+name = "Classes de recebimento mensal familiar"
+silver_dimension = "Classes de recebimento mensal familiar"
+total = "6196"
+
+[[classifications.partitions]]
+id = "classes_recebimento_sm"
+label = "Classes de recebimento (salários mínimos)"
+categories = ["3497", "3498", "3499", "3500", "3501", "3502", "3503", "3504", "3505", "3506", "6547"]
+exhaustive = false
+summable = false
+note = "Faixas em salários mínimos (piso salarial de Cz$ 2.640,00 em 1987 e salário mínimo de R$ 112,00 em 1996, segundo a nota da tabela). A classe Até 2 inclui as famílias sem recebimento."
+
+[[classifications]]
+id = "c210"
+name = "Tipo de despesa"
+silver_dimension = "Tipo de despesa"
+total = "3618"
+
+[[classifications.partitions]]
+id = "tipos_despesa_pof_antiga"
+label = "Tipos de despesa"
+categories = ["3619", "3620", "3621", "3622", "3623", "3624", "3625", "3626", "3627", "3628", "3629", "3630", "3631", "3632", "3633", "3634", "3635", "3636", "3637", "3638", "3639", "3640", "3641", "3642", "3643", "3644", "3645", "3646", "3647", "5365", "3648", "3649", "3650", "3651", "3652", "3653", "3654", "3655", "3656", "3657", "3658", "3659", "5367", "3660", "3661", "3662", "5368", "3663", "3664", "3665", "3666", "5366", "3667", "3668", "3669", "5369", "3670", "3671", "3672", "5581", "3673", "3674", "3675", "3676", "3677", "3678", "3679", "3680"]
+exhaustive = false
+summable = false
+note = "Total: Desembolso global (100%). O descritor não traz a hierarquia: as categorias se sobrepõem (subtotais e itens)."
+
+[[classifications]]
+id = "c210alim"
+name = "Tipo de despesa"
+silver_dimension = "Tipo de despesa"
+total = "5764"
+datasets = ["ibge-sidra-400"]
+
+[[classifications.partitions]]
+id = "tipos_despesa_alimentacao"
+label = "Despesas com alimentação"
+categories = ["5473", "5474", "5765", "5766", "5767", "5475", "5768", "5769", "5770", "5771", "5476", "5772", "5773", "5774", "5477", "5775", "5776", "5777", "5478", "5778", "5779", "5780", "5781", "5479", "5782", "5783", "5784", "5785", "5822", "5786", "5787", "5788", "5482", "5789", "5790", "5483", "5791", "5792", "5793", "5484", "5794", "5795", "5796", "5797", "5485", "5798", "5799", "5800", "5486", "5801", "5802", "5803", "5487", "5804", "5805", "5806", "5807", "5488", "5808", "5809", "5810", "5811", "5584", "5812", "5813", "5814", "5815", "5489", "5816", "5491", "5817", "5818", "5819", "5820", "5821"]
+exhaustive = false
+summable = false
+note = "Total: Despesa em alimentação (100%). O descritor não traz a hierarquia: as categorias se sobrepõem (subtotais e itens)."
+
+[[classifications]]
+id = "c214"
+name = "Origem do recebimento"
+silver_dimension = "Origem do recebimento"
+total = "6177"
+
+[[classifications.partitions]]
+id = "origens_recebimento"
+label = "Origens do recebimento"
+categories = ["3581", "3582", "3549", "3550", "3551", "3552", "3583", "3584", "3585", "3586", "3587", "3588", "3553", "6178", "6179", "3591", "3592", "3593", "3554", "3594"]
+exhaustive = false
+summable = false
+note = "Total: Recebimento total (100%). O descritor não traz a hierarquia: as categorias se sobrepõem (subtotais e itens)."
+
+[[classifications]]
+id = "c215"
+name = "Grupos de produtos"
+silver_dimension = "Grupos de produtos"
+total = "0"
+
+[[classifications.partitions]]
+id = "grupos_produtos_pof"
+label = "Grupos de produtos"
+categories = ["3792", "3793", "3794", "3795", "3796", "3797", "3798", "3799", "3800", "3801", "3802", "111501", "3803", "3804", "3805", "3806", "111502", "3807", "111503"]
+exhaustive = false
+note = "Alguns grupos mudaram de nome e de código entre as edições (12, 16 e 17): cada um só tem valor nas edições em que existe."
+
+[[facts]]
+id = "fact_pof_old_expense_share"
+dataset = "ibge-sidra-387"
+grain = "território (Total das áreas da POF, Região Metropolitana, Município) x ano x classe de recebimento x tipo de despesa"
+description = "Distribuição da despesa média mensal familiar por tipo de despesa e classe de recebimento (POF 1987-1988 e 1995-1996). Tabela SIDRA 387."
+classifications = { "c201" = "receipt_class_category_key", "c210" = "expense_type_category_key" }
+
+[[indicators]]
+id = "pof_despesa_distribuicao_antiga"
+name = "Percentual da despesa média mensal familiar"
+description = "Distribuição da despesa média mensal familiar por tipo de despesa e classe de recebimento (POF 1987-1988 e 1995-1996)."
+dataset = "ibge-sidra-387"
+variable = "172"
+fact = "fact_pof_old_expense_share"
+column = "expense_share_pct"
+unit = "%"
+additivity = "non_additive"
+concept = "pof_despesa_distribuicao_antiga"
+path = ["Consumo e orçamentos familiares", "Despesas e rendimentos das famílias"]
+caveats = ["Só as áreas da pesquisa: 9 regiões metropolitanas (Belém, Fortaleza, Recife, Salvador, Belo Horizonte, Rio de Janeiro, São Paulo, Curitiba e Porto Alegre), Brasília e Goiânia, e o Total das áreas. Não há Brasil nem UF.", "Períodos: 1987, 1995 (anos de referência das pesquisas).", "Só percentuais: a tabela não publica os valores em moeda. Os de 1987 seriam em cruzados.", "Não comparável diretamente com a POF nacional (2002 em diante): outra cobertura, outros tipos de despesa e classes em salários mínimos.", "Nota da tabela 387: 1) Em 1987 o valor do piso salarial era cz$ 2.640,00, e em 1996 o salário mínimo correspondia a R$ 112,00.", "Nota da tabela 387: 2) Na classe de recebimento até 2 estão incluídas as famílias sem recebimento."]
+
+[[facts]]
+id = "fact_pof_old_food_share"
+dataset = "ibge-sidra-400"
+grain = "território (Total das áreas da POF, Região Metropolitana, Município) x ano x classe de recebimento x tipo de despesa"
+description = "Distribuição da despesa média mensal familiar com alimentação por tipo e classe de recebimento (POF 1987-1988 e 1995-1996). Tabela SIDRA 400."
+classifications = { "c201" = "receipt_class_category_key", "c210alim" = "food_expense_type_category_key" }
+
+[[indicators]]
+id = "pof_despesa_alimentacao_antiga"
+name = "Percentual da despesa média mensal familiar em alimentação"
+description = "Distribuição da despesa média mensal familiar com alimentação por tipo e classe de recebimento (POF 1987-1988 e 1995-1996)."
+dataset = "ibge-sidra-400"
+variable = "174"
+fact = "fact_pof_old_food_share"
+column = "food_share_pct"
+unit = "%"
+additivity = "non_additive"
+concept = "pof_despesa_alimentacao_antiga"
+path = ["Consumo e orçamentos familiares", "Alimentação e segurança alimentar"]
+caveats = ["Só as áreas da pesquisa: 9 regiões metropolitanas (Belém, Fortaleza, Recife, Salvador, Belo Horizonte, Rio de Janeiro, São Paulo, Curitiba e Porto Alegre), Brasília e Goiânia, e o Total das áreas. Não há Brasil nem UF.", "Períodos: 1987, 1995 (anos de referência das pesquisas).", "Só percentuais da despesa com alimentação.", "Não comparável diretamente com a POF nacional (2002 em diante).", "Nota da tabela 400: 1) Em 1987 o valor do piso salarial era cz$ 2.640,00, e em 1996 o salário mínimo correspondia a R$ 112,00.", "Nota da tabela 400: 2) Na classe de recebimento até 2 estão incluídas as famílias sem recebimento."]
+
+[[facts]]
+id = "fact_pof_old_income_share"
+dataset = "ibge-sidra-414"
+grain = "território (Total das áreas da POF, Região Metropolitana, Município) x ano x classe de recebimento x origem do recebimento"
+description = "Distribuição do recebimento médio mensal familiar por origem e classe de recebimento (POF 1987-1988 e 1995-1996). Tabela SIDRA 414."
+classifications = { "c201" = "receipt_class_category_key", "c214" = "income_origin_category_key" }
+
+[[indicators]]
+id = "pof_recebimento_distribuicao_antiga"
+name = "Percentual do recebimento médio mensal familiar"
+description = "Distribuição do recebimento médio mensal familiar por origem e classe de recebimento (POF 1987-1988 e 1995-1996)."
+dataset = "ibge-sidra-414"
+variable = "177"
+fact = "fact_pof_old_income_share"
+column = "income_share_pct"
+unit = "%"
+additivity = "non_additive"
+concept = "pof_recebimento_distribuicao_antiga"
+path = ["Consumo e orçamentos familiares", "Despesas e rendimentos das famílias"]
+caveats = ["Só as áreas da pesquisa: 9 regiões metropolitanas (Belém, Fortaleza, Recife, Salvador, Belo Horizonte, Rio de Janeiro, São Paulo, Curitiba e Porto Alegre), Brasília e Goiânia, e o Total das áreas. Não há Brasil nem UF.", "Períodos: 1987, 1995 (anos de referência das pesquisas).", "Só percentuais: a tabela não publica os valores em moeda.", "Não comparável diretamente com a POF nacional (2002 em diante).", "Nota da tabela 414: 1) Em 1987 o valor do piso salarial era cz$ 2.640,00, e em 1996 o salário mínimo correspondia a R$ 112,00.", "Nota da tabela 414: 2) Na classe de recebimento até 2 estão incluídas as famílias sem recebimento.", "Nota da tabela 414: 3) Os percentuais médios foram obtidos segundo o recebimento mensal familiar de cada classe de recebimento mensal familiar dividido pelo número de famílias das classes correspondentes."]
+
+[[facts]]
+id = "fact_pof_food_acquisition"
+dataset = "ibge-sidra-417"
+grain = "território (Total das áreas da POF, Região Metropolitana, Município) x ano x classe de recebimento x grupos de produtos"
+description = "Aquisição (monetária) alimentar domiciliar per capita anual, em quilos, por grupo de produtos e classe de recebimento (POF 1987-1988, 1995-1996, 2002-2003 e 2008-2009). Tabela SIDRA 417."
+classifications = { "c201" = "receipt_class_category_key", "c215" = "product_group_category_key" }
+
+[[indicators]]
+id = "aquisicao_alimentar"
+name = "Aquisição (monetária) alimentar domiciliar per capita anual"
+description = "Aquisição (monetária) alimentar domiciliar per capita anual, em quilos, por grupo de produtos e classe de recebimento (POF 1987-1988, 1995-1996, 2002-2003 e 2008-2009)."
+dataset = "ibge-sidra-417"
+variable = "180"
+fact = "fact_pof_food_acquisition"
+column = "per_capita_kg"
+unit = "Quilogramas"
+additivity = "non_additive"
+concept = "aquisicao_alimentar"
+path = ["Consumo e orçamentos familiares", "Alimentação e segurança alimentar"]
+caveats = ["Só as áreas da pesquisa: 9 regiões metropolitanas (Belém, Fortaleza, Recife, Salvador, Belo Horizonte, Rio de Janeiro, São Paulo, Curitiba e Porto Alegre), Brasília e Goiânia, e o Total das áreas. Não há Brasil nem UF.", "Períodos: 1987, 1995, 2002, 2008 (anos de referência das pesquisas).", "Só as áreas das POF de 1987 e 1995, também em 2002 e 2008: a série é comparável nessas áreas, não no país.", "Nota da tabela 417: 1) Em 1987 o valor do piso salarial era cz$ 2.640,00,  em 1996 o salário mínimo correspondia a R$ 112,00, em 2003 o salário mínimo correspondia a R$ 200,00 e em 2009 o salário mínimo correspondia a R$ 415,00.", "Nota da tabela 417: 2) Na classe de recebimento até 2 estão incluídas as famílias sem recebimento.", "Nota da tabela 417: 3) Os produtos cuja aquisição se dá em unidade de medida volumétrica estão expressos em peso na proporção 1 para 1."]
+

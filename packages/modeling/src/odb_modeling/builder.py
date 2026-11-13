@@ -184,6 +184,7 @@ class GoldBuilder:
         self._registry = registry
         self._code_version = code_version
         self._reader = DeltaReader()
+        self._reset_schema: frozenset[str] = frozenset()
 
     # ------------------------------------------------------------- configuração
 
@@ -241,13 +242,16 @@ class GoldBuilder:
         return out
 
     def _series_info(self, series_id: str, members: list[str]) -> model.DatasetInfo:
-        """Série de planilhas anuais do Sinesp VDE (uma tabela Silver por ano)."""
+        """Série de datasets: planilhas anuais do Sinesp VDE ou edições de tabelas SIDRA."""
         configs = [self._sources.dataset(m) for m in members]
-        if {c.silver.get("transformer") for c in configs} != {"sinesp_vde"}:
-            msg = f"{series_id}: a Gold desta versão aceita séries só do Sinesp VDE"
-            raise GoldBuildError(msg)
+        transformers = {c.silver.get("transformer") for c in configs}
         if len({c.license for c in configs}) != 1:
             msg = f"{series_id}: membros da série com licenças diferentes"
+            raise GoldBuildError(msg)
+        if transformers == {"sidra_observation"}:
+            return self._sidra_series_info(series_id, configs)
+        if transformers != {"sinesp_vde"}:
+            msg = f"{series_id}: a Gold desta versão aceita séries do Sinesp VDE e do SIDRA"
             raise GoldBuildError(msg)
         base = str(configs[0].silver.get("table_id", "SINESP-VDE"))
         return model.DatasetInfo(
@@ -258,6 +262,33 @@ class GoldBuilder:
             period_type="mes",
             table_ids=tuple(f"{base}-{c.params['reference_period']}" for c in configs),
             marginals=True,
+        )
+
+    @staticmethod
+    def _sidra_series_info(series_id: str, configs: list[Any]) -> model.DatasetInfo:
+        """Edições de uma pesquisa em tabelas SIDRA diferentes (ADR-0016).
+
+        Ex.: POF 2002-2003 (2309), 2008-2009 (1594) e 2017-2018 (6715). Os membros
+        declaram ``silver.series_order`` (1, 2, ...); a tabela, o link e a licença da
+        série são os do último, a edição mais recente. Cada observação mantém a
+        tabela de origem (``source_table_id``).
+        """
+        if any("series_order" not in c.silver for c in configs):
+            msg = f"{series_id}: membros SIDRA da série precisam de silver.series_order"
+            raise GoldBuildError(msg)
+        ordered = sorted(configs, key=lambda c: int(c.silver["series_order"]))
+        params = [SidraConnector.params(c) for c in ordered]
+        if len({p.period_type for p in params}) != 1:
+            msg = f"{series_id}: membros da série com tipos de período diferentes"
+            raise GoldBuildError(msg)
+        last = ordered[-1]
+        return model.DatasetInfo(
+            dataset_id=series_id,
+            table_id=params[-1].table,
+            reference_url=last.reference_url,
+            license_id=last.license,
+            period_type=params[-1].period_type,
+            table_ids=tuple(p.table for p in params),
         )
 
     def reference_dataset(self) -> str:
@@ -284,8 +315,20 @@ class GoldBuilder:
 
     # ------------------------------------------------------------- execução
 
-    def build(self, *, pipeline_run_id: str | None = None, force: bool = False) -> GoldBuild:
-        """Constrói a Gold. Erros ficam registrados no ``GoldBuild``."""
+    def build(
+        self,
+        *,
+        pipeline_run_id: str | None = None,
+        force: bool = False,
+        reset_schema: Sequence[str] = (),
+    ) -> GoldBuild:
+        """Constrói a Gold. Erros ficam registrados no ``GoldBuild``.
+
+        ``reset_schema``: tabelas cujo schema pode mudar de forma incompatível (coluna
+        removida) nesta construção, por pedido explícito do operador. Ex.: uma coluna
+        gravada por uma construção que falhou e nunca foi publicada.
+        """
+        self._reset_schema = frozenset(reset_schema)
         build = GoldBuild(
             build_id=str(uuid.uuid4()),
             scope=self._catalog.scope,
@@ -748,6 +791,12 @@ class GoldBuilder:
                 existing = pl.scan_delta(uri).collect_schema()
                 comparison = compare_schema(existing, contract)
                 if comparison.change is SchemaChange.INCOMPATIBLE:
+                    if name in self._reset_schema:
+                        logger.warning(
+                            "gold schema reset",
+                            extra={"table": name, "details": list(comparison.details)},
+                        )
+                        continue
                     msg = f"{name}: mudança de schema incompatível: {list(comparison.details)}"
                     raise GoldBuildError(msg)
                 evolve[name] = comparison.change is SchemaChange.COMPATIBLE_ADDITION
@@ -772,6 +821,7 @@ class GoldBuilder:
             mode=mode,
             partition_by=list(contract.partition_by),
             evolve_schema=evolve[name],
+            overwrite_schema=name in self._reset_schema and mode == "overwrite",
         )
         build.tables[name] = GoldTable(
             table_id=name,

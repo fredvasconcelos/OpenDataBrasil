@@ -212,9 +212,14 @@ def test_repository_scope_with_fragments_matches_sources() -> None:
 
     catalog = load_scope(REPO_INDICATORS, "demografia")
     sources = load_sources(REPO_INDICATORS.parent / "sources")
-    missing = [d for d in catalog.datasets() if d not in sources.datasets]
+    series = {d.silver.get("series") for d in sources.datasets.values()} - {None}
+    missing = [d for d in catalog.datasets() if d not in sources.datasets and d not in series]
     assert not missing
     assert "despesa_familiar" in {i.id for i in catalog.indicators}
+    # A POF em série (ADR-0016): três edições num fato, com regras para a 2309.
+    fact = catalog.fact("fact_pof_household_expense")
+    assert fact.dataset == "ibge-pof-despesa-familiar"
+    assert fact.table_rules["2309"].missing_as_total == ("c339",)
 
 
 def test_fragment_extends_curated_classification(tmp_path: Path) -> None:

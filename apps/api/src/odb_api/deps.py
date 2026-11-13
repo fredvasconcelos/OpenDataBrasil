@@ -9,7 +9,6 @@ from sqlalchemy import Engine
 from odb_api.config import ApiSettings
 from odb_api.gold import GoldGateway
 from odb_api.kpis import KpiService
-from odb_api.portal import load_portal
 from odb_api.release import ReleaseResolver
 from odb_api.repository import CatalogRepository
 from odb_catalog.db import make_engine
@@ -19,6 +18,7 @@ from odb_common.storage import LakehouseLayout, Layer
 from odb_ingestion.config import SourceCatalog, load_sources
 from odb_query_engine import DuckDBConfig, DuckDBReadEngine, ReadEngine
 from odb_semantics import load_panorama
+from odb_semantics.portal import load_portal
 
 
 class _NoVerifier:
@@ -57,6 +57,10 @@ def provenance(sources: SourceCatalog) -> dict[str, tuple[str, str | None]]:
         institution = sources.institutions[sources.source_institution[dataset.source]]
         connector = sources.sources[dataset.source].connector
         out[dataset_id] = (institution.acronym, "SIDRA" if connector == "sidra" else None)
+        # Série de datasets (silver.series): a proveniência é a dos membros.
+        series = dataset.silver.get("series")
+        if series:
+            out.setdefault(str(series), out[dataset_id])
     return out
 
 

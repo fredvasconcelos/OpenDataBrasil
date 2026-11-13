@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import hashlib
 import tomllib
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Literal
 
@@ -144,6 +144,22 @@ class Classification(_Strict):
         return frozenset({self.total, *(c for p in self.partitions for c in p.categories)})
 
 
+class TableRule(_Strict):
+    """Regras de uma tabela de origem de um fato em série (ADR-0016).
+
+    Numa série de tabelas (``silver.series``), cada edição pode ter classificações
+    próprias. Ex.: a POF 2002-2003 (SIDRA 2309) tem a situação do domicílio e
+    outro conceito de classe de rendimento; a 2008-2009 e a 2017-2018 (1594 e
+    6715) usam a c339.
+    """
+
+    # Como ``FactConfig.fixed_categories``, só para as linhas desta tabela.
+    fixed_categories: dict[str, str] = Field(default_factory=dict)
+    # Classificações do fato que a tabela não tem: o valor é do universo inteiro e
+    # entra no Total delas (a POF 2002 não tem a c339; o valor é de todas as famílias).
+    missing_as_total: tuple[str, ...] = ()
+
+
 class FactConfig(_Strict):
     """Fato temático da Gold."""
 
@@ -159,6 +175,36 @@ class FactConfig(_Strict):
     # dimensão (o fato fica sem desagregação). Usado pelos KPIs de Total do
     # panorama (ADR-0010), cujas classificações ainda não têm código conhecido.
     fixed_categories: dict[str, str] = Field(default_factory=dict)
+    # Tabela de origem (código na Silver) → regras próprias, nas séries de tabelas.
+    table_rules: dict[str, TableRule] = Field(default_factory=dict)
+
+    def fixed_for(self, table_id: str) -> dict[str, str]:
+        """Dimensões fixas das linhas de uma tabela de origem."""
+        rule = self.table_rules.get(table_id)
+        return {**self.fixed_categories, **(rule.fixed_categories if rule else {})}
+
+    def has_fixed(self) -> bool:
+        """O fato tem alguma dimensão fixa (geral ou de uma tabela)."""
+        return bool(self.fixed_categories) or any(
+            r.fixed_categories for r in self.table_rules.values()
+        )
+
+
+def _fixed_problems(fact: FactConfig, dimension_of: Mapping[str, str]) -> list[str]:
+    """Dimensões fixas e regras por tabela de origem coerentes com o fato (ADR-0016)."""
+    problems = []
+    classified = {dimension_of[c] for c in fact.classifications if c in dimension_of}
+    both = sorted(set(fact.fixed_categories) & classified)
+    if both:
+        problems.append(f"{fact.id}: dimensões fixas e classificadas ao mesmo tempo {both}")
+    for table, rule in fact.table_rules.items():
+        outside = sorted(set(rule.missing_as_total) - set(fact.classifications))
+        if outside:
+            problems.append(f"{fact.id}: missing_as_total da tabela {table} fora do fato {outside}")
+        clash = sorted(set(rule.fixed_categories) & classified)
+        if clash:
+            problems.append(f"{fact.id}: dimensões fixas e classificadas na tabela {table} {clash}")
+    return problems
 
 
 class Incompatibility(_Strict):
@@ -187,10 +233,14 @@ class IndicatorConfig(_Strict):
     # Primeiro período publicado na Gold (código do SIDRA ou prefixo, como "1998"):
     # a Silver guarda a série inteira; a Gold mostra a partir daqui.
     first_period: str | None = Field(default=None, pattern=r"^\d{4,6}$")
-    # Agregação no tempo (ADR-0013). "sum" só para fluxos (ocorrências, vítimas, óbitos):
-    # o trimestre, o semestre e o ano são a soma dos meses. Estoques (população,
-    # ocupados), taxas e índices não declaram e nunca são somados no tempo.
-    time_aggregation: Literal["sum"] | None = None
+    # Agregação no tempo (ADR-0013 e ADR-0017): como o trimestre, o semestre e o ano
+    # saem dos períodos publicados.
+    # - "sum": fluxos (ocorrências, óbitos, abates, PIB a preços correntes);
+    # - "mean": números-índice (o índice anual da PMC, PMS e PIM é a média dos meses)
+    #   e médias por período (rendimento médio, massa mensal, pessoas ocupadas);
+    # - "last": acumulados em 12 meses e estimativas revisadas (o ano é o último mês).
+    # Taxas sem regra oficial de agregação (desocupação, investimento) não declaram.
+    time_aggregation: Literal["sum", "mean", "last"] | None = None
 
 
 def _dimension_scope_problems(classifications: Sequence[Classification]) -> list[str]:
@@ -292,12 +342,7 @@ class SemanticCatalog(_Strict):
             unknown = sorted(set(fact.classifications) - classes)
             if unknown:
                 problems.append(f"{fact.id}: classificações não declaradas {unknown}")
-            both = sorted(
-                set(fact.fixed_categories)
-                & {dimension_of[c] for c in fact.classifications if c in dimension_of}
-            )
-            if both:
-                problems.append(f"{fact.id}: dimensões fixas e classificadas ao mesmo tempo {both}")
+            problems += _fixed_problems(fact, dimension_of)
         for ind in self.indicators:
             fact_cfg = facts.get(ind.fact)
             if fact_cfg is None:

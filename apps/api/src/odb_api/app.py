@@ -18,6 +18,7 @@ from odb_api.deps import ApiDeps, build_deps
 from odb_api.middleware import RateLimiter, make_middleware
 from odb_api.routes import catalog, kpi, query, territory
 from odb_api.routes.common import Deps
+from odb_api.schemas import HealthOut
 from odb_common.logging import configure_logging
 from odb_common.settings import Settings
 
@@ -62,10 +63,22 @@ def create_app(deps: ApiDeps | None, settings: ApiSettings | None = None) -> Fas
         app.include_router(router)
 
     @app.get("/health", tags=["operação"], summary="Saúde do serviço")
-    def health(d: Deps) -> dict[str, str]:
-        """PostgreSQL acessível e release ativo resolvido."""
+    def health(d: Deps) -> HealthOut:
+        """PostgreSQL acessível, release ativo resolvido e coerência do portal.
+
+        ``portal`` é ``degraded`` quando algum KPI da configuração não casa com o
+        release ativo; esses KPIs saem da navegação e os demais seguem no ar
+        (ADR-0015). O serviço continua saudável (200).
+        """
         d.catalog.ping()
-        return {"status": "ok", "release_id": d.resolver.current().release_id}
+        ctx = d.resolver.current()
+        unavailable = d.kpis.unavailable(ctx)
+        return HealthOut(
+            status="ok",
+            release_id=ctx.release_id,
+            portal="degraded" if unavailable else "ok",
+            unavailable_kpis=unavailable,
+        )
 
     return app
 

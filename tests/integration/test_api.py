@@ -14,12 +14,12 @@ from odb_api.config import ApiSettings
 from odb_api.deps import ApiDeps, _NoVerifier
 from odb_api.gold import GoldGateway
 from odb_api.kpis import KpiService
-from odb_api.portal import load_portal
 from odb_api.release import ReleaseResolver
 from odb_api.repository import CatalogRepository
 from odb_catalog.publication import PublicationService
 from odb_cli.main import app as cli
 from odb_query_engine import DuckDBConfig, DuckDBReadEngine
+from odb_semantics.portal import load_portal
 from tests.integration.test_gold import lake  # noqa: F401 - fixture reaproveitada
 from tests.support import duckdb_extension_directory
 
@@ -60,7 +60,12 @@ def test_api_with_reader_role(lake: Path, reader_engine: Engine, tmp_path: Path)
         health = client.get("/health").json()
         active = publication.active("demografia")
         assert active is not None
-        assert health == {"status": "ok", "release_id": active.release_id}
+        assert health == {
+            "status": "ok",
+            "release_id": active.release_id,
+            "portal": "ok",
+            "unavailable_kpis": {},
+        }
         sources = client.get("/api/v1/sources").json()
         assert {s["source_id"] for s in sources} == {"ibge-sidra", "ibge-geoftp"}
         dataset = client.get("/api/v1/datasets/ibge-sidra-9606").json()

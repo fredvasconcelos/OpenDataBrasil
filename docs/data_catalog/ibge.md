@@ -201,6 +201,32 @@ iguais. A 9606 ainda traz cor ou raça e 2010. Por isso:
 | Linhas | 39.666 |
 | Brasil | 203.574 residentes (104.555 homens + 99.019 mulheres); 167.769 quilombolas (86.284 + 81.485), iguais à 9723 |
 
+### POF: `ibge-sidra-2309`, `ibge-sidra-1594` e `ibge-sidra-6715` (série `ibge-pof-despesa-familiar`)
+
+Despesa monetária e não monetária média mensal familiar (1201, Reais) e sua
+distribuição (1204, %) em três edições, num só fato (ADR-0016). Valores de
+2026-11-12, Brasil, despesa total, em reais da época.
+
+| Tabela | Edição | Níveis | Classes de rendimento | Tipos de despesa (c12190) | Linhas | Despesa total (Brasil) |
+|---|---|---|---|---|---|---|
+| 2309 | 2002-2003 | N1, N2 | só o Total (c12191, outro conceito; c1 no Total) | 89 (71 iguais a 2018, 18 próprios) | 1.068 | R$ 1.778,03 |
+| 1594 | 2008-2009 | N1, N2, N3 | c339: 7 faixas (2 a 25 SM de R$ 415) | 93 | 49.104 | R$ 2.626,31 |
+| 6715 | 2017-2018 | N1, N2, N3 | c339: 7 faixas (2 a 25 SM de R$ 954) | 93 | 49.104 | ver a Gold |
+
+### POF de 1987 e 1995: `ibge-sidra-387`, `-400`, `-414` e `-417`
+
+Só as áreas da pesquisa: Total das áreas (N103), 9 regiões metropolitanas (N7;
+código com o prefixo da UF, como 1501 = Belém) e os municípios de Brasília e
+Goiânia (N6). As classes de recebimento (c201) são faixas de salário mínimo (piso
+de Cz$ 2.640,00 em 1987 e SM de R$ 112,00 em 1996, segundo a nota oficial).
+
+| Tabela | Variável | Classificação | Períodos |
+|---|---|---|---|
+| 387 | 172 % da despesa média mensal familiar | c210 Tipo de despesa (68 e o Desembolso global, sem hierarquia no descritor) | 1987, 1995 |
+| 400 | 174 % da despesa com alimentação | c210 Tipo de despesa (75 e a Despesa em alimentação; na Gold, `c210alim`) | 1987, 1995 |
+| 414 | 177 % do recebimento médio mensal familiar | c214 Origem do recebimento (20 e o Recebimento total) | 1987, 1995 |
+| 417 | 180 Aquisição alimentar per capita anual (kg) | c215 Grupos de produtos (19, alguns próprios de cada edição) | 1987, 1995, 2002, 2008 |
+
 ### Como os níveis especiais foram obtidos
 
 Consultadas pelo nível Brasil, a 9954 e a 9723 respondiam sem a dimensão "Terra

@@ -72,6 +72,8 @@ class IndicatorMeta:
     incompatible_with: Mapping[str, str] = field(default_factory=dict)
     # Grãos de tempo oferecidos, do publicado ao menos detalhado (ADR-0013).
     time_grains: tuple[str, ...] = ()
+    # "sum", "mean" ou "last" (ADR-0017); None: só o grão publicado.
+    time_aggregation: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -203,10 +205,38 @@ def _check_time(query: IndicatorQuery, selected: Sequence[IndicatorMeta]) -> str
                 f"(disponível: {list(ind.time_grains)})"
             )
             raise SemanticError(msg)
+    rules = {ind.time_aggregation for ind in selected if ind.time_grains[0] != query.grain}
+    if len(rules) > 1:
+        listed = sorted(map(str, rules))
+        msg = f"indicadores com agregações no tempo diferentes na mesma consulta: {listed}"
+        raise SemanticError(msg)
+    how = TIME_AGGREGATION_LABELS.get(next(iter(rules), None) or "sum", "somados")
     return (
-        f"valores por {label} somados a partir dos períodos publicados: resultado "
+        f"valores por {label} {how} a partir dos períodos publicados: resultado "
         "derivado. Período incompleto fica sem valor."
     )
+
+
+# Agregação no tempo (ADR-0017): expressão SQL, status do valor e texto do alerta. A
+# ordem lexicográfica dos códigos de período ("2024M01" < "2024M12", "2024T1" < "2024T4")
+# é a cronológica dentro do ano, o que basta para o último valor.
+TIME_AGGREGATION_SQL = {
+    "sum": "sum(o.value)",
+    "mean": "avg(o.value)",
+    "last": "arg_max(o.value, o.period)",
+}
+TIME_AGGREGATION_STATUS = {"sum": "derived_sum", "mean": "derived_mean", "last": "derived_last"}
+TIME_AGGREGATION_LABELS = {
+    "sum": "somados",
+    "mean": "pela média",
+    "last": "pelo último período",
+}
+
+
+def time_aggregation(query: IndicatorQuery, meta: Mapping[str, IndicatorMeta]) -> str:
+    """Regra de agregação no tempo dos indicadores da consulta (a mesma para todos)."""
+    rules = {meta[i].time_aggregation for i in query.indicators if i in meta}
+    return next(iter(rules - {None}), None) or "sum"
 
 
 def aggregates_time(query: IndicatorQuery, meta: Mapping[str, IndicatorMeta]) -> bool:
@@ -262,11 +292,13 @@ def plan_query(query: IndicatorQuery, meta: Mapping[str, IndicatorMeta]) -> Quer
     if by_time:
         params["grain"] = query.grain
         complete = "count(o.value) = any_value(p.parts)"
+        rule = time_aggregation(query, meta)
+        value, status = TIME_AGGREGATION_SQL[rule], TIME_AGGREGATION_STATUS[rule]
         sql = (
             "SELECT o.indicator_id, o.geography_key, g.name AS territory_name, o.level_id, "
             "p.ancestor_period AS period, o.breakdown_key, b.label AS breakdown_label, "
-            f"CASE WHEN {complete} THEN sum(o.value) END AS value, "
-            f"CASE WHEN {complete} THEN 'derived_sum' ELSE 'incomplete_period' END "
+            f"CASE WHEN {complete} THEN {value} END AS value, "
+            f"CASE WHEN {complete} THEN '{status}' ELSE 'incomplete_period' END "
             "AS value_status, any_value(o.unit) AS unit, count(o.value) AS parts_with_value, "
             "any_value(p.parts) AS parts_expected FROM {{obs}} AS o "
             "JOIN {{per}} AS p ON p.period = o.period AND p.ancestor_type = $grain "
@@ -336,5 +368,6 @@ def meta_from_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, IndicatorMeta
                 str(i["indicator"]): str(i["reason"]) for i in r["incompatible_with"] or ()
             },
             time_grains=tuple(r.get("time_grains") or ()),
+            time_aggregation=r.get("time_aggregation"),
         )
     return out

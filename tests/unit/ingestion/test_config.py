@@ -28,6 +28,14 @@ def test_repository_sources_are_valid() -> None:
         "ibge-malha-uf-2022",
         "ibge-malha-municipios-2022",
         "ibge-sidra-6715",
+        # POF 2008-2009 e 2002-2003, em série com a 6715 (ADR-0016).
+        "ibge-sidra-1594",
+        "ibge-sidra-2309",
+        # POF de 1987 e 1995 (regiões metropolitanas), opção A do mantenedor (ADR-0016).
+        "ibge-sidra-387",
+        "ibge-sidra-400",
+        "ibge-sidra-414",
+        "ibge-sidra-417",
     }
     # O fragmento gerado do panorama só acrescenta datasets SIDRA.
     datasus = {d for d in catalog.datasets if d.startswith("datasus-")}

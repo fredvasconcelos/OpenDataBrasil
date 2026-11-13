@@ -112,7 +112,8 @@ Os testes cobrem:
 - KPI de Total gerado do panorama (Nascidos vivos, tabela 2609): mapa por UF,
   fonte e notas oficiais no rodapé;
 - POF 6715 completa: classes de rendimento e despesas de consumo, com o tooltip do
-  mapa em matriz inteiro na janela;
+  mapa em matriz inteiro na janela; série 2002, 2008 e 2018 (ADR-0016), com só as
+  faixas de rendimento da edição no tooltip;
 - cabeçalho e rodapé (v2.3): botão do GitHub quando há endereço, rodapé completo
   no início e faixa de 44 px no Painel, sem rolagem da página;
 - série mensal do IPCA desde jan 1998, eixo de tempo e tooltip por teclado;
@@ -120,7 +121,14 @@ Os testes cobrem:
   preparação sem ação, busca pelo nº da tabela, filtro de situação e link da
   tabela na fonte; Início no tema escuro;
 - mapa em % de uma categoria (Municípios com Plano Diretor, legenda
-  "% Com Plano Diretor").
+  "% Com Plano Diretor");
+- POF em série (ADR-0016): na tabela de 2008, só as faixas de 2008 (e o contrário em
+  2018), e o período 2002 disponível;
+- detalhes marginais (ADR-0016): nos óbitos, o aviso "Uma por vez" e marcar uma
+  dimensão desmarca a outra; a POF de 1995 abre no Total das áreas, com a tabela nas
+  regiões metropolitanas;
+- agregação no tempo (ADR-0017): vendas de materiais de construção por ano mostram a
+  nota da média, e o IPCA por ano, a do último mês, com 4,83% em 2024.
 
 As capturas ficam em `apps/portal/test-results/`. Esses testes dependem dos
 dados reais e não rodam no CI.

@@ -74,6 +74,19 @@ def test_schema_evolution_opt_in(writer: DeltaWriter, uri: str) -> None:
     assert writer.write(uri, evolved, run_id="r", evolve_schema=True).version == 1
 
 
+def test_schema_reset_only_on_request_and_old_versions_stay(writer: DeltaWriter, uri: str) -> None:
+    """``odb gold build --reset-schema``: coluna removida só por pedido explícito."""
+    wide = make_frame([1]).with_columns(pl.lit("n").alias("note"))
+    writer.write(uri, wide, run_id="r")
+    narrow = make_frame([2])
+    with pytest.raises(TableWriteError, match="exige mode='overwrite'"):
+        writer.write(uri, narrow, run_id="r", overwrite_schema=True)
+    result = writer.write(uri, narrow, run_id="r", mode="overwrite", overwrite_schema=True)
+    assert "note" not in pl.read_delta(uri).columns
+    # A versão anterior, que um release pode ter fixado, continua legível com a coluna.
+    assert "note" in pl.read_delta(uri, version=result.version - 1).columns
+
+
 @pytest.mark.parametrize(
     ("target", "message"),
     [

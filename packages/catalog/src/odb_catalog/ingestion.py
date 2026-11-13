@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from collections.abc import Mapping
 from datetime import datetime
@@ -113,6 +114,22 @@ class PostgresIngestionRegistry:
                         "cfg": _j(ds.model_dump(mode="json")),
                         "sha": ds.config_sha256(),
                     },
+                )
+            for row in series_rows(catalog):
+                conn.execute(
+                    text(
+                        "INSERT INTO catalog.dataset (dataset_id, source_id, official_id, title, "
+                        "description, license_id, access_classification, periodicity, "
+                        "reference_url, enabled, config, config_sha256) VALUES (:id, :src, :oid, "
+                        ":title, :desc, :lic, :acc, :per, :ref, false, CAST(:cfg AS jsonb), "
+                        ":sha) ON CONFLICT (dataset_id) DO UPDATE SET "
+                        "official_id = EXCLUDED.official_id, title = EXCLUDED.title, "
+                        "description = EXCLUDED.description, license_id = EXCLUDED.license_id, "
+                        "reference_url = EXCLUDED.reference_url, config = EXCLUDED.config, "
+                        "config_sha256 = EXCLUDED.config_sha256, updated_at = now() "
+                        "WHERE catalog.dataset.config_sha256 <> EXCLUDED.config_sha256"
+                    ),
+                    row,
                 )
 
     def start_ingestion(
@@ -318,3 +335,40 @@ class PostgresIngestionRegistry:
                 .all()
             )
         return [dict(r) for r in rows]
+
+
+def series_rows(catalog: SourceCatalog) -> list[dict[str, Any]]:
+    """Séries de datasets (``silver.series``) sem dataset próprio, para o catálogo.
+
+    Os indicadores de uma série apontam para o id da série (ADR-0016). O Sinesp VDE
+    tem um dataset real com esse id (a página das notas); a POF não: a entrada vem
+    do membro mais recente (maior ``silver.series_order``), sem ingestão própria.
+    """
+    members: dict[str, list[Any]] = {}
+    for ds in catalog.datasets.values():
+        series = ds.silver.get("series")
+        if series and series not in catalog.datasets:
+            members.setdefault(str(series), []).append(ds)
+    rows = []
+    for series_id, group in sorted(members.items()):
+        group.sort(key=lambda d: (int(d.silver.get("series_order", 0)), d.id))
+        last = group[-1]
+        config = {"series_members": [d.id for d in group]}
+        tables = ", ".join(d.official_id or d.id for d in group)
+        rows.append(
+            {
+                "id": series_id,
+                "src": last.source,
+                "oid": tables,
+                "title": f"Série: {last.title}",
+                "desc": f"Série de {len(group)} datasets ({tables}) num só indicador; "
+                "cada observação guarda a tabela de origem.",
+                "lic": last.license,
+                "acc": last.access_classification,
+                "per": last.periodicity,
+                "ref": last.reference_url,
+                "cfg": _j(config),
+                "sha": hashlib.sha256(_j(config).encode()).hexdigest(),
+            }
+        )
+    return rows

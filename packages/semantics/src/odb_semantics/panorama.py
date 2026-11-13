@@ -30,6 +30,7 @@ import tomllib
 from collections import Counter
 from collections.abc import Iterable, Mapping
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
@@ -75,6 +76,13 @@ class PanoramaKpi(_Strict):
     referencia: dict[str, str] = Field(default_factory=dict)
     # Categoria cuja participação no Total colore o mapa (KPIs de categoria).
     categoria_mapa: str | None = Field(default=None, pattern=r"^\d+$")
+    # Agregação no tempo (ADR-0017) para KPIs mensais e trimestrais: "soma" (fluxos),
+    # "media" (números-índice, médias por período) ou "ultimo" (acumulados em 12
+    # meses, estimativas revisadas). Sem o campo, só o grão publicado.
+    agregacao_tempo: Literal["soma", "media", "ultimo"] | None = None
+    # Tabelas-irmãs (ADR-0018): a mesma variável com uma classificação a mais (cor ou
+    # raça, idade, instrução...), que entra como detalhe do KPI.
+    complementos: tuple[str, ...] = Field(default=(), max_length=12)
 
 
 class PanoramaExternal(_Strict):

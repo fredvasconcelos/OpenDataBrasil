@@ -144,3 +144,62 @@ def test_grain_sql_sums_complete_periods_only() -> None:
     # Abril publicado, maio indisponível e junho ausente: o trimestre fica sem valor.
     assert (t2[cols.index("value")], t2[cols.index("value_status")]) == (None, "incomplete_period")
     assert (t2[cols.index("parts_with_value")], t2[cols.index("parts_expected")]) == (1, 3)
+
+
+@pytest.mark.parametrize(
+    ("rule", "value", "status"),
+    [("sum", 3.0, "derived_sum"), ("mean", 1.0, "derived_mean"), ("last", 0.0, "derived_last")],
+)
+def test_time_aggregation_rules(rule: str, value: float, status: str) -> None:
+    """ADR-0017: soma (fluxos), média (números-índice) e último valor (acumulados)."""
+    con = duckdb.connect()
+    con.execute(
+        "CREATE TABLE obs AS SELECT * FROM (VALUES "
+        "('x','uf:29','uf','2025M01','none',1.0,'valid','u',[]::VARCHAR[]),"
+        "('x','uf:29','uf','2025M02','none',2.0,'valid','u',[]::VARCHAR[]),"
+        "('x','uf:29','uf','2025M03','none',0.0,'true_zero','u',[]::VARCHAR[])"
+        ") AS t(indicator_id, geography_key, level_id, period, breakdown_key, value, "
+        "value_status, unit, flags)"
+    )
+    con.execute("CREATE TABLE geo AS SELECT 'uf:29' AS geography_key, 'Bahia' AS name")
+    con.execute(
+        "CREATE TABLE brk AS SELECT 'none' AS breakdown_key, 'Total' AS label, "
+        "[]::VARCHAR[] AS non_total_classifications, []::VARCHAR[] AS category_keys"
+    )
+    con.execute(
+        "CREATE TABLE per AS SELECT * FROM (VALUES "
+        "('2025M01','2025T1','trimestre',3),('2025M02','2025T1','trimestre',3),"
+        "('2025M03','2025T1','trimestre',3)) AS t(period, ancestor_period, ancestor_type, parts)"
+    )
+    meta = {
+        "x": IndicatorMeta(
+            "x",
+            "X",
+            "u",
+            "non_additive",
+            "x",
+            LEVELS,
+            ("2025M01",),
+            (),
+            time_grains=("mes", "trimestre", "semestre", "ano"),
+            time_aggregation=rule,
+        )
+    }
+    plan = plan_query(IndicatorQuery(("x",), "uf", grain="trimestre"), meta)
+    sql = plan.sql_template
+    for alias in plan.aliases:
+        sql = sql.replace("{{" + alias + "}}", alias)
+    row = con.execute(sql, dict(plan.params)).fetchone()
+    cols = [d[0] for d in con.description]
+    assert row is not None
+    assert (row[cols.index("value")], row[cols.index("value_status")]) == (value, status)
+
+
+def test_mixed_time_aggregations_are_refused() -> None:
+    other = IndicatorMeta(
+        "idx", "Índice", "Número-índice", "non_additive", "idx", LEVELS, ("2024M01",), (),
+        time_grains=("mes", "trimestre", "semestre", "ano"), time_aggregation="mean",
+    )  # fmt: skip
+    meta = {**META, "idx": other}
+    with pytest.raises(SemanticError, match="agregações no tempo diferentes"):
+        plan_query(IndicatorQuery(("vitimas", "idx"), "uf", grain="ano"), meta)

@@ -486,3 +486,40 @@ def test_detail_levels_split_total_and_categories() -> None:
                 }
             )
         )
+
+
+def test_extra_sets_bring_marginal_details() -> None:
+    """ADR-0016: cada conjunto extra traz outra classificação, com as demais no Total."""
+    base = {
+        "table": "9543",
+        "variables": ["2513"],
+        "territorial_levels": ["n1", "n2", "n3", "n6"],
+        "estimated_values_per_period": 16899,
+        "classifications": {"c2": "all", "c287": "100362"},
+    }
+    params = SidraConnector.params(
+        _ds(
+            {
+                **base,
+                # c86 não está em classifications: a principal a deixa no Total padrão.
+                "extra_sets": [{"c2": "6794", "c86": "2776,2777,2778,2779,2780"}],
+                "extra_levels": ["n1", "n2", "n3"],
+            }
+        )
+    )
+    main, extra = params.request_groups()
+    assert (main.suffix, main.levels) == ("", ())
+    assert extra.suffix == "-xc86"  # pela classificação detalhada, não pela posição
+    assert extra.classifications == {
+        "c2": "6794",
+        "c287": "100362",
+        "c86": "2776,2777,2778,2779,2780",
+    }
+    assert extra.levels == ("n1", "n2", "n3")
+    assert params.request_group("n1n2n3n6-p2022-xc86").levels == ("n1", "n2", "n3")
+    with pytest.raises(ValueError, match="extra_levels fora"):
+        SidraConnector.params(
+            _ds({**base, "extra_sets": [{"c86": "2776"}], "extra_levels": ["n7"]})
+        )
+    with pytest.raises(ValueError, match="extra_levels exige"):
+        SidraConnector.params(_ds({**base, "extra_levels": ["n1"]}))

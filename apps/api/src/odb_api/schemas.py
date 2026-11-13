@@ -196,9 +196,13 @@ class KpiOut(_Out):
     levels: list[str]
     map_levels: list[str]
     dimensions: list[DimensionOut]
+    # Dimensões marginais: detalhar uma por vez (ADR-0016).
+    exclusive_dimensions: bool = False
     caveats: list[str]
     # O primeiro é o grão publicado; os demais são somas (só fluxos). Vazio sem períodos.
     time_grains: list[TimeGrainOut] = []
+    # Como os grãos maiores saem do publicado: "sum", "mean" ou "last" (ADR-0017).
+    time_aggregation: Literal["sum", "mean", "last"] | None = None
     source: KpiSourceOut
 
 
@@ -245,6 +249,18 @@ class NavigationOut(_Out):
     scope: str
     dimension_order: list[str]
     themes: list[ThemeOut]
+
+
+class HealthOut(_Out):
+    """Saúde do serviço (ADR-0015)."""
+
+    status: Literal["ok"]
+    release_id: str
+    # "degraded": KPIs da configuração incoerentes com o release saíram da navegação.
+    portal: Literal["ok", "degraded"]
+    unavailable_kpis: dict[str, list[str]] = Field(
+        description="KPI → problemas contra o release ativo (vazio quando o portal está ok)."
+    )
 
 
 class MapValueOut(_Out):

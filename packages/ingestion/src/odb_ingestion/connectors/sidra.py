@@ -112,6 +112,15 @@ class SidraParams(BaseModel):
     detail_classification: str | None = Field(default=None, pattern=r"^c\d{1,6}$")
     detail_total: str | None = Field(default=None, pattern=r"^\d+$")
     detail_levels: tuple[str, ...] = ()
+    # Detalhes marginais (ADR-0016): cada conjunto troca as categorias de
+    # ``classifications`` e vira uma requisição própria por período (sufixo
+    # ``-x<classificação>``, a última do conjunto, que é a detalhada). Usado para
+    # trazer outra classificação inteira com as demais no Total, sem pedir os
+    # cruzamentos. As categorias do conjunto não repetem o Total
+    # da classificação detalhada, que já vem na requisição principal.
+    extra_sets: tuple[dict[str, str], ...] = ()
+    # Níveis das requisições extras (vazio: os do dataset).
+    extra_levels: tuple[str, ...] = ()
     period_type: Literal["ano", "mes", "trimestre"] = "ano"
     # Meses ou trimestres do mesmo ano numa única requisição (partição "p<ano>").
     # Com isso, ``estimated_values_per_period``, ``min_rows`` e ``max_rows`` valem
@@ -225,6 +234,35 @@ class SidraParams(BaseModel):
                 raise ValueError(msg)
         return self
 
+    @model_validator(mode="after")
+    def _extras(self) -> SidraParams:
+        if not self.extra_sets:
+            if self.extra_levels:
+                msg = "extra_levels exige extra_sets"
+                raise ValueError(msg)
+            return self
+        if self.split_by_classification:
+            msg = "extra_sets não combina com split_by_classification"
+            raise ValueError(msg)
+        detailed = [list(extra)[-1] for extra in self.extra_sets if extra]
+        if len(set(detailed)) != len(detailed):
+            msg = f"extra_sets com a mesma classificação detalhada: {detailed}"
+            raise ValueError(msg)
+        for extra in self.extra_sets:
+            # A classificação detalhada pode não estar em ``classifications``: a
+            # requisição principal a deixa no Total padrão da API.
+            bad = sorted(
+                c for c, cats in extra.items() if not re.fullmatch(r"c\d{1,6}", c) or not cats
+            )
+            if bad:
+                msg = f"extra_sets com classificações inválidas: {bad}"
+                raise ValueError(msg)
+        outside = sorted(set(self.extra_levels) - set(self.territorial_levels))
+        if outside:
+            msg = f"extra_levels fora dos níveis do dataset: {outside}"
+            raise ValueError(msg)
+        return self
+
     @property
     def level_codes(self) -> frozenset[str]:
         """Códigos numéricos dos níveis (``n6`` → ``6``), como aparecem na coluna ``NC``."""
@@ -274,6 +312,18 @@ class SidraParams(BaseModel):
                     )
                 else:
                     groups.append(RequestGroup(variables, classes, suffix))
+            base = f"-v{variables[0]}" if self.split_by_variable else ""
+            for extra in self.extra_sets:
+                # Sufixo pela classificação detalhada (a última do conjunto), e não pela
+                # posição: incluir ou tirar um conjunto não muda as partições dos outros.
+                groups.append(
+                    RequestGroup(
+                        variables,
+                        {**self.classifications, **extra},
+                        f"{base}-x{list(extra)[-1]}",
+                        self.extra_levels,
+                    )
+                )
         return groups
 
     def partition_key(self, period: str, group: RequestGroup | None = None) -> str:

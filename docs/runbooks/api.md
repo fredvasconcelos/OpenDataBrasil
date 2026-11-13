@@ -8,7 +8,7 @@ PostgreSQL e monta a Gold **somente leitura**. Não monta Bronze nem Silver
 
 ```bash
 docker compose --profile web up -d api      # porta 127.0.0.1:${ODB_API_PORT:-8000}
-curl -s localhost:8000/health               # {"status":"ok","release_id":"..."}
+curl -s localhost:8000/health               # {"status":"ok","release_id":"...","portal":"ok","unavailable_kpis":{}}
 ```
 
 - Documentação interativa (OpenAPI): <http://localhost:8000/docs>
@@ -21,6 +21,22 @@ nenhum, responde 503. As rotas que precisam do catálogo (`/health`,
 `/sources`, `/datasets`) também respondem 503 (`catalog_unavailable`, com
 `Retry-After`), com uma linha `catalog unavailable` no log, sem traceback.
 Quando o banco volta, tudo se normaliza sem reiniciar a API.
+
+### Portal degradado
+
+`/health` com `"portal": "degraded"` indica KPIs da configuração que não casam com
+o release ativo, por exemplo uma API com a configuração antiga depois de uma
+ativação ([ADR-0015](../adr/0015-conferencia-portal-release-e-ciclo-de-atualizacao.md)).
+O que acontece:
+
+- esses KPIs saem da navegação e respondem 404;
+- o resto do portal segue no ar;
+- `unavailable_kpis` lista os problemas por KPI;
+- o log registra o evento `portal.kpis_indisponiveis`.
+
+Para corrigir, reconstrua e reinicie a API com a configuração do release
+(`docker compose --profile web build api && docker compose --profile web up -d api`)
+e confira de novo com `odb release check`.
 
 ## Rotas
 
@@ -56,15 +72,20 @@ curl -s -X POST localhost:8000/api/v1/exports -H 'Content-Type: application/json
   -d '{"kpi_id":"pessoas_quilombolas","level":"uf","dimensions":["c2"],"format":"csv"}' -o quilombolas.zip
 ```
 
+No tooltip (`/detail`) e na tabela (`/table`), categorias sem nenhuma observação no
+período ficam de fora. Exemplo: as faixas de rendimento de outra edição da POF. Uma
+categoria publicada sem valor ("..", "-") continua aparecendo com o símbolo
+(ADR-0016).
+
 ## Erros
 
 `{"error": {"code", "message"}}`:
 
 | Código | HTTP | Quando |
 |---|---|---|
-| `semantic_rule` | 422 | regra semântica: nível não publicado, dimensão não exposta, soma de não aditivos, indicadores incompatíveis |
+| `semantic_rule` | 422 | regra semântica: nível não publicado, dimensão não exposta, soma de não aditivos, indicadores incompatíveis, duas dimensões marginais juntas (`exclusive_dimensions`, ADR-0016) |
 | `invalid_request` | 422 | parâmetro fora do formato |
-| `not_found` | 404 | KPI, território ou nível sem geometria inexistente |
+| `not_found` | 404 | KPI, território ou nível sem geometria inexistente; KPI indisponível no release ativo (ADR-0015) |
 | `too_large` | 413 | exportação acima de `ODB_API_EXPORT_MAX_ROWS` |
 | `rate_limited` | 429 | acima de `ODB_API_RATE_LIMIT_PER_MINUTE` por IP |
 | `busy` / `release_unavailable` | 503 | motor ocupado ou sem release ativo |

@@ -12,7 +12,6 @@ from typing import Any
 import pytest
 from typer.testing import CliRunner
 
-from odb_api.portal import load_portal
 from odb_cli.main import app
 from odb_cli.panorama_gen import (
     generate,
@@ -25,6 +24,7 @@ from odb_cli.panorama_gen import (
 )
 from odb_ingestion import load_sources
 from odb_semantics import PanoramaKpi, check_against_acervo, load_panorama, load_scope
+from odb_semantics.portal import load_portal
 
 REPO = Path(__file__).resolve().parents[3]
 CONFIGS = REPO / "configs"
@@ -53,13 +53,18 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     gen = _generate()
     ids = {i["id"]: i for i in gen.indicators}
     skipped = {k: why for k, _, why in gen.skipped}
-    assert len(ids) == 126  # a 9514 saiu: o item passou à 9606 curada (2026-11-12)
+    # A 9514 saiu (passou à 9606 curada); a 10061 entrou com uma classificação própria.
+    assert len(ids) == 127
     # Variável fixada no panorama e regra automática (sem coeficientes de variação).
     assert ids["homicidios"]["variable"] == "13532"
     assert ids["taxa_escolarizacao"]["variable"] == "10276"
     # Total = universo: entra com as categorias; sem elas, fica de fora com o motivo.
     assert "plano_diretor" in ids
-    assert "o Total é só o universo" in skipped["nivel_instrucao_censo"]
+    # Total = universo com códigos próprios da tabela: classificação c1568t10061 (ADR-0014).
+    assert gen.dimensions["nivel_instrucao_censo"]["classification"] == "c1568t10061"
+    assert gen.classifications["c1568t10061"]["datasets"] == ["ibge-sidra-10061"]
+    instrucao = next(d for d in gen.datasets if d["official_id"] == "10061")["params"]
+    assert "c1568" in instrucao["classifications"]  # na fonte, o código SIDRA
     # Fora: sem Total, tabelas curadas, RM, unidade variável.
     # Sem Total: categoria de referência (parte B), com nota.
     assert "Bovino" in ids["efetivo_rebanhos"]["caveats"][0]
@@ -67,16 +72,67 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     assert pib["params"]["classifications"] == {"c11255": "90707"}  # PIB a preços de mercado
     assert "requer categoria de referência" in skipped["emissoes_gee"]
     assert "já configurada" in skipped["despesa_familiar"]
-    assert "n7" in skipped["aquisicao_alimentar"]
+    assert "aquisicao_alimentar" not in skipped  # curada (POF de 1987 e 1995, ADR-0016)
     assert "unidade não é única" in skipped["producao_origem_animal"]
     assert "casamentos" in ids
     # Total + %: a dimensão principal vira classificação do fato; as demais ficam fixas.
     fact = next(f for f in gen.facts if f["dataset"] == "ibge-sidra-9543")
-    assert fact["classifications"] == {"c2": "c2_category_key"}  # sexo, curada
-    assert "Sexo" not in fact["fixed_categories"]
-    assert fact["fixed_categories"]["Idade"] == "100362"
+    # Sexo (principal, curada), cor ou raça e idade (detalhes marginais, ADR-0016). A idade
+    # da 9543 tem faixas próprias: classificação c287t9543 (ADR-0014).
+    assert fact["classifications"] == {
+        "c2": "c2_category_key",
+        "c86": "c86_category_key",
+        "c287t9543": "c287t9543_category_key",
+    }
+    assert not {"Sexo", "Cor ou raça", "Idade"} & set(fact["fixed_categories"])
+    alfab = next(d for d in gen.datasets if d["official_id"] == "9543")["params"]
+    # Requisição extra: sexo no Total, cor ou raça sem o Total (já vem na principal).
+    assert alfab["extra_sets"][0] == {"c2": "6794", "c86": "2776,2777,2778,2779,2780"}
+    assert list(alfab["extra_sets"][1]) == ["c2", "c287"]  # na fonte, o código SIDRA
+    assert alfab["extra_levels"] == ["n1", "n2", "n3"]
+    assert [d["classification"] for d in gen.extra_dimensions["taxa_alfabetizacao_censo"]] == [
+        "c86",
+        "c287t9543",
+    ]
+    # Óbitos: sexo (Total 0 no Registro Civil: classificação própria), mês, local e idade
+    # como detalhes marginais, até UF.
+    assert [d["classification"] for d in gen.extra_dimensions["obitos"]] == [
+        "c2t2654",
+        "c244",
+        "c257",
+        "c260",
+    ]
+    # Tabelas-irmãs (ADR-0018): hipertensão (4418) ganha cor ou raça, idade, instrução,
+    # rendimento e força de trabalho das irmãs 4419 a 4423, numa série com a base.
+    assert gen.complements["hipertensao"] == ["4421", "4419", "4420", "4422", "4423"]
+    hiper = next(f for f in gen.facts if f["id"] == "fact_sidra_4418")
+    assert hiper["dataset"] == "ibge-serie-4418"
+    assert "fixed_categories" not in hiper  # as fixas da base vão para a regra dela
+    rule = hiper["table_rules"]["4421"]
+    assert "c86" not in rule["missing_as_total"]  # a classificação da própria irmã
+    assert "c86" in hiper["table_rules"]["4418"]["missing_as_total"]
+    irma = next(d for d in gen.datasets if d["id"] == "ibge-sidra-4421")
+    assert irma["silver"] == {
+        "transformer": "sidra_observation",
+        "territorial_reference": "ibge-dtb",
+        "series": "ibge-serie-4418",
+        "series_order": 1,
+    }
+    assert "95251" not in irma["params"]["classifications"]["c86"].split(",")  # sem o Total
+    assert ids["hipertensao"]["dataset"] == "ibge-serie-4418"
+    # Agregação no tempo declarada no panorama (ADR-0017).
+    assert ids["vendas_materiais"]["time_aggregation"] == "mean"
+    assert ids["ipca"]["time_aggregation"] == "last"
+    assert ids["abate_bovinos"]["time_aggregation"] == "sum"
+    assert "time_aggregation" not in ids["taxas_desocupacao"]
+    # Classe de tamanho do município: detalhe só até UF (cada município está numa classe).
+    plano_params = next(d for d in gen.datasets if d["official_id"] == "5882")["params"]
+    assert plano_params["extra_levels"] == ["n1", "n2", "n3"]
     plano = next(f for f in gen.facts if f["dataset"] == "ibge-sidra-5882")
-    assert plano["classifications"] == {"c1480": "c1480_category_key"}
+    assert plano["classifications"] == {
+        "c1480": "c1480_category_key",
+        "c12446": "c12446_category_key",  # classe de tamanho do município (marginal)
+    }
     assert gen.dimensions["plano_diretor"]["classification"] == "c1480"
     assert gen.classifications["c1480"]["total"] == "58278"  # "Total", do descritor
     # Lavouras: categorias até UF, Total também no município (volume).
@@ -101,7 +157,13 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     # Agregado único como Total ("15 anos ou mais") e níveis vindos do descritor.
     analf = next(d for d in gen.datasets if d["official_id"] == "7113")
     assert gen.dimensions["taxa_analfabetismo"]["classification"] == "c2"
-    assert analf["params"]["classifications"]["c58"] == "2795"
+    # O agregado "15 anos ou mais" (2795) é o Total da idade, que virou detalhe marginal
+    # com faixas próprias da tabela (c58t7113): a requisição extra traz as faixas sem ele.
+    assert gen.classifications["c58t7113"]["total"] == "2795"
+    assert analf["params"]["classifications"]["c58"] == "2795"  # a principal segue no Total
+    (extra,) = analf["params"]["extra_sets"]
+    assert "c58" in extra
+    assert "2795" not in extra["c58"].split(",")
     assert analf["params"]["territorial_levels"]
     # Sem Total nem agregado: categoria de referência (parte B).
     assert ids["vendas_varejo"]["variable"]  # índice de volume como referência
@@ -150,9 +212,11 @@ def test_rendered_fragments_load_with_the_curated_configs(tmp_path: Path) -> Non
     sources = load_sources(tmp_path / "sources")
     catalog = load_scope(tmp_path / "indicators", "demografia")
     portal = load_portal(tmp_path / "portal", "demografia")
-    assert all(d in sources.datasets for d in catalog.datasets())
+    # Séries (silver.series, ADR-0016) contam como datasets: a POF reúne 2309, 1594 e 6715.
+    series = {d.silver.get("series") for d in sources.datasets.values()} - {None}
+    assert all(d in sources.datasets or d in series for d in catalog.datasets())
     assert {k.indicator for k in portal.kpis()} <= {i.id for i in catalog.indicators}
-    assert len(portal.kpis()) == 13 + 127
+    assert len(portal.kpis()) == 14 + 127  # 14 curados no arquivo principal + 127 gerados
 
 
 def test_repository_fragments_are_up_to_date() -> None:
@@ -228,9 +292,11 @@ def test_gerar_command_writes_three_fragments(tmp_path: Path) -> None:
         path.unlink()
     result = CliRunner().invoke(app, ["panorama", "gerar", "--raiz", str(tmp_path)])
     assert result.exit_code == 0, result.output
-    assert "126 KPIs gerados (126 tabelas), 71 com categorias" in result.output
+    assert "127 KPIs gerados (176 tabelas), 77 com categorias" in result.output
+    assert "50 com detalhes marginais (117 classificações a mais)" in result.output
+    assert "15 com tabelas-irmãs (49 tabelas)" in result.output  # ADR-0018
     data = tomllib.loads((tmp_path / "sources" / "ibge-panorama.toml").read_text("utf-8"))
-    assert len(data["datasets"]) == 126
+    assert len(data["datasets"]) == 176  # 127 bases + 49 tabelas-irmãs (ADR-0018)
     assert "institution" not in data
 
 
@@ -304,5 +370,5 @@ def test_proposal_of_main_dimension_from_descriptors() -> None:
     assert rows["efetivo_rebanhos"]["has_total"] is False
     assert "Bovino" in rows["efetivo_rebanhos"]["categories"]
     doc = render_proposal(list(rows.values()), {"ipca"})
-    assert doc.count("\n| ") == 150 + 1  # cabeçalho + 150 KPIs
+    assert doc.count("\n| ") == 153 + 1  # cabeçalho + 153 KPIs
     assert "c1480 Existência de Plano Diretor" in doc

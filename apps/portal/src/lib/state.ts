@@ -18,6 +18,15 @@ const GEOGRAPHY_KEY = /^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$/;
 
 export const DEFAULT_GEOGRAPHY = "brasil:1";
 
+/**
+ * Território inicial do KPI: o Brasil ou, sem ele, o recorte mais agregado
+ * publicado (POF de 1987 e 1995: "Total das áreas", ADR-0016).
+ */
+export function defaultGeography(kpi: Kpi | null | undefined): string {
+  if (!kpi || kpi.levels.includes("brasil") || !kpi.levels.includes("areas_pof")) return DEFAULT_GEOGRAPHY;
+  return "areas_pof:1";
+}
+
 export function allKpis(nav: Navigation): Kpi[] {
   return nav.themes.flatMap((t) => t.subthemes.flatMap((s) => s.kpis));
 }
@@ -56,14 +65,20 @@ export function readState(params: URLSearchParams, nav: Navigation): DashboardSt
     level: chosen,
     grain,
     period: period && periods.includes(period) ? period : null,
-    dimensions: nav.dimension_order.filter((d) => dims.includes(d)),
-    geography: geography && GEOGRAPHY_KEY.test(geography) ? geography : DEFAULT_GEOGRAPHY,
+    // Dimensões marginais (exclusive_dimensions): uma por vez.
+    dimensions: nav.dimension_order.filter((d) => dims.includes(d)).slice(0, kpi?.exclusive_dimensions ? 1 : undefined),
+    // Território de um nível que o KPI não publica (ex.: o Brasil nas POF antigas) volta ao inicial.
+    geography:
+      geography && GEOGRAPHY_KEY.test(geography) && (!kpi || kpi.levels.includes(geography.split(":")[0] ?? ""))
+        ? geography
+        : defaultGeography(kpi),
     focus: focus && GEOGRAPHY_KEY.test(focus) && validFocus(zoomLadder(kpi?.map_levels ?? []), focus, chosen) ? focus : null,
   };
 }
 
 // O mapa abre no nível mais agregado da escada de zoom (Grande Região, quando houver).
-const PREFERRED_LEVELS = ["regiao", "uf", "municipio"];
+// Sem mapa nem UF (POF de 1987 e 1995), a tabela abre nas regiões metropolitanas.
+const PREFERRED_LEVELS = ["regiao", "uf", "regiao_metropolitana", "municipio"];
 
 function defaultLevel(levels: string[]): string {
   return PREFERRED_LEVELS.find((l) => levels.includes(l)) ?? levels[0] ?? "regiao";

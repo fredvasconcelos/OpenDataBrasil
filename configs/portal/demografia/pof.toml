@@ -1,8 +1,10 @@
-# KPI curado da POF 2017-2018 (tabela 6715 completa). O id do KPI é o do item
-# do panorama (ligação implícita, ADR-0010).
+# KPIs curados da POF. A despesa média (série 2002, 2008 e 2018 das tabelas 2309,
+# 1594 e 6715) liga ao item do panorama pelo id (ligação implícita, ADR-0010). As
+# POF de 1987 e 1995 (tabelas 387, 400, 414 e 417, ADR-0016) têm ligação explícita.
 
 config_version = "1.0.0"
 scope = "demografia"
+dimension_order = ["c201", "c210", "c210alim", "c214", "c215"]
 
 [[themes]]
 id = "consumo_familias"
@@ -19,4 +21,52 @@ indicator = "despesa_familiar"
 dimensions = [
     { classification = "c339", partition = "classes_rendimento", label = "Classes de rendimento" },
     { classification = "c12190", partition = "d2_1_despesas_de_consumo", label = "Despesas de consumo" },
+]
+
+[[themes.subthemes.kpis]]
+id = "pof_despesa_distribuicao_antiga"
+label = "Distribuição da despesa familiar (POF 1987 e 1995)"
+indicator = "pof_despesa_distribuicao_antiga"
+# Sem mapa: na malha municipal, só Brasília e Goiânia teriam cor.
+map_levels = []
+dimensions = [
+    { classification = "c201", partition = "classes_recebimento_sm", label = "Classes de recebimento" },
+    { classification = "c210", partition = "tipos_despesa_pof_antiga", label = "Tipos de despesa" },
+]
+
+[[themes.subthemes.kpis]]
+id = "pof_recebimento_distribuicao_antiga"
+label = "Distribuição do recebimento familiar (POF 1987 e 1995)"
+indicator = "pof_recebimento_distribuicao_antiga"
+# Sem mapa: na malha municipal, só Brasília e Goiânia teriam cor.
+map_levels = []
+dimensions = [
+    { classification = "c201", partition = "classes_recebimento_sm", label = "Classes de recebimento" },
+    { classification = "c214", partition = "origens_recebimento", label = "Origens do recebimento" },
+]
+
+[[themes.subthemes]]
+id = "alimentacao"
+label = "Alimentação e segurança alimentar"
+
+[[themes.subthemes.kpis]]
+id = "aquisicao_alimentar"
+label = "Aquisição alimentar domiciliar per capita"
+indicator = "aquisicao_alimentar"
+# Sem mapa: na malha municipal, só Brasília e Goiânia teriam cor.
+map_levels = []
+dimensions = [
+    { classification = "c201", partition = "classes_recebimento_sm", label = "Classes de recebimento" },
+    { classification = "c215", partition = "grupos_produtos_pof", label = "Grupos de produtos" },
+]
+
+[[themes.subthemes.kpis]]
+id = "pof_despesa_alimentacao_antiga"
+label = "Despesa com alimentação por tipo (POF 1987 e 1995)"
+indicator = "pof_despesa_alimentacao_antiga"
+# Sem mapa: na malha municipal, só Brasília e Goiânia teriam cor.
+map_levels = []
+dimensions = [
+    { classification = "c201", partition = "classes_recebimento_sm", label = "Classes de recebimento" },
+    { classification = "c210alim", partition = "tipos_despesa_alimentacao", label = "Tipos de despesa com alimentação" },
 ]

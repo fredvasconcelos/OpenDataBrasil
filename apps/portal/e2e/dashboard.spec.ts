@@ -522,3 +522,39 @@ test("sexo no SIM e no Sinesp: classificações próprias com o rótulo Sexo", a
   await expect(head).toContainText("Masculino");
   await expect(page.locator(".data-table tbody tr").first()).toContainText(/\d/);
 });
+
+test("POF em série (ADR-0016): 2002 a 2018 e só as faixas da edição na tabela", async ({ page }) => {
+  await page.goto("/dashboard?kpi=despesa_familiar&nivel=regiao&dim=c339&periodo=2008");
+  const head = page.locator(".data-table thead");
+  // 2008: faixas de 2 a 25 SM de R$ 415; as de 2018 não aparecem.
+  await expect(head).toContainText("Até 830 Reais");
+  await expect(head).not.toContainText("Até 1.908 Reais");
+  await page.goto("/dashboard?kpi=despesa_familiar&nivel=regiao&dim=c339&periodo=2018");
+  await expect(head).toContainText("Até 1.908 Reais");
+  await expect(head).not.toContainText("Até 830 Reais");
+  await expect(page.getByRole("combobox", { name: /^Período/ })).toContainText("2002");
+});
+
+test("detalhes marginais (ADR-0016): uma dimensão por vez e POF antiga sem Brasil", async ({ page }) => {
+  await page.goto("/dashboard?kpi=obitos&nivel=uf&dim=c1836,c244");
+  await expect(page.getByText("Uma por vez: cada detalhe vem com os demais no Total.")).toBeVisible();
+  const nature = page.getByRole("checkbox", { name: "Natureza do óbito" });
+  const month = page.getByRole("checkbox", { name: "Mês de ocorrência" });
+  await expect(nature).toBeChecked();
+  await expect(month).not.toBeChecked();
+  await month.click();
+  await expect(page).toHaveURL(/dim=c244(&|$)/);
+  await expect(nature).not.toBeChecked();
+  await page.screenshot({ path: "test-results/detalhar-uma-por-vez.png", fullPage: false });
+  await page.goto("/dashboard?kpi=pof_despesa_distribuicao_antiga");
+  await expect(page.locator(".data-table tbody")).toContainText("Belém - PA");
+  await expect(page.getByRole("heading", { name: /Total das áreas da POF/ })).toBeVisible();
+});
+
+test("agregação no tempo (ADR-0017): índice pela média, IPCA pelo último mês", async ({ page }) => {
+  await page.goto("/dashboard?kpi=vendas_materiais&grao=ano&periodo=2024");
+  await expect(page.getByText(/Média dos períodos publicados/)).toBeVisible();
+  await page.goto("/dashboard?kpi=ipca&grao=ano&periodo=2024");
+  await expect(page.getByText(/Valor do último período publicado/)).toBeVisible();
+  await expect(page.locator(".data-table tbody")).toContainText("4,83");
+});

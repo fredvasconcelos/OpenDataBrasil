@@ -164,7 +164,7 @@ id = "ibge-sidra-2609"
 source = "ibge-sidra"
 official_id = "2609"
 title = "Nascidos vivos, por ano de nascimento, grupos de idade da mãe na ocasião do parto, sexo e lugar de residência da mãe"
-description = "Tabela SIDRA 2609, variável 217 (Nascidos vivos registrados no ano), no Total das classificações (Sexo: Total; Idade da mãe na ocasião do parto: Total). KPI de panorama 'Nascidos vivos' (ADR-0010)."
+description = "Tabela SIDRA 2609, variável 217 (Nascidos vivos registrados no ano), no Total das classificações. KPI de panorama 'Nascidos vivos' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anual"
@@ -183,6 +183,8 @@ classifications = { "c232" = "0,82135,77792,71500,58297,56680,48972,47550,46256,
 detail_classification = "c232"
 detail_total = "0"
 detail_levels = ["n1", "n2", "n3"]
+extra_sets = [{ "c232" = "0", "c2" = "4,5,104539" }, { "c232" = "0", "c240" = "5370,5414,5371,5372,5373,5374,5375,5376,5377,5378,5379,5380,5381,5382,5383,5384,5385,5386,5387,5388,5389,5390,5391,5392,5393,5394,5395,5396,5397,5398,5399,5400,5401,5402,5403,5404,5405,5406,5407,5408,5409,5410,5411,5412,5413" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -193,7 +195,7 @@ id = "ibge-sidra-2654"
 source = "ibge-sidra"
 official_id = "2654"
 title = "Óbitos, ocorridos no ano, por mês de ocorrência, natureza do óbito, sexo, idade, local de ocorrência e lugar de residência do falecido"
-description = "Tabela SIDRA 2654, variável 343 (Número de óbitos ocorridos no ano), no Total das classificações (Sexo: Total; Mês de ocorrência: Total; Local de ocorrência: Total; Idade do(a) falecido(a): Total). KPI de panorama 'Óbitos' (ADR-0010)."
+description = "Tabela SIDRA 2654, variável 343 (Número de óbitos ocorridos no ano), no Total das classificações. KPI de panorama 'Óbitos' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anual"
@@ -212,6 +214,8 @@ classifications = { "c1836" = "0,26877,99818,26881,26882" }
 detail_classification = "c1836"
 detail_total = "0"
 detail_levels = ["n1", "n2", "n3"]
+extra_sets = [{ "c1836" = "0", "c2" = "4,5,104539" }, { "c1836" = "0", "c244" = "5586,5587,5588,5589,5590,5591,5592,5593,5594,5595,5596,5597,102885" }, { "c1836" = "0", "c257" = "5832,5833,107166,100296,100297" }, { "c1836" = "0", "c260" = "5922,5923,5924,5925,5926,5927,5928,5929,5930,5931,5932,5933,5934,5935,5936,109550,5937,5938,5939,5940,5941,5942,5943,5944,5945,5946,5947,5948,5949,5950,5951,5952,5953,5954,5955,5956,5957,5958,5959,5960,5961,5962,5963,5964,5965,5966,5967,5968,5969,5970,5971,5972,5973,5974,5975,5976,5977,5978,5979,5980,106181,5981,5982,5983,5984,5985,106182,5986,5987,5988,5989,5990,106183,5991,5992,5993,5994,5995,5996,5997" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -222,7 +226,7 @@ id = "ibge-sidra-4412"
 source = "ibge-sidra"
 official_id = "4412"
 title = "Casamentos, por mês de ocorrência, estado civil dos cônjuges, grupos de idade dos cônjuges e lugar do registro"
-description = "Tabela SIDRA 4412, variável 4993 (Número de casamentos), no Total das classificações (Mês de ocorrência: Total; Estado civil do segundo cônjuge: Total; Grupo de idade do primeiro cônjuge: Total; Grupo de idade do segundo cônjuge: Total). KPI de panorama 'Casamentos' (ADR-0010)."
+description = "Tabela SIDRA 4412, variável 4993 (Número de casamentos), no Total das classificações. KPI de panorama 'Casamentos' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anual"
@@ -241,6 +245,8 @@ classifications = { "c664" = "0,32960,32961,32962,32963" }
 detail_classification = "c664"
 detail_total = "0"
 detail_levels = ["n1", "n2", "n3"]
+extra_sets = [{ "c664" = "0", "c244" = "5585,5586,5587,5588,5589,5590,5591,5592,5593,5594,5595,5596,5597,102885" }, { "c664" = "0", "c665" = "32964,32965,32966,32967" }, { "c664" = "0", "c666" = "32968,32969,32970,32971,32972,32973,32974,32975,32976,32977,32978,32979,32980,32981,32982,32983,32984,32985,32986,32987,32988,32989,32990,32991,32992,32993,32994,32995,32996,32997,32998,32999,33000,33001,33002,33003,33004,33005" }, { "c664" = "0", "c667" = "33006,33007,33008,33009,33010,33011,33012,33013,33014,33015,33016,33017,33018,33019,33020,33021,33022,33023,33024,33025,33026,33027,33028,33029,33030,33031,33032,33033,33034,33035,33036,33037,33038,33039,33040,33041,33042,33043" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -251,7 +257,7 @@ id = "ibge-sidra-1695"
 source = "ibge-sidra"
 official_id = "1695"
 title = "Divórcios concedidos em 1ª instância ou por escritura, por tempo transcorrido entre a data do casamento e a data da sentença ou da escritura, grupos de idade do marido e da mulher na data da sentença ou da escritura, regime de bens do casamento e lugar da ação do processo"
-description = "Tabela SIDRA 1695, variável 393 (Número de divórcios concedidos em 1ª instância ou por escritura), no Total das classificações (Regime de bens do casamento: Total; Grupos de idade do marido na data da sentença: Total; Grupos de idade da mulher na data da sentença: Total). KPI de panorama 'Divórcios' (ADR-0010)."
+description = "Tabela SIDRA 1695, variável 393 (Número de divórcios concedidos em 1ª instância ou por escritura), no Total das classificações. KPI de panorama 'Divórcios' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anual"
@@ -270,6 +276,8 @@ classifications = { "c345" = "0,8074,8075,8076,8077,8078,8079,8080,8081,8082,808
 detail_classification = "c345"
 detail_total = "0"
 detail_levels = ["n1", "n2", "n3"]
+extra_sets = [{ "c345" = "0", "c269" = "6090,6091,6092,6093" }, { "c345" = "0", "c274" = "6121,6122,6123,6124,6125,6126,6127,6128,6129,6130,6131,6132,6133,6134" }, { "c345" = "0", "c275" = "6135,6136,6137,6138,6139,6140,6141,6142,6143,6144,6145,6146,6147,6148" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -305,7 +313,7 @@ id = "ibge-sidra-6788"
 source = "ibge-sidra"
 official_id = "6788"
 title = "Domicílios, por sexo do responsável e espécie da unidade doméstica"
-description = "Tabela SIDRA 6788, variável 162 (Domicílios), no Total das classificações (Sexo do responsável pelo domicílio: Total). KPI de panorama 'Domicílios por tipo de arranjo (unidade doméstica)' (ADR-0010)."
+description = "Tabela SIDRA 6788, variável 162 (Domicílios), no Total das classificações. KPI de panorama 'Domicílios por tipo de arranjo (unidade doméstica)' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anual"
@@ -324,6 +332,8 @@ classifications = { "c460" = "45902,12076,12077,12078,12079" }
 detail_classification = "c460"
 detail_total = "45902"
 detail_levels = ["n1", "n2", "n3"]
+extra_sets = [{ "c460" = "45902", "c293" = "100312,100313" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -500,7 +510,7 @@ id = "ibge-sidra-6731"
 source = "ibge-sidra"
 official_id = "6731"
 title = "Domicílios e Moradores, por situação do domicílio e principal fonte de abastecimento de água"
-description = "Tabela SIDRA 6731, variável 162 (Domicílios), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Principal fonte de abastecimento de água' (ADR-0010)."
+description = "Tabela SIDRA 6731, variável 162 (Domicílios), no Total das classificações. KPI de panorama 'Principal fonte de abastecimento de água' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -516,6 +526,7 @@ min_rows = 1
 max_rows = 198
 refresh_recent_periods = 1
 classifications = { "c825" = "all" }
+extra_sets = [{ "c825" = "47937", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -581,7 +592,7 @@ id = "ibge-sidra-7192"
 source = "ibge-sidra"
 official_id = "7192"
 title = "Domicílios e Moradores com banheiro, sanitário ou buraco para dejeções, por situação do domicílio e tipo de esgotamento sanitário (a partir de 2019)"
-description = "Tabela SIDRA 7192, variável 9986 (Domicílios com banheiro, sanitário ou buraco para dejeções), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Domicílios por tipo de esgotamento sanitário' (ADR-0010)."
+description = "Tabela SIDRA 7192, variável 9986 (Domicílios com banheiro, sanitário ou buraco para dejeções), no Total das classificações. KPI de panorama 'Domicílios por tipo de esgotamento sanitário' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -600,6 +611,8 @@ classifications = { "c11558" = "46292,47930,47931,47936,119522" }
 detail_classification = "c11558"
 detail_total = "46292"
 detail_levels = ["n1", "n2", "n3"]
+extra_sets = [{ "c11558" = "46292", "c1" = "1,2" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -610,7 +623,7 @@ id = "ibge-sidra-7461"
 source = "ibge-sidra"
 official_id = "7461"
 title = "Municípios com serviço de esgotamento sanitário por rede coletora, por condição de funcionamento do serviço"
-description = "Tabela SIDRA 7461, variável 2601 (Municípios com serviço de esgotamento sanitário), no Total das classificações (Condição de funcionamento do serviço: Total). KPI de panorama 'Municípios com rede coletora de esgoto' (ADR-0010)."
+description = "Tabela SIDRA 7461, variável 2601 (Municípios com serviço de esgotamento sanitário), no Total das classificações. KPI de panorama 'Municípios com rede coletora de esgoto' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -621,10 +634,11 @@ table = "7461"
 variables = ["2601"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 16899
 min_rows = 1
-max_rows = 5633
+max_rows = 16899
 refresh_recent_periods = 1
+classifications = { "c921" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -664,7 +678,7 @@ id = "ibge-sidra-6736"
 source = "ibge-sidra"
 official_id = "6736"
 title = "Domicílios e Moradores, por situação do domicílio e destino do lixo"
-description = "Tabela SIDRA 6736, variável 162 (Domicílios), no Total das classificações (Situação do domicílio: Total; Destino do lixo: Total). KPI de panorama 'Domicílios por destino do lixo' (ADR-0010)."
+description = "Tabela SIDRA 6736, variável 162 (Domicílios), no Total das classificações. KPI de panorama 'Domicílios por destino do lixo' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -675,11 +689,16 @@ table = "6736"
 variables = ["162"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 65
+estimated_values_per_period = 132
 min_rows = 1
-max_rows = 65
+max_rows = 132
 refresh_recent_periods = 1
-classifications = { "c67" = "10972" }
+classifications = { "c67" = "10972,4661,92864,1087,1091" }
+detail_classification = "c67"
+detail_total = "10972"
+detail_levels = ["n1", "n2", "n3"]
+extra_sets = [{ "c67" = "10972", "c1" = "1,2" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -690,7 +709,7 @@ id = "ibge-sidra-9543"
 source = "ibge-sidra"
 official_id = "9543"
 title = "Taxa de alfabetização das pessoas de 15 anos ou mais de idade por sexo, cor ou raça e grupos de idade"
-description = "Tabela SIDRA 9543, variável 2513 (Taxa de alfabetização das pessoas de 15 anos ou mais de idade), no Total das classificações (Cor ou raça: Total; Idade: Total). KPI de panorama 'Taxa de alfabetização (15 anos ou mais, Censo)' (ADR-0010)."
+description = "Tabela SIDRA 9543, variável 2513 (Taxa de alfabetização das pessoas de 15 anos ou mais de idade), no Total das classificações. KPI de panorama 'Taxa de alfabetização (15 anos ou mais, Censo)' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -706,6 +725,8 @@ min_rows = 1
 max_rows = 16899
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c86" = "2776,2777,2778,2779,2780" }, { "c2" = "6794", "c287" = "93086,6572,6573,6574,6575,6576,93087,6577,6578,6579,6580,6581,2999,6582,6656,6657,6658,6659,6583,6584,6585,6586,6587,9482,6588,6589,6590,6591,6592,6593,6594,6595,6596,6597,9483,6598,6599,6600,6601,6602,6603,6604,6605,6606,6607,9484,6608,6609,6610,6611,6612,6613,6614,6615,6616,6617,3000,9486,113623" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -716,7 +737,7 @@ id = "ibge-sidra-7113"
 source = "ibge-sidra"
 official_id = "7113"
 title = "Taxa de analfabetismo das pessoas de 15 anos ou mais de idade, por sexo e grupo de idade"
-description = "Tabela SIDRA 7113, variável 10267 (Taxa de analfabetismo das pessoas de 15 anos ou mais de idade), no Total das classificações (Grupo de idade: 15 anos ou mais). KPI de panorama 'Taxa de analfabetismo (15 anos ou mais)' (ADR-0010)."
+description = "Tabela SIDRA 7113, variável 10267 (Taxa de analfabetismo das pessoas de 15 anos ou mais de idade), no Total das classificações. KPI de panorama 'Taxa de analfabetismo (15 anos ou mais)' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -727,22 +748,53 @@ table = "7113"
 variables = ["10267"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 99
+estimated_values_per_period = 132
 min_rows = 1
-max_rows = 99
+max_rows = 132
 refresh_recent_periods = 1
 classifications = { "c58" = "2795", "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c58" = "100452,108866,109012,3302" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-7113"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-7125"
+source = "ibge-sidra"
+official_id = "7125"
+title = "Taxa de analfabetismo das pessoas de 15 anos ou mais de idade, por cor ou raça e grupo de idade"
+description = "Tabela-irmã da 7113 (ADR-0018): variável 10267 por cor ou raça, só as categorias (o Total vem da 7113). KPI de panorama 'Taxa de analfabetismo (15 anos ou mais)'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/7125"
+
+[datasets.params]
+table = "7125"
+variables = ["10267"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 66
+min_rows = 1
+max_rows = 66
+refresh_recent_periods = 1
+classifications = { "c58" = "2795", "c86" = "2776,119525" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-7113"
+series_order = 1
 
 [[datasets]]
 id = "ibge-sidra-7138"
 source = "ibge-sidra"
 official_id = "7138"
 title = "Taxa de escolarização, por sexo e grupo de idade"
-description = "Tabela SIDRA 7138, variável 10276 (Taxa de escolarização), no Total das classificações (Grupo de idade: Total). KPI de panorama 'Taxa de escolarização' (ADR-0010)."
+description = "Tabela SIDRA 7138, variável 10276 (Taxa de escolarização), no Total das classificações. KPI de panorama 'Taxa de escolarização' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -753,14 +805,16 @@ table = "7138"
 variables = ["10276"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 66
+estimated_values_per_period = 231
 min_rows = 1
-max_rows = 66
+max_rows = 231
 refresh_recent_periods = 1
 classifications = { "c2" = "6794,4,5" }
 detail_classification = "c2"
 detail_total = "6794"
 detail_levels = ["n1", "n2", "n3"]
+extra_sets = [{ "c2" = "6794", "c58" = "41126,99749,47813,31615,2792,100052,108866" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -797,7 +851,7 @@ id = "ibge-sidra-7189"
 source = "ibge-sidra"
 official_id = "7189"
 title = "Pessoas de 25 anos ou mais de idade, por sexo e nível de instrução"
-description = "Tabela SIDRA 7189, variável 1643 (Pessoas de 25 anos ou mais de idade), no Total das classificações (Sexo: Total). KPI de panorama 'Pessoas de 25 anos ou mais por nível de instrução' (ADR-0010)."
+description = "Tabela SIDRA 7189, variável 1643 (Pessoas de 25 anos ou mais de idade), no Total das classificações. KPI de panorama 'Pessoas de 25 anos ou mais por nível de instrução' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -813,17 +867,48 @@ min_rows = 1
 max_rows = 264
 refresh_recent_periods = 1
 classifications = { "c1568" = "all" }
+extra_sets = [{ "c1568" = "120704", "c2" = "4,5" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-7189"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-7270"
+source = "ibge-sidra"
+official_id = "7270"
+title = "Pessoas de 25 anos ou mais de idade por cor ou raça e nível de instrução"
+description = "Tabela-irmã da 7189 (ADR-0018): variável 1643 por cor ou raça, só as categorias (o Total vem da 7189). KPI de panorama 'Pessoas de 25 anos ou mais por nível de instrução'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/7270"
+
+[datasets.params]
+table = "7270"
+variables = ["1643"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 66
+min_rows = 1
+max_rows = 66
+refresh_recent_periods = 1
+classifications = { "c1568" = "120704", "c86" = "2776,119525" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-7189"
+series_order = 1
 
 [[datasets]]
 id = "ibge-sidra-7126"
 source = "ibge-sidra"
 official_id = "7126"
 title = "Número médio de anos de estudo das pessoas de 15 anos ou mais, por sexo e grupo de idade"
-description = "Tabela SIDRA 7126, variável 3593 (Número médio de anos de estudo das pessoas de 15 anos ou mais de idade), no Total das classificações (Grupo de idade: 15 anos ou mais). KPI de panorama 'Média de anos de estudo (15 anos ou mais)' (ADR-0010)."
+description = "Tabela SIDRA 7126, variável 3593 (Número médio de anos de estudo das pessoas de 15 anos ou mais de idade), no Total das classificações. KPI de panorama 'Média de anos de estudo (15 anos ou mais)' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -834,14 +919,44 @@ table = "7126"
 variables = ["3593"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 66
+estimated_values_per_period = 231
 min_rows = 1
-max_rows = 66
+max_rows = 231
 refresh_recent_periods = 1
 classifications = { "c58" = "2795", "c2" = "6794,4,5" }
 detail_classification = "c2"
 detail_total = "6794"
 detail_levels = ["n1", "n2", "n3"]
+extra_sets = [{ "c2" = "6794", "c58" = "2792,33061,100052,108866,108875,99127,3302" }]
+extra_levels = ["n1", "n2", "n3"]
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-10061"
+source = "ibge-sidra"
+official_id = "10061"
+title = "Pessoas de 18 anos ou mais de idade, por nível de instrução, segundo os grupos de idade, o sexo e a cor ou raça"
+description = "Tabela SIDRA 10061, variável 2667 (Pessoas de 18 anos ou mais de idade), no Total das classificações. KPI de panorama 'Nível de instrução (18 anos ou mais, Censo)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/10061"
+
+[datasets.params]
+table = "10061"
+variables = ["2667"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 28165
+min_rows = 1
+max_rows = 28165
+refresh_recent_periods = 1
+classifications = { "c1568" = "all" }
+extra_sets = [{ "c1568" = "120704", "c2" = "4,5" }, { "c1568" = "120704", "c58" = "100052,2793,1144,108866,100754,1145,1146,1147,1148,1149,1150,1151,1152,6798,1153,1154,1155,2503" }, { "c1568" = "120704", "c86" = "2776,2777,2778,2779,2780" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1018,7 +1133,7 @@ id = "ibge-sidra-10295"
 source = "ibge-sidra"
 official_id = "10295"
 title = "Moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a), valor do rendimento domiciliar mensal per capita, médio e mediano, por sexo, cor ou raça e grupos de idade"
-description = "Tabela SIDRA 10295, variável 13431 (Valor do rendimento nominal médio mensal domiciliar per capita dos moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a)), no Total das classificações (Grupo de idade: Total; Cor ou raça: Total). KPI de panorama 'Rendimento domiciliar per capita (Censo)' (ADR-0010)."
+description = "Tabela SIDRA 10295, variável 13431 (Valor do rendimento nominal médio mensal domiciliar per capita dos moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a)), no Total das classificações. KPI de panorama 'Rendimento domiciliar per capita (Censo)' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -1034,6 +1149,8 @@ min_rows = 1
 max_rows = 16899
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c58" = "33269,6744,118282,114535,100052,2793,1144,108866,100754,1145,1146,1147,1148,1149,1150,1151,1152,6798,1153,1154,1155,2503" }, { "c2" = "6794", "c86" = "2776,2777,2778,2779,2780" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1063,6 +1180,36 @@ refresh_recent_periods = 1
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-5877"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-5845"
+source = "ibge-sidra"
+official_id = "5845"
+title = "Indicador 1.2.1 - Proporção da população vivendo abaixo da linha de pobreza nacional, por cor ou raça"
+description = "Tabela-irmã da 5877 (ADR-0018): variável 9948 por cor ou raça, só as categorias (o Total vem da 5877). KPI de panorama 'Proporção da população abaixo da linha de pobreza nacional'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5845"
+
+[datasets.params]
+table = "5845"
+variables = ["9948"]
+territorial_levels = ["n1"]
+period_discovery_level = "n1"
+estimated_values_per_period = 2
+min_rows = 1
+max_rows = 2
+refresh_recent_periods = 1
+classifications = { "c86" = "2776,119525" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-5877"
+series_order = 1
 
 [[datasets]]
 id = "ibge-sidra-9836"
@@ -1124,7 +1271,7 @@ id = "ibge-sidra-7666"
 source = "ibge-sidra"
 official_id = "7666"
 title = "Pessoas de 18 anos ou mais de idade, por sexo e avaliação do estado de saúde"
-description = "Tabela SIDRA 7666, variável 2667 (Pessoas de 18 anos ou mais de idade), no Total das classificações (Sexo: Total). KPI de panorama 'Avaliação do próprio estado de saúde' (ADR-0010)."
+description = "Tabela SIDRA 7666, variável 2667 (Pessoas de 18 anos ou mais de idade), no Total das classificações. KPI de panorama 'Avaliação do próprio estado de saúde' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -1140,6 +1287,7 @@ min_rows = 1
 max_rows = 4
 refresh_recent_periods = 1
 classifications = { "c12258" = "all" }
+extra_sets = [{ "c12258" = "10011", "c2" = "110095,110096" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1150,7 +1298,7 @@ id = "ibge-sidra-7972"
 source = "ibge-sidra"
 official_id = "7972"
 title = "Pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica, por sexo e situação do domicílio"
-description = "Tabela SIDRA 7972, variável 11216 (Pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Pessoas com pelo menos uma doença crônica' (ADR-0010)."
+description = "Tabela SIDRA 7972, variável 11216 (Pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica), no Total das classificações. KPI de panorama 'Pessoas com pelo menos uma doença crônica' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -1166,17 +1314,132 @@ min_rows = 1
 max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-7972"
+series_order = 5
+
+[[datasets]]
+id = "ibge-sidra-7975"
+source = "ibge-sidra"
+official_id = "7975"
+title = "Pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica, por cor ou raça e situação do domicílio"
+description = "Tabela-irmã da 7972 (ADR-0018): variável 11216 por cor ou raça, só as categorias (o Total vem da 7972). KPI de panorama 'Pessoas com pelo menos uma doença crônica'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/7975"
+
+[datasets.params]
+table = "7975"
+variables = ["11216"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c86" = "2776,2777,2779" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-7972"
+series_order = 1
+
+[[datasets]]
+id = "ibge-sidra-7973"
+source = "ibge-sidra"
+official_id = "7973"
+title = "Pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica, por grupo de idade e situação do domicílio"
+description = "Tabela-irmã da 7972 (ADR-0018): variável 11216 por grupo de idade, só as categorias (o Total vem da 7972). KPI de panorama 'Pessoas com pelo menos uma doença crônica'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/7973"
+
+[datasets.params]
+table = "7973"
+variables = ["11216"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 325
+min_rows = 1
+max_rows = 325
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c58" = "33061,33062,1152,33063,33064" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-7972"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-7974"
+source = "ibge-sidra"
+official_id = "7974"
+title = "Pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica, por nível de instrução e situação do domicílio"
+description = "Tabela-irmã da 7972 (ADR-0018): variável 11216 por nível de instrução, só as categorias (o Total vem da 7972). KPI de panorama 'Pessoas com pelo menos uma doença crônica'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/7974"
+
+[datasets.params]
+table = "7974"
+variables = ["11216"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c1568" = "9493,9494,9495,99713" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-7972"
+series_order = 3
+
+[[datasets]]
+id = "ibge-sidra-7976"
+source = "ibge-sidra"
+official_id = "7976"
+title = "Pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica, por condição em relação à força de trabalho na semana de referência e situação do domicílio"
+description = "Tabela-irmã da 7972 (ADR-0018): variável 11216 por condição em relação à força de trabalho na semana de referência, só as categorias (o Total vem da 7972). KPI de panorama 'Pessoas com pelo menos uma doença crônica'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/7976"
+
+[datasets.params]
+table = "7976"
+variables = ["11216"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c653" = "32862,32863,32864" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-7972"
+series_order = 4
 
 [[datasets]]
 id = "ibge-sidra-4418"
 source = "ibge-sidra"
 official_id = "4418"
 title = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial, por sexo e situação do domicílio"
-description = "Tabela SIDRA 4418, variável 4396 (Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Diagnóstico de hipertensão arterial' (ADR-0010)."
+description = "Tabela SIDRA 4418, variável 4396 (Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial), no Total das classificações. KPI de panorama 'Diagnóstico de hipertensão arterial' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -1192,17 +1455,160 @@ min_rows = 1
 max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-4418"
+series_order = 6
+
+[[datasets]]
+id = "ibge-sidra-4421"
+source = "ibge-sidra"
+official_id = "4421"
+title = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial, por cor ou raça e situação do domicílio"
+description = "Tabela-irmã da 4418 (ADR-0018): variável 4396 por cor ou raça, só as categorias (o Total vem da 4418). KPI de panorama 'Diagnóstico de hipertensão arterial'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4421"
+
+[datasets.params]
+table = "4421"
+variables = ["4396"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c86" = "2776,2777,2779" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4418"
+series_order = 1
+
+[[datasets]]
+id = "ibge-sidra-4419"
+source = "ibge-sidra"
+official_id = "4419"
+title = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial, por grupo de idade e situação do domicílio"
+description = "Tabela-irmã da 4418 (ADR-0018): variável 4396 por grupo de idade, só as categorias (o Total vem da 4418). KPI de panorama 'Diagnóstico de hipertensão arterial'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4419"
+
+[datasets.params]
+table = "4419"
+variables = ["4396"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 325
+min_rows = 1
+max_rows = 325
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c58" = "33061,33062,1152,33063,33064" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4418"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-4420"
+source = "ibge-sidra"
+official_id = "4420"
+title = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial, por nível de instrução e situação do domicílio"
+description = "Tabela-irmã da 4418 (ADR-0018): variável 4396 por nível de instrução, só as categorias (o Total vem da 4418). KPI de panorama 'Diagnóstico de hipertensão arterial'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4420"
+
+[datasets.params]
+table = "4420"
+variables = ["4396"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c1568" = "9493,9494,9495,99713" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4418"
+series_order = 3
+
+[[datasets]]
+id = "ibge-sidra-4422"
+source = "ibge-sidra"
+official_id = "4422"
+title = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial, por faixas de rendimento mensal domiciliar per capita e situação do domicílio"
+description = "Tabela-irmã da 4418 (ADR-0018): variável 4396 por faixas de rendimento mensal domiciliar per capita, só as categorias (o Total vem da 4418). KPI de panorama 'Diagnóstico de hipertensão arterial'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4422"
+
+[datasets.params]
+table = "4422"
+variables = ["4396"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 455
+min_rows = 1
+max_rows = 455
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c652" = "32852,32853,32854,32855,32856,32857,32858" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4418"
+series_order = 4
+
+[[datasets]]
+id = "ibge-sidra-4423"
+source = "ibge-sidra"
+official_id = "4423"
+title = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial, por condição em relação à força de trabalho na semana de referência e situação do domicílio"
+description = "Tabela-irmã da 4418 (ADR-0018): variável 4396 por condição em relação à força de trabalho na semana de referência, só as categorias (o Total vem da 4418). KPI de panorama 'Diagnóstico de hipertensão arterial'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4423"
+
+[datasets.params]
+table = "4423"
+variables = ["4396"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c653" = "32862,32863,32864" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4418"
+series_order = 5
 
 [[datasets]]
 id = "ibge-sidra-4487"
 source = "ibge-sidra"
 official_id = "4487"
 title = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes, por sexo e situação do domicílio"
-description = "Tabela SIDRA 4487, variável 4462 (Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Diagnóstico de diabetes' (ADR-0010)."
+description = "Tabela SIDRA 4487, variável 4462 (Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes), no Total das classificações. KPI de panorama 'Diagnóstico de diabetes' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -1218,17 +1624,160 @@ min_rows = 1
 max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-4487"
+series_order = 6
+
+[[datasets]]
+id = "ibge-sidra-4490"
+source = "ibge-sidra"
+official_id = "4490"
+title = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes, por cor ou raça e situação do domicílio"
+description = "Tabela-irmã da 4487 (ADR-0018): variável 4462 por cor ou raça, só as categorias (o Total vem da 4487). KPI de panorama 'Diagnóstico de diabetes'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4490"
+
+[datasets.params]
+table = "4490"
+variables = ["4462"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c86" = "2776,2777,2779" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4487"
+series_order = 1
+
+[[datasets]]
+id = "ibge-sidra-4488"
+source = "ibge-sidra"
+official_id = "4488"
+title = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes, por grupo de idade e situação do domicílio"
+description = "Tabela-irmã da 4487 (ADR-0018): variável 4462 por grupo de idade, só as categorias (o Total vem da 4487). KPI de panorama 'Diagnóstico de diabetes'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4488"
+
+[datasets.params]
+table = "4488"
+variables = ["4462"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 325
+min_rows = 1
+max_rows = 325
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c58" = "33061,33062,1152,33063,33064" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4487"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-4489"
+source = "ibge-sidra"
+official_id = "4489"
+title = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes, por nível de instrução e situação do domicílio"
+description = "Tabela-irmã da 4487 (ADR-0018): variável 4462 por nível de instrução, só as categorias (o Total vem da 4487). KPI de panorama 'Diagnóstico de diabetes'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4489"
+
+[datasets.params]
+table = "4489"
+variables = ["4462"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c1568" = "9493,9494,9495,99713" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4487"
+series_order = 3
+
+[[datasets]]
+id = "ibge-sidra-4491"
+source = "ibge-sidra"
+official_id = "4491"
+title = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes, por faixas de rendimento mensal domiciliar per capita e situação do domicílio"
+description = "Tabela-irmã da 4487 (ADR-0018): variável 4462 por faixas de rendimento mensal domiciliar per capita, só as categorias (o Total vem da 4487). KPI de panorama 'Diagnóstico de diabetes'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4491"
+
+[datasets.params]
+table = "4491"
+variables = ["4462"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 455
+min_rows = 1
+max_rows = 455
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c652" = "32852,32853,32854,32855,32856,32857,32858" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4487"
+series_order = 4
+
+[[datasets]]
+id = "ibge-sidra-4492"
+source = "ibge-sidra"
+official_id = "4492"
+title = "Pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes, por condição em relação à força de trabalho na semana de referência e situação do domicílio"
+description = "Tabela-irmã da 4487 (ADR-0018): variável 4462 por condição em relação à força de trabalho na semana de referência, só as categorias (o Total vem da 4487). KPI de panorama 'Diagnóstico de diabetes'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4492"
+
+[datasets.params]
+table = "4492"
+variables = ["4462"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c653" = "32862,32863,32864" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4487"
+series_order = 5
 
 [[datasets]]
 id = "ibge-sidra-4173"
 source = "ibge-sidra"
 official_id = "4173"
 title = "Pessoas de 18 anos ou mais de idade fumantes atuais de tabaco, por sexo e situação do domicílio"
-description = "Tabela SIDRA 4173, variável 4160 (Pessoas de 18 anos ou mais de idade fumantes atuais de tabaco), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Fumantes atuais de tabaco' (ADR-0010)."
+description = "Tabela SIDRA 4173, variável 4160 (Pessoas de 18 anos ou mais de idade fumantes atuais de tabaco), no Total das classificações. KPI de panorama 'Fumantes atuais de tabaco' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -1244,17 +1793,132 @@ min_rows = 1
 max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-4173"
+series_order = 5
+
+[[datasets]]
+id = "ibge-sidra-4183"
+source = "ibge-sidra"
+official_id = "4183"
+title = "Pessoas de 18 anos ou mais de idade fumantes atuais de tabaco, por cor ou raça e situação do domicílio"
+description = "Tabela-irmã da 4173 (ADR-0018): variável 4160 por cor ou raça, só as categorias (o Total vem da 4173). KPI de panorama 'Fumantes atuais de tabaco'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4183"
+
+[datasets.params]
+table = "4183"
+variables = ["4160"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c86" = "2776,2777,2779" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4173"
+series_order = 1
+
+[[datasets]]
+id = "ibge-sidra-4179"
+source = "ibge-sidra"
+official_id = "4179"
+title = "Pessoas de 18 anos ou mais de idade fumantes atuais de tabaco, por grupo de idade e situação do domicílio"
+description = "Tabela-irmã da 4173 (ADR-0018): variável 4160 por grupo de idade, só as categorias (o Total vem da 4173). KPI de panorama 'Fumantes atuais de tabaco'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4179"
+
+[datasets.params]
+table = "4179"
+variables = ["4160"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c58" = "100052,108875,99127,3302" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4173"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-4181"
+source = "ibge-sidra"
+official_id = "4181"
+title = "Pessoas de 18 anos ou mais de idade fumantes atuais de tabaco, por nível de instrução e situação do domicílio"
+description = "Tabela-irmã da 4173 (ADR-0018): variável 4160 por nível de instrução, só as categorias (o Total vem da 4173). KPI de panorama 'Fumantes atuais de tabaco'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4181"
+
+[datasets.params]
+table = "4181"
+variables = ["4160"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c1568" = "9493,9494,9495,99713" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4173"
+series_order = 3
+
+[[datasets]]
+id = "ibge-sidra-4182"
+source = "ibge-sidra"
+official_id = "4182"
+title = "Pessoas de 18 anos ou mais de idade fumantes atuais de tabaco, por condição em relação à força de trabalho na semana de referência e situação do domicílio"
+description = "Tabela-irmã da 4173 (ADR-0018): variável 4160 por condição em relação à força de trabalho na semana de referência, só as categorias (o Total vem da 4173). KPI de panorama 'Fumantes atuais de tabaco'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4182"
+
+[datasets.params]
+table = "4182"
+variables = ["4160"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c653" = "32862,32863,32864" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4173"
+series_order = 4
 
 [[datasets]]
 id = "ibge-sidra-7726"
 source = "ibge-sidra"
 official_id = "7726"
 title = "Pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa, por sexo e situação do domicílio (2019)"
-description = "Tabela SIDRA 7726, variável 4298 (Pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Consumo abusivo de álcool' (ADR-0010)."
+description = "Tabela SIDRA 7726, variável 4298 (Pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa), no Total das classificações. KPI de panorama 'Consumo abusivo de álcool' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -1270,17 +1934,132 @@ min_rows = 1
 max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-7726"
+series_order = 5
+
+[[datasets]]
+id = "ibge-sidra-7729"
+source = "ibge-sidra"
+official_id = "7729"
+title = "Pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa, por cor ou raça e situação do domicílio (2019)"
+description = "Tabela-irmã da 7726 (ADR-0018): variável 4298 por cor ou raça, só as categorias (o Total vem da 7726). KPI de panorama 'Consumo abusivo de álcool'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/7729"
+
+[datasets.params]
+table = "7729"
+variables = ["4298"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c86" = "2776,2777,2779" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-7726"
+series_order = 1
+
+[[datasets]]
+id = "ibge-sidra-7727"
+source = "ibge-sidra"
+official_id = "7727"
+title = "Pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa, por grupo de idade e situação do domicílio (2019)"
+description = "Tabela-irmã da 7726 (ADR-0018): variável 4298 por grupo de idade, só as categorias (o Total vem da 7726). KPI de panorama 'Consumo abusivo de álcool'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/7727"
+
+[datasets.params]
+table = "7727"
+variables = ["4298"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c58" = "100052,108875,99127,3302" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-7726"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-7728"
+source = "ibge-sidra"
+official_id = "7728"
+title = "Pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa, por nível de instrução e situação do domicílio (2019)"
+description = "Tabela-irmã da 7726 (ADR-0018): variável 4298 por nível de instrução, só as categorias (o Total vem da 7726). KPI de panorama 'Consumo abusivo de álcool'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/7728"
+
+[datasets.params]
+table = "7728"
+variables = ["4298"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c1568" = "9493,9494,9495,99713" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-7726"
+series_order = 3
+
+[[datasets]]
+id = "ibge-sidra-7730"
+source = "ibge-sidra"
+official_id = "7730"
+title = "Pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa, por condição em relação à força de trabalho na semana de referência e situação do domicílio"
+description = "Tabela-irmã da 7726 (ADR-0018): variável 4298 por condição em relação à força de trabalho na semana de referência, só as categorias (o Total vem da 7726). KPI de panorama 'Consumo abusivo de álcool'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/7730"
+
+[datasets.params]
+table = "7730"
+variables = ["4298"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c653" = "32862,32863,32864" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-7726"
+series_order = 4
 
 [[datasets]]
 id = "ibge-sidra-7740"
 source = "ibge-sidra"
 official_id = "7740"
 title = "Pessoas de 18 anos ou mais de idade insuficientemente ativas, por sexo e situação do domicílio (2019)"
-description = "Tabela SIDRA 7740, variável 4262 (Pessoas de 18 anos ou mais de idade insuficientemente ativas), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Pessoas insuficientemente ativas' (ADR-0010)."
+description = "Tabela SIDRA 7740, variável 4262 (Pessoas de 18 anos ou mais de idade insuficientemente ativas), no Total das classificações. KPI de panorama 'Pessoas insuficientemente ativas' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -1296,17 +2075,132 @@ min_rows = 1
 max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-7740"
+series_order = 5
+
+[[datasets]]
+id = "ibge-sidra-7743"
+source = "ibge-sidra"
+official_id = "7743"
+title = "Pessoas de 18 anos ou mais de idade insuficientemente ativas, por cor ou raça e situação do domicílio (2019)"
+description = "Tabela-irmã da 7740 (ADR-0018): variável 4262 por cor ou raça, só as categorias (o Total vem da 7740). KPI de panorama 'Pessoas insuficientemente ativas'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/7743"
+
+[datasets.params]
+table = "7743"
+variables = ["4262"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c86" = "2776,2777,2779" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-7740"
+series_order = 1
+
+[[datasets]]
+id = "ibge-sidra-7741"
+source = "ibge-sidra"
+official_id = "7741"
+title = "Pessoas de 18 anos ou mais de idade insuficientemente ativas, por grupo de idade e situação do domicílio (2019)"
+description = "Tabela-irmã da 7740 (ADR-0018): variável 4262 por grupo de idade, só as categorias (o Total vem da 7740). KPI de panorama 'Pessoas insuficientemente ativas'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/7741"
+
+[datasets.params]
+table = "7741"
+variables = ["4262"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c58" = "100052,108875,99127,3302" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-7740"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-7742"
+source = "ibge-sidra"
+official_id = "7742"
+title = "Pessoas de 18 anos ou mais de idade insuficientemente ativas, por nível de instrução e situação do domicílio (2019)"
+description = "Tabela-irmã da 7740 (ADR-0018): variável 4262 por nível de instrução, só as categorias (o Total vem da 7740). KPI de panorama 'Pessoas insuficientemente ativas'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/7742"
+
+[datasets.params]
+table = "7742"
+variables = ["4262"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c1568" = "9493,9494,9495,99713" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-7740"
+series_order = 3
+
+[[datasets]]
+id = "ibge-sidra-7744"
+source = "ibge-sidra"
+official_id = "7744"
+title = "Pessoas de 18 anos ou mais de idade insuficientemente ativas, por condição em relação à força de trabalho na semana de referência e situação do domicílio"
+description = "Tabela-irmã da 7740 (ADR-0018): variável 4262 por condição em relação à força de trabalho na semana de referência, só as categorias (o Total vem da 7740). KPI de panorama 'Pessoas insuficientemente ativas'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/7744"
+
+[datasets.params]
+table = "7744"
+variables = ["4262"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c653" = "32862,32863,32864" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-7740"
+series_order = 4
 
 [[datasets]]
 id = "ibge-sidra-8476"
 source = "ibge-sidra"
 official_id = "8476"
 title = "Pessoas de 18 anos ou mais de idade com excesso de peso ou obesidade, por sexo e situação do domicílio"
-description = "Tabela SIDRA 8476, variável 11671 (Pessoas de 18 anos ou mais de idade com excesso de peso), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Excesso de peso ou obesidade' (ADR-0010)."
+description = "Tabela SIDRA 8476, variável 11671 (Pessoas de 18 anos ou mais de idade com excesso de peso), no Total das classificações. KPI de panorama 'Excesso de peso ou obesidade' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -1322,6 +2216,7 @@ min_rows = 1
 max_rows = 99
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1332,7 +2227,7 @@ id = "ibge-sidra-4938"
 source = "ibge-sidra"
 official_id = "4938"
 title = "Pessoas que tinham algum plano de saúde (médico ou odontológico), por sexo e situação do domicílio"
-description = "Tabela SIDRA 4938, variável 5260 (Pessoas que tinham algum plano de saúde (médico ou odontológico)), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Pessoas com plano de saúde' (ADR-0010)."
+description = "Tabela SIDRA 4938, variável 5260 (Pessoas que tinham algum plano de saúde (médico ou odontológico)), no Total das classificações. KPI de panorama 'Pessoas com plano de saúde' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -1348,17 +2243,160 @@ min_rows = 1
 max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-4938"
+series_order = 6
+
+[[datasets]]
+id = "ibge-sidra-4951"
+source = "ibge-sidra"
+official_id = "4951"
+title = "Pessoas que tinham algum plano de saúde (médico ou odontológico), por cor ou raça e situação do domicílio"
+description = "Tabela-irmã da 4938 (ADR-0018): variável 5260 por cor ou raça, só as categorias (o Total vem da 4938). KPI de panorama 'Pessoas com plano de saúde'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4951"
+
+[datasets.params]
+table = "4951"
+variables = ["5260"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c86" = "2776,2777,2779" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4938"
+series_order = 1
+
+[[datasets]]
+id = "ibge-sidra-4949"
+source = "ibge-sidra"
+official_id = "4949"
+title = "Pessoas que tinham algum plano de saúde (médico ou odontológico), por grupo de idade e situação do domicílio"
+description = "Tabela-irmã da 4938 (ADR-0018): variável 5260 por grupo de idade, só as categorias (o Total vem da 4938). KPI de panorama 'Pessoas com plano de saúde'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4949"
+
+[datasets.params]
+table = "4949"
+variables = ["5260"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 325
+min_rows = 1
+max_rows = 325
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c58" = "33269,33061,3299,99127,3302" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4938"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-4950"
+source = "ibge-sidra"
+official_id = "4950"
+title = "Pessoas que tinham algum plano de saúde (médico ou odontológico), por nível de instrução e situação do domicílio"
+description = "Tabela-irmã da 4938 (ADR-0018): variável 5260 por nível de instrução, só as categorias (o Total vem da 4938). KPI de panorama 'Pessoas com plano de saúde'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4950"
+
+[datasets.params]
+table = "4950"
+variables = ["5260"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c1568" = "9493,9494,9495,99713" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4938"
+series_order = 3
+
+[[datasets]]
+id = "ibge-sidra-4953"
+source = "ibge-sidra"
+official_id = "4953"
+title = "Pessoas que tinham algum plano de saúde (médico ou odontológico), por faixas de rendimento mensal domiciliar per capita e situação do domicílio"
+description = "Tabela-irmã da 4938 (ADR-0018): variável 5260 por faixas de rendimento mensal domiciliar per capita, só as categorias (o Total vem da 4938). KPI de panorama 'Pessoas com plano de saúde'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4953"
+
+[datasets.params]
+table = "4953"
+variables = ["5260"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 455
+min_rows = 1
+max_rows = 455
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c652" = "32852,32853,32854,32855,32856,32857,32858" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4938"
+series_order = 4
+
+[[datasets]]
+id = "ibge-sidra-4952"
+source = "ibge-sidra"
+official_id = "4952"
+title = "Pessoas que tinham algum plano de saúde (médico ou odontológico), por condição em relação à força de trabalho na semana de referência e situação do domicílio"
+description = "Tabela-irmã da 4938 (ADR-0018): variável 5260 por condição em relação à força de trabalho na semana de referência, só as categorias (o Total vem da 4938). KPI de panorama 'Pessoas com plano de saúde'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/4952"
+
+[datasets.params]
+table = "4952"
+variables = ["5260"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c653" = "32862,32863,32864" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-4938"
+series_order = 5
 
 [[datasets]]
 id = "ibge-sidra-5055"
 source = "ibge-sidra"
 official_id = "5055"
 title = "Pessoas que consultaram médico nos últimos 12 meses, por sexo e situação do domicílio"
-description = "Tabela SIDRA 5055, variável 5358 (Pessoas que consultaram médico nos últimos 12 meses), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Consultaram médico nos últimos 12 meses' (ADR-0010)."
+description = "Tabela SIDRA 5055, variável 5358 (Pessoas que consultaram médico nos últimos 12 meses), no Total das classificações. KPI de panorama 'Consultaram médico nos últimos 12 meses' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -1374,10 +2412,97 @@ min_rows = 1
 max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-5055"
+series_order = 4
+
+[[datasets]]
+id = "ibge-sidra-5061"
+source = "ibge-sidra"
+official_id = "5061"
+title = "Pessoas que consultaram médico nos últimos 12 meses, por cor ou raça e situação do domicílio"
+description = "Tabela-irmã da 5055 (ADR-0018): variável 5358 por cor ou raça, só as categorias (o Total vem da 5055). KPI de panorama 'Consultaram médico nos últimos 12 meses'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/5061"
+
+[datasets.params]
+table = "5061"
+variables = ["5358"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c86" = "2776,2777,2779" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-5055"
+series_order = 1
+
+[[datasets]]
+id = "ibge-sidra-5058"
+source = "ibge-sidra"
+official_id = "5058"
+title = "Pessoas que consultaram médico nos últimos 12 meses, por grupo de idade e situação do domicílio"
+description = "Tabela-irmã da 5055 (ADR-0018): variável 5358 por grupo de idade, só as categorias (o Total vem da 5055). KPI de panorama 'Consultaram médico nos últimos 12 meses'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/5058"
+
+[datasets.params]
+table = "5058"
+variables = ["5358"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 325
+min_rows = 1
+max_rows = 325
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c58" = "33269,33061,3299,99127,3302" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-5055"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-5065"
+source = "ibge-sidra"
+official_id = "5065"
+title = "Pessoas que consultaram médico nos últimos 12 meses, por condição em relação à força de trabalho na semana de referência e situação do domicílio"
+description = "Tabela-irmã da 5055 (ADR-0018): variável 5358 por condição em relação à força de trabalho na semana de referência, só as categorias (o Total vem da 5055). KPI de panorama 'Consultaram médico nos últimos 12 meses'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/5065"
+
+[datasets.params]
+table = "5065"
+variables = ["5358"]
+territorial_levels = ["n1", "n2"]
+period_discovery_level = "n1"
+estimated_values_per_period = 18
+min_rows = 1
+max_rows = 18
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c653" = "32862,32863,32864" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-5055"
+series_order = 3
 
 [[datasets]]
 id = "ibge-sidra-211"
@@ -1409,7 +2534,7 @@ id = "ibge-sidra-8289"
 source = "ibge-sidra"
 official_id = "8289"
 title = "Mulheres que realizaram pré-natal, por cor ou raça e situação do domicílio (2019)"
-description = "Tabela SIDRA 8289, variável 6635 (Mulheres que realizaram pré-natal), no Total das classificações (Situação do domicílio: Total; Cor ou raça: Total). KPI de panorama 'Mulheres que realizaram pré-natal' (ADR-0010)."
+description = "Tabela SIDRA 8289, variável 6635 (Mulheres que realizaram pré-natal), no Total das classificações. KPI de panorama 'Mulheres que realizaram pré-natal' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -1420,14 +2545,74 @@ table = "8289"
 variables = ["6635"]
 territorial_levels = ["n1", "n2"]
 period_discovery_level = "n1"
-estimated_values_per_period = 6
+estimated_values_per_period = 24
 min_rows = 1
-max_rows = 6
+max_rows = 24
 refresh_recent_periods = 1
+classifications = { "c86" = "all" }
+extra_sets = [{ "c86" = "95251", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-8289"
+series_order = 3
+
+[[datasets]]
+id = "ibge-sidra-8288"
+source = "ibge-sidra"
+official_id = "8288"
+title = "Mulheres que realizaram pré-natal, por faixas de rendimento mensal domiciliar per capita"
+description = "Tabela-irmã da 8289 (ADR-0018): variável 6635 por faixas de rendimento mensal domiciliar per capita, só as categorias (o Total vem da 8289). KPI de panorama 'Mulheres que realizaram pré-natal'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/8288"
+
+[datasets.params]
+table = "8288"
+variables = ["6635"]
+territorial_levels = ["n1"]
+period_discovery_level = "n1"
+estimated_values_per_period = 7
+min_rows = 1
+max_rows = 7
+refresh_recent_periods = 1
+classifications = { "c652" = "32852,32853,32854,32855,32856,32857,32858" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-8289"
+series_order = 1
+
+[[datasets]]
+id = "ibge-sidra-8290"
+source = "ibge-sidra"
+official_id = "8290"
+title = "Mulheres que realizaram pré-natal, por nível de instrução e situação do domicílio (2019)"
+description = "Tabela-irmã da 8289 (ADR-0018): variável 6635 por nível de instrução, só as categorias (o Total vem da 8289). KPI de panorama 'Mulheres que realizaram pré-natal'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/8290"
+
+[datasets.params]
+table = "8290"
+variables = ["6635"]
+territorial_levels = ["n1", "n2"]
+period_discovery_level = "n1"
+estimated_values_per_period = 24
+min_rows = 1
+max_rows = 24
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c1568" = "9493,9494,9495,99713" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-8289"
+series_order = 2
 
 [[datasets]]
 id = "ibge-sidra-5905"
@@ -1510,7 +2695,7 @@ id = "ibge-sidra-4277"
 source = "ibge-sidra"
 official_id = "4277"
 title = "Indicador 3.4.1 - Taxa de mortalidade atribuída a doenças cardiovasculares, câncer, diabetes ou doenças respiratórias crônicas"
-description = "Tabela SIDRA 4277, variável 11754 (Probabilidade de morrer atribuída a doenças cardiovasculares, câncer, diabetes ou doenças respiratórias crônicas entre os 30 a 69 anos), no Total das classificações (Grupo de idade: 30 a 69 anos). KPI de panorama 'Mortalidade por doenças crônicas não transmissíveis' (ADR-0010)."
+description = "Tabela SIDRA 4277, variável 11754 (Probabilidade de morrer atribuída a doenças cardiovasculares, câncer, diabetes ou doenças respiratórias crônicas entre os 30 a 69 anos), no Total das classificações. KPI de panorama 'Mortalidade por doenças crônicas não transmissíveis' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anual"
@@ -1521,11 +2706,12 @@ table = "4277"
 variables = ["11754"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 99
+estimated_values_per_period = 264
 min_rows = 1
-max_rows = 99
+max_rows = 264
 refresh_recent_periods = 1
 classifications = { "c58" = "56742", "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c58" = "1146,1147,1148,1149,1150,1151,1152,1153" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1536,7 +2722,7 @@ id = "ibge-sidra-6356"
 source = "ibge-sidra"
 official_id = "6356"
 title = "Percentual de escolares com idade de 13 a 17 anos que fumaram nos 30 dias anteriores à pesquisa, por sexo, dependência administrativa da escola e grupo de idade do escolar"
-description = "Tabela SIDRA 6356, variável 8586 (Percentual de escolares com idade de 13 a 17 anos que fumaram nos 30 dias anteriores à pesquisa), no Total das classificações (Sexo: Total; Grupo de idade: 13 a 17 anos). KPI de panorama 'Escolares de 13 a 17 anos que fumaram nos últimos 30 dias' (ADR-0010)."
+description = "Tabela SIDRA 6356, variável 8586 (Percentual de escolares com idade de 13 a 17 anos que fumaram nos 30 dias anteriores à pesquisa), no Total das classificações. KPI de panorama 'Escolares de 13 a 17 anos que fumaram nos últimos 30 dias' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -1552,6 +2738,7 @@ min_rows = 1
 max_rows = 18
 refresh_recent_periods = 1
 classifications = { "c556" = "all" }
+extra_sets = [{ "c556" = "31050", "c2" = "110095,110096" }, { "c556" = "31050", "c58" = "40088,92981" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1562,7 +2749,7 @@ id = "ibge-sidra-6358"
 source = "ibge-sidra"
 official_id = "6358"
 title = "Percentual de escolares com idade de 13 a 17 anos que consumiram bebidas alcoólicas pelo menos um dia nos 30 dias anteriores à pesquisa, por sexo, dependência administrativa da escola e grupo de idade do escolar"
-description = "Tabela SIDRA 6358, variável 8592 (Percentual de escolares com idade de 13 a 17 anos que consumiram bebidas alcoólicas pelo menos um dia nos 30 dias anteriores à pesquisa), no Total das classificações (Sexo: Total; Grupo de idade: 13 a 17 anos). KPI de panorama 'Escolares de 13 a 17 anos que consumiram bebida alcoólica' (ADR-0010)."
+description = "Tabela SIDRA 6358, variável 8592 (Percentual de escolares com idade de 13 a 17 anos que consumiram bebidas alcoólicas pelo menos um dia nos 30 dias anteriores à pesquisa), no Total das classificações. KPI de panorama 'Escolares de 13 a 17 anos que consumiram bebida alcoólica' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -1578,6 +2765,7 @@ min_rows = 1
 max_rows = 18
 refresh_recent_periods = 1
 classifications = { "c556" = "all" }
+extra_sets = [{ "c556" = "31050", "c2" = "110095,110096" }, { "c556" = "31050", "c58" = "40088,92981" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1588,7 +2776,7 @@ id = "ibge-sidra-6378"
 source = "ibge-sidra"
 official_id = "6378"
 title = "Percentual de escolares com idade de 13 a 17 anos que apresentaram excesso de peso, por sexo, dependência administrativa da escola e grupo de idade do escolar"
-description = "Tabela SIDRA 6378, variável 8196 (Percentual de escolares com idade de 13 a 17 anos que apresentaram excesso de peso), no Total das classificações (Sexo: Total; Grupo de idade: 13 a 17 anos). KPI de panorama 'Escolares de 13 a 17 anos com excesso de peso' (ADR-0010)."
+description = "Tabela SIDRA 6378, variável 8196 (Percentual de escolares com idade de 13 a 17 anos que apresentaram excesso de peso), no Total das classificações. KPI de panorama 'Escolares de 13 a 17 anos com excesso de peso' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -1604,6 +2792,7 @@ min_rows = 1
 max_rows = 18
 refresh_recent_periods = 1
 classifications = { "c556" = "all" }
+extra_sets = [{ "c556" = "31050", "c2" = "110095,110096" }, { "c556" = "31050", "c58" = "40088,92981" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1614,7 +2803,7 @@ id = "ibge-sidra-9730"
 source = "ibge-sidra"
 official_id = "9730"
 title = "Pessoas de 5 anos ou mais de idade que se vacinaram pelo menos uma vez contra a COVID-19, por sexo e grupo de idade"
-description = "Tabela SIDRA 9730, variável 8992 (Pessoas de 5 anos ou mais de idade que se vacinaram pelo menos uma vez contra a COVID-19), no Total das classificações (Grupo de idade: Total). KPI de panorama 'Vacinados contra a COVID-19' (ADR-0010)."
+description = "Tabela SIDRA 9730, variável 8992 (Pessoas de 5 anos ou mais de idade que se vacinaram pelo menos uma vez contra a COVID-19), no Total das classificações. KPI de panorama 'Vacinados contra a COVID-19' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -1625,11 +2814,12 @@ table = "9730"
 variables = ["8992"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 99
+estimated_values_per_period = 198
 min_rows = 1
-max_rows = 99
+max_rows = 198
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c58" = "100448,71509,71510,100452,71511,3302" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1640,7 +2830,7 @@ id = "ibge-sidra-9373"
 source = "ibge-sidra"
 official_id = "9373"
 title = "Pessoas de 5 anos ou mais de idade que tiveram ou consideram que tiveram COVID-19, por situação do domicílio e sexo"
-description = "Tabela SIDRA 9373, variável 9446 (Pessoas de 5 anos ou mais de idade que tiveram ou consideram que tiveram COVID-19), no Total das classificações (Sexo: Total). KPI de panorama 'Pessoas que tiveram ou consideram que tiveram COVID-19' (ADR-0010)."
+description = "Tabela SIDRA 9373, variável 9446 (Pessoas de 5 anos ou mais de idade que tiveram ou consideram que tiveram COVID-19), no Total das classificações. KPI de panorama 'Pessoas que tiveram ou consideram que tiveram COVID-19' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -1656,6 +2846,7 @@ min_rows = 1
 max_rows = 18
 refresh_recent_periods = 1
 classifications = { "c1" = "all" }
+extra_sets = [{ "c1" = "6795", "c2" = "4,5" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1666,7 +2857,7 @@ id = "ibge-sidra-6974"
 source = "ibge-sidra"
 official_id = "6974"
 title = "Rendimento total e variação patrimonial médio mensal familiar - valor e distribuição - por classes de rendimento total e variação patrimonial mensal familiar, segundo a origem do rendimento"
-description = "Tabela SIDRA 6974, variável 388 (Rendimento total e variação patrimonial médio mensal familiar), no Total das classificações (Origem dos rendimentos: Rendimento total e variação patrimonial). KPI de panorama 'Rendimento médio mensal familiar' (ADR-0010)."
+description = "Tabela SIDRA 6974, variável 388 (Rendimento total e variação patrimonial médio mensal familiar), no Total das classificações. KPI de panorama 'Rendimento médio mensal familiar' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -1677,11 +2868,12 @@ table = "6974"
 variables = ["388"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 264
+estimated_values_per_period = 528
 min_rows = 1
-max_rows = 264
+max_rows = 528
 refresh_recent_periods = 1
 classifications = { "c339" = "all" }
+extra_sets = [{ "c339" = "7999", "c4908" = "103423,103424,103425,103426,103427,103428,8050,103429,103430,8051,103432,8052,103434,8053,103442,8054" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1692,7 +2884,7 @@ id = "ibge-sidra-9552"
 source = "ibge-sidra"
 official_id = "9552"
 title = "Domicílios e moradores, por situação do domicílio e situação de segurança alimentar existente no domicílio"
-description = "Tabela SIDRA 9552, variável 162 (Domicílios), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Domicílios por situação de segurança alimentar' (ADR-0010)."
+description = "Tabela SIDRA 9552, variável 162 (Domicílios), no Total das classificações. KPI de panorama 'Domicílios por situação de segurança alimentar' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anual"
@@ -1708,6 +2900,7 @@ min_rows = 1
 max_rows = 198
 refresh_recent_periods = 1
 classifications = { "c12404" = "all" }
+extra_sets = [{ "c12404" = "109106", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1718,7 +2911,7 @@ id = "ibge-sidra-7307"
 source = "ibge-sidra"
 official_id = "7307"
 title = "Domicílios e Moradores, por situação do domicílio e existência de utilização da internet no domicílio"
-description = "Tabela SIDRA 7307, variável 162 (Domicílios), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Domicílios com utilização da internet' (ADR-0010)."
+description = "Tabela SIDRA 7307, variável 162 (Domicílios), no Total das classificações. KPI de panorama 'Domicílios com utilização da internet' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -1734,6 +2927,7 @@ min_rows = 1
 max_rows = 99
 refresh_recent_periods = 1
 classifications = { "c688" = "all" }
+extra_sets = [{ "c688" = "33298", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1744,7 +2938,7 @@ id = "ibge-sidra-7325"
 source = "ibge-sidra"
 official_id = "7325"
 title = "Pessoas de 10 anos ou mais de idade, por sexo e utilização da Internet no período de referência dos últimos três meses"
-description = "Tabela SIDRA 7325, variável 140 (Pessoas de 10 anos ou mais de idade), no Total das classificações (Sexo: Total). KPI de panorama 'Pessoas que utilizaram a internet' (ADR-0010)."
+description = "Tabela SIDRA 7325, variável 140 (Pessoas de 10 anos ou mais de idade), no Total das classificações. KPI de panorama 'Pessoas que utilizaram a internet' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -1760,6 +2954,7 @@ min_rows = 1
 max_rows = 99
 refresh_recent_periods = 1
 classifications = { "c422" = "all" }
+extra_sets = [{ "c422" = "10979", "c2" = "4,5" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1770,7 +2965,7 @@ id = "ibge-sidra-7373"
 source = "ibge-sidra"
 official_id = "7373"
 title = "Pessoas de 10 anos ou mais de idade, por sexo e posse de telefone móvel celular para uso pessoal"
-description = "Tabela SIDRA 7373, variável 140 (Pessoas de 10 anos ou mais de idade), no Total das classificações (Sexo: Total). KPI de panorama 'Pessoas com celular para uso pessoal' (ADR-0010)."
+description = "Tabela SIDRA 7373, variável 140 (Pessoas de 10 anos ou mais de idade), no Total das classificações. KPI de panorama 'Pessoas com celular para uso pessoal' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -1786,6 +2981,7 @@ min_rows = 1
 max_rows = 99
 refresh_recent_periods = 1
 classifications = { "c427" = "all" }
+extra_sets = [{ "c427" = "11326", "c2" = "4,5" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1796,7 +2992,7 @@ id = "ibge-sidra-7167"
 source = "ibge-sidra"
 official_id = "7167"
 title = "Domicílios e Moradores, por situação do domicílio e existência de televisão no domicílio"
-description = "Tabela SIDRA 7167, variável 162 (Domicílios), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Domicílios com televisão' (ADR-0010)."
+description = "Tabela SIDRA 7167, variável 162 (Domicílios), no Total das classificações. KPI de panorama 'Domicílios com televisão' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anos de referência da pesquisa"
@@ -1812,6 +3008,7 @@ min_rows = 1
 max_rows = 99
 refresh_recent_periods = 1
 classifications = { "c937" = "all" }
+extra_sets = [{ "c937" = "48455", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1842,6 +3039,92 @@ classifications = { "c2" = "all" }
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-8713"
+series_order = 4
+
+[[datasets]]
+id = "ibge-sidra-8715"
+source = "ibge-sidra"
+official_id = "8715"
+title = "Pessoas de 15 anos ou mais de idade que se sentem seguras ao andar sozinhas nas redondezas ou arredores do seu domicílio, por cor ou raça"
+description = "Tabela-irmã da 8713 (ADR-0018): variável 12567 por cor ou raça, só as categorias (o Total vem da 8713). KPI de panorama 'Pessoas que se sentem seguras ao andar sozinhas perto de casa'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/8715"
+
+[datasets.params]
+table = "8715"
+variables = ["12567"]
+territorial_levels = ["n1", "n2"]
+period_discovery_level = "n1"
+estimated_values_per_period = 12
+min_rows = 1
+max_rows = 12
+refresh_recent_periods = 1
+classifications = { "c86" = "2776,119525" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-8713"
+series_order = 1
+
+[[datasets]]
+id = "ibge-sidra-8717"
+source = "ibge-sidra"
+official_id = "8717"
+title = "Pessoas de 15 anos ou mais de idade que se sentem seguras ao andar sozinhas nas redondezas ou arredores do seu domicílio, por nível de instrução"
+description = "Tabela-irmã da 8713 (ADR-0018): variável 12567 por nível de instrução, só as categorias (o Total vem da 8713). KPI de panorama 'Pessoas que se sentem seguras ao andar sozinhas perto de casa'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/8717"
+
+[datasets.params]
+table = "8717"
+variables = ["12567"]
+territorial_levels = ["n1", "n2"]
+period_discovery_level = "n1"
+estimated_values_per_period = 24
+min_rows = 1
+max_rows = 24
+refresh_recent_periods = 1
+classifications = { "c1568" = "9493,9494,9495,99713" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-8713"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-8724"
+source = "ibge-sidra"
+official_id = "8724"
+title = "Pessoas de 15 anos ou mais de idade que se sentem seguras ao andar sozinhas nas redondezas ou arredores do seu domicílio, por principal meio de informação sobre crimes na cidade em que reside"
+description = "Tabela-irmã da 8713 (ADR-0018): variável 12567 por meio de informação sobre crimes na cidade em que reside, só as categorias (o Total vem da 8713). KPI de panorama 'Pessoas que se sentem seguras ao andar sozinhas perto de casa'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/8724"
+
+[datasets.params]
+table = "8724"
+variables = ["12567"]
+territorial_levels = ["n1", "n2"]
+period_discovery_level = "n1"
+estimated_values_per_period = 42
+min_rows = 1
+max_rows = 42
+refresh_recent_periods = 1
+classifications = { "c1393" = "57658,57659,57660,57661,57662,57663,57664" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-8713"
+series_order = 3
 
 [[datasets]]
 id = "ibge-sidra-8503"
@@ -1868,13 +3151,99 @@ classifications = { "c2" = "all" }
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-8503"
+series_order = 4
+
+[[datasets]]
+id = "ibge-sidra-8505"
+source = "ibge-sidra"
+official_id = "8505"
+title = "Pessoas de 15 anos ou mais de idade que foram vítimas de roubo nos últimos 12 meses, por cor ou raça"
+description = "Tabela-irmã da 8503 (ADR-0018): variável 12452 por cor ou raça, só as categorias (o Total vem da 8503). KPI de panorama 'Vítimas de roubo nos últimos 12 meses'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/8505"
+
+[datasets.params]
+table = "8505"
+variables = ["12452"]
+territorial_levels = ["n1", "n2"]
+period_discovery_level = "n1"
+estimated_values_per_period = 18
+min_rows = 1
+max_rows = 18
+refresh_recent_periods = 1
+classifications = { "c86" = "2776,2777,2779" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-8503"
+series_order = 1
+
+[[datasets]]
+id = "ibge-sidra-8504"
+source = "ibge-sidra"
+official_id = "8504"
+title = "Pessoas de 15 anos ou mais de idade que foram vítimas de roubo nos últimos 12 meses, por grupo de idade"
+description = "Tabela-irmã da 8503 (ADR-0018): variável 12452 por grupo de idade, só as categorias (o Total vem da 8503). KPI de panorama 'Vítimas de roubo nos últimos 12 meses'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/8504"
+
+[datasets.params]
+table = "8504"
+variables = ["12452"]
+territorial_levels = ["n1", "n2"]
+period_discovery_level = "n1"
+estimated_values_per_period = 30
+min_rows = 1
+max_rows = 30
+refresh_recent_periods = 1
+classifications = { "c58" = "2792,100052,108875,99127,3302" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-8503"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-8507"
+source = "ibge-sidra"
+official_id = "8507"
+title = "Pessoas de 15 anos ou mais de idade que foram vítimas de roubo nos últimos 12 meses, por nível de instrução"
+description = "Tabela-irmã da 8503 (ADR-0018): variável 12452 por nível de instrução, só as categorias (o Total vem da 8503). KPI de panorama 'Vítimas de roubo nos últimos 12 meses'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/8507"
+
+[datasets.params]
+table = "8507"
+variables = ["12452"]
+territorial_levels = ["n1", "n2"]
+period_discovery_level = "n1"
+estimated_values_per_period = 24
+min_rows = 1
+max_rows = 24
+refresh_recent_periods = 1
+classifications = { "c1568" = "9493,9494,9495,99713" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-8503"
+series_order = 3
 
 [[datasets]]
 id = "ibge-sidra-8022"
 source = "ibge-sidra"
 official_id = "8022"
 title = "Pessoas de 18 anos ou mais de idade que sofreram violência nos últimos 12 meses, por sexo e situação do domicílio"
-description = "Tabela SIDRA 8022, variável 11392 (Pessoas de 18 anos ou mais de idade que sofreram violência nos últimos 12 meses), no Total das classificações (Situação do domicílio: Total). KPI de panorama 'Pessoas que sofreram violência nos últimos 12 meses' (ADR-0010)."
+description = "Tabela SIDRA 8022, variável 11392 (Pessoas de 18 anos ou mais de idade que sofreram violência nos últimos 12 meses), no Total das classificações. KPI de panorama 'Pessoas que sofreram violência nos últimos 12 meses' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -1890,10 +3259,125 @@ min_rows = 1
 max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
+extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-8022"
+series_order = 5
+
+[[datasets]]
+id = "ibge-sidra-8025"
+source = "ibge-sidra"
+official_id = "8025"
+title = "Pessoas de 18 anos ou mais de idade que sofreram violência nos últimos 12 meses, por cor ou raça e situação do domicílio"
+description = "Tabela-irmã da 8022 (ADR-0018): variável 11392 por cor ou raça, só as categorias (o Total vem da 8022). KPI de panorama 'Pessoas que sofreram violência nos últimos 12 meses'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/8025"
+
+[datasets.params]
+table = "8025"
+variables = ["11392"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 195
+min_rows = 1
+max_rows = 195
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c86" = "2776,2777,2779" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-8022"
+series_order = 1
+
+[[datasets]]
+id = "ibge-sidra-8023"
+source = "ibge-sidra"
+official_id = "8023"
+title = "Pessoas de 18 anos ou mais de idade que sofreram violência nos últimos 12 meses, por grupo de idade e situação do domicílio"
+description = "Tabela-irmã da 8022 (ADR-0018): variável 11392 por grupo de idade, só as categorias (o Total vem da 8022). KPI de panorama 'Pessoas que sofreram violência nos últimos 12 meses'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/8023"
+
+[datasets.params]
+table = "8023"
+variables = ["11392"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c58" = "33061,3299,99127,3302" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-8022"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-8024"
+source = "ibge-sidra"
+official_id = "8024"
+title = "Pessoas de 18 anos ou mais de idade que sofreram violência nos últimos 12 meses, por nível de instrução e situação do domicílio"
+description = "Tabela-irmã da 8022 (ADR-0018): variável 11392 por nível de instrução, só as categorias (o Total vem da 8022). KPI de panorama 'Pessoas que sofreram violência nos últimos 12 meses'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/8024"
+
+[datasets.params]
+table = "8024"
+variables = ["11392"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 260
+min_rows = 1
+max_rows = 260
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c1568" = "9493,9494,9495,99713" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-8022"
+series_order = 3
+
+[[datasets]]
+id = "ibge-sidra-8026"
+source = "ibge-sidra"
+official_id = "8026"
+title = "Pessoas de 18 anos ou mais de idade que sofreram violência nos últimos 12 meses, por condição em relação à força de trabalho na semana de referência e situação do domicílio"
+description = "Tabela-irmã da 8022 (ADR-0018): variável 11392 por condição em relação à força de trabalho na semana de referência, só as categorias (o Total vem da 8022). KPI de panorama 'Pessoas que sofreram violência nos últimos 12 meses'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/8026"
+
+[datasets.params]
+table = "8026"
+variables = ["11392"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 99
+min_rows = 1
+max_rows = 99
+refresh_recent_periods = 1
+classifications = { "c1" = "6795", "c653" = "32862,32863,32864" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-8022"
+series_order = 4
 
 [[datasets]]
 id = "ibge-sidra-6606"
@@ -2008,7 +3492,7 @@ id = "ibge-sidra-1092"
 source = "ibge-sidra"
 official_id = "1092"
 title = "Número de informantes, Quantidade e Peso total das carcaças dos bovinos abatidos, no mês e no trimestre, por tipo de rebanho e tipo de inspeção"
-description = "Tabela SIDRA 1092, variável 284 (Animais abatidos), no Total das classificações (Tipo de inspeção: Total; Referência temporal: Total do trimestre). KPI de panorama 'Abate de bovinos' (ADR-0010)."
+description = "Tabela SIDRA 1092, variável 284 (Animais abatidos), no Total das classificações. KPI de panorama 'Abate de bovinos' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "trimestral"
@@ -2026,6 +3510,7 @@ refresh_recent_periods = 1
 period_type = "trimestre"
 group_periods_by_year = true
 classifications = { "c18" = "all" }
+extra_sets = [{ "c18" = "992", "c12529" = "111737,111738,111739" }, { "c18" = "992", "c12716" = "115233,115234,115235" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2036,7 +3521,7 @@ id = "ibge-sidra-1086"
 source = "ibge-sidra"
 official_id = "1086"
 title = "Número de informantes e Quantidade de leite cru, resfriado ou não, adquirido e industrializado, e preço médio, no mês e no trimestre, por tipo de inspeção"
-description = "Tabela SIDRA 1086, variável 282 (Quantidade de leite cru, resfriado ou não, adquirido), no Total das classificações (Tipo de inspeção: Total). KPI de panorama 'Leite adquirido e industrializado' (ADR-0010)."
+description = "Tabela SIDRA 1086, variável 282 (Quantidade de leite cru, resfriado ou não, adquirido), no Total das classificações. KPI de panorama 'Leite adquirido e industrializado' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "trimestral"
@@ -2054,6 +3539,7 @@ refresh_recent_periods = 1
 period_type = "trimestre"
 group_periods_by_year = true
 classifications = { "c12716" = "all" }
+extra_sets = [{ "c12716" = "115236", "c12529" = "111737,111738,111739" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2064,7 +3550,7 @@ id = "ibge-sidra-7524"
 source = "ibge-sidra"
 official_id = "7524"
 title = "Número de informantes, Número de galinhas poedeiras e Quantidade de ovos produzidos, no mês e no trimestre"
-description = "Tabela SIDRA 7524, variável 29 (Quantidade de ovos produzidos), no Total das classificações (Referência temporal: Total do trimestre). KPI de panorama 'Produção de ovos de galinha' (ADR-0010)."
+description = "Tabela SIDRA 7524, variável 29 (Quantidade de ovos produzidos), no Total das classificações. KPI de panorama 'Produção de ovos de galinha' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "trimestral"
@@ -2082,6 +3568,7 @@ refresh_recent_periods = 1
 period_type = "trimestre"
 group_periods_by_year = true
 classifications = { "c1835" = "all" }
+extra_sets = [{ "c1835" = "72208", "c12716" = "115233,115234,115235" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2121,7 +3608,7 @@ id = "ibge-sidra-6878"
 source = "ibge-sidra"
 official_id = "6878"
 title = "Número de estabelecimentos agropecuários e Área dos estabelecimentos agropecuários, por tipologia, grupos de atividade econômica, sexo do produtor, classe de idade do produtor e condição do produtor em relação às terras"
-description = "Tabela SIDRA 6878, variável 183 (Número de estabelecimentos agropecuários), no Total das classificações (Condição do produtor em relação às terras: Total; Grupos de atividade econômica: Total; Sexo do produtor: Total; Classe de idade do produtor: Total). KPI de panorama 'Número e área dos estabelecimentos agropecuários' (ADR-0010)."
+description = "Tabela SIDRA 6878, variável 183 (Número de estabelecimentos agropecuários), no Total das classificações. KPI de panorama 'Número e área dos estabelecimentos agropecuários' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -2140,6 +3627,8 @@ classifications = { "c829" = "46302,46303,46304,46305,46306,46307,46422,46423" }
 detail_classification = "c829"
 detail_total = "46302"
 detail_levels = ["n1", "n2", "n3"]
+extra_sets = [{ "c829" = "46302", "c218" = "46503,46504,46505,46506,46507,4783,111518" }, { "c829" = "46302", "c12517" = "111519,111520,111521,111522,111523,111524,111525,114349,111526" }, { "c829" = "46302", "c12564" = "112634,112635,41146" }, { "c829" = "46302", "c12771" = "118190,118191,118192,118193,118194,46437,46501,47177" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2704,7 +4193,7 @@ id = "ibge-sidra-9949"
 source = "ibge-sidra"
 official_id = "9949"
 title = "Número de nascimentos de empresas empregadoras e taxas de sobrevivência, segundo as seções da classificação de atividade e faixas de pessoal ocupado assalariado"
-description = "Tabela SIDRA 9949, variável 13234 (Número de nascimentos de empresas empregadoras), no Total das classificações (Faixas de pessoal ocupado assalariado: Total; Classificação Nacional de Atividades Econômicas (CNAE 2.0): Total). KPI de panorama 'Nascimentos de empresas e taxa de sobrevivência' (ADR-0010)."
+description = "Tabela SIDRA 9949, variável 13234 (Número de nascimentos de empresas empregadoras), no Total das classificações. KPI de panorama 'Nascimentos de empresas e taxa de sobrevivência' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "anual"
@@ -2715,10 +4204,12 @@ table = "9949"
 variables = ["13234"]
 territorial_levels = ["n1"]
 period_discovery_level = "n1"
-estimated_values_per_period = 1
+estimated_values_per_period = 22
 min_rows = 1
-max_rows = 1
+max_rows = 22
 refresh_recent_periods = 1
+classifications = { "c12762" = "all" }
+extra_sets = [{ "c12762" = "117897", "c370" = "9502,46281,73113" }]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -3224,7 +4715,7 @@ id = "ibge-sidra-5882"
 source = "ibge-sidra"
 official_id = "5882"
 title = "Municípios, total e com Plano Diretor, por classe de tamanho da população, Grandes Regiões e Unidades da Federação"
-description = "Tabela SIDRA 5882, variável 603 (Número de municípios), no Total das classificações (Classe de tamanho da população do município: Total). KPI de panorama 'Municípios com Plano Diretor' (ADR-0010)."
+description = "Tabela SIDRA 5882, variável 603 (Número de municípios), no Total das classificações. KPI de panorama 'Municípios com Plano Diretor' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -3240,6 +4731,8 @@ min_rows = 1
 max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c1480" = "all" }
+extra_sets = [{ "c1480" = "58278", "c12446" = "110088,110089,110090,110091,110092,110093,110094" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -3275,7 +4768,7 @@ id = "ibge-sidra-8530"
 source = "ibge-sidra"
 official_id = "8530"
 title = "Municípios total e atingidos pela seca nos últimos 4 anos, existência de Plano de Contingência e/ou Prevenção para a seca, por classe de tamanho da população do município"
-description = "Tabela SIDRA 8530, variável 603 (Número de municípios), no Total das classificações (Plano de Contingência e/ou Prevenção para a seca: Total; Classe de tamanho da população do município: Total). KPI de panorama 'Municípios atingidos pela seca e com plano de contingência' (ADR-0010)."
+description = "Tabela SIDRA 8530, variável 603 (Número de municípios), no Total das classificações. KPI de panorama 'Municípios atingidos pela seca e com plano de contingência' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -3291,6 +4784,8 @@ min_rows = 1
 max_rows = 28165
 refresh_recent_periods = 1
 classifications = { "c1346" = "all" }
+extra_sets = [{ "c1346" = "57247", "c1347" = "57253,57254,57255,57256" }, { "c1346" = "57247", "c12446" = "110088,110089,110090,110091,110092,110093,110094" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -3301,7 +4796,7 @@ id = "ibge-sidra-9985"
 source = "ibge-sidra"
 official_id = "9985"
 title = "Municípios, totais e com Plano Municipal nas áreas de assistência social, segurança alimentar, política para mulheres, segurança pública, direitos humanos e primeira infância, por classe de tamanho da população do município"
-description = "Tabela SIDRA 9985, variável 603 (Número de municípios), no Total das classificações (Classe de tamanho da população do município: Total). KPI de panorama 'Municípios com planos municipais nas áreas sociais' (ADR-0010)."
+description = "Tabela SIDRA 9985, variável 603 (Número de municípios), no Total das classificações. KPI de panorama 'Municípios com planos municipais nas áreas sociais' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -3320,6 +4815,8 @@ classifications = { "c1329" = "57146,15608,15609,15675,15676,15677,15678,15679,1
 detail_classification = "c1329"
 detail_total = "57146"
 detail_levels = ["n1", "n2", "n3"]
+extra_sets = [{ "c1329" = "57146", "c12446" = "110088,110089,110090,110091,110092,110093,110094" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -3330,7 +4827,7 @@ id = "ibge-sidra-9987"
 source = "ibge-sidra"
 official_id = "9987"
 title = "Municípios, total, e com conselho municipal nas áreas de assistência social, segurança alimentar, política para mulheres, segurança pública e direitos humanos, por classe de tamanho da população do município"
-description = "Tabela SIDRA 9987, variável 603 (Número de municípios), no Total das classificações (Classe de tamanho da população do município: Total). KPI de panorama 'Municípios com conselhos municipais nas áreas sociais' (ADR-0010)."
+description = "Tabela SIDRA 9987, variável 603 (Número de municípios), no Total das classificações. KPI de panorama 'Municípios com conselhos municipais nas áreas sociais' (ADR-0010)."
 license = "ibge-reuso-com-citacao"
 access_classification = "public_conditional"
 periodicity = "período único"
@@ -3349,6 +4846,8 @@ classifications = { "c1328" = "57131,77667,77668,77669,77670,77671,77672,77673,7
 detail_classification = "c1328"
 detail_total = "57131"
 detail_levels = ["n1", "n2", "n3"]
+extra_sets = [{ "c1328" = "57131", "c12446" = "110088,110089,110090,110091,110092,110093,110094" }]
+extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"

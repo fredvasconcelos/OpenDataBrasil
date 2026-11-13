@@ -66,7 +66,7 @@ Guia completo: [`docs/development/setup-windows-wsl2.md`](docs/development/setup
 - Níveis territoriais do SIDRA (inclusive recortes especiais): [`docs/data_catalog/ibge-niveis-territoriais.md`](docs/data_catalog/ibge-niveis-territoriais.md)
 - Indicadores da Gold: [`docs/data_catalog/gold-demografia.md`](docs/data_catalog/gold-demografia.md)
 - Escopo de detalhamento do MVP e plano de expansão: [`docs/data_catalog/escopo-mvp-e-expansao.md`](docs/data_catalog/escopo-mvp-e-expansao.md)
-- Operação: [ingestão](docs/runbooks/ingestao.md), [Silver](docs/runbooks/silver.md), [Gold](docs/runbooks/gold.md), [exportação para análise](docs/runbooks/exportacao.md), [API](docs/runbooks/api.md) e [portal](docs/runbooks/portal.md)
+- Operação: [ingestão](docs/runbooks/ingestao.md), [Silver](docs/runbooks/silver.md), [Gold](docs/runbooks/gold.md), [exportação para análise](docs/runbooks/exportacao.md), [API](docs/runbooks/api.md), [portal](docs/runbooks/portal.md) e [ciclo de atualização](docs/runbooks/atualizacao.md)
 - Problemas conhecidos: [`docs/known-issues.md`](docs/known-issues.md)
 - Compatibilidade: [`docs/development/compatibility-matrix.md`](docs/development/compatibility-matrix.md)
 

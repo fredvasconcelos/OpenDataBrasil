@@ -2,8 +2,10 @@
 
 Tema > subtema > KPI. Cada KPI aponta para um indicador da Gold e lista as
 dimensões (classificação e partição de categorias) liberadas no portal. A
-configuração é conferida contra o release ativo: indicador publicado,
-classificação do indicador e partição existente.
+configuração é conferida contra um release (ADR-0015): indicador publicado,
+classificação do indicador, partição existente e, com o panorama, a mesma
+tabela de origem. A conferência vale nos dois lados: rígida no worker, antes de
+ativar o release, e tolerante na API, que esconde só os KPIs com problema.
 """
 
 from __future__ import annotations
@@ -11,9 +13,14 @@ from __future__ import annotations
 import tomllib
 from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
+
+from odb_semantics.panorama import resolve_links
+
+if TYPE_CHECKING:
+    from odb_semantics.panorama import Panorama
 
 _ID = r"^[a-z][a-z0-9_]{0,63}$"
 
@@ -45,11 +52,20 @@ class KpiConfig(_Strict):
     # Categoria da primeira dimensão cuja participação no Total colore o mapa (em %).
     # Para KPIs cujo Total é só o universo (ex.: % de municípios com Plano Diretor).
     map_share: str | None = Field(default=None, pattern=r"^[0-9A-Za-z_\-]{1,32}$")
+    # Dimensões marginais (ADR-0016): cada uma vem com as demais no Total, sem os
+    # cruzamentos. O portal detalha uma por vez, e a API recusa duas juntas.
+    exclusive_dimensions: bool = False
+    # Níveis com mapa, se diferentes dos que têm geometria. Vazio: sem mapa (POF de
+    # 1987 e 1995: só Brasília e Goiânia teriam cor na malha municipal, ADR-0016).
+    map_levels: tuple[str, ...] | None = None
 
     @model_validator(mode="after")
     def _share(self) -> KpiConfig:
         if self.map_share is not None and not self.dimensions:
             msg = f"{self.id}: map_share exige ao menos uma dimensão"
+            raise ValueError(msg)
+        if self.exclusive_dimensions and len(self.dimensions) < 2:  # noqa: PLR2004
+            msg = f"{self.id}: exclusive_dimensions exige duas dimensões ou mais"
             raise ValueError(msg)
         return self
 
@@ -158,30 +174,59 @@ def load_portal(config_dir: str | Path, scope: str) -> PortalConfig:
     return config
 
 
-def check_against_release(
+def release_problems(
     config: PortalConfig,
     indicators: Mapping[str, Mapping[str, Any]],
     partitions: Mapping[str, Sequence[str]],
-) -> None:
-    """Confere a configuração contra o release (``dim_indicator`` e ``dim_category``).
+    panorama: Panorama | None = None,
+) -> dict[str, list[str]]:
+    """Problemas de cada KPI contra o release (``dim_indicator`` e ``dim_category``).
 
-    ``partitions`` mapeia classificação → partições publicadas.
+    ``partitions`` mapeia classificação → partições publicadas. Com o
+    ``panorama``, confere também se a tabela de origem publicada é a que o item
+    declara. Devolve só os KPIs com problema, na ordem da configuração.
     """
-    problems: list[str] = []
+    problems: dict[str, list[str]] = {}
     for kpi in config.kpis():
         meta = indicators.get(kpi.indicator)
         if meta is None:
-            problems.append(f"{kpi.id}: indicador {kpi.indicator} não publicado no release")
+            problems[kpi.id] = [f"indicador {kpi.indicator} não publicado no release"]
             continue
         classes = set(meta.get("classification_ids") or ())
         for dim in kpi.dimensions:
             if dim.classification not in classes:
-                problems.append(
-                    f"{kpi.id}: {kpi.indicator} não tem a classificação {dim.classification}"
-                )
+                problem = f"{kpi.indicator} não tem a classificação {dim.classification}"
             elif dim.partition not in partitions.get(dim.classification, ()):
-                problems.append(
-                    f"{kpi.id}: partição {dim.partition} inexistente em {dim.classification}"
+                problem = f"partição {dim.partition} inexistente em {dim.classification}"
+            else:
+                continue
+            problems.setdefault(kpi.id, []).append(problem)
+    if panorama is not None:
+        links = resolve_links(panorama, (k.id for k in config.kpis()))
+        for _, _, item in panorama.items():
+            linked = config.kpi(links[item.id] or "")
+            if linked is None or linked.indicator not in indicators:
+                continue  # planejado, ou indicador ausente (já registrado)
+            published = str(indicators[linked.indicator].get("source_table_id"))
+            if published != item.tabela:
+                problems.setdefault(linked.id, []).append(
+                    f"tabela {item.tabela} no panorama ({item.id}), {published} na Gold"
                 )
+    return problems
+
+
+def describe_problems(problems: Mapping[str, Sequence[str]]) -> str:
+    """Problemas em uma linha: ``kpi: problema; kpi: problema``."""
+    return "; ".join(f"{kpi}: {p}" for kpi, items in problems.items() for p in items)
+
+
+def check_against_release(
+    config: PortalConfig,
+    indicators: Mapping[str, Mapping[str, Any]],
+    partitions: Mapping[str, Sequence[str]],
+    panorama: Panorama | None = None,
+) -> None:
+    """Conferência rígida: erro se algum KPI tiver problema (ver ``release_problems``)."""
+    problems = release_problems(config, indicators, partitions, panorama)
     if problems:
-        raise PortalConfigError("; ".join(problems))
+        raise PortalConfigError(describe_problems(problems))

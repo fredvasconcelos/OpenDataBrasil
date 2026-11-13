@@ -116,11 +116,17 @@ class DeltaWriter:
         partition_by: Sequence[str] | None = None,
         evolve_schema: bool = False,
         replace_where: Mapping[str, str] | None = None,
+        overwrite_schema: bool = False,
     ) -> WriteResult:
         """Grava ``frame`` com o modo indicado e devolve a nova versão.
 
         ``evolve_schema=True`` permite apenas acrescentar colunas (``schema_mode
         = merge``). Remoção ou troca de tipo continua bloqueada pelo delta-rs.
+
+        ``overwrite_schema=True`` (exige ``mode="overwrite"``) troca o schema da tabela
+        inteira (``schema_mode = overwrite``). Só para pedidos explícitos do operador
+        (``odb gold build --reset-schema``): as versões anteriores continuam legíveis por
+        versão, e os releases que as fixaram não mudam.
 
         ``replace_where`` (exige ``mode="overwrite"``) substitui apenas as linhas
         que satisfazem as igualdades informadas, por exemplo
@@ -152,7 +158,12 @@ class DeltaWriter:
             if partition_by and not exists:
                 _check_identifiers(partition_by, "colunas de partição")
                 options["partition_by"] = list(partition_by)
-            if evolve_schema:
+            if overwrite_schema:
+                if mode != "overwrite":
+                    msg = "overwrite_schema exige mode='overwrite'"
+                    raise TableWriteError(msg)
+                options["schema_mode"] = "overwrite"
+            elif evolve_schema:
                 options["schema_mode"] = "merge"
             operation = f"write:{mode}"
             if predicate is not None and exists:

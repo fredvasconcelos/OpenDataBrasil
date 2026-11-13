@@ -6,7 +6,7 @@ mais as revisões da beta) e mantêm todas as classes, rótulos e `aria-*` de qu
 
 ## Novidades da v2.3 (sobre a v2.1)
 
-> Versão do pacote: **2.3.3** (arquivo `VERSION`; ajustes da 2.3.1 a 2.3.3 na seção "Ajustes depois da 2.3.0"). Telas de referência em `reference/`.
+> Versão do pacote: **2.3.5** (arquivo `VERSION`; ajustes da 2.3.1 a 2.3.5 na seção "Ajustes depois da 2.3.0"). Telas de referência em `reference/`.
 >
 > **O que a API ainda não fornece (não inventado):** o canvas mostra indicadores
 > "em preparação" e o filtro de situação; o contrato `/navigation` só traz indicadores
@@ -88,6 +88,8 @@ anteriores a estes ajustes e ainda não os mostram.
 | Versão | Item | Onde | Regra |
 |---|---|---|---|
 | 2.3.1 | Busca da barra lateral fixa | `Sidebar.tsx` (`.tree-head`), `globals.css` | Título "Temas e indicadores", campo e resumo ficam fixos no topo da área que rola (a barra até 1599 px; o cartão da árvore em tela cheia). O fundo cobre a árvore que passa por baixo e o recuo de cima; `scroll-padding-top` mantém à vista o item focado pelo teclado. "Filtros" não é fixo. Captura: `reference/screens/busca-barra-lateral-fixa.png`. Especificação: `docs/DESIGN-SYSTEM.md`, "Páginas (v2.3)" |
+| 2.3.5 | Nota de "Período por" conforme a regra | `Sidebar.tsx` (`.grain-note`), `messages/pt-BR.json` (`grainNotes.sum`, `.mean`, `.last`; sai `dashboard.grainNote`) | O seletor "Período por" aparece também em números-índice (PMC, PMS, PIM), acumulados (IPCA) e estimativas (LSPA). A nota diz como o período maior é calculado, conforme `time_aggregation` da API: soma, média ou último período publicado. Regra: ADR-0017 |
+| 2.3.4 | Detalhar por: uma dimensão por vez | `Sidebar.tsx` (`.hint` no `fieldset`), `lib/state.ts` (só a primeira dimensão da URL), `globals.css` (`.sidebar fieldset .hint`), `messages/pt-BR.json` (`dashboard.dimensionsExclusive`) | Em KPIs com dimensões marginais (`exclusive_dimensions` da API: cada detalhe vem com os demais no Total, sem cruzamentos), marcar uma caixa desmarca as outras, e o aviso "Uma por vez: cada detalhe vem com os demais no Total." aparece sob "Detalhar por" (12 px, `text-muted`). Os demais KPIs seguem com várias caixas. Tooltip e tabela não mostram categorias sem dado no período (faixas de rendimento de outra edição da POF). KPI sem nível Brasil (POF de 1987 e 1995) abre no "Total das áreas da POF" (`defaultGeography`), com a tabela nas regiões metropolitanas e o cartão "sem mapa" (`map_levels` vazio na configuração). Captura: `reference/screens/detalhar-uma-por-vez.png`. Regra: ADR-0016 |
 | 2.3.3 | Rodapé no fim da janela | `globals.css` (`body`, `#conteudo`) | Com pouco conteúdo, o rodapé fica no fim da janela, e não logo abaixo do cartão (correção pedida pelo mantenedor na página de erro). Painel e Início sem mudança |
 | 2.3.3 | Rótulos T/S e eixo agrupado | `lib/period.ts` (`formatPeriod`, `groupedAxis`, `partsFit`, `slotWidth`), `SeriesChart.tsx` | Trimestre "T2 2026" e semestre "S1 2026" em todo o portal, iguais à `dim_period` da Gold (decisão do mantenedor). No gráfico de evolução, trimestres e semestres em duas linhas: a parte do ano em cima e o ano centralizado embaixo, com divisórias entre os anos; sem espaço para as partes, uma linha só com os anos, e o ano com dois dígitos ("26") se o de quatro não couber (salvo na virada do século). Captura: `reference/screens/serie-eixo-semestres.png`. Especificação: `docs/DESIGN-SYSTEM.md`, seção 9 (Séries) |
 | 2.3.2 | Período por (grão de tempo) | `Sidebar.tsx` (`fieldset.grains`, `.grain-note`), `Dashboard.tsx`, `ExportMenu.tsx`, `lib/state.ts` (`grao=`, `grainPeriods`), `lib/period.ts` (semestre), `lib/format.ts` (`incomplete_period`), `globals.css`, `messages/pt-BR.json` (`dashboard.grain`, `dashboard.grainNote`, `grains.*`) | Rádios Mês, Trimestre, Semestre e Ano acima do Período, só em KPIs que somam no tempo (`time_grains` da API). Ano, semestre e trimestre são a soma dos meses (valor derivado); período incompleto fica "período incompleto". Padrão: o último período completo. Especificação: `docs/DESIGN-SYSTEM.md`, "Páginas (v2.3)"; regra: ADR-0013 |
@@ -130,7 +132,7 @@ design-system/
 ├── tokens/
 │   ├── tokens.css            ← variáveis CSS (claro, dark, prefers-color-scheme)
 │   └── tokens.json           ← os mesmos valores em JSON (para outras ferramentas)
-├── VERSION                   ← 2.3.3
+├── VERSION                   ← 2.3.5
 ├── reference/                ← telas do canvas (fontes) e capturas dos componentes
 ├── assets/brand/             ← logos em SVG (texto convertido em curvas) e ícones PNG
 ├── assets/icons/             ← github.svg (Bootstrap Icons, MIT) + licença

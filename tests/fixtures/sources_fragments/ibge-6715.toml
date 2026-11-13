@@ -26,3 +26,59 @@ refresh_recent_periods = 1
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-pof-despesa-familiar"
+series_order = 3
+
+# POF 2008-2009 (1594) e 2002-2003 (2309) só no nível Brasil (fixtures de 2026-11-12).
+[[datasets]]
+id = "ibge-sidra-1594"
+source = "ibge-sidra"
+official_id = "1594"
+title = "Despesa média mensal familiar (2008)"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+
+[datasets.params]
+table = "1594"
+variables = ["1201", "1204"]
+territorial_levels = ["n1"]
+classifications = { "c339" = "all", "c12190" = "all" }
+split_by_variable = true
+estimated_values_per_period = 744
+min_rows = 744
+max_rows = 744
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-pof-despesa-familiar"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-2309"
+source = "ibge-sidra"
+official_id = "2309"
+title = "Despesa média mensal familiar (2002)"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+
+[datasets.params]
+table = "2309"
+variables = ["1201", "1204"]
+territorial_levels = ["n1"]
+classifications = { "c1" = "6795", "c12191" = "103411", "c12190" = "all" }
+estimated_values_per_period = 178
+min_rows = 178
+max_rows = 178
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-pof-despesa-familiar"
+series_order = 1

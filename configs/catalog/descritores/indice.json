@@ -27,12 +27,47 @@
   "sha256": "c15dde6fd9149398e0fb53cfae31f6df95d2091057def42e6bec028ccaa13c9e",
   "size_bytes": 28822
  },
+ "387": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/387",
+  "retrieved_at": "2026-11-12T21:00:00+00:00",
+  "status": "ok",
+  "sha256": "4e53adc78f8286bd4f96bca7db0f48c0872516aa755b28c6bae12720bc52734b",
+  "size_bytes": 18580
+ },
+ "400": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/400",
+  "retrieved_at": "2026-11-12T21:00:00+00:00",
+  "status": "ok",
+  "sha256": "f0feedc723c0b0b54f63b8317afe3662b54a45db2f00f0adb9fb2e69c2238ca6",
+  "size_bytes": 19313
+ },
+ "414": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/414",
+  "retrieved_at": "2026-11-12T21:00:00+00:00",
+  "status": "ok",
+  "sha256": "36eec41a29d8d009a8eb74344cbfac66b559edfcb1bd59fff33be0d86fb6d10e",
+  "size_bytes": 12516
+ },
  "417": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/417",
   "retrieved_at": "2026-11-11T09:06:17.699951+00:00",
   "status": "ok",
   "sha256": "820ba254ca27477a4960bbe9e0815d201db1c62c9e4870fea3780744c64a69ce",
   "size_bytes": 12832
+ },
+ "434": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/434",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "1c5dda1acd313e168a8b6cfd72d44331d2dc139a4c8b6020dbaf494e31ed6d76",
+  "size_bytes": 12017
+ },
+ "435": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/435",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "a2f2d8cde7a17f364bf792488508edb2396f111691d0bf7832a464fecc54dc33",
+  "size_bytes": 10788
  },
  "770": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/770",
@@ -69,12 +104,26 @@
   "sha256": "b5086271d2af88fd92a11742c6ea2287a3d5050a83471b91a5117377c96c37f8",
   "size_bytes": 23137
  },
+ "1187": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/1187",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "231793d88da01d731fed7d2ebf3f3e221fcd2169c222c5e9521f023ef290dee5",
+  "size_bytes": 4506
+ },
  "1286": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/1286",
   "retrieved_at": "2026-11-11T09:03:49.241299+00:00",
   "status": "ok",
   "sha256": "7d7bed9c630dae941e3a7c38d76339de6ad6cfe14bc869189ac5b26226f12931",
   "size_bytes": 5988
+ },
+ "1594": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/1594",
+  "retrieved_at": "2026-11-12T21:00:00+00:00",
+  "status": "ok",
+  "sha256": "a056b1b292cd1bc8daa50b443ea2756818b8f4978dd48d00c5fa2b7609d5ac57",
+  "size_bytes": 25378
  },
  "1695": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/1695",
@@ -110,6 +159,13 @@
   "status": "ok",
   "sha256": "7e9003a9c3249e6163932923c8d7f6e7710e70c14a30e4e2c249957665629f9a",
   "size_bytes": 56548
+ },
+ "2309": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/2309",
+  "retrieved_at": "2026-11-12T21:00:00+00:00",
+  "status": "ok",
+  "sha256": "f4990585577d1dc8e0cd35a33bbd9e8b9a2a97fc60bc251c64cb8dd080e35ec4",
+  "size_bytes": 17219
  },
  "2581": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/2581",
@@ -181,6 +237,34 @@
   "sha256": "b5308a59bd84783300a625df6055c68b82f6862f3e9d996c2ddc6246f287f492",
   "size_bytes": 14297
  },
+ "4179": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4179",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "fc6693b22dc3941485fd3be57479e59526dd66638b0dcb5c8d1502c3a785e316",
+  "size_bytes": 14585
+ },
+ "4181": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4181",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "f2cdb9e0c4abad49ee6225aa9bcd48fd37044b0d1d9f1ac9d63c0f31685f4981",
+  "size_bytes": 15061
+ },
+ "4182": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4182",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "c764d6d370a33427c3f49e70dca3ae2c1a8049387b041f6055b2fd2ca2d75a28",
+  "size_bytes": 15370
+ },
+ "4183": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4183",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "9ffb7ead51e2faa8d11d26452ba6b313e63297bb667eb010576cbbf1fde06ea7",
+  "size_bytes": 14576
+ },
  "4277": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4277",
   "retrieved_at": "2026-11-11T09:06:01.698713+00:00",
@@ -202,12 +286,82 @@
   "sha256": "9d0084f7b277c7c18590ef717830848cdc62e7951e5e69febb007e21ab5b2208",
   "size_bytes": 14592
  },
+ "4419": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4419",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "0b318f1704a46036804a879c72a17d246b847533dbd6b8d7ad299a260e35e21b",
+  "size_bytes": 14996
+ },
+ "4420": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4420",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "4d11bd96ddcc07b3a3510e45fb8a66a196f62caabf2d76f173919bda8e414850",
+  "size_bytes": 15355
+ },
+ "4421": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4421",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "ee3a0fc13605707762d677b85ba088e2b6bdaa37a332640c4a23f407fb9677c1",
+  "size_bytes": 14872
+ },
+ "4422": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4422",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "54712b9aa6abaccf98e3afb270c58aaa080d214fbfd3b0102ff9be4f08acfa2e",
+  "size_bytes": 16367
+ },
+ "4423": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4423",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "b323dfba7837f26beb50c0fdbdafda63919bfb270ee6150fc4393bbda61cd382",
+  "size_bytes": 15664
+ },
  "4487": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4487",
   "retrieved_at": "2026-11-11T09:05:36.932129+00:00",
   "status": "ok",
   "sha256": "7533fd1e66a42095976857e13d95d84e348fb9304f0132c04a71c044fa70e3ae",
   "size_bytes": 14474
+ },
+ "4488": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4488",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "16759b7a4a7e033c7f5df53c0c1aa188feb3762d208dd89d8f168e6c70575b56",
+  "size_bytes": 14881
+ },
+ "4489": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4489",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "294cac3d2d1bd65e6baf640401a855d6b4c035fd2cebf4ae056f4d137d345931",
+  "size_bytes": 15237
+ },
+ "4490": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4490",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "e3d8fc8db1fc67c6487f692d3ca6f0cab27abdec3deb863da607c724e87faff0",
+  "size_bytes": 14754
+ },
+ "4491": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4491",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "f890e8f6cbb901f4c62ae68ac407db3406d6305586db24f7e5ea2712229610bd",
+  "size_bytes": 16250
+ },
+ "4492": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4492",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "a0e6e78d7c159aeb8833ce87dec91aa3254e645d94c9af4da7e785e45cd73fbd",
+  "size_bytes": 15546
  },
  "4708": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4708",
@@ -244,12 +398,68 @@
   "sha256": "7b8341653ac63a3b6106f36c8b2f3a8dbda9f0eb6c34882a34e3a44e60402b08",
   "size_bytes": 14370
  },
+ "4949": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4949",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "f9b15b97a9c4eebb861c41b7b9a04b32172462488cf14f857b1754e73f65ea59",
+  "size_bytes": 14775
+ },
+ "4950": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4950",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "fdd4a3706f36cd7d255ca48a100564a0367f78ba716c2efbc0d1b6db27ca3266",
+  "size_bytes": 15195
+ },
+ "4951": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4951",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "f3ef3561cd11136ea1862a54cae3bf1fcf5ff565013efd84b48a0ced71b56cba",
+  "size_bytes": 14643
+ },
+ "4952": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4952",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "af775910ea37f2e4661a2f76c6f8b023d893f57d3b1de8dfdfdd3e731004dfc9",
+  "size_bytes": 15505
+ },
+ "4953": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/4953",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "af6f4a5bd7230310367b82f84a58798478aa07a9e1659d554431d654d1fe0a88",
+  "size_bytes": 16139
+ },
  "5055": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/5055",
   "retrieved_at": "2026-11-11T09:05:48.836835+00:00",
   "status": "ok",
   "sha256": "67da772c3f497c60565862d9dd521b135165867da5c2efc7ebee7da9c226e7ba",
   "size_bytes": 14241
+ },
+ "5058": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/5058",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "2520df0b932157e134730715c3977d2115f0b1e18882e02bb99e0ff514a52f8e",
+  "size_bytes": 14648
+ },
+ "5061": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/5061",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "c2e00bc7e9a4cb875d9808de183d6444ba48b90aa69cebe1833353c8744b0d31",
+  "size_bytes": 14522
+ },
+ "5065": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/5065",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "54d98d7aa66a082e4b29a4b92ca59c51ccb4c87fe4ca8be3909e3d5afe469933",
+  "size_bytes": 6832
  },
  "5436": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/5436",
@@ -306,6 +516,13 @@
   "status": "ok",
   "sha256": "dafbe5da1d8e56899dd5e3834d743fb13800fa77f1d0cb9c9baf2db8ba91a767",
   "size_bytes": 3956
+ },
+ "5845": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/5845",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "86df416d626f3d7637b7dca12f10b56ec51862e8c20a6b6ab43fc6cbc1bdbbd7",
+  "size_bytes": 4163
  },
  "5877": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/5877",
@@ -538,6 +755,13 @@
   "sha256": "0dc026f1b7aae4cd3a6bc26bf8c85363c06758f87f3c9ab0ab343734f2240de7",
   "size_bytes": 16340
  },
+ "6825": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/6825",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "d0d0f0ad3e0de94fdd8dbce51d42d2fcee9f82cf6cd36999c508b928cf4e680c",
+  "size_bytes": 4090
+ },
  "6843": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/6843",
   "retrieved_at": "2026-11-11T09:08:25.704115+00:00",
@@ -594,6 +818,13 @@
   "sha256": "3fbe82169869b8b3153ba1691f41a447e23b97ee9fb1a595b31c1046defcc31c",
   "size_bytes": 6592
  },
+ "7125": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7125",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "ffef3885b131d7026f33090fa98cd4d514dfd49a14efb5d2e7e64a33089584b1",
+  "size_bytes": 5871
+ },
  "7126": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7126",
   "retrieved_at": "2026-11-11T09:05:05.755255+00:00",
@@ -642,6 +873,20 @@
   "status": "ok",
   "sha256": "d4dcba0b07df4455a34fb9d76084a00df8171c6d6edb655271bec45cabee625c",
   "size_bytes": 5078
+ },
+ "7269": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7269",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "df3689299f4cd0a20f63b784580c11eca0a9d4c9e9566916666110110255df59",
+  "size_bytes": 16073
+ },
+ "7270": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7270",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "4507964a0ff6953bb008ebc21bed4ebd78aa3d0075e85899741db04761b8746e",
+  "size_bytes": 16266
  },
  "7307": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7307",
@@ -713,12 +958,68 @@
   "sha256": "c6fc62219197a496f2341bde086049f034d044caa06817505a0255d23358bd40",
   "size_bytes": 14906
  },
+ "7727": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7727",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "33e93df5417c0c2cf82a15939f53bc24293118b00f7a103e430a74df2a3733c3",
+  "size_bytes": 15180
+ },
+ "7728": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7728",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "630420e31fbe9a6cc9c17395423d189c45a61be40b39eb86dc2e01a017ff16c8",
+  "size_bytes": 15656
+ },
+ "7729": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7729",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "0d09bf5812c7db94745b7b800f84287433558befeba606d8a5101e0c7a12f3f0",
+  "size_bytes": 15173
+ },
+ "7730": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7730",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "c0ca3ede6f9ca957b51a57f1ff54107df9de35f392c3c450d8e3362b00c49878",
+  "size_bytes": 15954
+ },
  "7740": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7740",
   "retrieved_at": "2026-11-11T09:05:42.878377+00:00",
   "status": "ok",
   "sha256": "d50e23751a65cc9758f4779ccd2784f86909576f62aac85e2981489290fd1b2d",
   "size_bytes": 14453
+ },
+ "7741": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7741",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "9fe679f4f6cb1c45f978177c8e08a03064dd251a53905504c8ef7992fd9a6378",
+  "size_bytes": 14727
+ },
+ "7742": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7742",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "c0f25b4411def228d968b8849e67128d60d4715f444755556904157aa596cf94",
+  "size_bytes": 15202
+ },
+ "7743": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7743",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "6464bd08423a8a86a2a0afefcf539955a6c91b53132689f3d07d4338240ced62",
+  "size_bytes": 14721
+ },
+ "7744": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7744",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "917edaec76030f6a0e3d49b08f53cfa920a0f6a3f9c99696db79b30ac9fb0c7f",
+  "size_bytes": 15506
  },
  "7972": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7972",
@@ -727,12 +1028,68 @@
   "sha256": "8e44f879e155a6bff2fa4e5f0a469d3e8c4ec650b2d81af1471b89b7627d19e4",
   "size_bytes": 14748
  },
+ "7973": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7973",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "80d42058e8088004962e74c5e38437d1daabf5d8cba08d727ab85be1178da547",
+  "size_bytes": 15144
+ },
+ "7974": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7974",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "9e8d218d75249e3879586f897572bbd5b861e53ae4cb591fc675af03182dddc6",
+  "size_bytes": 15499
+ },
+ "7975": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7975",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "67a813938a863200173c00f0b2ab47e241db1d3a9414d9d000c6b58618f12d66",
+  "size_bytes": 15016
+ },
+ "7976": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/7976",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "6fcc50912df48a96bb1044ba8f31c5fab4093220cfff66893760a3df8fcf6751",
+  "size_bytes": 15804
+ },
  "8022": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8022",
   "retrieved_at": "2026-11-11T09:06:34.906368+00:00",
   "status": "ok",
   "sha256": "03f2a50363e2be86aebe8782347de9f08dd7a8eee2cb0dfb3a718d575044e07e",
   "size_bytes": 14352
+ },
+ "8023": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8023",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "d5541626167cb2c7adf5a567098ebfb23dda78dec0e8caac98f410040a58028b",
+  "size_bytes": 14625
+ },
+ "8024": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8024",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "2b2200ab5601e37d5b5dfbeeff3f336937edc802729ffd8f9f52136f117e4789",
+  "size_bytes": 15104
+ },
+ "8025": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8025",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "952ae2276fdc6e83c984325deef6f6d31f1a0375b22f647372104d0d719a68ad",
+  "size_bytes": 14621
+ },
+ "8026": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8026",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "21b7e44ee419e2020c88f372a4fd0961ffc71c382a87b2a8808c826f2006b149",
+  "size_bytes": 7496
  },
  "8176": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8176",
@@ -741,12 +1098,26 @@
   "sha256": "50ba39e0c43d1519088e4b44ff79c18af907d4c92ae357f03a5ab29b6747ff49",
   "size_bytes": 28935
  },
+ "8288": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8288",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "0538d4e76255d91420e68c9fd6dd7a69c70fae88b5c081026709b7712869aa11",
+  "size_bytes": 6466
+ },
  "8289": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8289",
   "retrieved_at": "2026-11-11T09:05:52.880728+00:00",
   "status": "ok",
   "sha256": "543ed3d80f28c78093bab522aab80ba73f7d56b7470aa49a31f0333449b5e5ce",
   "size_bytes": 6349
+ },
+ "8290": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8290",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "2567208818c792cd5b2d51820c5f3d18cdcc10a126a261d15241073c3f756468",
+  "size_bytes": 6830
  },
  "8476": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8476",
@@ -761,6 +1132,27 @@
   "status": "ok",
   "sha256": "52f46d86346cd8b49cefb8b34ef5d444e3a451721c406994f62ad892260decbe",
   "size_bytes": 3621
+ },
+ "8504": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8504",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "ce9b4de4f5d660de2536e23bb5ad925d90b80b3b8e453b0d2885cb85c1e92049",
+  "size_bytes": 4033
+ },
+ "8505": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8505",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "24503f2d9e6c1f41ac19f7873120b7ee7f8d3efae627ecff78f95758d44b288e",
+  "size_bytes": 3895
+ },
+ "8507": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8507",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "26e10a5c820fc0283d0c8ce9e0f9106272ccddff4f2ab417c64c350420929f35",
+  "size_bytes": 4007
  },
  "8530": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8530",
@@ -796,6 +1188,27 @@
   "status": "ok",
   "sha256": "f2ce5b26ef5c8364a2ab103e7fe378e5f2e1af2d5a4b89caafa8d64bb9773adc",
   "size_bytes": 3780
+ },
+ "8715": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8715",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "b56fbc7be9e8d585b4e69167f9ec9f7634f76357acd5482f4c82a9054996fd9b",
+  "size_bytes": 3950
+ },
+ "8717": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8717",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "6a44e0f08b5e3eab3df2ccba768ab9a45c1ac622c7cf983696f19f1f864e6dcc",
+  "size_bytes": 4164
+ },
+ "8724": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8724",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "f7b72cbb1e2c4105af5ada92d5a61e3fc89d51df48fabbc7f6cd3f5d08af669b",
+  "size_bytes": 4644
  },
  "8757": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/8757",
@@ -880,6 +1293,34 @@
   "status": "ok",
   "sha256": "08c9f916f877b4b8fef29c26b5071e6354fef2c9a5d701bed5ead40b40a0156c",
   "size_bytes": 7616
+ },
+ "9553": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/9553",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "8d6e125b698b2713226eb7d86d3ac00e80571754be571efd54ae9417470fd47b",
+  "size_bytes": 5369
+ },
+ "9554": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/9554",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "7eb9c023995339a4db8ae27109dc956c6ef390a75033436812524ddd98217245",
+  "size_bytes": 5688
+ },
+ "9555": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/9555",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "6d9dd12d433be90cf37c8544b4aa2454e524e9207dd0a65a20b5f50efd7d9bd2",
+  "size_bytes": 6178
+ },
+ "9558": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/9558",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "353f6ab6c65c1e7505a4faf177503bed66a18b38640110d88957a6da71e28583",
+  "size_bytes": 6868
  },
  "9578": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/9578",
@@ -1006,6 +1447,62 @@
   "status": "ok",
   "sha256": "c224293d8b1be072d4e4b02038a13c0097d11c179b0fe726df0cac4a479a1884",
   "size_bytes": 19250
+ },
+ "10361": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/10361",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "7e2ffba573cfa06085db5f36bd7fc9b3e2df85902ec378a72fb4dce79cec8270",
+  "size_bytes": 29362
+ },
+ "10362": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/10362",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "f9d50d15ae358dbd69f35ff73cdf8ec8a173e2ff6d61d663457de1fc7b80980e",
+  "size_bytes": 29493
+ },
+ "10363": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/10363",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "2778ee59dd4fb5eda4991509275e6318e09587110c0a43adce7ac370336b6aa4",
+  "size_bytes": 30511
+ },
+ "10374": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/10374",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "f0c538da80181d383c59f2a957469719f27470d7ba2dc21633102ceffaf9c594",
+  "size_bytes": 19417
+ },
+ "10375": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/10375",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "90c7ba204934a61ebc921de21e29d212c21a842b9559dca10593c3ebe7b316ce",
+  "size_bytes": 19548
+ },
+ "10376": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/10376",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "4e75e8ff8fb523cdeed403c5c16c0e09d0dc815c999c5865623cac388f209be1",
+  "size_bytes": 20565
+ },
+ "10378": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/10378",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "2b2687b8b1fce8cbeec13826a9f9cd0449d64f6c91bee31be465e83f4052b94e",
+  "size_bytes": 20505
+ },
+ "10379": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/10379",
+  "retrieved_at": "2026-11-13T00:00:00+00:00",
+  "status": "ok",
+  "sha256": "561880310d1ccaa65b037d26a369b20f3bda14cf68b4b6830c84928090b2284a",
+  "size_bytes": 20351
  },
  "10442": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/10442",

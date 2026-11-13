@@ -56,6 +56,10 @@ class Settings(BaseSettings):
     sources_config_dir: str = "configs/sources"
     # Catálogo semântico (indicadores, classificações e fatos; um TOML por escopo).
     indicators_config_dir: str = "configs/indicators"
+    # Portal (KPIs) e panorama, conferidos contra o release antes de ativá-lo (ADR-0015).
+    # São os mesmos arquivos que a API carrega. Panorama vazio: sem conferência de tabelas.
+    portal_config_dir: str = "configs/portal"
+    panorama_path: str = "configs/catalog/panorama.toml"
     # Destino de `odb gold export` (cópias descartáveis para análise local, fora do lakehouse).
     export_dir: str = "/export"
 

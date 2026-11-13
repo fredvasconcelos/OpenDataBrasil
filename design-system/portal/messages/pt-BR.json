@@ -32,6 +32,7 @@
   "dashboard": {
     "menu": "Temas e indicadores",
     "dimensions": "Detalhar por",
+    "dimensionsExclusive": "Uma por vez: cada detalhe vem com os demais no Total.",
     "level": "Nível territorial",
     "period": "Período",
     "loading": "Carregando…",
@@ -89,8 +90,12 @@
     "searchEmptyTitle": "Nenhum indicador para “{q}”",
     "searchEmptyHint": "A busca ignora acentos e maiúsculas. Tente outra palavra ou o número da tabela.",
     "searchTable": "Tabela {id}",
-    "grain": "Período por",
-    "grainNote": "Soma dos meses publicados (valor derivado). Período com mês sem dado fica sem valor."
+    "grain": "Período por"
+  },
+  "grainNotes": {
+    "sum": "Soma dos períodos publicados (valor derivado). Período com parte sem dado fica sem valor.",
+    "mean": "Média dos períodos publicados (valor derivado), como o IBGE faz com os números-índice anuais. Período com parte sem dado fica sem valor.",
+    "last": "Valor do último período publicado (por exemplo, o acumulado em 12 meses de dezembro). Período incompleto fica sem valor."
   },
   "levels": {
     "brasil": "Brasil",
@@ -103,7 +108,9 @@
     "terra_indigena_uf": "Terra indígena por UF",
     "coordenacao_regional_funai": "Coordenação Regional da Funai",
     "amazonia_legal": "Amazônia Legal",
-    "amazonia_legal_uf": "Amazônia Legal por UF"
+    "amazonia_legal_uf": "Amazônia Legal por UF",
+    "regiao_metropolitana": "Região Metropolitana",
+    "areas_pof": "Total das áreas da POF"
   },
   "table": {
     "territory": "Território",

@@ -11,8 +11,10 @@ odb silver build --all                # pré-requisito: Silver vigente de todos 
 odb gold build                        # constrói, verifica e cria um release *validated*
 odb gold build --activate             # idem, e ativa o release (publicação interna)
 odb gold build --force                # reconstrói mesmo sem mudança nas entradas
+odb gold build --reset-schema <tabela> # permite remover coluna dessa tabela (ADR-0018; os releases anteriores seguem lendo as versões fixadas)
 odb release list [--scope demografia]
-odb release activate <release_id>     # ativa um release validado; o anterior vira superseded
+odb release check [<release_id>]      # confere o portal e o panorama contra o release (código 1 se houver problema)
+odb release activate <release_id>     # confere o portal e ativa; o anterior vira superseded
 odb quality gold [--json]             # verificações da última construção
 odb gold export [--release <id>]      # cópia Parquet + DuckDB para análise local
 ```
@@ -25,19 +27,34 @@ Exportação, DBeaver e Python: [exportacao.md](exportacao.md).
 | `skipped` | Silver, catálogo semântico e contratos iguais aos da última construção: nenhuma versão nova; se o release ativo já aponta para essas versões, nada muda |
 | `failed` | verificação `fail`, Silver ausente ou schema incompatível. **Nada é publicado**: lotes já gravados ficam em versões Delta sem release (KI-007), e o release ativo continua vigente (`active_release` na saída) |
 
+**Conferência do portal ([ADR-0015](../adr/0015-conferencia-portal-release-e-ciclo-de-atualizacao.md)):**
+
+- `release activate` e `gold build --activate` conferem os KPIs do portal e o
+  panorama contra o release antes de ativar. Os problemas por KPI podem ser:
+  - indicador ausente;
+  - classificação ou partição inexistente;
+  - tabela diferente da do panorama.
+- Com problema, a ativação é recusada (código 1, `portal_problems` na saída), o
+  release fica `validated` e o ativo continua vigente.
+- `--skip-portal-check` ativa assim mesmo. A API esconde os KPIs afetados e mostra
+  `portal: "degraded"` no `/health`.
+
 **Configuração nova (indicadores, portal, panorama):** a configuração vai embutida
-nas imagens do worker e da API, e a API confere o portal contra o release ativo.
-Release novo com a API antiga (ou o contrário) deixa a navegação fora do ar até as
-duas casarem: em 2026-11-12, o portal mostrou "Dados temporariamente
-indisponíveis" por alguns minutos, porque o release sem o indicador da 9514 foi
-ativado antes de a API ser reiniciada. Ordem segura:
+nas imagens do worker e da API. Se a API rodar com uma configuração diferente da do
+worker, ela não derruba mais o portal inteiro: só os KPIs que não casam com o
+release saem da navegação, até as duas configurações casarem. Ordem recomendada:
 
 ```bash
 docker compose --profile data --profile web build worker api
 docker compose --profile data run --rm worker odb gold build     # release validated
+docker compose --profile data run --rm worker odb release check <release_id>
 docker compose --profile data run --rm worker odb release activate <release_id> \
   && docker compose --profile web up -d api                      # em seguida
+curl -s localhost:8000/health                                    # "portal": "ok"
 ```
+
+Ciclo completo de atualização (fontes → Bronze → Silver → Gold → portal):
+[atualizacao.md](atualizacao.md).
 
 **Reverter** para um release anterior: não há reativação de `superseded`. Corrija
 a causa e reconstrua, ou ative outro release `validated`. As versões Delta

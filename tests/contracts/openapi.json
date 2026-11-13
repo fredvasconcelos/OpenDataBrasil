@@ -1940,7 +1940,7 @@
           "operação"
         ],
         "summary": "Saúde do serviço",
-        "description": "PostgreSQL acessível e release ativo resolvido.",
+        "description": "PostgreSQL acessível, release ativo resolvido e coerência do portal.\n\n``portal`` é ``degraded`` quando algum KPI da configuração não casa com o\nrelease ativo; esses KPIs saem da navegação e os demais seguem no ar\n(ADR-0015). O serviço continua saudável (200).",
         "operationId": "health_health_get",
         "responses": {
           "200": {
@@ -1948,11 +1948,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "type": "object",
-                  "title": "Response Health Health Get"
+                  "$ref": "#/components/schemas/HealthOut"
                 }
               }
             }
@@ -2499,6 +2495,47 @@
         "title": "GeographyRefOut",
         "description": "Referência curta a um território."
       },
+      "HealthOut": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status"
+          },
+          "release_id": {
+            "type": "string",
+            "title": "Release Id"
+          },
+          "portal": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded"
+            ],
+            "title": "Portal"
+          },
+          "unavailable_kpis": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Unavailable Kpis",
+            "description": "KPI → problemas contra o release ativo (vazio quando o portal está ok)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "release_id",
+          "portal",
+          "unavailable_kpis"
+        ],
+        "title": "HealthOut",
+        "description": "Saúde do serviço (ADR-0015)."
+      },
       "IndicatorOut": {
         "properties": {
           "indicator_id": {
@@ -2695,6 +2732,11 @@
             "type": "array",
             "title": "Dimensions"
           },
+          "exclusive_dimensions": {
+            "type": "boolean",
+            "title": "Exclusive Dimensions",
+            "default": false
+          },
           "caveats": {
             "items": {
               "type": "string"
@@ -2709,6 +2751,22 @@
             "type": "array",
             "title": "Time Grains",
             "default": []
+          },
+          "time_aggregation": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "sum",
+                  "mean",
+                  "last"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Aggregation"
           },
           "source": {
             "$ref": "#/components/schemas/KpiSourceOut"

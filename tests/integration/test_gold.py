@@ -20,6 +20,8 @@ from tests.ingestion_support import TEST_SOURCES, FakeSources
 
 pytestmark = pytest.mark.integration
 
+REPO_PORTAL = REPO_INDICATORS.parent / "portal"
+
 
 @pytest.fixture
 def lake(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, engine: Engine) -> Path:
@@ -33,6 +35,12 @@ def lake(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, engine: Engine) -> Pat
     monkeypatch.setenv("ODB_DUCKDB_MEMORY_LIMIT", "512MB")
     monkeypatch.setenv("ODB_DUCKDB_THREADS", "2")
     monkeypatch.setenv("ODB_PG_DATABASE", "odb_test")
+    # Só o portal curado, sem o panorama: a Gold de teste tem as tabelas das fixtures.
+    portal = tmp_path / "portal"
+    portal.mkdir()
+    shutil.copy(REPO_PORTAL / "demografia.toml", portal)
+    monkeypatch.setenv("ODB_PORTAL_CONFIG_DIR", str(portal))
+    monkeypatch.setenv("ODB_PANORAMA_PATH", "")
     monkeypatch.setattr(ingest_cli, "HTTP_TRANSPORT", FakeSources().transport())
     return root
 
@@ -215,7 +223,29 @@ def test_gold_publish_query_and_preserve_on_failure(  # noqa: PLR0915 - cenário
     rebuilt = json.loads(runner.invoke(app, ["gold", "build", "--force"]).stdout)
     assert rebuilt["status"] == "succeeded"
     assert rebuilt["release"]["status"] == "validated"
-    activated = runner.invoke(app, ["release", "activate", rebuilt["release"]["release_id"]])
+    candidate = rebuilt["release"]["release_id"]
+    assert runner.invoke(app, ["release", "check", candidate]).exit_code == 0
+
+    # ADR-0015: portal que não casa com o release bloqueia a ativação no worker.
+    portal = tmp_path / "portal" / "demografia.toml"
+    good = portal.read_text(encoding="utf-8")
+    portal.write_text(
+        good.replace('indicator = "populacao_estimada"', 'indicator = "retirado"', 1),
+        encoding="utf-8",
+    )
+    checked = runner.invoke(app, ["release", "check", candidate])
+    assert checked.exit_code == 1
+    assert json.loads(checked.stdout)["problems"] == {
+        "populacao_estimada": ["indicador retirado não publicado no release"]
+    }
+    refused = runner.invoke(app, ["release", "activate", candidate])
+    assert refused.exit_code == 1
+    assert "ativação recusada" in refused.output
+    releases = json.loads(runner.invoke(app, ["release", "list"]).stdout)
+    assert [r["status"] for r in releases] == ["validated", "active"]
+    portal.write_text(good, encoding="utf-8")
+
+    activated = runner.invoke(app, ["release", "activate", candidate])
     assert activated.exit_code == 0, activated.output
     releases = json.loads(runner.invoke(app, ["release", "list"]).stdout)
     assert [r["status"] for r in releases] == ["active", "superseded"]

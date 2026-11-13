@@ -11,7 +11,6 @@ from sqlalchemy.exc import InterfaceError, OperationalError
 
 from odb_api.exports import ExportTooLargeError
 from odb_api.gold import NotFoundError
-from odb_api.portal import PortalConfigError
 from odb_api.release import ReleaseUnavailableError, TableNotInReleaseError
 from odb_query_engine import (
     QueryEngineBusyError,
@@ -19,6 +18,7 @@ from odb_query_engine import (
     QueryTimeoutError,
 )
 from odb_semantics import SemanticError
+from odb_semantics.portal import PortalConfigError
 
 logger = logging.getLogger(__name__)
 

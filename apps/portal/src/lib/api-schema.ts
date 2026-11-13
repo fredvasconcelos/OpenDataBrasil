@@ -377,7 +377,11 @@ export interface paths {
         };
         /**
          * Saúde do serviço
-         * @description PostgreSQL acessível e release ativo resolvido.
+         * @description PostgreSQL acessível, release ativo resolvido e coerência do portal.
+         *
+         *     ``portal`` é ``degraded`` quando algum KPI da configuração não casa com o
+         *     release ativo; esses KPIs saem da navegação e os demais seguem no ar
+         *     (ADR-0015). O serviço continua saudável (200).
          */
         get: operations["health_health_get"];
         put?: never;
@@ -594,6 +598,31 @@ export interface components {
             level_id: string;
         };
         /**
+         * HealthOut
+         * @description Saúde do serviço (ADR-0015).
+         */
+        HealthOut: {
+            /**
+             * Status
+             * @constant
+             */
+            status: "ok";
+            /** Release Id */
+            release_id: string;
+            /**
+             * Portal
+             * @enum {string}
+             */
+            portal: "ok" | "degraded";
+            /**
+             * Unavailable Kpis
+             * @description KPI → problemas contra o release ativo (vazio quando o portal está ok).
+             */
+            unavailable_kpis: {
+                [key: string]: string[];
+            };
+        };
+        /**
          * IndicatorOut
          * @description Indicador publicado no release.
          */
@@ -664,6 +693,11 @@ export interface components {
             map_levels: string[];
             /** Dimensions */
             dimensions: components["schemas"]["DimensionOut"][];
+            /**
+             * Exclusive Dimensions
+             * @default false
+             */
+            exclusive_dimensions: boolean;
             /** Caveats */
             caveats: string[];
             /**
@@ -671,6 +705,8 @@ export interface components {
              * @default []
              */
             time_grains: components["schemas"]["TimeGrainOut"][];
+            /** Time Aggregation */
+            time_aggregation?: ("sum" | "mean" | "last") | null;
             source: components["schemas"]["KpiSourceOut"];
         };
         /**
@@ -2380,9 +2416,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["HealthOut"];
                 };
             };
         };

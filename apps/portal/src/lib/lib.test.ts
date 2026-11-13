@@ -142,6 +142,7 @@ describe("state", () => {
     levels,
     map_levels: levels.filter((l) => l !== "terra_indigena"),
     dimensions: dims.map((d) => ({ classification_id: d, label: d, partition_id: d, total_category_key: `${d}:0`, categories: [] })),
+    exclusive_dimensions: false,
     caveats: [],
     time_grains,
     source: { dataset_id: "d", source_table_id: "1", source_variable_id: "1", source_variable_name: null, reference_url: null, license_id: null },
@@ -179,6 +180,27 @@ describe("state", () => {
     expect(s).toEqual({ kpi: "pop", level: "municipio", grain: null, period: "2010", dimensions: ["c86", "c2"], geography: "uf:29", focus: null });
     const bad = readState(new URLSearchParams("kpi=x&nivel=zzz&periodo=1999&territorio=uf;drop"), nav);
     expect(bad).toEqual({ kpi: "pop", level: "uf", grain: null, period: null, dimensions: [], geography: "brasil:1", focus: null });
+  });
+
+  it("sem nível Brasil, abre no Total das áreas e nas regiões metropolitanas (ADR-0016)", () => {
+    const old = kpi("pof", ["c201"], ["municipio", "regiao_metropolitana", "areas_pof"], ["1987", "1995"]);
+    const pof: Navigation = {
+      ...nav,
+      themes: [{ theme_id: "t", label: "T", filters: [], subthemes: [{ subtheme_id: "s", label: "S", planned: [], kpis: [{ ...old, map_levels: [] }] }] }],
+    };
+    const s = readState(new URLSearchParams("kpi=pof&territorio=brasil:1"), pof);
+    expect(s.geography).toBe("areas_pof:1");
+    expect(s.level).toBe("regiao_metropolitana");
+    expect(readState(new URLSearchParams("kpi=pof&territorio=regiao_metropolitana:1501"), pof).geography).toBe("regiao_metropolitana:1501");
+  });
+
+  it("com dimensões marginais, fica uma só (ADR-0016)", () => {
+    const marginal = { ...kpi("pop", ["c86", "c2"], ["brasil", "uf"], ["2022"]), exclusive_dimensions: true };
+    const one: Navigation = {
+      ...nav,
+      themes: [{ theme_id: "t", label: "T", filters: [], subthemes: [{ subtheme_id: "s", label: "S", planned: [], kpis: [marginal] }] }],
+    };
+    expect(readState(new URLSearchParams("kpi=pop&dim=c2,c86"), one).dimensions).toEqual(["c86"]);
   });
 
   it("lê o grão de tempo e valida o período nele (ADR-0013)", () => {

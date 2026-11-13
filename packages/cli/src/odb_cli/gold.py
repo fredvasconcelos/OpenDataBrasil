@@ -31,10 +31,19 @@ from odb_common.storage import LakehouseLayout, Layer
 from odb_ingestion import load_sources
 from odb_lakehouse import DeltaReader, DeltaWriter
 from odb_modeling.builder import GoldBuild, GoldBuilder
-from odb_modeling.contracts import DIM_INDICATOR, DIM_INDICATOR_NODE
+from odb_modeling.contracts import DIM_CATEGORY, DIM_INDICATOR, DIM_INDICATOR_NODE
 from odb_modeling.export import ExportError, ReleaseToExport, export_release
 from odb_query_engine import DuckDBConfig, DuckDBReadEngine, PinnedTable, QueryError, ReadQuery
-from odb_semantics import IndicatorQuery, SemanticError, load_scope, meta_from_rows, plan_query
+from odb_semantics import (
+    IndicatorQuery,
+    SemanticError,
+    check_against_portal,
+    load_panorama,
+    load_scope,
+    meta_from_rows,
+    plan_query,
+)
+from odb_semantics.portal import load_portal, release_problems
 
 DEFAULT_SCOPE = "demografia"
 
@@ -99,8 +108,19 @@ def gold_build(
     activate: Annotated[
         bool, typer.Option(help="Ativa o release validado (publicação interna).")
     ] = False,
+    reset_schema: Annotated[
+        list[str] | None,
+        typer.Option(
+            help="Tabela Gold cujo schema pode mudar de forma incompatível nesta construção "
+            "(repetível). Os releases anteriores continuam lendo as versões fixadas.",
+        ),
+    ] = None,
 ) -> None:
-    """Constrói a Gold, cria e valida um release e, com --activate, publica."""
+    """Constrói a Gold, cria e valida um release e, com --activate, publica.
+
+    Antes de ativar, confere o portal contra o release (``odb release check``):
+    com problema, o release fica ``validated`` e o comando sai com código 1.
+    """
     settings = _settings()
     sources = load_sources(settings.sources_config_dir)
     catalog = load_scope(settings.indicators_config_dir, scope)
@@ -124,9 +144,16 @@ def gold_build(
             engine,
             "gold.build",
             settings.code_version,
-            {"scope": scope, "force": force, "activate": activate},
+            {
+                "scope": scope,
+                "force": force,
+                "activate": activate,
+                "reset_schema": reset_schema or [],
+            },
         ) as run_id:
-            build = builder.build(pipeline_run_id=run_id, force=force)
+            build = builder.build(
+                pipeline_run_id=run_id, force=force, reset_schema=reset_schema or ()
+            )
             output.update(_summary(build))
             if build.status == "failed":
                 active = publication.active(scope)
@@ -141,6 +168,11 @@ def gold_build(
                 DeltaReader().scan(indicators.storage_uri, indicators.delta_version).collect(),
             )
             output["release"] = _publish(publication, registry, build, settings, activate=activate)
+            if output["release"].get("portal_problems"):
+                raise PortalCheckError
+    except PortalCheckError:
+        _echo_json(output)
+        raise typer.Exit(code=1) from None
     except PublicationError as exc:
         output["publication_error"] = str(exc)
         _echo_json(output)
@@ -155,6 +187,10 @@ def gold_build(
 
 class GoldFailedError(RuntimeError):
     """A construção Gold falhou; o release vigente foi preservado."""
+
+
+class PortalCheckError(RuntimeError):
+    """O portal não casa com o release; a ativação foi recusada."""
 
 
 def _publish(
@@ -186,8 +222,45 @@ def _publish(
     registry.link_release(build.build_id, release_id)
     release = publication.validate(release_id)
     if activate:
+        problems = portal_problems(release, settings)
+        if problems:
+            return {**_release_json(release), "portal_problems": problems}
         release = publication.activate(release_id)
     return _release_json(release)
+
+
+def portal_problems(release: Release, settings: Settings) -> dict[str, list[str]]:
+    """Conferência rígida do portal contra o release, antes de ativá-lo (ADR-0015).
+
+    Usa a configuração deste worker, a mesma embutida na imagem da API, e lê
+    ``dim_indicator`` e ``dim_category`` nas versões do release. Escopo sem
+    configuração de portal não tem o que conferir.
+    """
+    portal_dir = Path(settings.portal_config_dir)
+    if not (portal_dir / f"{release.scope}.toml").exists():
+        return {}
+    config = load_portal(portal_dir, release.scope)
+    panorama = None
+    if settings.panorama_path:
+        panorama = load_panorama(settings.panorama_path)
+        check_against_portal(panorama, {k.id: k for k in config.kpis()})
+    reader = DeltaReader()
+
+    def scan(table_id: str, columns: list[str]) -> pl.DataFrame:
+        table = release.tables[table_id]
+        return reader.scan(table.storage_uri, table.delta_version).select(columns).collect()
+
+    indicators = {
+        r["indicator_id"]: r
+        for r in scan(
+            DIM_INDICATOR.name, ["indicator_id", "classification_ids", "source_table_id"]
+        ).to_dicts()
+    }
+    partitions: dict[str, list[str]] = {}
+    categories = scan(DIM_CATEGORY.name, ["classification_id", "partition_id"])
+    for row in categories.drop_nulls("partition_id").unique(maintain_order=True).to_dicts():
+        partitions.setdefault(row["classification_id"], []).append(row["partition_id"])
+    return release_problems(config, indicators, partitions, panorama)
 
 
 @gold_app.command("export")
@@ -279,13 +352,65 @@ def release_list(
     _echo_json([_release_json(r) for r in releases])
 
 
-@release_app.command("activate")
-def release_activate(release_id: str) -> None:
-    """Ativa um release validado. O anterior do escopo vira ``superseded``."""
+@release_app.command("check")
+def release_check(
+    release_id: Annotated[
+        str | None, typer.Argument(help="Release a conferir (padrão: o ativo do escopo).")
+    ] = None,
+    scope: Annotated[str, typer.Option(help="Escopo de publicação.")] = DEFAULT_SCOPE,
+) -> None:
+    """Confere o portal (KPIs e panorama) contra um release. Código 1 se houver problema."""
     settings = _settings()
     engine = make_engine(settings, pool_size=1)
     try:
-        release = _publication(settings, engine).activate(release_id)
+        publication = _publication(settings, engine)
+        release = publication.get(release_id) if release_id else publication.active(scope)
+    except PublicationError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=1) from None
+    finally:
+        engine.dispose()
+    if release is None:
+        typer.echo(f"nenhum release ativo no escopo {scope!r}", err=True)
+        raise typer.Exit(code=1)
+    problems = portal_problems(release, settings)
+    _echo_json(
+        {
+            "release_id": release.release_id,
+            "portal": "ok" if not problems else "problems",
+            "problems": problems,
+        }
+    )
+    if problems:
+        raise typer.Exit(code=1)
+
+
+@release_app.command("activate")
+def release_activate(
+    release_id: str,
+    skip_portal_check: Annotated[
+        bool,
+        typer.Option(
+            help="Ativa mesmo com KPIs do portal incoerentes (a API os esconde; ADR-0015)."
+        ),
+    ] = False,
+) -> None:
+    """Ativa um release validado. O anterior do escopo vira ``superseded``.
+
+    Antes, confere o portal contra o release (``odb release check``) e recusa a
+    ativação se algum KPI não casar, salvo com ``--skip-portal-check``.
+    """
+    settings = _settings()
+    engine = make_engine(settings, pool_size=1)
+    try:
+        publication = _publication(settings, engine)
+        if not skip_portal_check:
+            problems = portal_problems(publication.get(release_id), settings)
+            if problems:
+                _echo_json({"release_id": release_id, "portal_problems": problems})
+                typer.echo("ativação recusada: o portal não casa com o release", err=True)
+                raise typer.Exit(code=1)
+        release = publication.activate(release_id)
     except PublicationError as exc:
         typer.echo(str(exc), err=True)
         raise typer.Exit(code=1) from None

@@ -136,6 +136,15 @@ def _generation(config: Panorama, panorama: Path, raiz: Path, escopo: str) -> Ge
         for c in curated.classifications
     }
     portal = _portal_kpis(raiz / "portal", escopo, exclude=GENERATED_NAME)
+    # Ordem de aninhamento curada (arquivo principal e fragmentos, menos o gerado).
+    order: list[str] = []
+    for path in [
+        raiz / "portal" / f"{escopo}.toml",
+        *sorted((raiz / "portal" / escopo).glob("*.toml")),
+    ]:
+        if path.name != GENERATED_NAME and path.exists():
+            extra = tomllib.loads(path.read_text(encoding="utf-8")).get("dimension_order", [])
+            order += [c for c in extra if c not in order]
     descriptors = {
         path.stem[1:]: json.loads(path.read_text(encoding="utf-8"))
         for path in sorted((panorama.parent / DESCRIPTORS_DIR).glob("t*.json"))
@@ -149,6 +158,7 @@ def _generation(config: Panorama, panorama: Path, raiz: Path, escopo: str) -> Ge
         existing_portal_kpis=list(portal),
         descriptors=descriptors,
         curated_classifications=curated_classes,
+        curated_order=order,
     )
 
 

@@ -514,3 +514,179 @@ transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
 # Médias e distribuições: o descritor marca as duas variáveis como não somáveis
 # entre territórios (PermiteSomaUnidadesTerritoriais = false).
+# Série da POF (ADR-0016): 2309 (2002), 1594 (2008) e 6715 (2018) num só fato.
+series = "ibge-pof-despesa-familiar"
+series_order = 3
+
+[[datasets]]
+id = "ibge-sidra-1594"
+source = "ibge-sidra"
+official_id = "1594"
+title = "Despesa monetária e não monetária média mensal familiar - valor e distribuição - por classes de rendimento total e variação patrimonial mensal familiar, segundo os tipos de despesa (2008)"
+description = "POF 2008-2009 (período 2008): mesma estrutura da 6715 (variáveis 1201 e 1204, c339 com 7 classes e Total, c12190 com os mesmos 93 tipos de despesa). As faixas de rendimento valem 2, 3, 6, 10, 15 e 25 salários mínimos de R$ 415. Códigos do descritor oficial (/DescritoresTabela/t/1594, 2026-11-12)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/1594"
+
+[datasets.params]
+table = "1594"
+variables = ["1201", "1204"]
+# A tabela também tem regiões metropolitanas e municípios; a série fica em Brasil,
+# Grandes Regiões e UFs, como a 6715.
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c339" = "all", "c12190" = "all" }
+# 8 classes x 93 tipos x 33 territórios = 24.552 valores por variável.
+split_by_variable = true
+estimated_values_per_period = 24552
+min_rows = 24552
+max_rows = 24552
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-pof-despesa-familiar"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-2309"
+source = "ibge-sidra"
+official_id = "2309"
+title = "Despesa monetária e não monetária média mensal familiar - valor e distribuição - por classes de rendimento monetário e não monetário mensal familiar e tipos de despesa"
+description = "POF 2002-2003 (período 2002): despesa média mensal familiar (1201, Reais) e distribuição (1204, %) por tipos de despesa (c12190, 89 categorias). Só o Total da situação do domicílio (c1) e das classes de rendimento monetário e não monetário (c12191), outro conceito de rendimento que o da c339. Brasil e Grandes Regiões. Códigos do descritor oficial (/DescritoresTabela/t/2309, 2026-11-12)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/2309"
+
+[datasets.params]
+table = "2309"
+variables = ["1201", "1204"]
+territorial_levels = ["n1", "n2"]
+classifications = { "c1" = "6795", "c12191" = "103411", "c12190" = "all" }
+# 89 tipos x 6 territórios x 2 variáveis.
+estimated_values_per_period = 1068
+min_rows = 1068
+max_rows = 1068
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-pof-despesa-familiar"
+series_order = 1
+
+# ------------------------------------------------------------------ POF 1987-1988 e 1995-1996 (ADR-0016)
+
+[[datasets]]
+id = "ibge-sidra-387"
+source = "ibge-sidra"
+official_id = "387"
+title = "Percentual da despesa média mensal familiar por tipo de despesa e classes de recebimento mensal familiar"
+description = "POF 1987-1988 e 1995-1996: percentual da despesa média mensal familiar (172) por tipo de despesa (c210, 68 tipos e o Desembolso global) e classe de recebimento em salários mínimos (c201). Níveis: Total das áreas da POF (n103), 9 regiões metropolitanas (n7) e os municípios de Brasília e Goiânia (n6). Códigos do descritor oficial (/DescritoresTabela/t/387, 2026-11-12)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/387"
+
+[datasets.params]
+table = "387"
+variables = ["172"]
+territorial_levels = ["n103", "n7", "n6"]
+# Sem nível Brasil: a descoberta dos períodos usa o Total das áreas.
+period_discovery_level = "n103"
+classifications = { "c210" = "all", "c201" = "all" }
+# 69 categorias x 12 classes x 12 territórios (Total das áreas, 9 RMs, 2 municípios).
+estimated_values_per_period = 9936
+min_rows = 1
+max_rows = 9936
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-400"
+source = "ibge-sidra"
+official_id = "400"
+title = "Percentual da despesa média mensal familiar em alimentação por tipo de despesa e classes de recebimento mensal familiar"
+description = "POF 1987-1988 e 1995-1996: percentual da despesa com alimentação (174) por tipo (c210, 75 tipos e a Despesa em alimentação) e classe de recebimento (c201). Níveis: Total das áreas da POF (n103), 9 regiões metropolitanas (n7) e os municípios de Brasília e Goiânia (n6). Códigos do descritor oficial (/DescritoresTabela/t/400, 2026-11-12)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/400"
+
+[datasets.params]
+table = "400"
+variables = ["174"]
+territorial_levels = ["n103", "n7", "n6"]
+# Sem nível Brasil: a descoberta dos períodos usa o Total das áreas.
+period_discovery_level = "n103"
+classifications = { "c210" = "all", "c201" = "all" }
+# 76 categorias x 12 classes x 12 territórios (Total das áreas, 9 RMs, 2 municípios).
+estimated_values_per_period = 10944
+min_rows = 1
+max_rows = 10944
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-414"
+source = "ibge-sidra"
+official_id = "414"
+title = "Percentual do recebimento médio mensal familiar por origem do recebimento e classes de recebimento mensal familiar"
+description = "POF 1987-1988 e 1995-1996: percentual do recebimento médio mensal familiar (177) por origem (c214, 20 origens e o Recebimento total) e classe de recebimento (c201). Níveis: Total das áreas da POF (n103), 9 regiões metropolitanas (n7) e os municípios de Brasília e Goiânia (n6). Códigos do descritor oficial (/DescritoresTabela/t/414, 2026-11-12)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/414"
+
+[datasets.params]
+table = "414"
+variables = ["177"]
+territorial_levels = ["n103", "n7", "n6"]
+# Sem nível Brasil: a descoberta dos períodos usa o Total das áreas.
+period_discovery_level = "n103"
+classifications = { "c214" = "all", "c201" = "all" }
+# 21 categorias x 12 classes x 12 territórios (Total das áreas, 9 RMs, 2 municípios).
+estimated_values_per_period = 3024
+min_rows = 1
+max_rows = 3024
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-417"
+source = "ibge-sidra"
+official_id = "417"
+title = "Aquisição (monetária) alimentar domiciliar per capita anual por grupos de produtos e classes de recebimento mensal familiar"
+description = "POF 1987-1988, 1995-1996, 2002-2003 e 2008-2009, nas áreas das POF antigas: aquisição alimentar per capita anual em kg (180) por grupo de produtos (c215) e classe de recebimento (c201). Níveis: Total das áreas da POF (n103), 9 regiões metropolitanas (n7) e os municípios de Brasília e Goiânia (n6). Códigos do descritor oficial (/DescritoresTabela/t/417, 2026-11-12)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/417"
+
+[datasets.params]
+table = "417"
+variables = ["180"]
+territorial_levels = ["n103", "n7", "n6"]
+# Sem nível Brasil: a descoberta dos períodos usa o Total das áreas.
+period_discovery_level = "n103"
+classifications = { "c215" = "all", "c201" = "all" }
+# 20 categorias x 12 classes x 12 territórios (Total das áreas, 9 RMs, 2 municípios).
+estimated_values_per_period = 2880
+min_rows = 1
+max_rows = 2880
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"

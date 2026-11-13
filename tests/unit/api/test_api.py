@@ -23,11 +23,16 @@ from odb_api.deps import ApiDeps
 from odb_api.gold import GoldGateway
 from odb_api.kpis import KpiService
 from odb_api.middleware import RateLimiter
-from odb_api.portal import PortalConfigError, check_against_release, load_portal
 from odb_api.release import ReleaseContext, ReleaseResolver, ReleaseUnavailableError
 from odb_catalog.publication import Release, TableVersion
 from odb_query_engine import DuckDBConfig, DuckDBReadEngine
-from odb_semantics import PanoramaConfigError, load_panorama
+from odb_semantics import PanoramaConfigError, SemanticError, load_panorama
+from odb_semantics.portal import (
+    PortalConfigError,
+    check_against_release,
+    load_portal,
+    release_problems,
+)
 from tests.gold_support import GoldEnv
 from tests.support import duckdb_extension_directory
 
@@ -40,12 +45,20 @@ PANORAMA_REPO = REPO / "configs" / "catalog" / "panorama.toml"
 # Os itens `externos` (Sinesp, ADR-0012) apontam para KPIs de outra Silver, ausente da
 # Gold de teste: o panorama de teste não os traz (conferidos em test_external_kpis...).
 PANORAMA = Path(tempfile.mkdtemp(prefix="odb-panorama-")) / "panorama.toml"
-PANORAMA.write_text(
-    re.sub(
-        r"\nexternos = \[.*?\n\]\n", "\n", PANORAMA_REPO.read_text(encoding="utf-8"), flags=re.S
-    ),
-    encoding="utf-8",
+# Ligações explícitas a KPIs de fragmentos curados (POF de 1987 e 1995, ADR-0016) também
+# saem: o portal de teste só tem o arquivo principal.
+FRAGMENT_KPIS = (
+    "aquisicao_alimentar",
+    "pof_despesa_alimentacao_antiga",
+    "pof_despesa_distribuicao_antiga",
+    "pof_recebimento_distribuicao_antiga",
 )
+_panorama_text = re.sub(
+    r"\nexternos = \[.*?\n\]\n", "\n", PANORAMA_REPO.read_text(encoding="utf-8"), flags=re.S
+)
+for _kpi in FRAGMENT_KPIS:
+    _panorama_text = _panorama_text.replace(f', kpi = "{_kpi}"', "")
+PANORAMA.write_text(_panorama_text, encoding="utf-8")
 
 
 class FakeCatalog:
@@ -167,7 +180,12 @@ def test_catalog_down_is_503_and_recovers(stack: dict[str, Any]) -> None:
 
 
 def test_health_release_and_catalog(stack: dict[str, Any]) -> None:
-    assert _get(stack, "/health") == {"status": "ok", "release_id": "rel-1"}
+    assert _get(stack, "/health") == {
+        "status": "ok",
+        "release_id": "rel-1",
+        "portal": "ok",
+        "unavailable_kpis": {},
+    }
     release = _get(stack, "/api/v1/release")
     assert release["release_id"] == "rel-1"
     assert {t["table_id"] for t in release["tables"]} >= {"indicator_observation", "dim_geometry"}
@@ -499,6 +517,69 @@ def test_portal_config_is_checked(tmp_path: Path, stack: dict[str, Any]) -> None
         check_against_release(config, indicators, {"c86": [], "c2": []})
 
 
+def test_inconsistent_kpi_is_hidden_not_the_portal(tmp_path: Path, stack: dict[str, Any]) -> None:
+    """ADR-0015: um KPI fora do release sai da navegação; o resto do portal segue no ar.
+
+    Reproduz 2026-11-12: release novo sem o indicador que a configuração antiga da
+    API ainda citava. Antes, a navegação inteira respondia 500.
+    """
+    text = (PORTAL_DIR / "demografia.toml").read_text(encoding="utf-8")
+    marker = 'indicator = "populacao_estimada"\n'
+    assert marker in text
+    (tmp_path / "demografia.toml").write_text(
+        text.replace(marker, 'indicator = "indicador_retirado"\n', 1), encoding="utf-8"
+    )
+    service = KpiService(
+        stack["gold"],
+        load_portal(tmp_path, "demografia"),
+        page_max=100,
+        panorama=load_panorama(PANORAMA),
+    )
+    # Sem closers: o motor DuckDB é o do módulo, compartilhado com os outros testes.
+    deps = dataclasses.replace(stack["client"].app.state.deps, kpis=service, closers=[])
+    with TestClient(create_app(deps)) as client:
+        nav = client.get("/api/v1/portal/navigation")
+        assert nav.status_code == 200, nav.text
+        subthemes = [s for t in nav.json()["themes"] for s in t["subthemes"]]
+        published = [k["kpi_id"] for s in subthemes for k in s["kpis"]]
+        planned = [p["kpi_id"] for s in subthemes for p in s["planned"]]
+        assert "populacao_estimada" not in published
+        assert "populacao_estimada" not in planned  # some; não vira "planejado"
+        assert len(published) == 13
+        assert "populacao_residente" in published
+        missing = client.get("/api/v1/kpis/populacao_estimada")
+        assert missing.status_code == 404
+        assert "indisponível no release" in missing.json()["error"]["message"]
+        assert client.get("/api/v1/kpis/populacao_residente/map?level=uf").status_code == 200
+        health = client.get("/health")
+        assert health.status_code == 200
+        assert health.json()["portal"] == "degraded"
+        assert health.json()["unavailable_kpis"] == {
+            "populacao_estimada": ["indicador indicador_retirado não publicado no release"]
+        }
+
+
+def test_release_problems_by_kpi(stack: dict[str, Any]) -> None:
+    """A conferência devolve os problemas por KPI, inclusive a tabela do panorama."""
+    config = load_portal(PORTAL_DIR, "demografia")
+    ctx = ReleaseContext(stack["state"]["release"])
+    gold: GoldGateway = stack["gold"]
+    indicators, partitions = gold.indicators(ctx), gold.partitions(ctx)
+    panorama = load_panorama(PANORAMA)
+    assert release_problems(config, indicators, partitions, panorama) == {}
+    kpi = config.kpi("populacao_residente")
+    assert kpi is not None
+    changed = {
+        **indicators,
+        kpi.indicator: {**indicators[kpi.indicator], "source_table_id": "9999"},
+    }
+    problems = release_problems(config, changed, partitions, panorama)
+    # Os dois KPIs da 9606 usam o mesmo indicador.
+    assert list(problems) == ["populacao_residente", "populacao_sexo_idade"]
+    assert problems["populacao_residente"][0].startswith("tabela ")
+    assert problems["populacao_residente"][0].endswith(", 9999 na Gold")
+
+
 def test_concurrent_requests_are_consistent(stack: dict[str, Any]) -> None:
     """Consultas simultâneas (§11.5): todas respondem, com os mesmos valores."""
     from concurrent.futures import ThreadPoolExecutor  # noqa: PLC0415
@@ -615,3 +696,25 @@ def test_provenance_from_source_configuration() -> None:
     assert out["ibge-sidra-6579"] == ("IBGE", "SIDRA")
     assert out["mjsp-sinesp-vde"] == ("MJSP", None)
     assert out["datasus-sim-cid10-dores"] == ("MS", None)
+
+
+def test_exclusive_dimensions_and_absent_categories(tmp_path: Path, stack: dict[str, Any]) -> None:
+    """ADR-0016: dimensões marginais vão uma por vez; categoria sem dado não aparece."""
+    text = (PORTAL_DIR / "demografia.toml").read_text(encoding="utf-8")
+    marker = 'indicator = "censo_populacao_cor_raca_sexo"\n'
+    assert marker in text
+    (tmp_path / "demografia.toml").write_text(
+        text.replace(marker, marker + "exclusive_dimensions = true\n", 1), encoding="utf-8"
+    )
+    service = KpiService(stack["gold"], load_portal(tmp_path, "demografia"), page_max=100)
+    ctx = ReleaseContext(stack["state"]["release"])
+    with pytest.raises(SemanticError, match="uma dimensão por vez"):
+        service.series(ctx, "populacao_residente", geography="brasil:1", dimensions=["c86", "c2"])
+    one = service.series(ctx, "populacao_residente", geography="brasil:1", dimensions=["c2"])
+    assert len(one.series) == 3  # Total, Homens e Mulheres
+    # As fixtures da 9606 só têm o Total de idade: os grupos quinquenais não aparecem.
+    detail = service.detail(
+        ctx, "populacao_residente", geography="brasil:1", period="2022", dimensions=["c287"]
+    )
+    assert detail.root.children == []
+    assert detail.root.value is not None

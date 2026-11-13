@@ -34,9 +34,16 @@ class GeographyError(ValueError):
 
 SPECIAL_LEVELS = frozenset(lv.id for lv in LEVELS if lv.special)
 # Níveis cujo código começa pelo código da UF (2 dígitos).
-_UF_PREFIXED = ["municipio", "territorio_quilombola_uf", "terra_indigena_uf", "amazonia_legal_uf"]
+_UF_PREFIXED = [
+    "municipio",
+    "territorio_quilombola_uf",
+    "terra_indigena_uf",
+    "amazonia_legal_uf",
+    "regiao_metropolitana",
+]
 # Recortes nacionais (pai direto: Brasil).
 _NATIONAL_SPECIAL = [
+    "areas_pof",
     "territorio_quilombola",
     "terra_indigena",
     "coordenacao_regional_funai",

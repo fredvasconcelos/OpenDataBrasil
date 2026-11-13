@@ -245,7 +245,7 @@ id = "alfabetizacao"
 label = "Alfabetização"
 kpis = [
   { id = "taxa_alfabetizacao_censo", label = "Taxa de alfabetização (15 anos ou mais, Censo)", tabela = "9543", pesquisa = "Censo Demográfico", filtros = ["sexo", "cor_raca", "idade"] },
-  { id = "taxa_analfabetismo", label = "Taxa de analfabetismo (15 anos ou mais)", tabela = "7113", pesquisa = "PNAD Contínua anual", filtros = ["sexo", "idade"] },
+  { id = "taxa_analfabetismo", label = "Taxa de analfabetismo (15 anos ou mais)", tabela = "7113", pesquisa = "PNAD Contínua anual", filtros = ["sexo", "idade"], complementos = ["7125"] },
 ]
 
 [[temas.subtemas]]
@@ -260,7 +260,7 @@ kpis = [
 id = "instrucao"
 label = "Nível de instrução"
 kpis = [
-  { id = "nivel_instrucao", label = "Pessoas de 25 anos ou mais por nível de instrução", tabela = "7189", pesquisa = "PNAD Contínua anual", filtros = ["sexo"], requer_categoria = true },
+  { id = "nivel_instrucao", label = "Pessoas de 25 anos ou mais por nível de instrução", tabela = "7189", pesquisa = "PNAD Contínua anual", filtros = ["sexo"], requer_categoria = true, complementos = ["7270"] },
   { id = "anos_estudo", label = "Média de anos de estudo (15 anos ou mais)", tabela = "7126", pesquisa = "PNAD Contínua anual", filtros = ["sexo", "idade"] },
   { id = "nivel_instrucao_censo", label = "Nível de instrução (18 anos ou mais, Censo)", tabela = "10061", pesquisa = "Censo Demográfico", filtros = ["sexo", "cor_raca", "idade"], requer_categoria = true },
 ]
@@ -275,7 +275,7 @@ filtros = ["sexo", "idade", "cor_raca", "instrucao", "situacao", "atividade"]
 id = "ocupacao"
 label = "Ocupação e desocupação"
 kpis = [
-  { id = "forca_trabalho", label = "Força de trabalho, ocupação e desocupação", tabela = "4093", pesquisa = "PNAD Contínua trimestral", filtros = ["sexo"], variavel = "4090" },
+  { id = "forca_trabalho", label = "Força de trabalho, ocupação e desocupação", tabela = "4093", pesquisa = "PNAD Contínua trimestral", filtros = ["sexo"], variavel = "4090", agregacao_tempo = "media" },
   { id = "taxas_desocupacao", label = "Taxas de desocupação e de subutilização", tabela = "4099", pesquisa = "PNAD Contínua trimestral" },
 ]
 
@@ -290,8 +290,8 @@ kpis = [
 id = "rendimento_trabalho"
 label = "Rendimento do trabalho"
 kpis = [
-  { id = "rendimento_medio_trabalho", label = "Rendimento médio real do trabalho", tabela = "5436", pesquisa = "PNAD Contínua anual", filtros = ["sexo"] },
-  { id = "massa_rendimento", label = "Massa de rendimento real do trabalho", tabela = "5606", pesquisa = "PNAD Contínua trimestral" },
+  { id = "rendimento_medio_trabalho", label = "Rendimento médio real do trabalho", tabela = "5436", pesquisa = "PNAD Contínua anual", filtros = ["sexo"], agregacao_tempo = "media" },
+  { id = "massa_rendimento", label = "Massa de rendimento real do trabalho", tabela = "5606", pesquisa = "PNAD Contínua trimestral", agregacao_tempo = "media" },
 ]
 
 [[temas.subtemas]]
@@ -300,7 +300,7 @@ label = "Rendimento domiciliar, desigualdade e pobreza"
 kpis = [
   { id = "gini_domiciliar", label = "Índice de Gini do rendimento domiciliar per capita", tabela = "7435", pesquisa = "PNAD Contínua anual" },
   { id = "rendimento_domiciliar_censo", label = "Rendimento domiciliar per capita (Censo)", tabela = "10295", pesquisa = "Censo Demográfico", filtros = ["sexo", "cor_raca", "idade"], variavel = "13431" },
-  { id = "pobreza_linha_nacional", label = "Proporção da população abaixo da linha de pobreza nacional", tabela = "5877", pesquisa = "Objetivos de Desenvolvimento Sustentável" },
+  { id = "pobreza_linha_nacional", label = "Proporção da população abaixo da linha de pobreza nacional", tabela = "5877", pesquisa = "Objetivos de Desenvolvimento Sustentável", complementos = ["5845", "6825"] },
 ]
 
 [[temas.subtemas]]
@@ -322,18 +322,18 @@ id = "condicoes_saude"
 label = "Condições de saúde"
 kpis = [
   { id = "autoavaliacao_saude", label = "Avaliação do próprio estado de saúde", tabela = "7666", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"], requer_categoria = true },
-  { id = "doenca_cronica", label = "Pessoas com pelo menos uma doença crônica", tabela = "7972", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
-  { id = "hipertensao", label = "Diagnóstico de hipertensão arterial", tabela = "4418", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
-  { id = "diabetes", label = "Diagnóstico de diabetes", tabela = "4487", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
+  { id = "doenca_cronica", label = "Pessoas com pelo menos uma doença crônica", tabela = "7972", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"], complementos = ["7975", "7973", "7974", "7976"] },
+  { id = "hipertensao", label = "Diagnóstico de hipertensão arterial", tabela = "4418", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"], complementos = ["4421", "4419", "4420", "4422", "4423"] },
+  { id = "diabetes", label = "Diagnóstico de diabetes", tabela = "4487", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"], complementos = ["4490", "4488", "4489", "4491", "4492"] },
 ]
 
 [[temas.subtemas]]
 id = "fatores_risco"
 label = "Hábitos e fatores de risco"
 kpis = [
-  { id = "fumantes", label = "Fumantes atuais de tabaco", tabela = "4173", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
-  { id = "consumo_abusivo_alcool", label = "Consumo abusivo de álcool", tabela = "7726", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
-  { id = "insuficientemente_ativos", label = "Pessoas insuficientemente ativas", tabela = "7740", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
+  { id = "fumantes", label = "Fumantes atuais de tabaco", tabela = "4173", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"], complementos = ["4183", "4179", "4181", "4182"] },
+  { id = "consumo_abusivo_alcool", label = "Consumo abusivo de álcool", tabela = "7726", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"], complementos = ["7729", "7727", "7728", "7730"] },
+  { id = "insuficientemente_ativos", label = "Pessoas insuficientemente ativas", tabela = "7740", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"], complementos = ["7743", "7741", "7742", "7744"] },
   { id = "excesso_peso", label = "Excesso de peso ou obesidade", tabela = "8476", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
 ]
 
@@ -341,8 +341,8 @@ kpis = [
 id = "acesso_servicos"
 label = "Acesso a serviços de saúde"
 kpis = [
-  { id = "plano_saude", label = "Pessoas com plano de saúde", tabela = "4938", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
-  { id = "consulta_medica", label = "Consultaram médico nos últimos 12 meses", tabela = "5055", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
+  { id = "plano_saude", label = "Pessoas com plano de saúde", tabela = "4938", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"], complementos = ["4951", "4949", "4950", "4953", "4952"] },
+  { id = "consulta_medica", label = "Consultaram médico nos últimos 12 meses", tabela = "5055", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"], complementos = ["5061", "5058", "5065"] },
   { id = "estabelecimentos_saude", label = "Estabelecimentos de saúde", tabela = "211", pesquisa = "Pesquisa de Assistência Médico-Sanitária" },
 ]
 
@@ -350,7 +350,7 @@ kpis = [
 id = "materno_infantil"
 label = "Saúde materno-infantil"
 kpis = [
-  { id = "pre_natal", label = "Mulheres que realizaram pré-natal", tabela = "8289", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["cor_raca"] },
+  { id = "pre_natal", label = "Mulheres que realizaram pré-natal", tabela = "8289", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["cor_raca"], complementos = ["8288", "8290"] },
   { id = "aleitamento_exclusivo", label = "Aleitamento materno exclusivo (menos de 6 meses)", tabela = "5905", pesquisa = "Pesquisa Nacional de Saúde" },
 ]
 
@@ -397,13 +397,16 @@ label = "Despesas e rendimentos das famílias"
 kpis = [
   { id = "despesa_familiar", label = "Despesa média mensal familiar", tabela = "6715", pesquisa = "Pesquisa de Orçamentos Familiares", filtros = ["grupo_produto", "renda"] },
   { id = "rendimento_familiar", label = "Rendimento médio mensal familiar", tabela = "6974", pesquisa = "Pesquisa de Orçamentos Familiares", filtros = ["renda"] },
+  { id = "pof_despesa_distribuicao_antiga", label = "Distribuição da despesa familiar (POF 1987 e 1995)", tabela = "387", pesquisa = "Pesquisa de Orçamentos Familiares", filtros = ["renda"], nota = "Só regiões metropolitanas, Brasília e Goiânia (ADR-0016).", kpi = "pof_despesa_distribuicao_antiga" },
+  { id = "pof_recebimento_distribuicao_antiga", label = "Distribuição do recebimento familiar (POF 1987 e 1995)", tabela = "414", pesquisa = "Pesquisa de Orçamentos Familiares", filtros = ["renda"], nota = "Só regiões metropolitanas, Brasília e Goiânia (ADR-0016).", kpi = "pof_recebimento_distribuicao_antiga", complementos = ["435", "434"] },
 ]
 
 [[temas.subtemas]]
 id = "alimentacao"
 label = "Alimentação e segurança alimentar"
 kpis = [
-  { id = "aquisicao_alimentar", label = "Aquisição alimentar domiciliar per capita", tabela = "417", pesquisa = "Pesquisa de Orçamentos Familiares", filtros = ["grupo_produto", "renda"], nota = "Exemplo do mantenedor: grupos de produtos em % do Total, classe de recebimento no Total." },
+  { id = "aquisicao_alimentar", label = "Aquisição alimentar domiciliar per capita", tabela = "417", pesquisa = "Pesquisa de Orçamentos Familiares", filtros = ["grupo_produto", "renda"], nota = "Só as áreas das POF de 1987 e 1995 (regiões metropolitanas, Brasília e Goiânia), também em 2002 e 2008 (ADR-0016).", kpi = "aquisicao_alimentar" },
+  { id = "pof_despesa_alimentacao_antiga", label = "Despesa com alimentação por tipo (POF 1987 e 1995)", tabela = "400", pesquisa = "Pesquisa de Orçamentos Familiares", filtros = ["grupo_produto", "renda"], nota = "Só regiões metropolitanas, Brasília e Goiânia (ADR-0016).", kpi = "pof_despesa_alimentacao_antiga" },
   { id = "seguranca_alimentar", label = "Domicílios por situação de segurança alimentar", tabela = "9552", pesquisa = "PNAD Contínua", filtros = ["situacao"], requer_categoria = true },
 ]
 
@@ -439,15 +442,15 @@ filtros = ["sexo", "idade", "cor_raca", "instrucao", "situacao"]
 id = "percepcao_seguranca"
 label = "Percepção de segurança"
 kpis = [
-  { id = "sensacao_seguranca", label = "Pessoas que se sentem seguras ao andar sozinhas perto de casa", tabela = "8713", pesquisa = "PNAD Contínua", filtros = ["sexo"] },
+  { id = "sensacao_seguranca", label = "Pessoas que se sentem seguras ao andar sozinhas perto de casa", tabela = "8713", pesquisa = "PNAD Contínua", filtros = ["sexo"], complementos = ["8715", "8717", "8724"] },
 ]
 
 [[temas.subtemas]]
 id = "vitimizacao"
 label = "Vitimização e violência"
 kpis = [
-  { id = "vitimas_roubo", label = "Vítimas de roubo nos últimos 12 meses", tabela = "8503", pesquisa = "PNAD Contínua", filtros = ["sexo"] },
-  { id = "violencia", label = "Pessoas que sofreram violência nos últimos 12 meses", tabela = "8022", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"] },
+  { id = "vitimas_roubo", label = "Vítimas de roubo nos últimos 12 meses", tabela = "8503", pesquisa = "PNAD Contínua", filtros = ["sexo"], complementos = ["8505", "8504", "8507"] },
+  { id = "violencia", label = "Pessoas que sofreram violência nos últimos 12 meses", tabela = "8022", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["sexo"], complementos = ["8025", "8023", "8024", "8026"] },
   { id = "homicidios", label = "Vítimas de homicídio por 100 mil habitantes", tabela = "6606", pesquisa = "Objetivos de Desenvolvimento Sustentável", variavel = "13532" },
 ]
 # Registros policiais do Sinesp VDE (MJSP), curados à mão (ADR-0012). Não são a mesma
@@ -472,7 +475,7 @@ id = "lavouras"
 label = "Lavouras"
 kpis = [
   { id = "producao_lavouras", label = "Área, produção e valor das lavouras", tabela = "5457", pesquisa = "Produção Agrícola Municipal", filtros = ["produto"] },
-  { id = "safra_estimada", label = "Estimativa da safra (área, produção e rendimento)", tabela = "6588", pesquisa = "Levantamento Sistemático da Produção Agrícola", filtros = ["produto"] },
+  { id = "safra_estimada", label = "Estimativa da safra (área, produção e rendimento)", tabela = "6588", pesquisa = "Levantamento Sistemático da Produção Agrícola", filtros = ["produto"], agregacao_tempo = "ultimo" },
 ]
 
 [[temas.subtemas]]
@@ -481,9 +484,9 @@ label = "Pecuária e produção animal"
 kpis = [
   { id = "efetivo_rebanhos", label = "Efetivo de bovinos", tabela = "3939", pesquisa = "Pesquisa da Pecuária Municipal", filtros = ["especie"], referencia = { c79 = "2670" } },
   { id = "producao_origem_animal", label = "Produção de origem animal", tabela = "74", pesquisa = "Pesquisa da Pecuária Municipal", filtros = ["produto"] },
-  { id = "abate_bovinos", label = "Abate de bovinos", tabela = "1092", pesquisa = "Pesquisa Trimestral do Abate de Animais", variavel = "284" },
-  { id = "leite_adquirido", label = "Leite adquirido e industrializado", tabela = "1086", pesquisa = "Pesquisa Trimestral do Leite", variavel = "282" },
-  { id = "ovos_produzidos", label = "Produção de ovos de galinha", tabela = "7524", pesquisa = "Produção de Ovos de Galinha", variavel = "29" },
+  { id = "abate_bovinos", label = "Abate de bovinos", tabela = "1092", pesquisa = "Pesquisa Trimestral do Abate de Animais", variavel = "284", agregacao_tempo = "soma" },
+  { id = "leite_adquirido", label = "Leite adquirido e industrializado", tabela = "1086", pesquisa = "Pesquisa Trimestral do Leite", variavel = "282", agregacao_tempo = "soma" },
+  { id = "ovos_produzidos", label = "Produção de ovos de galinha", tabela = "7524", pesquisa = "Produção de Ovos de Galinha", variavel = "29", agregacao_tempo = "soma" },
 ]
 
 [[temas.subtemas]]
@@ -521,7 +524,7 @@ filtros = ["atividade", "porte"]
 id = "producao_industrial"
 label = "Produção industrial"
 kpis = [
-  { id = "producao_fisica", label = "Produção física industrial", tabela = "8888", pesquisa = "Pesquisa Industrial Mensal - Produção Física", filtros = ["atividade"], referencia = { c544 = "129314" } },
+  { id = "producao_fisica", label = "Produção física industrial", tabela = "8888", pesquisa = "Pesquisa Industrial Mensal - Produção Física", filtros = ["atividade"], referencia = { c544 = "129314" }, agregacao_tempo = "media" },
 ]
 
 [[temas.subtemas]]
@@ -544,15 +547,15 @@ id = "atividade_construcao"
 label = "Atividade da construção"
 kpis = [
   { id = "empresas_construcao", label = "Empresas de construção: pessoal, salários e valor das obras", tabela = "10442", pesquisa = "Pesquisa Anual da Indústria da Construção" },
-  { id = "vendas_materiais", label = "Volume de vendas de materiais de construção", tabela = "8757", pesquisa = "Pesquisa Mensal de Comércio", referencia = { c11046 = "56732" } },
+  { id = "vendas_materiais", label = "Volume de vendas de materiais de construção", tabela = "8757", pesquisa = "Pesquisa Mensal de Comércio", referencia = { c11046 = "56732" }, agregacao_tempo = "media" },
 ]
 
 [[temas.subtemas]]
 id = "custos_construcao"
 label = "Custos e insumos da construção"
 kpis = [
-  { id = "custo_m2", label = "Custo médio do metro quadrado da construção", tabela = "2296", pesquisa = "SINAPI" },
-  { id = "insumos_construcao", label = "Produção de insumos típicos da construção civil", tabela = "8886", pesquisa = "Pesquisa Industrial Mensal - Produção Física" },
+  { id = "custo_m2", label = "Custo médio do metro quadrado da construção", tabela = "2296", pesquisa = "SINAPI", agregacao_tempo = "media" },
+  { id = "insumos_construcao", label = "Produção de insumos típicos da construção civil", tabela = "8886", pesquisa = "Pesquisa Industrial Mensal - Produção Física", agregacao_tempo = "media" },
 ]
 
 # ======================================================================= 14
@@ -565,8 +568,8 @@ filtros = ["atividade", "porte"]
 id = "varejo"
 label = "Comércio varejista"
 kpis = [
-  { id = "vendas_varejo", label = "Volume de vendas no varejo", tabela = "8880", pesquisa = "Pesquisa Mensal de Comércio", referencia = { c11046 = "56734" } },
-  { id = "vendas_varejo_ampliado", label = "Volume de vendas no varejo ampliado", tabela = "8881", pesquisa = "Pesquisa Mensal de Comércio", referencia = { c11046 = "56736" } },
+  { id = "vendas_varejo", label = "Volume de vendas no varejo", tabela = "8880", pesquisa = "Pesquisa Mensal de Comércio", referencia = { c11046 = "56734" }, agregacao_tempo = "media" },
+  { id = "vendas_varejo_ampliado", label = "Volume de vendas no varejo ampliado", tabela = "8881", pesquisa = "Pesquisa Mensal de Comércio", referencia = { c11046 = "56736" }, agregacao_tempo = "media" },
 ]
 
 [[temas.subtemas]]
@@ -593,7 +596,7 @@ filtros = ["atividade", "porte"]
 id = "servicos_empresariais"
 label = "Serviços"
 kpis = [
-  { id = "volume_servicos", label = "Volume de serviços", tabela = "5906", pesquisa = "Pesquisa Mensal de Serviços", referencia = { c11046 = "56726" } },
+  { id = "volume_servicos", label = "Volume de serviços", tabela = "5906", pesquisa = "Pesquisa Mensal de Serviços", referencia = { c11046 = "56726" }, agregacao_tempo = "media" },
   { id = "servicos_nao_financeiros", label = "Resultados dos serviços empresariais não financeiros", tabela = "2581", pesquisa = "Pesquisa Anual de Serviços", filtros = ["atividade"] },
 ]
 
@@ -601,7 +604,7 @@ kpis = [
 id = "turismo_transportes"
 label = "Turismo e transportes"
 kpis = [
-  { id = "atividades_turisticas", label = "Volume das atividades turísticas", tabela = "8694", pesquisa = "Pesquisa Mensal de Serviços", referencia = { c11046 = "56728" } },
+  { id = "atividades_turisticas", label = "Volume das atividades turísticas", tabela = "8694", pesquisa = "Pesquisa Mensal de Serviços", referencia = { c11046 = "56728" }, agregacao_tempo = "media" },
   { id = "transporte_passageiros_cargas", label = "Volume e receita do transporte de passageiros e cargas", tabela = "8695", pesquisa = "Pesquisa Mensal de Serviços" },
   { id = "viagens", label = "Viagens realizadas pelos moradores", tabela = "7204", pesquisa = "PNAD Contínua" },
 ]
@@ -645,16 +648,16 @@ filtros = ["grupo_produto", "atividade"]
 id = "precos_consumidor"
 label = "Inflação ao consumidor"
 kpis = [
-  { id = "ipca", label = "IPCA", tabela = "1737", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo", variavel = "2265", periodo_inicial = "1998" },
-  { id = "inpc", label = "INPC", tabela = "1736", pesquisa = "Índice Nacional de Preços ao Consumidor", variavel = "2292" },
-  { id = "ipca15", label = "IPCA-15", tabela = "3065", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo 15", variavel = "1120" },
+  { id = "ipca", label = "IPCA", tabela = "1737", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo", variavel = "2265", periodo_inicial = "1998", agregacao_tempo = "ultimo" },
+  { id = "inpc", label = "INPC", tabela = "1736", pesquisa = "Índice Nacional de Preços ao Consumidor", variavel = "2292", agregacao_tempo = "ultimo" },
+  { id = "ipca15", label = "IPCA-15", tabela = "3065", pesquisa = "Índice Nacional de Preços ao Consumidor Amplo 15", variavel = "1120", agregacao_tempo = "ultimo" },
 ]
 
 [[temas.subtemas]]
 id = "precos_produtor"
 label = "Preços ao produtor"
 kpis = [
-  { id = "ipp", label = "Índice de Preços ao Produtor", tabela = "6904", pesquisa = "Índice de Preços ao Produtor", filtros = ["atividade"], variavel = "1394" },
+  { id = "ipp", label = "Índice de Preços ao Produtor", tabela = "6904", pesquisa = "Índice de Preços ao Produtor", filtros = ["atividade"], variavel = "1394", agregacao_tempo = "ultimo" },
 ]
 
 # ======================================================================= 18
@@ -668,7 +671,7 @@ id = "pib_brasil"
 label = "PIB do Brasil"
 kpis = [
   { id = "pib_per_capita", label = "PIB e PIB per capita", tabela = "6784", pesquisa = "Contas Nacionais Anuais" },
-  { id = "pib_trimestral", label = "PIB trimestral a preços correntes", tabela = "1846", pesquisa = "Contas Nacionais Trimestrais", referencia = { c11255 = "90707" } },
+  { id = "pib_trimestral", label = "PIB trimestral a preços correntes", tabela = "1846", pesquisa = "Contas Nacionais Trimestrais", referencia = { c11255 = "90707" }, agregacao_tempo = "soma" },
   { id = "variacao_pib_trimestral", label = "Taxa de variação do PIB trimestral", tabela = "5932", pesquisa = "Contas Nacionais Trimestrais", referencia = { c11255 = "90707" } },
 ]
 

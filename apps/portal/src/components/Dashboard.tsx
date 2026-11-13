@@ -15,7 +15,7 @@ import { api } from "@/lib/api";
 import { formatPeriod, legendTitleKey } from "@/lib/format";
 import {
   allKpis,
-  DEFAULT_GEOGRAPHY,
+  defaultGeography,
   grainPeriods,
   readState,
   writeState,
@@ -308,9 +308,11 @@ export function Dashboard({ nav }: { nav: Navigation }) {
           .map((s) => `${th.label} › ${s.label}`),
       )
       .at(0) ?? "";
+  // Território inicial do KPI: o Brasil ou, sem ele, o "Total das áreas" da POF antiga.
+  const home = defaultGeography(kpi);
   const selectedName =
-    state.geography === DEFAULT_GEOGRAPHY
-      ? t("levels.brasil")
+    state.geography === home
+      ? t(`levels.${home.split(":")[0]}`)
       : (values.data?.values.find((v) => v.geography_key === state.geography)
           ?.name ??
         shown?.context?.features.find((f) => f.id === state.geography)
@@ -476,11 +478,11 @@ export function Dashboard({ nav }: { nav: Navigation }) {
           <section className="card area-chart" aria-labelledby="series-title">
             <h2 id="series-title">
               {t("dashboard.seriesTitle")} · {selectedName}{" "}
-              {state.geography !== DEFAULT_GEOGRAPHY ? (
+              {state.geography !== home ? (
                 <button
                   type="button"
                   className="small"
-                  onClick={() => update({ geography: DEFAULT_GEOGRAPHY })}
+                  onClick={() => update({ geography: home })}
                 >
                   {t("dashboard.resetSelection")}
                 </button>

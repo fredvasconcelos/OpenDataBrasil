@@ -13,13 +13,13 @@ está detalhada. Exemplo, com cor ou raça e sexo:
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
 
 from odb_api.gold import GoldGateway, NotFoundError
-from odb_api.portal import KpiConfig, PortalConfig, PortalConfigError, check_against_release
 from odb_api.release import ReleaseContext
 from odb_api.schemas import (
     CategoryOut,
@@ -56,6 +56,15 @@ from odb_semantics import (
     resolve_links,
 )
 from odb_semantics.periods import GRAIN_LABELS, complete_periods_at, periods_at
+from odb_semantics.portal import (
+    KpiConfig,
+    PortalConfig,
+    PortalConfigError,
+    describe_problems,
+    release_problems,
+)
+
+logger = logging.getLogger(__name__)
 
 Combo = tuple[str, ...]
 
@@ -121,40 +130,54 @@ class KpiService:
         self._page_max = page_max
         # dataset → (sigla da instituição, sistema), das fontes configuradas.
         self._provenance = dict(provenance or {})
-        self._checked: set[str] = set()
+        # release → KPIs com problema contra ele (ADR-0015).
+        self._unavailable: dict[str, dict[str, list[str]]] = {}
 
     # ------------------------------------------------------------- configuração
 
-    def _check(self, ctx: ReleaseContext) -> None:
-        if ctx.release_id not in self._checked:
-            indicators = self._gold.indicators(ctx)
-            check_against_release(self._portal, indicators, self._gold.partitions(ctx))
-            if self._panorama is not None:
-                self._check_panorama_tables(self._panorama, indicators)
-            self._checked.add(ctx.release_id)
+    def unavailable(self, ctx: ReleaseContext) -> dict[str, list[str]]:
+        """KPIs da configuração incoerentes com o release, com os problemas.
 
-    def _check_panorama_tables(
-        self, panorama: Panorama, indicators: Mapping[str, Mapping[str, Any]]
-    ) -> None:
-        """A tabela de origem publicada é a mesma que o panorama declara."""
-        problems = []
-        for _, _, item in panorama.items():
-            link = self._links.get(item.id)
-            kpi = self._portal.kpi(link) if link else None
-            if kpi is None:  # planejado (a ligação com o portal já foi conferida)
-                continue
-            published = str(indicators[kpi.indicator]["source_table_id"])
-            if published != item.tabela:
-                problems.append(f"{item.id}: tabela {item.tabela} no panorama, {published} na Gold")
-        if problems:
-            raise PortalConfigError("; ".join(problems))
+        Conferência tolerante (ADR-0015): um KPI com problema (indicador fora do
+        release, classificação ou partição ausente, tabela diferente da do
+        panorama) sai da navegação e responde 404, e os demais seguem no ar. A
+        conferência rígida roda no worker, antes de ativar o release
+        (``odb release check``). Feita uma vez por release.
+        """
+        found = self._unavailable.get(ctx.release_id)
+        if found is None:
+            found = release_problems(
+                self._portal,
+                self._gold.indicators(ctx),
+                self._gold.partitions(ctx),
+                self._panorama,
+            )
+            if found:
+                logger.warning(
+                    "portal.kpis_indisponiveis",
+                    extra={
+                        "release_id": ctx.release_id,
+                        "kpis": sorted(found),
+                        "problems": describe_problems(found),
+                    },
+                )
+            self._unavailable[ctx.release_id] = found
+        return found
+
+    def _available(self, ctx: ReleaseContext, kpi: KpiConfig | None) -> KpiConfig | None:
+        """O KPI, se existir e estiver coerente com o release."""
+        if kpi is None or kpi.id in self.unavailable(ctx):
+            return None
+        return kpi
 
     def kpi(self, ctx: ReleaseContext, kpi_id: str) -> KpiConfig:
-        """KPI configurado e conferido contra o release."""
-        self._check(ctx)
+        """KPI configurado e coerente com o release."""
         kpi = self._portal.kpi(kpi_id)
         if kpi is None:
             msg = f"KPI inexistente: {kpi_id}"
+            raise NotFoundError(msg)
+        if kpi_id in self.unavailable(ctx):
+            msg = f"KPI indisponível no release {ctx.release_id}: {kpi_id}"
             raise NotFoundError(msg)
         return kpi
 
@@ -164,8 +187,14 @@ class KpiService:
         if unknown:
             msg = f"{kpi.id}: dimensões não disponíveis {unknown} (disponíveis: {exposed})"
             raise SemanticError(msg)
-        # Ordem fixa do portal, sem repetição.
-        return [d for d in exposed if d in set(requested)]
+        chosen = [d for d in exposed if d in set(requested)]  # ordem do portal, sem repetição
+        if kpi.exclusive_dimensions and len(chosen) > 1:
+            msg = (
+                f"{kpi.id}: detalhe uma dimensão por vez (cada uma vem com as demais no Total,"
+                " sem os cruzamentos)"
+            )
+            raise SemanticError(msg)
+        return chosen
 
     def _dimension_out(self, ctx: ReleaseContext, kpi: KpiConfig) -> list[DimensionOut]:
         out = []
@@ -208,10 +237,18 @@ class KpiService:
             additivity=meta["additivity"],
             periods=list(meta["periods"] or ()),
             levels=levels,
-            map_levels=[lvl for lvl in levels if lvl in geometry],
+            map_levels=[
+                lvl
+                for lvl in levels
+                if lvl in geometry and (kpi.map_levels is None or lvl in kpi.map_levels)
+            ],
             dimensions=self._dimension_out(ctx, kpi),
+            exclusive_dimensions=kpi.exclusive_dimensions,
             caveats=list(meta["caveats"] or ()),
             time_grains=self._time_grains(kpi, meta),
+            time_aggregation=(
+                meta.get("time_aggregation") if len(meta.get("time_grains") or ()) > 1 else None
+            ),
             source=KpiSourceOut(
                 dataset_id=meta["dataset_id"],
                 source_table_id=meta["source_table_id"],
@@ -242,29 +279,33 @@ class KpiService:
         ]
 
     def navigation(self, ctx: ReleaseContext) -> NavigationOut:
-        """Temas, subtemas e KPIs (publicados e, com o panorama, planejados)."""
-        self._check(ctx)
-        themes = (
-            self._panorama_themes(ctx, self._panorama)
-            if self._panorama is not None
-            else [
-                ThemeOut(
-                    theme_id=t.id,
-                    label=t.label,
-                    filters=[],
-                    subthemes=[
-                        SubthemeOut(
-                            subtheme_id=s.id,
-                            label=s.label,
-                            kpis=[self.describe(ctx, k, t.id, s.id) for k in s.kpis],
-                            planned=[],
-                        )
-                        for s in t.subthemes
-                    ],
-                )
-                for t in self._portal.themes
-            ]
-        )
+        """Temas, subtemas e KPIs (publicados e, com o panorama, planejados).
+
+        KPIs incoerentes com o release ficam de fora (``unavailable``).
+        """
+        if self._panorama is not None:
+            themes = self._panorama_themes(ctx, self._panorama)
+        else:
+            themes = []
+            for t in self._portal.themes:
+                subthemes = [
+                    SubthemeOut(
+                        subtheme_id=s.id,
+                        label=s.label,
+                        kpis=[
+                            self.describe(ctx, k, t.id, s.id)
+                            for k in s.kpis
+                            if self._available(ctx, k)
+                        ],
+                        planned=[],
+                    )
+                    for s in t.subthemes
+                ]
+                subthemes = [s for s in subthemes if s.kpis]
+                if subthemes:
+                    themes.append(
+                        ThemeOut(theme_id=t.id, label=t.label, filters=[], subthemes=subthemes)
+                    )
         return NavigationOut(
             release_id=ctx.release_id,
             scope=self._portal.scope,
@@ -280,12 +321,12 @@ class KpiService:
                 published = []
                 for item in sub.kpis:
                     link = self._links.get(item.id)
-                    kpi = self._portal.kpi(link) if link else None
+                    kpi = self._available(ctx, self._portal.kpi(link) if link else None)
                     if kpi is not None:
                         published.append(self.describe(ctx, kpi, theme.id, sub.id))
                 # KPIs curados de outras fontes (itens `externos`, ex.: Sinesp), após os do SIDRA.
                 for external in sub.externos:
-                    kpi = self._portal.kpi(external.kpi)
+                    kpi = self._available(ctx, self._portal.kpi(external.kpi))
                     if kpi is not None:
                         published.append(self.describe(ctx, kpi, theme.id, sub.id))
                 planned = [
@@ -580,7 +621,11 @@ class KpiService:
                 for cat in self._gold.partition_categories(ctx, dim.classification, dim.partition):
                     child = list(combo)
                     child[depth] = cat["category_key"]
-                    children.append(node(tuple(child), depth + 1, found))
+                    sub = node(tuple(child), depth + 1, found)
+                    # Categoria sem nenhuma observação no período (ex.: faixa de
+                    # rendimento de outra edição da POF) não aparece (ADR-0016).
+                    if sub.status != "absent" or sub.children:
+                        children.append(sub)
             key = combo[depth - 1] if depth else None
             return DetailNodeOut(
                 label=categories[key]["name"] if key else "Total",
@@ -703,6 +748,9 @@ class KpiService:
             if o.combo in keys:
                 row["cells"][keys[o.combo]] = CellOut(value=to_float(o.value), status=o.status)
         total_key = keys[combos[0]]
+        # Colunas só das combinações com alguma observação no período (o Total sempre).
+        observed = {o.combo for o in obs}
+        combos = [c for i, c in enumerate(combos) if i == 0 or c in observed]
 
         def sort_key(item: tuple[str, dict[str, Any]]) -> tuple[Any, ...]:
             if sort == "name":

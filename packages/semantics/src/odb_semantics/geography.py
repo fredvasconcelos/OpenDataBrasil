@@ -53,6 +53,11 @@ LEVELS: tuple[GeographyLevel, ...] = (
         "terra_indigena_uf", 12, "Terra Indígena por Unidade da Federação", special=True
     ),
     GeographyLevel("coordenacao_regional_funai", 13, "Coordenação Regional da Funai", special=True),
+    # POF 1987-1988 e 1995-1996 (ADR-0016): as pesquisas cobriam só estas áreas.
+    GeographyLevel(
+        "regiao_metropolitana", 14, "Região Metropolitana (recorte até 2020)", special=True
+    ),
+    GeographyLevel("areas_pof", 15, "Total das áreas da POF", special=True),
 )
 LEVELS_BY_ID = {level.id: level for level in LEVELS}
 
@@ -71,6 +76,9 @@ ANCESTOR_LEVELS: dict[str, frozenset[str]] = {
     "terra_indigena": frozenset({"brasil"}),
     "terra_indigena_uf": frozenset({"terra_indigena", "uf", "regiao", "brasil"}),
     "coordenacao_regional_funai": frozenset({"brasil"}),
+    # O código da RM começa pelo da UF (1501 = Belém, PA): cada RM fica numa UF.
+    "regiao_metropolitana": frozenset({"uf", "regiao", "brasil"}),
+    "areas_pof": frozenset({"brasil"}),
 }
 
 

@@ -4,7 +4,7 @@
 
 config_version = "1.0.0"
 scope = "demografia"
-dimension_order = ["c2083", "c232", "c1836", "c664", "c345", "c460", "c63", "c338", "c845", "c1821", "c825", "c921", "c11558", "c67", "c2", "c1568", "c58", "c12258", "c1", "c556", "c339", "c12404", "c688", "c422", "c427", "c937", "c782", "c48", "c18", "c12716", "c1835", "c734", "c829", "c716", "c12899", "c12762", "c11065", "c85", "c892", "c956", "c696", "c543", "c1480", "c1346", "c1329", "c1328"]
+dimension_order = ["c86", "c2", "sexosim", "sexosinesp", "c287", "c339", "c12190", "c201", "c210", "c210alim", "c214", "c215", "c2083", "c232", "c1836", "c664", "c345", "c460", "c63", "c338", "c845", "c1821", "c825", "c921", "c11558", "c921t7461", "c67", "c67t6736", "c1568", "c1568t10061", "c86t5845", "c58", "c12258", "c1", "c556", "c12404", "c688", "c422", "c427", "c937", "c782", "c48", "c18", "c12716", "c1835", "c734", "c829", "c716", "c12899", "c12762", "c11065", "c85", "c892", "c956", "c12762t9949", "c696", "c543", "c1480", "c1346", "c1329", "c1328", "c2t2609", "c240", "c2t2654", "c244", "c257", "c260", "c244t4412", "c665", "c666", "c667", "c269", "c274", "c275", "c293", "c287t9543", "c58t7113", "c86t7125", "c86t7270", "c58t7126", "c58t10061", "c58t10295", "c58t7973", "c1568t7974", "c653t7976", "c58t4419", "c1568t4420", "c652t4422", "c653t4423", "c58t4488", "c1568t4489", "c652t4491", "c653t4492", "c58t4179", "c1568t4181", "c653t4182", "c58t7727", "c1568t7728", "c653t7730", "c58t7741", "c1568t7742", "c653t7744", "c58t4949", "c1568t4950", "c652t4953", "c653t4952", "c58t5058", "c653t5065", "c652t8288", "c1568t8290", "c58t4277", "c58t6356", "c58t6358", "c58t6378", "c4908", "c86t8715", "c1568t8717", "c1393t8724", "c58t8504", "c1568t8507", "c58t8023", "c1568t8024", "c653t8026", "c12529", "c218", "c12517", "c12564", "c12771", "c370", "c12446", "c1347"]
 
 [[themes]]
 id = "populacao"
@@ -69,13 +69,15 @@ label = "Nascimentos e óbitos"
 id = "nascidos_vivos"
 label = "Nascidos vivos"
 indicator = "nascidos_vivos"
-dimensions = [{ "classification" = "c232", "partition" = "p0", "label" = "Ano de nascimento" }]
+dimensions = [{ "classification" = "c232", "partition" = "p0", "label" = "Ano de nascimento" }, { "classification" = "c2t2609", "partition" = "p0", "label" = "Sexo" }, { "classification" = "c240", "partition" = "p0", "label" = "Idade da mãe na ocasião do parto" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "obitos"
 label = "Óbitos"
 indicator = "obitos"
-dimensions = [{ "classification" = "c1836", "partition" = "p0", "label" = "Natureza do óbito" }]
+dimensions = [{ "classification" = "c1836", "partition" = "p0", "label" = "Natureza do óbito" }, { "classification" = "c2t2654", "partition" = "p0", "label" = "Sexo" }, { "classification" = "c244", "partition" = "p0", "label" = "Mês de ocorrência" }, { "classification" = "c257", "partition" = "p0", "label" = "Local de ocorrência" }, { "classification" = "c260", "partition" = "p0", "label" = "Idade do(a) falecido(a)" }]
+exclusive_dimensions = true
 
 [[themes.subthemes]]
 id = "casamentos_divorcios"
@@ -85,13 +87,15 @@ label = "Casamentos e divórcios"
 id = "casamentos"
 label = "Casamentos"
 indicator = "casamentos"
-dimensions = [{ "classification" = "c664", "partition" = "p0", "label" = "Estado civil do primeiro cônjuge" }]
+dimensions = [{ "classification" = "c664", "partition" = "p0", "label" = "Estado civil do primeiro cônjuge" }, { "classification" = "c244t4412", "partition" = "p0", "label" = "Mês de ocorrência" }, { "classification" = "c665", "partition" = "p0", "label" = "Estado civil do segundo cônjuge" }, { "classification" = "c666", "partition" = "p0", "label" = "Grupo de idade do primeiro cônjuge" }, { "classification" = "c667", "partition" = "p0", "label" = "Grupo de idade do segundo cônjuge" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "divorcios"
 label = "Divórcios"
 indicator = "divorcios"
-dimensions = [{ "classification" = "c345", "partition" = "p0", "label" = "Tempo transcorrido entre a data do casamento e a data da sentença ou da escritura" }]
+dimensions = [{ "classification" = "c345", "partition" = "p0", "label" = "Tempo transcorrido entre a data do casamento e a data da sentença ou da escritura" }, { "classification" = "c269", "partition" = "p0", "label" = "Regime de bens do casamento" }, { "classification" = "c274", "partition" = "p0", "label" = "Grupos de idade do marido na data da sentença" }, { "classification" = "c275", "partition" = "p0", "label" = "Grupos de idade da mulher na data da sentença" }]
+exclusive_dimensions = true
 
 [[themes]]
 id = "domicilios"
@@ -110,7 +114,8 @@ indicator = "domicilios_ocupados"
 id = "arranjos_domiciliares"
 label = "Domicílios por tipo de arranjo (unidade doméstica)"
 indicator = "arranjos_domiciliares"
-dimensions = [{ "classification" = "c460", "partition" = "p45902", "label" = "Espécie de unidade doméstica" }]
+dimensions = [{ "classification" = "c460", "partition" = "p45902", "label" = "Espécie de unidade doméstica" }, { "classification" = "c293", "partition" = "p100311", "label" = "Sexo do responsável pelo domicílio" }]
+exclusive_dimensions = true
 map_share = "12076"
 
 [[themes.subthemes]]
@@ -171,7 +176,8 @@ map_share = "72144"
 id = "fonte_abastecimento"
 label = "Principal fonte de abastecimento de água"
 indicator = "fonte_abastecimento"
-dimensions = [{ "classification" = "c825", "partition" = "p47937", "label" = "Principal fonte de abastecimento de água" }]
+dimensions = [{ "classification" = "c825", "partition" = "p47937", "label" = "Principal fonte de abastecimento de água" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "servico_agua_municipios"
@@ -194,12 +200,14 @@ map_share = "46290"
 id = "esgotamento_pnad"
 label = "Domicílios por tipo de esgotamento sanitário"
 indicator = "esgotamento_pnad"
-dimensions = [{ "classification" = "c11558", "partition" = "p46292_t7192", "label" = "Tipo de esgotamento sanitário" }]
+dimensions = [{ "classification" = "c11558", "partition" = "p46292_t7192", "label" = "Tipo de esgotamento sanitário" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "servico_esgoto_municipios"
 label = "Municípios com rede coletora de esgoto"
 indicator = "servico_esgoto_municipios"
+dimensions = [{ "classification" = "c921t7461", "partition" = "p48278", "label" = "Condição de funcionamento do serviço" }]
 
 [[themes.subthemes]]
 id = "lixo"
@@ -216,6 +224,8 @@ map_share = "2520"
 id = "destino_lixo_pnad"
 label = "Domicílios por destino do lixo"
 indicator = "destino_lixo_pnad"
+dimensions = [{ "classification" = "c67t6736", "partition" = "p10972", "label" = "Destino do lixo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }]
+exclusive_dimensions = true
 
 [[themes]]
 id = "educacao"
@@ -229,13 +239,15 @@ label = "Alfabetização"
 id = "taxa_alfabetizacao_censo"
 label = "Taxa de alfabetização (15 anos ou mais, Censo)"
 indicator = "taxa_alfabetizacao_censo"
-dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c287t9543", "partition" = "p100362", "label" = "Idade" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "taxa_analfabetismo"
 label = "Taxa de analfabetismo (15 anos ou mais)"
 indicator = "taxa_analfabetismo"
-dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c58t7113", "partition" = "p2795", "label" = "Grupo de idade" }, { "classification" = "c86t7125", "partition" = "p95251", "label" = "Cor ou raça" }]
+exclusive_dimensions = true
 
 [[themes.subthemes]]
 id = "escolarizacao"
@@ -245,7 +257,8 @@ label = "Frequência escolar"
 id = "taxa_escolarizacao"
 label = "Taxa de escolarização"
 indicator = "taxa_escolarizacao"
-dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c58", "partition" = "p95253_t7138", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "frequencia_liquida"
@@ -260,14 +273,24 @@ label = "Nível de instrução"
 id = "nivel_instrucao"
 label = "Pessoas de 25 anos ou mais por nível de instrução"
 indicator = "nivel_instrucao"
-dimensions = [{ "classification" = "c1568", "partition" = "p120704", "label" = "Nível de instrução" }]
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c1568", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c86t7270", "partition" = "p95251", "label" = "Cor ou raça" }]
+exclusive_dimensions = true
 map_share = "18837"
 
 [[themes.subthemes.kpis]]
 id = "anos_estudo"
 label = "Média de anos de estudo (15 anos ou mais)"
 indicator = "anos_estudo"
-dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c58t7126", "partition" = "p2795", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "nivel_instrucao_censo"
+label = "Nível de instrução (18 anos ou mais, Censo)"
+indicator = "nivel_instrucao_censo"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c1568t10061", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c58t10061", "partition" = "p95253", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
+map_share = "9493"
 
 [[themes]]
 id = "trabalho_rendimento"
@@ -325,12 +348,14 @@ indicator = "gini_domiciliar"
 id = "rendimento_domiciliar_censo"
 label = "Rendimento domiciliar per capita (Censo)"
 indicator = "rendimento_domiciliar_censo"
-dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c58t10295", "partition" = "p95253", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "pobreza_linha_nacional"
 label = "Proporção da população abaixo da linha de pobreza nacional"
 indicator = "pobreza_linha_nacional"
+dimensions = [{ "classification" = "c86t5845", "partition" = "p95251", "label" = "Cor ou raça" }]
 
 [[themes.subthemes]]
 id = "trabalho_infantil_cuidados"
@@ -360,26 +385,30 @@ label = "Condições de saúde"
 id = "autoavaliacao_saude"
 label = "Avaliação do próprio estado de saúde"
 indicator = "autoavaliacao_saude"
-dimensions = [{ "classification" = "c12258", "partition" = "p10011", "label" = "Avaliação do estado de saúde" }]
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c12258", "partition" = "p10011", "label" = "Avaliação do estado de saúde" }]
+exclusive_dimensions = true
 map_share = "104864"
 
 [[themes.subthemes.kpis]]
 id = "doenca_cronica"
 label = "Pessoas com pelo menos uma doença crônica"
 indicator = "doenca_cronica"
-dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t7973", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t7974", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t7976", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "hipertensao"
 label = "Diagnóstico de hipertensão arterial"
 indicator = "hipertensao"
-dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t4419", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4420", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c652t4422", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita" }, { "classification" = "c653t4423", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "diabetes"
 label = "Diagnóstico de diabetes"
 indicator = "diabetes"
-dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t4488", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4489", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c652t4491", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita" }, { "classification" = "c653t4492", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
 
 [[themes.subthemes]]
 id = "fatores_risco"
@@ -389,25 +418,29 @@ label = "Hábitos e fatores de risco"
 id = "fumantes"
 label = "Fumantes atuais de tabaco"
 indicator = "fumantes"
-dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t4179", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4181", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t4182", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "consumo_abusivo_alcool"
 label = "Consumo abusivo de álcool"
 indicator = "consumo_abusivo_alcool"
-dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t7727", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t7728", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t7730", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "insuficientemente_ativos"
 label = "Pessoas insuficientemente ativas"
 indicator = "insuficientemente_ativos"
-dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t7741", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t7742", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t7744", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "excesso_peso"
 label = "Excesso de peso ou obesidade"
 indicator = "excesso_peso"
-dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }]
+exclusive_dimensions = true
 
 [[themes.subthemes]]
 id = "acesso_servicos"
@@ -417,13 +450,15 @@ label = "Acesso a serviços de saúde"
 id = "plano_saude"
 label = "Pessoas com plano de saúde"
 indicator = "plano_saude"
-dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t4949", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4950", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c652t4953", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita" }, { "classification" = "c653t4952", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "consulta_medica"
 label = "Consultaram médico nos últimos 12 meses"
 indicator = "consulta_medica"
-dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t5058", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c653t5065", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "estabelecimentos_saude"
@@ -438,6 +473,8 @@ label = "Saúde materno-infantil"
 id = "pre_natal"
 label = "Mulheres que realizaram pré-natal"
 indicator = "pre_natal"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c652t8288", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita" }, { "classification" = "c1568t8290", "partition" = "p120704", "label" = "Nível de instrução" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "aleitamento_exclusivo"
@@ -463,7 +500,8 @@ indicator = "mortalidade_menores_5"
 id = "mortalidade_doencas_cronicas"
 label = "Mortalidade por doenças crônicas não transmissíveis"
 indicator = "mortalidade_doencas_cronicas"
-dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c58t4277", "partition" = "p56742", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
 
 [[themes.subthemes]]
 id = "saude_escolar"
@@ -473,19 +511,22 @@ label = "Saúde do escolar"
 id = "escolares_fumaram"
 label = "Escolares de 13 a 17 anos que fumaram nos últimos 30 dias"
 indicator = "escolares_fumaram"
-dimensions = [{ "classification" = "c556", "partition" = "p31050", "label" = "Dependência administrativa da escola" }]
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c556", "partition" = "p31050", "label" = "Dependência administrativa da escola" }, { "classification" = "c58t6356", "partition" = "p40087", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "escolares_alcool"
 label = "Escolares de 13 a 17 anos que consumiram bebida alcoólica"
 indicator = "escolares_alcool"
-dimensions = [{ "classification" = "c556", "partition" = "p31050", "label" = "Dependência administrativa da escola" }]
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c556", "partition" = "p31050", "label" = "Dependência administrativa da escola" }, { "classification" = "c58t6358", "partition" = "p40087", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "escolares_excesso_peso"
 label = "Escolares de 13 a 17 anos com excesso de peso"
 indicator = "escolares_excesso_peso"
-dimensions = [{ "classification" = "c556", "partition" = "p31050", "label" = "Dependência administrativa da escola" }]
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c556", "partition" = "p31050", "label" = "Dependência administrativa da escola" }, { "classification" = "c58t6378", "partition" = "p40087", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
 
 [[themes.subthemes]]
 id = "covid"
@@ -495,13 +536,15 @@ label = "COVID-19"
 id = "vacinacao_covid"
 label = "Vacinados contra a COVID-19"
 indicator = "vacinacao_covid"
-dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c58", "partition" = "p95253_t9730", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "tiveram_covid"
 label = "Pessoas que tiveram ou consideram que tiveram COVID-19"
 indicator = "tiveram_covid"
-dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }]
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }]
+exclusive_dimensions = true
 
 [[themes]]
 id = "consumo_familias"
@@ -515,7 +558,8 @@ label = "Despesas e rendimentos das famílias"
 id = "rendimento_familiar"
 label = "Rendimento médio mensal familiar"
 indicator = "rendimento_familiar"
-dimensions = [{ "classification" = "c339", "partition" = "classes_rendimento", "label" = "Classes de rendimento total e variação patrimonial mensal familiar" }]
+dimensions = [{ "classification" = "c339", "partition" = "classes_rendimento", "label" = "Classes de rendimento total e variação patrimonial mensal familiar" }, { "classification" = "c4908", "partition" = "p8049", "label" = "Origem dos rendimentos" }]
+exclusive_dimensions = true
 
 [[themes.subthemes]]
 id = "alimentacao"
@@ -525,7 +569,8 @@ label = "Alimentação e segurança alimentar"
 id = "seguranca_alimentar"
 label = "Domicílios por situação de segurança alimentar"
 indicator = "seguranca_alimentar"
-dimensions = [{ "classification" = "c12404", "partition" = "p109106", "label" = "Situação de segurança alimentar existente no domicílio" }]
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c12404", "partition" = "p109106", "label" = "Situação de segurança alimentar existente no domicílio" }]
+exclusive_dimensions = true
 map_share = "109098"
 
 [[themes]]
@@ -540,14 +585,16 @@ label = "Internet"
 id = "domicilios_internet"
 label = "Domicílios com utilização da internet"
 indicator = "domicilios_internet"
-dimensions = [{ "classification" = "c688", "partition" = "p33298", "label" = "Existência de utilização da Internet no domicílio" }]
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c688", "partition" = "p33298", "label" = "Existência de utilização da Internet no domicílio" }]
+exclusive_dimensions = true
 map_share = "48534"
 
 [[themes.subthemes.kpis]]
 id = "pessoas_internet"
 label = "Pessoas que utilizaram a internet"
 indicator = "pessoas_internet"
-dimensions = [{ "classification" = "c422", "partition" = "p10979", "label" = "Utilização da internet no período de referência dos últimos três meses" }]
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c422", "partition" = "p10979", "label" = "Utilização da internet no período de referência dos últimos três meses" }]
+exclusive_dimensions = true
 map_share = "48578"
 
 [[themes.subthemes]]
@@ -558,14 +605,16 @@ label = "Telefonia e televisão"
 id = "celular_uso_pessoal"
 label = "Pessoas com celular para uso pessoal"
 indicator = "celular_uso_pessoal"
-dimensions = [{ "classification" = "c427", "partition" = "p11326", "label" = "Posse de telefone móvel celular para uso pessoal" }]
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c427", "partition" = "p11326", "label" = "Posse de telefone móvel celular para uso pessoal" }]
+exclusive_dimensions = true
 map_share = "11327"
 
 [[themes.subthemes.kpis]]
 id = "domicilios_televisao"
 label = "Domicílios com televisão"
 indicator = "domicilios_televisao"
-dimensions = [{ "classification" = "c937", "partition" = "p48455", "label" = "Existência de televisão no domicílio" }]
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c937", "partition" = "p48455", "label" = "Existência de televisão no domicílio" }]
+exclusive_dimensions = true
 map_share = "48456"
 
 [[themes]]
@@ -580,7 +629,8 @@ label = "Percepção de segurança"
 id = "sensacao_seguranca"
 label = "Pessoas que se sentem seguras ao andar sozinhas perto de casa"
 indicator = "sensacao_seguranca"
-dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c86t8715", "partition" = "p95251", "label" = "Cor ou raça" }, { "classification" = "c1568t8717", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c1393t8724", "partition" = "p57657", "label" = "Meio de informação sobre crimes na cidade em que reside" }]
+exclusive_dimensions = true
 
 [[themes.subthemes]]
 id = "vitimizacao"
@@ -590,13 +640,15 @@ label = "Vitimização e violência"
 id = "vitimas_roubo"
 label = "Vítimas de roubo nos últimos 12 meses"
 indicator = "vitimas_roubo"
-dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c58t8504", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t8507", "partition" = "p120704", "label" = "Nível de instrução" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "violencia"
 label = "Pessoas que sofreram violência nos últimos 12 meses"
 indicator = "violencia"
-dimensions = [{ "classification" = "c2", "partition" = "p6794_t7972", "label" = "Sexo" }]
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c58t8023", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t8024", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t8026", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "homicidios"
@@ -636,19 +688,22 @@ indicator = "efetivo_rebanhos"
 id = "abate_bovinos"
 label = "Abate de bovinos"
 indicator = "abate_bovinos"
-dimensions = [{ "classification" = "c18", "partition" = "p992", "label" = "Tipo de rebanho bovino" }]
+dimensions = [{ "classification" = "c18", "partition" = "p992", "label" = "Tipo de rebanho bovino" }, { "classification" = "c12716", "partition" = "p115236", "label" = "Referência temporal" }, { "classification" = "c12529", "partition" = "p118225", "label" = "Tipo de inspeção" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "leite_adquirido"
 label = "Leite adquirido e industrializado"
 indicator = "leite_adquirido"
-dimensions = [{ "classification" = "c12716", "partition" = "p115236", "label" = "Referência temporal" }]
+dimensions = [{ "classification" = "c12716", "partition" = "p115236", "label" = "Referência temporal" }, { "classification" = "c12529", "partition" = "p118225", "label" = "Tipo de inspeção" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "ovos_produzidos"
 label = "Produção de ovos de galinha"
 indicator = "ovos_produzidos"
-dimensions = [{ "classification" = "c1835", "partition" = "p72208", "label" = "Finalidade da produção" }]
+dimensions = [{ "classification" = "c12716", "partition" = "p115236", "label" = "Referência temporal" }, { "classification" = "c1835", "partition" = "p72208", "label" = "Finalidade da produção" }]
+exclusive_dimensions = true
 
 [[themes.subthemes]]
 id = "silvicultura_extracao"
@@ -668,7 +723,8 @@ label = "Estabelecimentos agropecuários"
 id = "estabelecimentos_area"
 label = "Número e área dos estabelecimentos agropecuários"
 indicator = "estabelecimentos_area"
-dimensions = [{ "classification" = "c829", "partition" = "p46302", "label" = "Tipologia" }]
+dimensions = [{ "classification" = "c829", "partition" = "p46302", "label" = "Tipologia" }, { "classification" = "c218", "partition" = "p46502", "label" = "Condição do produtor em relação às terras" }, { "classification" = "c12517", "partition" = "p113601", "label" = "Grupos de atividade econômica" }, { "classification" = "c12564", "partition" = "p41145", "label" = "Sexo do produtor" }, { "classification" = "c12771", "partition" = "p45951", "label" = "Classe de idade do produtor" }]
+exclusive_dimensions = true
 
 [[themes.subthemes.kpis]]
 id = "estabelecimentos_serie"
@@ -854,6 +910,8 @@ dimensions = [{ "classification" = "c956", "partition" = "p59983", "label" = "Gr
 id = "nascimentos_empresas"
 label = "Nascimentos de empresas e taxa de sobrevivência"
 indicator = "nascimentos_empresas"
+dimensions = [{ "classification" = "c12762t9949", "partition" = "p117897", "label" = "Classificação Nacional de Atividades Econômicas (CNAE 2.0)" }, { "classification" = "c370", "partition" = "p9504", "label" = "Faixas de pessoal ocupado assalariado" }]
+exclusive_dimensions = true
 
 [[themes.subthemes]]
 id = "inovacao"
@@ -1016,7 +1074,8 @@ label = "Planejamento e meio ambiente"
 id = "plano_diretor"
 label = "Municípios com Plano Diretor"
 indicator = "plano_diretor"
-dimensions = [{ "classification" = "c1480", "partition" = "p58278", "label" = "Existência de Plano Diretor" }]
+dimensions = [{ "classification" = "c1480", "partition" = "p58278", "label" = "Existência de Plano Diretor" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município" }]
+exclusive_dimensions = true
 map_share = "58279"
 
 [[themes.subthemes.kpis]]
@@ -1032,7 +1091,8 @@ label = "Riscos e desastres"
 id = "plano_seca"
 label = "Municípios atingidos pela seca e com plano de contingência"
 indicator = "plano_seca"
-dimensions = [{ "classification" = "c1346", "partition" = "p57247", "label" = "Ocorrência de seca nos últimos 4 anos" }]
+dimensions = [{ "classification" = "c1346", "partition" = "p57247", "label" = "Ocorrência de seca nos últimos 4 anos" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município" }, { "classification" = "c1347", "partition" = "p57252", "label" = "Plano de Contingência e/ou Prevenção para a seca" }]
+exclusive_dimensions = true
 map_share = "57248"
 
 [[themes.subthemes]]
@@ -1043,12 +1103,14 @@ label = "Políticas sociais"
 id = "planos_municipais_sociais"
 label = "Municípios com planos municipais nas áreas sociais"
 indicator = "planos_municipais_sociais"
-dimensions = [{ "classification" = "c1329", "partition" = "p57146", "label" = "Existência de Plano Municipal" }]
+dimensions = [{ "classification" = "c1329", "partition" = "p57146", "label" = "Existência de Plano Municipal" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município" }]
+exclusive_dimensions = true
 map_share = "15608"
 
 [[themes.subthemes.kpis]]
 id = "conselhos_municipais_sociais"
 label = "Municípios com conselhos municipais nas áreas sociais"
 indicator = "conselhos_municipais_sociais"
-dimensions = [{ "classification" = "c1328", "partition" = "p57131", "label" = "Existência de Conselho Municipal" }]
+dimensions = [{ "classification" = "c1328", "partition" = "p57131", "label" = "Existência de Conselho Municipal" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município" }]
+exclusive_dimensions = true
 map_share = "77667"

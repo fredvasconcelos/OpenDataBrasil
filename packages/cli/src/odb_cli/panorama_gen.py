@@ -76,6 +76,15 @@ class Generated:
     dimensions: dict[str, dict[str, str]] = field(default_factory=dict)
     map_share: dict[str, str] = field(default_factory=dict)  # KPI → categoria do mapa (%)
     total_only: list[tuple[str, str, str]] = field(default_factory=list)
+    # Detalhes marginais (ADR-0016): KPI → dimensões além da principal, e as
+    # classificações que ficaram no Total, com o motivo (para o relatório).
+    extra_dimensions: dict[str, list[dict[str, str]]] = field(default_factory=dict)
+    extra_skipped: list[tuple[str, str, str]] = field(default_factory=list)
+    # Ordem de aninhamento das configurações curadas do portal (vem antes da gerada).
+    curated_order: list[str] = field(default_factory=list)
+    # Tabelas-irmãs (ADR-0018): KPI → tabelas que entraram; e as recusadas, com o motivo.
+    complements: dict[str, list[str]] = field(default_factory=dict)
+    complement_skipped: list[tuple[str, str, str]] = field(default_factory=list)
 
 
 def pick_variable(kpi: PanoramaKpi, info: Mapping[str, Any]) -> tuple[dict[str, Any] | None, str]:
@@ -229,6 +238,13 @@ class Detail:
     summable: bool
     partition: str = ""  # partição mostrada no portal (filhos do Total)
     levels: tuple[str, ...] = ()  # níveis com detalhe (vazio: todos)
+    # Classificação própria da tabela (ADR-0014), quando os códigos conflitam com os de
+    # outra tabela: ``cid`` vira ``c2t2609`` e ``source_cid`` continua ``c2`` na fonte.
+    source_cid: str = ""
+
+    def __post_init__(self) -> None:
+        """Na fonte, o código é o da classificação SIDRA."""
+        self.source_cid = self.source_cid or self.cid
 
 
 def _tree(categories: list[Mapping[str, Any]]) -> dict[str, list[str]]:
@@ -245,7 +261,7 @@ def _tree(categories: list[Mapping[str, Any]]) -> dict[str, list[str]]:
     return edges
 
 
-def plan_detail(  # noqa: PLR0911 - um retorno por motivo de ficar só com o Total
+def plan_detail(
     kpi: PanoramaKpi,
     info: Mapping[str, Any],
     descriptor: Mapping[str, Any] | None,
@@ -261,6 +277,14 @@ def plan_detail(  # noqa: PLR0911 - um retorno por motivo de ficar só com o Tot
     else:
         subject = [c for c in classes if c.get("Nome") not in COMMON_FILTERS]
         main = (subject or classes)[0]
+    reference = kpi.referencia.get(f"c{main['Id']}")
+    return _detail_of(main, info, reference)
+
+
+def _detail_of(
+    main: Mapping[str, Any], info: Mapping[str, Any], reference: str | None = None
+) -> tuple[Detail | None, str]:
+    """Plano de detalhe de uma classificação do descritor, ou o motivo para não detalhar."""
     cats: list[Mapping[str, Any]] = main.get("Categorias") or []
     level0 = min((int(c.get("NivelIdentacao") or 0) for c in cats), default=0)
     top = [c for c in cats if int(c.get("NivelIdentacao") or 0) == level0]
@@ -275,7 +299,6 @@ def plan_detail(  # noqa: PLR0911 - um retorno por motivo de ficar só com o Tot
         total = str(top[0]["Id"])  # agregado único da tabela (ex.: "15 anos ou mais")
     else:
         cname = f"c{main['Id']} {main['Nome']}"
-        reference = kpi.referencia.get(f"c{main['Id']}")
         if reference is not None:
             return None, f"{cname} sem Total: valor de referência {reference}"
         return None, f"{cname} sem categoria Total (requer categoria de referência)"
@@ -295,6 +318,211 @@ def plan_detail(  # noqa: PLR0911 - um retorno por motivo de ficar só com o Tot
         ),
         "",
     )
+
+
+MUNICIPAL_SIZE = "Classe de tamanho da população"
+# Agregação no tempo declarada no panorama (ADR-0017) → catálogo semântico e nota.
+TIME_AGGREGATION = {"soma": "sum", "media": "mean", "ultimo": "last"}
+TIME_AGGREGATION_NOTES = {
+    "soma": "Trimestre, semestre e ano: soma dos períodos publicados (valor derivado).",
+    "media": (
+        "Trimestre, semestre e ano: média dos períodos publicados (valor derivado), como o "
+        "IBGE calcula os números-índice anuais; não é a estimativa anual oficial quando a "
+        "pesquisa publica uma."
+    ),
+    "ultimo": (
+        "Trimestre, semestre e ano: valor do último período publicado (valor derivado; "
+        "para um acumulado em 12 meses, o de dezembro é o do ano)."
+    ),
+}
+
+
+@dataclass
+class Extras:
+    """Detalhes marginais de um KPI: as classificações além da principal (ADR-0016)."""
+
+    details: list[Detail] = field(default_factory=list)
+    levels: tuple[str, ...] = ()  # níveis das requisições extras (vazio: todos)
+    rows: int = 0  # maior número de valores numa requisição extra
+
+
+def plan_extras(  # noqa: PLR0917 - contexto da geração de um KPI
+    gen: Generated,
+    kpi: PanoramaKpi,
+    info: Mapping[str, Any],
+    descriptor: Mapping[str, Any] | None,
+    fixed: Mapping[str, str],
+    levels: list[str],
+    per_year: int,
+    curated: Mapping[str, CuratedClassification],
+) -> Extras:
+    """Classificações fixas no Total que podem vir como detalhe marginal.
+
+    Cada uma vem numa requisição própria, com as demais no Total, sem os cruzamentos
+    (que multiplicariam as consultas). Entram as que têm Total no descritor, cabem no
+    limite de valores por requisição e não conflitam com a hierarquia declarada. Os
+    municípios só entram com poucos períodos, como na dimensão principal.
+    """
+    by_name = {str(c["Nome"]): c for c in (descriptor or {}).get("Classificacoes") or []}
+    units = len(
+        {p[:4] for p in info.get("periods") or []} if per_year > 1 else info.get("periods") or []
+    )
+    municipal = "n6" in levels and units <= MAX_MUNICIPAL_DETAIL_UNITS
+    out = Extras()
+    planned: list[tuple[Detail, int]] = []
+    for label, category in fixed.items():
+        cls = by_name.get(label)
+        if cls is None or f"c{cls['Id']}" in kpi.referencia:
+            continue
+        detail, why = _detail_of(cls, info)
+        if detail is None:
+            gen.extra_skipped.append((kpi.id, f"c{cls['Id']}", why))
+            continue
+        if detail.total != category:
+            gen.extra_skipped.append(
+                (kpi.id, detail.cid, f"categoria fixa {category} não é o Total {detail.total}")
+            )
+            continue
+        planned.append((detail, len(detail.categories) - 1))
+    if not planned:
+        return out
+    widest = max(n for _, n in planned)
+    # Cada município está numa só classe de tamanho: o detalhe municipal não informa nada.
+    by_size = any(d.name.startswith(MUNICIPAL_SIZE) for d, _ in planned)
+    lvls = levels if municipal and not by_size else [lv for lv in levels if lv in DETAIL_LEVELS]
+    if lvls and _rows_per_period(info, lvls) * widest * per_year > DETAIL_LIMIT:
+        lvls = [lv for lv in lvls if lv in DETAIL_LEVELS]
+    if not lvls:
+        gen.extra_skipped += [(kpi.id, d.cid, "sem nível Brasil, Região ou UF") for d, _ in planned]
+        return out
+    for detail, n in planned:
+        rows = _rows_per_period(info, lvls) * n * per_year
+        if rows > DETAIL_LIMIT:
+            gen.extra_skipped.append((kpi.id, detail.cid, f"{rows} valores por requisição"))
+            continue
+        conflict = register_detail(gen, detail, kpi.tabela, curated)
+        if conflict:
+            gen.extra_skipped.append((kpi.id, detail.cid, conflict))
+            continue
+        out.details.append(detail)
+        out.rows = max(out.rows, rows)
+    out.levels = () if lvls == levels else tuple(lvls)
+    return out
+
+
+@dataclass
+class Complement:
+    """Tabela-irmã de um KPI: a mesma variável com uma classificação a mais (ADR-0018)."""
+
+    table: str
+    detail: Detail
+    levels: list[str]
+    params: dict[str, Any]
+    common: dict[str, str]  # classificações em comum com a base → Total pedido
+    rows: int
+    names: dict[str, str] = field(default_factory=dict)  # cNNN → nome, das comuns
+
+
+def _total_of(cls: Mapping[str, Any]) -> str | None:
+    """Total da classificação no descritor: "Total" no topo ou o agregado único."""
+    cats: list[Mapping[str, Any]] = cls.get("Categorias") or []
+    level0 = min((int(c.get("NivelIdentacao") or 0) for c in cats), default=0)
+    top = [c for c in cats if int(c.get("NivelIdentacao") or 0) == level0]
+    named = [c for c in top if c.get("Nome") == "Total"]
+    if named:
+        return str(named[0]["Id"])
+    return str(top[0]["Id"]) if len(top) == 1 else None
+
+
+def _complement(  # noqa: PLR0911, PLR0917 - um retorno por motivo de recusa
+    table: str,
+    sd: Mapping[str, Any],
+    base_names: set[str],
+    base_periods: set[str],
+    variable: Mapping[str, Any],
+    info: Mapping[str, Any],
+    per_year: int,
+) -> tuple[Complement | None, str]:
+    """Plano de uma tabela-irmã, ou o motivo da recusa."""
+    unit = variable["units"][0]
+    var = next((v for v in sd.get("Variaveis") or [] if str(v["Id"]) == variable["id"]), None)
+    # A unidade publicada tem de ser a mesma (a Gold confere): "%" e "Proporção (%)"
+    # são grafias diferentes e ficam separadas.
+    if var is None or var.get("UnidadeMedida") != unit:
+        why = "variável ausente" if var is None else f"unidade {var.get('UnidadeMedida')}"
+        return None, f"{why} (base: {unit})"
+    periods = base_periods & {str(p["Codigo"]) for p in sd.get("Periodos") or []}
+    if not periods:
+        return None, "nenhum período em comum com a base"
+    classes: list[Mapping[str, Any]] = sd.get("Classificacoes") or []
+    new = [c for c in classes if str(c["Nome"]) not in base_names]
+    if len(new) != 1:
+        return None, f"classificações novas: {[str(c['Nome']) for c in new]}"
+    common = {f"c{c['Id']}": _total_of(c) for c in classes if c is not new[0]}
+    if any(total is None for total in common.values()):
+        return None, "classificação comum sem Total"
+    detail, why = _detail_of(new[0], {})
+    if detail is None:
+        return None, why
+    available = {f"n{n['Id']}" for n in sd.get("NiveisTerritoriais") or []}
+    lvls = [lv for lv in _levels(info) if lv in available]
+    if "n6" in lvls and len({p[:4] for p in periods}) > MAX_MUNICIPAL_DETAIL_UNITS:
+        lvls = [lv for lv in lvls if lv in DETAIL_LEVELS]
+    rows = _rows_per_period(info, lvls) * (len(detail.categories) - 1) * per_year
+    if not lvls or rows > DETAIL_LIMIT:
+        return None, f"{rows} valores por requisição"
+    cats = ",".join(c for c in detail.categories if c != detail.total)
+    totals = {cid: str(total) for cid, total in common.items()}
+    return (
+        Complement(
+            table=table,
+            detail=detail,
+            levels=lvls,
+            params={**totals, detail.source_cid: cats},
+            common=totals,
+            rows=rows,
+            names={f"c{c['Id']}": str(c["Nome"]) for c in classes},
+        ),
+        "",
+    )
+
+
+def plan_complements(  # noqa: PLR0917 - contexto da geração de um KPI
+    gen: Generated,
+    kpi: PanoramaKpi,
+    descriptor: Mapping[str, Any] | None,
+    descriptors: Mapping[str, Mapping[str, Any]],
+    variable: Mapping[str, Any],
+    info: Mapping[str, Any],
+    per_year: int,
+    curated: Mapping[str, CuratedClassification],
+) -> list[Complement]:
+    """Tabelas-irmãs que trazem uma classificação a mais para o mesmo KPI.
+
+    O acervo publica a mesma variável em tabelas irmãs, uma por recorte (cor ou raça,
+    idade, instrução, rendimento). Cada irmã entra como membro da série do KPI e pede só
+    as categorias da classificação nova, com as comuns no Total (que já vem da base).
+    Entra a irmã com a mesma variável e unidade, períodos em comum com a base e
+    exatamente uma classificação nova com Total.
+    """
+    base_names = {str(c["Nome"]) for c in (descriptor or {}).get("Classificacoes") or []}
+    base_periods = {str(p["Codigo"]) for p in (descriptor or {}).get("Periodos") or []}
+    out: list[Complement] = []
+    for table in kpi.complementos:
+        sd = descriptors.get(table)
+        if sd is None:
+            gen.complement_skipped.append((kpi.id, table, "sem descritor gravado"))
+            continue
+        comp, why = _complement(table, sd, base_names, base_periods, variable, info, per_year)
+        if comp is None:
+            gen.complement_skipped.append((kpi.id, table, why))
+            continue
+        conflict = register_detail(gen, comp.detail, table, curated, own_first=True)
+        if conflict:
+            gen.complement_skipped.append((kpi.id, table, conflict))
+            continue
+        out.append(comp)
+    return out
 
 
 def _class_id(descriptor: Mapping[str, Any] | None, label: str) -> str:
@@ -366,7 +594,13 @@ def _register(
         return _register_curated(gen, detail, table, curated[detail.cid])
     entry = gen.classifications.setdefault(
         detail.cid,
-        {"name": detail.name, "total": detail.total, "partitions": {}, "member": {}},
+        {
+            "name": detail.name,
+            "total": detail.total,
+            "partitions": {},
+            "member": {},
+            "datasets": [f"ibge-sidra-{table}"] if detail.cid != detail.source_cid else [],
+        },
     )
     if entry["total"] != detail.total or entry["name"] != detail.name:
         return f"{detail.cid}: Total ou nome diferente entre tabelas"
@@ -394,13 +628,53 @@ def _register(
     return ""
 
 
+def register_detail(
+    gen: Generated,
+    detail: Detail,
+    table: str,
+    curated: Mapping[str, CuratedClassification],
+    *,
+    own_first: bool = False,
+) -> str:
+    """Declara a classificação; se os códigos conflitam, usa uma própria da tabela.
+
+    Uma mesma classificação SIDRA pode ter Totais e categorias diferentes em cada
+    tabela (o "Sexo" do Registro Civil tem Total 0; os grupos de idade mudam de
+    tabela para tabela). Nesse caso, a tabela ganha uma classificação própria
+    (``c2t2609``, ADR-0014) com o mesmo rótulo no portal. Devolve "" ou o conflito.
+    """
+    if own_first and detail.cid not in curated:
+        # Tabelas-irmãs (ADR-0018) não registram classificações geradas compartilhadas:
+        # a ordem de registro mudaria as classificações (e o schema) de outros KPIs.
+        conflict = f"{detail.cid}: classificação própria da tabela-irmã"
+    elif own_first:
+        # Curada: só se uma partição existente já serve, sem extensão nova.
+        before = {pid: dict(part) for pid, part in gen.extensions.get(detail.cid, {}).items()}
+        conflict = _register(gen, detail, table, curated)
+        if not conflict and gen.extensions.get(detail.cid, {}) != before:
+            gen.extensions[detail.cid] = before
+            conflict = f"{detail.cid}: a irmã estenderia a classificação curada"
+    else:
+        conflict = _register(gen, detail, table, curated)
+    if not conflict:
+        return ""
+    own = f"{detail.source_cid}t{table}"
+    if own in gen.classifications or own in curated:
+        return conflict
+    detail.cid = own
+    return _register(gen, detail, table, curated)
+
+
 def _register_curated(
     gen: Generated, detail: Detail, table: str, cur: CuratedClassification
 ) -> str:
-    """Classificação curada: reaproveita partições iguais e acrescenta as novas.
+    """Classificação curada: reaproveita partições que contêm as categorias e acrescenta as novas.
 
-    Uma partição nova só entra se nenhuma das suas categorias já tiver posição na
-    hierarquia curada (ou numa extensão anterior) e se o pai já tiver posição.
+    Uma partição curada serve quando tem o mesmo pai e todas as categorias da tabela
+    (pode ter outras, como as faixas de rendimento de outra edição da POF, que ficam
+    sem valor nesta tabela e não aparecem no portal; ADR-0016). Uma partição nova só
+    entra se nenhuma das suas categorias já tiver posição na hierarquia curada (ou
+    numa extensão anterior) e se o pai já tiver posição.
     """
     if cur.total != detail.total:
         return f"{detail.cid}: Total {detail.total} difere do curado ({cur.total})"
@@ -415,7 +689,7 @@ def _register_curated(
     for parent, children in detail.edges.items():
         wanted = set(children)
         same = next(
-            (pid for pid, (par, cats) in existing.items() if par == parent and cats == wanted),
+            (pid for pid, (par, cats) in existing.items() if par == parent and wanted <= cats),
             None,
         )
         if same is not None:
@@ -444,6 +718,7 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
     existing_portal_kpis: Iterable[str],
     descriptors: Mapping[str, Mapping[str, Any]] | None = None,
     curated_classifications: Mapping[str, CuratedClassification] | None = None,
+    curated_order: Iterable[str] = (),
 ) -> Generated:
     """Configurações dos KPIs de Total elegíveis.
 
@@ -456,7 +731,7 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
     curated = curated_classifications or {}
     tables = {t["table"]: t for t in verification.get("tables", [])}
     taken = set(existing_indicators) | set(existing_portal_kpis)
-    out = Generated()
+    out = Generated(curated_order=list(curated_order))
     seen_tables: set[str] = set()
     for theme, sub, kpi in panorama.items():
         if kpi.kpi is not None:
@@ -528,7 +803,7 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 why_total = f"{detail.cid}: {partial} valores por requisição mesmo sem municípios"
                 detail = None
         if detail is not None:
-            conflict = _register(out, detail, kpi.tabela, curated)
+            conflict = register_detail(out, detail, kpi.tabela, curated)
             if conflict:
                 why_total, detail = conflict, None
                 # Sem a dimensão, ela também fica fixa no Total.
@@ -545,23 +820,50 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 (kpi.id, kpi.tabela, f"o Total é só o universo da tabela; {why_total}")
             )
             continue
+        extras = Extras()
+        if detail is not None:
+            extras = plan_extras(out, kpi, info, descriptor, fixed, levels, per_year, curated)
+            # Saem das fixas do fato; o Total pedido explicitamente segue na requisição
+            # principal (quando não é o padrão da API, como "15 anos ou mais" na 7113).
+            for extra in extras.details:
+                fixed.pop(extra.name, None)
         if detail is not None:
             if detail.levels:
                 detail_params = {
-                    "classifications": {**fixed_params, detail.cid: ",".join(detail.categories)},
-                    "detail_classification": detail.cid,
+                    "classifications": {
+                        **fixed_params,
+                        detail.source_cid: ",".join(detail.categories),
+                    },
+                    "detail_classification": detail.source_cid,
                     "detail_total": detail.total,
                     "detail_levels": list(detail.levels),
                 }
                 rows = max(rows, partial)
             else:
-                detail_params = {"classifications": {**fixed_params, detail.cid: "all"}}
+                detail_params = {"classifications": {**fixed_params, detail.source_cid: "all"}}
                 rows = full
+            if extras.details:
+                detail_params["extra_sets"] = [
+                    {
+                        detail.source_cid: detail.total,
+                        extra.source_cid: ",".join(c for c in extra.categories if c != extra.total),
+                    }
+                    for extra in extras.details
+                ]
+                if extras.levels:
+                    detail_params["extra_levels"] = list(extras.levels)
+                rows = max(rows, extras.rows)
         else:
             if fixed_params:
                 detail_params = {"classifications": fixed_params}
             if why_total:
                 out.total_only.append((kpi.id, kpi.tabela, why_total))
+        comps = (
+            plan_complements(out, kpi, descriptor, descriptors, variable, info, per_year, curated)
+            if kpi.complementos
+            else []
+        )
+        series_id = f"ibge-serie-{kpi.tabela}" if comps else None
         title = titles[kpi.tabela]
         fonte = official_source(descriptor)
         names = {
@@ -614,6 +916,51 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 "silver": {"transformer": "sidra_observation", "territorial_reference": "ibge-dtb"},
             }
         )
+        if comps:
+            base = out.datasets[-1]
+            base["silver"].update(series=series_id, series_order=len(comps) + 1)
+            for order, comp in enumerate(comps, start=1):
+                sd = descriptors[comp.table]
+                out.datasets.append(
+                    {
+                        "id": f"ibge-sidra-{comp.table}",
+                        "source": SOURCE_ID,
+                        "official_id": comp.table,
+                        "title": str(sd.get("Nome") or comp.table),
+                        "description": (
+                            f"Tabela-irmã da {kpi.tabela} (ADR-0018): variável {variable['id']} "
+                            f"por {comp.detail.name.lower()}, só as categorias (o Total vem "
+                            f"da {kpi.tabela}). KPI de panorama '{kpi.label}'."
+                        ),
+                        "license": LICENSE_ID,
+                        "access_classification": "public_conditional",
+                        "periodicity": base["periodicity"],
+                        "reference_url": f"https://sidra.ibge.gov.br/tabela/{comp.table}",
+                        "params": {
+                            "table": comp.table,
+                            "variables": [variable["id"]],
+                            "territorial_levels": comp.levels,
+                            "period_discovery_level": comp.levels[0],
+                            "estimated_values_per_period": comp.rows,
+                            "min_rows": 1,
+                            "max_rows": comp.rows,
+                            "refresh_recent_periods": 1,
+                            **(
+                                {"period_type": period_type, "group_periods_by_year": True}
+                                if period_type != "ano"
+                                else {}
+                            ),
+                            "classifications": comp.params,
+                        },
+                        "silver": {
+                            "transformer": "sidra_observation",
+                            "territorial_reference": "ibge-dtb",
+                            "series": series_id,
+                            "series_order": order,
+                        },
+                    }
+                )
+            out.complements[kpi.id] = [c.table for c in comps]
         territories = ", ".join(LEVEL_LABELS[lv] for lv in levels)
         grain = f"território ({territories}) x {period_type}"
         if kpi.pausado:
@@ -630,10 +977,51 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
             ),
         }
         if detail is not None:
-            fact["classifications"] = {detail.cid: f"{detail.cid}_category_key"}
+            fact["classifications"] = {
+                d.cid: f"{d.cid}_category_key" for d in (detail, *extras.details)
+            }
+            if extras.details:
+                fact["grain"] += "".join(f" | {d.name.lower()}" for d in extras.details)
         fact["fixed_categories"] = fixed
+        if comps and series_id:
+            details = [d for d in (detail, *extras.details) if d is not None]
+            classes = fact.setdefault("classifications", {})
+            for comp in comps:
+                classes[comp.detail.cid] = f"{comp.detail.cid}_category_key"
+            fact["dataset"] = series_id
+            fact["grain"] += "".join(f" | {c.detail.name.lower()}" for c in comps)
+            # As fixas da base valem só para ela; cada irmã tem as suas (ADR-0016).
+            rules: dict[str, Any] = {
+                kpi.tabela: {
+                    "fixed_categories": fact.pop("fixed_categories"),
+                    "missing_as_total": [c.detail.cid for c in comps],
+                }
+            }
+            for comp in comps:
+                present = {d.cid for d in details if d.source_cid in comp.common}
+                in_fact = {d.source_cid for d in details}
+                rules[comp.table] = {
+                    "fixed_categories": {
+                        comp.names[cid]: total
+                        for cid, total in comp.common.items()
+                        if cid not in in_fact
+                    },
+                    "missing_as_total": [
+                        cid for cid in classes if cid not in present and cid != comp.detail.cid
+                    ],
+                }
+            fact["table_rules"] = rules
+            # Classificações próprias da base ou das irmãs são da série (dataset da Gold).
+            members = {f"ibge-sidra-{t}" for t in (kpi.tabela, *(c.table for c in comps))}
+            for entry in out.classifications.values():
+                if entry.get("datasets"):
+                    entry["datasets"] = list(
+                        dict.fromkeys(series_id if d in members else d for d in entry["datasets"])
+                    )
         out.facts.append(fact)
         caveats = [*reference_notes, *_caveats(kpi, info, levels, descriptor)]
+        if kpi.agregacao_tempo and period_type != "ano":
+            caveats.append(TIME_AGGREGATION_NOTES[kpi.agregacao_tempo])
         if detail is not None and detail.levels:
             shown = ", ".join(LEVEL_LABELS[lv] for lv in detail.levels)
             caveats.insert(
@@ -641,21 +1029,56 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 f"As categorias de {detail.name} vêm até {shown}; nos municípios, só o Total "
                 "(a série municipal por categoria exigiria milhares de consultas à fonte).",
             )
+        for extra in reversed(extras.details):
+            if not extra.summable:
+                caveats.insert(
+                    0,
+                    f"As categorias de {extra.name} podem se sobrepor (a fonte não permite "
+                    "somá-las): o percentual de cada uma é em relação ao Total.",
+                )
+        if extras.details:
+            listed = ", ".join(d.name for d in (detail, *extras.details) if d is not None)
+            where = (
+                f" Os detalhes além de {detail.name} vêm até "
+                + ", ".join(LEVEL_LABELS[lv] for lv in extras.levels)
+                + "."
+                if detail is not None and extras.levels
+                else ""
+            )
+            caveats.insert(
+                0,
+                f"Detalhes por {listed}: um de cada vez, com os demais no Total (a fonte "
+                "permite os cruzamentos, mas eles multiplicariam as consultas)." + where,
+            )
         if detail is not None and not detail.summable:
             caveats.insert(
                 0,
                 f"As categorias de {detail.name} podem se sobrepor (a fonte não permite somá-las): "
                 "o percentual de cada uma é em relação ao Total, e a soma pode passar de 100%.",
             )
-        if detail is not None:
-            out.dimensions[kpi.id] = {
-                "classification": detail.cid,
-                "partition": detail.partition,
-                "label": detail.name,
-            }
-            if kpi.requer_categoria:
-                # O Total é só o universo: o mapa mostra o % da categoria principal.
-                out.map_share[kpi.id] = kpi.categoria_mapa or detail.edges[detail.total][0]
+        dims_shown = [
+            {"classification": d.cid, "partition": d.partition, "label": d.name}
+            for d in (detail, *extras.details, *(c.detail for c in comps))
+            if d is not None
+        ]
+        if dims_shown:
+            out.dimensions[kpi.id] = dims_shown[0]
+            if dims_shown[1:]:
+                out.extra_dimensions[kpi.id] = dims_shown[1:]
+        if comps:
+            siblings = ", ".join(f"{c.table} ({c.detail.name})" for c in comps)
+            caveats.insert(
+                0,
+                f"Detalhes vindos das tabelas-irmãs da {kpi.tabela}, com a mesma variável: "
+                f"{siblings}. Cada uma traz um recorte, com os demais no Total.",
+            )
+            for comp in comps:
+                if comp.levels != levels:
+                    shown_levels = ", ".join(LEVEL_LABELS.get(lv, lv) for lv in comp.levels)
+                    caveats.append(f"{comp.detail.name}: só em {shown_levels}.")
+        if detail is not None and kpi.requer_categoria:
+            # O Total é só o universo: o mapa mostra o % da categoria principal.
+            out.map_share[kpi.id] = kpi.categoria_mapa or detail.edges[detail.total][0]
         out.indicators.append(
             {
                 "id": kpi.id,
@@ -665,7 +1088,7 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                     + (f"Recorte: {at}." if at else "Tabela sem classificações.")
                     + (f" Fonte: {fonte}." if fonte else "")
                 ),
-                "dataset": dataset_id,
+                "dataset": series_id or dataset_id,
                 "variable": variable["id"],
                 "fact": fact_id,
                 "column": "valor",
@@ -675,6 +1098,11 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 "path": [theme.label, sub.label],
                 "caveats": caveats,
                 **({"first_period": kpi.periodo_inicial} if kpi.periodo_inicial else {}),
+                **(
+                    {"time_aggregation": TIME_AGGREGATION[kpi.agregacao_tempo]}
+                    if kpi.agregacao_tempo and period_type != "ano"
+                    else {}
+                ),
             }
         )
         out.portal.append((theme, sub, kpi))
@@ -729,6 +1157,7 @@ def render_indicators(gen: Generated, scope: str) -> str:
             f"name = {_value(entry['name'])}",
             f"silver_dimension = {_value(entry['name'])}",
             f"total = {_value(entry['total'])}",
+            *([f"datasets = {_value(entry['datasets'])}"] if entry.get("datasets") else []),
             "",
         ]
         for pid, part in entry["partitions"].items():
@@ -767,7 +1196,15 @@ def render_indicators(gen: Generated, scope: str) -> str:
 
 def render_portal(gen: Generated, scope: str) -> str:
     """Fragmento do portal: temas e subtemas do panorama, KPIs com o id do item."""
-    order = list(dict.fromkeys(d["classification"] for d in gen.dimensions.values()))
+    order = list(
+        dict.fromkeys(
+            [
+                *gen.curated_order,
+                *(d["classification"] for d in gen.dimensions.values()),
+                *(d["classification"] for ds in gen.extra_dimensions.values() for d in ds),
+            ]
+        )
+    )
     lines = [GENERATED_HEADER, 'config_version = "1.0.0"', f"scope = {_value(scope)}"]
     if order:
         lines.append(f"dimension_order = {_value(order)}")
@@ -795,7 +1232,11 @@ def render_portal(gen: Generated, scope: str) -> str:
         ]
         dim = gen.dimensions.get(kpi.id)
         if dim:
-            lines.append(f"dimensions = [{_value(dim)}]")
+            dims = [dim, *gen.extra_dimensions.get(kpi.id, [])]
+            dims.sort(key=lambda d: order.index(d["classification"]))
+            lines.append(f"dimensions = [{', '.join(_value(d) for d in dims)}]")
+            if len(dims) > 1:
+                lines.append("exclusive_dimensions = true")
         if kpi.id in gen.map_share:
             lines.append(f"map_share = {_value(gen.map_share[kpi.id])}")
         lines.append("")
@@ -806,8 +1247,15 @@ def render_report(gen: Generated) -> str:
     """Resumo em texto: gerados e deixados de fora, com o motivo."""
     lines = [
         f"{len(gen.indicators)} KPIs gerados ({len(gen.datasets)} tabelas), "
-        f"{len(gen.dimensions)} com categorias (Total + %)."
+        f"{len(gen.dimensions)} com categorias (Total + %), "
+        f"{len(gen.extra_dimensions)} com detalhes marginais "
+        f"({sum(len(d) for d in gen.extra_dimensions.values())} classificações a mais), "
+        f"{len(gen.complements)} com tabelas-irmãs "
+        f"({sum(len(t) for t in gen.complements.values())} tabelas)."
     ]
+    if gen.complement_skipped:
+        lines.append(f"{len(gen.complement_skipped)} tabelas-irmãs recusadas:")
+        lines += [f"  {kpi} ({table}): {why}" for kpi, table, why in gen.complement_skipped]
     if gen.total_only:
         lines.append(f"{len(gen.total_only)} KPIs só com o Total:")
         lines += [f"  {kpi} ({table}): {why}" for kpi, table, why in gen.total_only]

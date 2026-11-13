@@ -1,8 +1,19 @@
-# POF 2017-2018: despesa média mensal familiar (tabela SIDRA 6715), completa.
+# POF: despesa média mensal familiar em três edições (ADR-0016), em série:
+# 2002-2003 (SIDRA 2309), 2008-2009 (1594) e 2017-2018 (6715), completas.
 #
-# Curado à mão a partir do descritor oficial
-# (https://apisidra.ibge.gov.br/DescritoresTabela/t/6715, gravado em
-# configs/catalog/descritores/t6715.json). A árvore dos tipos de despesa segue
+# Curado à mão a partir dos descritores oficiais
+# (https://apisidra.ibge.gov.br/DescritoresTabela/t/<tabela>, gravados em
+# configs/catalog/descritores/t2309.json, t1594.json e t6715.json).
+# - Tipos de despesa (c12190): 2008 e 2018 têm as mesmas 93 categorias (mesmos
+#   códigos). 2002 tem 89: 71 com os mesmos códigos e 18 próprias (habitação,
+#   transporte, saúde, educação e recreação foram reorganizados); as próprias
+#   entram como irmãs nas partições e só têm valor em 2002.
+# - Classes de rendimento (c339): só 2008 e 2018. As faixas mudam de valor a cada
+#   edição, mas são as mesmas em salários mínimos (2, 3, 6, 10, 15 e 25 SM; SM de
+#   R$ 415 em 2008 e de R$ 954 em 2018). A 2309 usa outro conceito (rendimento
+#   monetário e não monetário, c12191, 10 faixas): 2002 entra só no Total.
+#
+# A árvore dos tipos de despesa segue
 # a indentação oficial (NivelIdentacao): cada partição reúne os filhos diretos
 # de uma categoria. O descritor informa que as categorias das duas
 # classificações não podem ser somadas (CategoriasPodemSerSomadas = false):
@@ -20,9 +31,10 @@ total = "7999"
 [[classifications.partitions]]
 id = "classes_rendimento"
 label = "Classes de rendimento"
-categories = ["47558", "47559", "47560", "47561", "47562", "47563", "47564"]
+# 2018 (SM de R$ 954) e depois 2008 (SM de R$ 415): cada período só tem as suas.
+categories = ["47558", "47559", "47560", "47561", "47562", "47563", "47564", "8000", "8001", "8002", "8003", "8004", "8005", "8006"]
 exhaustive = false
-note = "A despesa média do Total não é a soma das médias das classes."
+note = "As faixas mudam a cada edição da POF: em salários mínimos, são até 2, de 2 a 3, de 3 a 6, de 6 a 10, de 10 a 15, de 15 a 25 e mais de 25 SM (SM de R$ 954 na POF 2017-2018 e de R$ 415 na 2008-2009). A POF 2002-2003 usa outro conceito de rendimento e só entra no Total. A despesa média do Total não é a soma das médias das classes."
 
 [[classifications]]
 id = "c12190"
@@ -54,7 +66,7 @@ exhaustive = false
 id = "d2_1_2_habitacao"
 label = "2.1.2 Habitação"
 parent = "103540"
-categories = ["103541", "8009", "8017", "8024", "8025", "8026", "111442", "8027"]
+categories = ["103541", "8009", "8017", "8024", "8025", "8026", "111442", "8027", "103542", "103549", "103550", "103551", "103552", "103553"]
 exhaustive = false
 
 [[classifications.partitions]]
@@ -82,7 +94,7 @@ exhaustive = false
 id = "d2_1_4_transporte"
 label = "2.1.4 Transporte"
 parent = "103561"
-categories = ["103562", "103563", "103564", "8011", "103566", "8012", "103568"]
+categories = ["103562", "103563", "103564", "8011", "103566", "8012", "103568", "103565", "103567"]
 exhaustive = false
 
 [[classifications.partitions]]
@@ -96,21 +108,21 @@ exhaustive = false
 id = "d2_1_6_assistencia_a_saude"
 label = "2.1.6 Assistência à saude"
 parent = "103574"
-categories = ["103575", "103576", "103577", "103578", "8013", "103580", "103581", "103582", "103583", "103584"]
+categories = ["103575", "103576", "103577", "103578", "8013", "103580", "103581", "103582", "103583", "103584", "103579"]
 exhaustive = false
 
 [[classifications.partitions]]
 id = "d2_1_7_educacao"
 label = "2.1.7 Educação"
 parent = "103585"
-categories = ["103586", "103587", "8014", "103589", "103590", "103591"]
+categories = ["103586", "103587", "8014", "103589", "103590", "103591", "103588"]
 exhaustive = false
 
 [[classifications.partitions]]
 id = "d2_1_8_recreacao_e_cultura"
 label = "2.1.8 Recreação e cultura"
 parent = "103592"
-categories = ["103593", "103594", "8015", "8016", "103597"]
+categories = ["103593", "103594", "8015", "8016", "103597", "103595", "103596"]
 exhaustive = false
 
 [[classifications.partitions]]
@@ -148,18 +160,31 @@ parent = "103622"
 categories = ["103623", "103624"]
 exhaustive = false
 
+[[classifications.partitions]]
+id = "d2_1_2_2_servicos_e_taxas_2002"
+label = "2.1.2.2 Serviços e taxas (POF 2002-2003)"
+parent = "103542"
+categories = ["103543", "103544", "103545", "103546", "103547", "103548"]
+exhaustive = false
+
 [[facts]]
 id = "fact_pof_household_expense"
-dataset = "ibge-sidra-6715"
+dataset = "ibge-pof-despesa-familiar"
 grain = "território (Brasil, Grande Região, UF) x ano de referência da POF x classe de rendimento x tipo de despesa"
-description = "Despesa monetária e não monetária média mensal familiar e sua distribuição, por classe de rendimento e tipo de despesa (POF 2017-2018)."
+description = "Despesa monetária e não monetária média mensal familiar e sua distribuição, por classe de rendimento e tipo de despesa (POF 2002-2003, 2008-2009 e 2017-2018)."
 classifications = { "c339" = "income_class_category_key", "c12190" = "expense_type_category_key" }
+
+# POF 2002-2003: situação do domicílio e classe de rendimento próprias, só no Total;
+# a c339 não existe na tabela, e o valor (de todas as famílias) entra no Total dela.
+[facts.table_rules.2309]
+fixed_categories = { "Situação do domicílio" = "6795", "Classes de rendimento monetário e não monetário mensal familiar" = "103411" }
+missing_as_total = ["c339"]
 
 [[indicators]]
 id = "despesa_familiar"
 name = "Despesa monetária e não monetária média mensal familiar"
-description = "Despesa média mensal das famílias, monetária e não monetária, na POF 2017-2018 (período de referência 2018), por classe de rendimento e tipo de despesa."
-dataset = "ibge-sidra-6715"
+description = "Despesa média mensal das famílias, monetária e não monetária, nas POF 2002-2003, 2008-2009 e 2017-2018, por classe de rendimento e tipo de despesa."
+dataset = "ibge-pof-despesa-familiar"
 variable = "1201"
 fact = "fact_pof_household_expense"
 column = "average_expense"
@@ -169,14 +194,17 @@ concept = "despesa_media_familiar"
 path = ["Consumo e orçamentos familiares", "Despesas e rendimentos das famílias"]
 caveats = [
     "Valor médio por família: médias de regiões ou de classes de rendimento não se somam.",
-    "Período de referência 2018 (POF 2017-2018), valores em reais da data de referência da pesquisa.",
+    "Três edições: 2002 (POF 2002-2003), 2008 (POF 2008-2009) e 2018 (POF 2017-2018). Os valores estão em reais da data de referência de cada pesquisa, sem correção pela inflação: a comparação entre edições é nominal.",
+    "A POF 2002-2003 só tem Brasil e Grandes Regiões; as UFs começam em 2008.",
+    "Classes de rendimento só em 2008 e 2018, com faixas diferentes em reais (as mesmas em salários mínimos). Em 2002, só o Total: a tabela 2309 usa outro conceito de rendimento.",
+    "Alguns tipos de despesa mudaram entre 2002 e 2008 (habitação, transporte, saúde, educação e recreação): os de 2002 com código próprio só têm valor em 2002.",
 ]
 
 [[indicators]]
 id = "despesa_familiar_distribuicao"
 name = "Distribuição da despesa monetária e não monetária média mensal familiar"
-description = "Participação de cada tipo de despesa na despesa total média mensal das famílias (POF 2017-2018)."
-dataset = "ibge-sidra-6715"
+description = "Participação de cada tipo de despesa na despesa total média mensal das famílias (POF 2002-2003, 2008-2009 e 2017-2018)."
+dataset = "ibge-pof-despesa-familiar"
 variable = "1204"
 fact = "fact_pof_household_expense"
 column = "expense_share_pct"
@@ -184,3 +212,8 @@ unit = "%"
 additivity = "non_additive"
 concept = "distribuicao_despesa_familiar"
 path = ["Consumo e orçamentos familiares", "Despesas e rendimentos das famílias"]
+caveats = [
+    "Três edições: 2002 (POF 2002-2003), 2008 (POF 2008-2009) e 2018 (POF 2017-2018). A POF 2002-2003 só tem Brasil e Grandes Regiões.",
+    "Classes de rendimento só em 2008 e 2018, com faixas diferentes em reais (as mesmas em salários mínimos). Em 2002, só o Total.",
+    "Alguns tipos de despesa mudaram entre 2002 e 2008: os de 2002 com código próprio só têm valor em 2002.",
+]

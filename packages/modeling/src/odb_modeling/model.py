@@ -49,6 +49,8 @@ SIDRA_LEVELS = {
     "125": "terra_indigena_uf",
     "1124": "coordenacao_regional_funai",
     "1125": "terra_indigena",
+    "7": "regiao_metropolitana",
+    "103": "areas_pof",
 }
 # Colunas da Silver ``sidra_observation`` que a Gold usa. As demais (linhagem da
 # execução, URL de origem, nomes do nível e do período) ficam fora do build: a
@@ -196,52 +198,79 @@ def select_silver(
 def strip_fixed_categories(
     selected: pl.DataFrame, catalog: SemanticCatalog
 ) -> tuple[pl.DataFrame, dict[str, dict[str, list[str]]]]:
-    """Retira as dimensões de categoria fixa (``fixed_categories`` dos fatos).
+    """Retira as dimensões de categoria fixa e completa o Total implícito (ADR-0016).
 
-    Devolve as observações sem essas dimensões e as divergências encontradas:
+    Dimensões fixas: ``fixed_categories`` do fato e, nas séries de tabelas, as de
+    ``table_rules`` de cada tabela de origem. A conferência é por tabela de origem:
+    todas as linhas de cada tabela precisam estar na categoria declarada.
+
+    Total implícito (``table_rules.missing_as_total``): a tabela não tem a
+    classificação, e as linhas dela entram no Total (o valor é do universo inteiro).
+
+    Devolve as observações ajustadas e as divergências encontradas:
     fato → dimensão → categorias observadas, quando alguma observação não
     está na categoria declarada (ou a dimensão não aparece).
     """
-    fixed = {f.id: f.fixed_categories for f in catalog.facts if f.fixed_categories}
-    if not fixed:
+    facts = [f for f in catalog.facts if f.has_fixed() or f.table_rules]
+    if not facts:
         return selected, {}
+    if "table_id" not in selected.columns:  # quadros parciais (testes): uma tabela só
+        out, found = strip_fixed_categories(
+            selected.with_columns(pl.lit("").alias("table_id")), catalog
+        )
+        return out.drop("table_id"), found
+    rows = selected.filter(pl.col("fact_table").is_in([f.id for f in facts]))
     observed = (
-        selected.filter(pl.col("fact_table").is_in(list(fixed)))
-        .select("fact_table", "classification_key", "classifications")
-        .unique(["fact_table", "classification_key"])
+        rows.select("fact_table", "table_id", "classification_key", "classifications")
+        .unique(["fact_table", "table_id", "classification_key"])
         .explode("classifications", empty_as_null=False)
         .with_columns(
             pl.col("classifications").struct.field("dimension").alias("dimension"),
             pl.col("classifications").struct.field("category_id").alias("category_id"),
         )
-        .group_by("fact_table", "dimension")
+        .group_by("fact_table", "table_id", "dimension")
         .agg(pl.col("category_id").unique().sort())
     )
     seen = {
-        (r["fact_table"], r["dimension"]): [str(c) for c in r["category_id"] if c is not None]
+        (r["fact_table"], r["table_id"], r["dimension"]): [
+            str(c) for c in r["category_id"] if c is not None
+        ]
         for r in observed.iter_rows(named=True)
     }
+    present = rows.select("fact_table", "table_id").unique()
     problems: dict[str, dict[str, list[str]]] = {}
-    for fact_id, dims in fixed.items():
-        if not selected.filter(pl.col("fact_table") == fact_id).height:
-            continue
-        for dim, category in dims.items():
-            cats = seen.get((fact_id, dim), [])
-            if cats != [category]:
-                problems.setdefault(fact_id, {})[dim] = cats
-    stripped = pl.col("classifications")
-    for fact_id, dims in fixed.items():
-        names = list(dims)
-        stripped = (
-            pl.when(pl.col("fact_table") == fact_id)
-            .then(
-                pl.col("classifications").list.eval(
-                    pl.element().filter(~pl.element().struct.field("dimension").is_in(names))
+    adjusted = pl.col("classifications")
+    for fact in facts:
+        tables = present.filter(pl.col("fact_table") == fact.id)["table_id"].to_list()
+        for table in sorted(tables):
+            fixed = fact.fixed_for(table)
+            for dim, category in fixed.items():
+                cats = seen.get((fact.id, table, dim), [])
+                if cats != [category]:
+                    bucket = problems.setdefault(fact.id, {}).setdefault(dim, [])
+                    bucket[:] = sorted({*bucket, *cats})
+            rule = fact.table_rules.get(table)
+            implicit = [
+                {
+                    "dimension": catalog.classification(cid).silver_dimension,
+                    "category_id": catalog.classification(cid).total,
+                    "category_name": "Total",
+                }
+                for cid in (rule.missing_as_total if rule else ())
+            ]
+            here = (pl.col("fact_table") == fact.id) & (pl.col("table_id") == table)
+            value = pl.col("classifications")
+            if fixed:
+                value = value.list.eval(
+                    pl.element().filter(~pl.element().struct.field("dimension").is_in(list(fixed)))
                 )
-            )
-            .otherwise(stripped)
-        )
-    return selected.with_columns(stripped.alias("classifications")), problems
+            if implicit:
+                value = value.list.concat(
+                    pl.lit(implicit, dtype=selected.schema["classifications"])
+                )
+            if fixed or implicit:
+                adjusted = pl.when(here).then(value).otherwise(adjusted)
+    return selected.with_columns(adjusted.alias("classifications")), problems
 
 
 def municipal_names(silver: pl.LazyFrame) -> pl.DataFrame:
@@ -537,13 +566,14 @@ def build_bridge_period_ancestor(observations: pl.DataFrame) -> pl.DataFrame:
 def time_grains(indicator: IndicatorConfig, periods: Sequence[str]) -> list[str]:
     """Grãos em que o indicador pode ser consultado (ADR-0013).
 
-    Só fluxos (``time_aggregation = "sum"``) sobem na hierarquia; os demais ficam no
-    grão publicado. Sem períodos, a lista fica vazia.
+    Só indicadores com ``time_aggregation`` (soma, média ou último valor; ADR-0017)
+    sobem na hierarquia; os demais ficam no grão publicado. Sem períodos, a lista
+    fica vazia.
     """
     if not periods:
         return []
     grain = parse_period(periods[0]).grain
-    return list(coarser_grains(grain)) if indicator.time_aggregation == "sum" else [grain]
+    return list(coarser_grains(grain)) if indicator.time_aggregation else [grain]
 
 
 def category_names(selected: pl.DataFrame, catalog: SemanticCatalog) -> dict[str, str]:
