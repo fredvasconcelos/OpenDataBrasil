@@ -162,3 +162,23 @@ def complete_periods_at(codes: Iterable[str], target: str) -> list[str]:
         return []
     needed = parts(grain, target)
     return [p for p in periods_at(present, target) if len(present[p]) == needed]
+
+
+# Nota de método de cada regra de agregação no tempo (ADR-0017). A Gold acrescenta a
+# nota a todo indicador que agrega no tempo, curado ou gerado, para que o usuário saiba
+# como o trimestre, o semestre e o ano foram calculados.
+TIME_AGGREGATION_NOTES = {
+    "sum": (
+        "Método: trimestre, semestre e ano são a soma dos períodos publicados (valor "
+        "derivado, ADR-0017). Período com alguma parte sem valor fica sem valor."
+    ),
+    "mean": (
+        "Método: trimestre, semestre e ano são a média dos períodos publicados (valor "
+        "derivado, ADR-0017), como o IBGE calcula os números-índice anuais. Não substitui "
+        "a estimativa anual oficial quando a pesquisa publica uma."
+    ),
+    "last": (
+        "Método: trimestre, semestre e ano são o valor do último período publicado (valor "
+        "derivado, ADR-0017); para um acumulado em 12 meses, o de dezembro é o do ano."
+    ),
+}

@@ -492,6 +492,7 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
 .data-table { width: 100%; border-collapse: collapse; font-size: var(--odbr-fs-ui); }
 .data-table th, .data-table td { border-bottom: 1px solid var(--odbr-divider); padding: 9px 12px; text-align: right; white-space: nowrap; color: var(--odbr-text-body); }
 .data-table th:first-child, .data-table td:first-child { text-align: left; }
+.data-table td .share { color: var(--odbr-text-muted); font-size: var(--odbr-fs-caption); }
 .data-table thead th { position: sticky; top: 0; z-index: 1; background: var(--odbr-bg-subtle); color: var(--odbr-text); font-size: var(--odbr-fs-small); font-weight: 800; }
 .data-table thead th button {
   min-height: 0; padding: 0; border: none; background: none; color: var(--odbr-text);

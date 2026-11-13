@@ -215,3 +215,15 @@ SVG e PNG exportados devem levar as cores já calculadas (`resolveSvgColors`) e 
 - Estados expostos: `aria-current`, `aria-pressed`, `aria-selected`, `aria-busy`, `role="alert"`, `role="note"`.
 - Nada só por cor: % sempre em texto; sexo com ícone e texto (para leitores de tela).
 - `prefers-reduced-motion` e `prefers-color-scheme` respeitados.
+
+## Ajustes da 2.3.6 (escala, unidades e rótulos)
+
+- **Escala do mapa:** 7 grupos por quantis do recorte exibido. Cada corte é o número
+  mais redondo dentro da janela entre os quantis vizinhos (`roundestIn`). A escala
+  não colapsa em dados concentrados, como a esperança de vida de 72 a 80 anos.
+- **Unidade nas colunas:** "Rótulo (unidade curta)", ou seja, %, R$, R$ mil,
+  R$ milhões, índice, mil pessoas, km² ou hab/km². Em KPIs aditivos, cada categoria
+  mostra também o % do Total do território, em texto `caption` / `text-muted`.
+- **Legenda de índice:** "Índice (base = 100)", com a base tirada do nome da variável.
+- **Rótulos limpos:** sem a numeração de tópicos da fonte; a hierarquia aparece pelo
+  recuo.

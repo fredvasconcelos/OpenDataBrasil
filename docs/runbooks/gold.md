@@ -11,7 +11,7 @@ odb silver build --all                # pré-requisito: Silver vigente de todos 
 odb gold build                        # constrói, verifica e cria um release *validated*
 odb gold build --activate             # idem, e ativa o release (publicação interna)
 odb gold build --force                # reconstrói mesmo sem mudança nas entradas
-odb gold build --reset-schema <tabela> # permite remover coluna dessa tabela (ADR-0018; os releases anteriores seguem lendo as versões fixadas)
+odb gold build --reset-schema <tabela> # remove coluna por pedido explícito (ADR-0019); versões não publicadas são desfeitas sozinhas
 odb release list [--scope demografia]
 odb release check [<release_id>]      # confere o portal e o panorama contra o release (código 1 se houver problema)
 odb release activate <release_id>     # confere o portal e ativa; o anterior vira superseded

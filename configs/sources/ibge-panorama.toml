@@ -1315,6 +1315,7 @@ max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
+extra_set_levels = [["n1"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1456,6 +1457,7 @@ max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
+extra_set_levels = [["n1"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1625,6 +1627,7 @@ max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
+extra_set_levels = [["n1"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1794,6 +1797,7 @@ max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
+extra_set_levels = [["n1"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1935,6 +1939,7 @@ max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
+extra_set_levels = [["n1"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2076,6 +2081,7 @@ max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
+extra_set_levels = [["n1"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2217,6 +2223,7 @@ max_rows = 99
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
+extra_set_levels = [["n1", "n2"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2244,6 +2251,7 @@ max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
+extra_set_levels = [["n1"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2413,6 +2421,7 @@ max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
+extra_set_levels = [["n1"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2551,6 +2560,7 @@ max_rows = 24
 refresh_recent_periods = 1
 classifications = { "c86" = "all" }
 extra_sets = [{ "c86" = "95251", "c1" = "1,2" }]
+extra_set_levels = [["n1"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2630,11 +2640,14 @@ table = "5905"
 variables = ["7175"]
 territorial_levels = ["n1", "n2"]
 period_discovery_level = "n1"
-estimated_values_per_period = 18
+estimated_values_per_period = 12
 min_rows = 1
-max_rows = 18
+max_rows = 12
 refresh_recent_periods = 1
-classifications = { "c1" = "all" }
+classifications = { "c1" = "6795,1,2" }
+detail_classification = "c1"
+detail_total = "6795"
+detail_levels = ["n1"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2901,6 +2914,7 @@ max_rows = 198
 refresh_recent_periods = 1
 classifications = { "c12404" = "all" }
 extra_sets = [{ "c12404" = "109106", "c1" = "1,2" }]
+extra_set_levels = [["n1", "n2"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2928,6 +2942,7 @@ max_rows = 99
 refresh_recent_periods = 1
 classifications = { "c688" = "all" }
 extra_sets = [{ "c688" = "33298", "c1" = "1,2" }]
+extra_set_levels = [["n1", "n2"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -3009,6 +3024,7 @@ max_rows = 99
 refresh_recent_periods = 1
 classifications = { "c937" = "all" }
 extra_sets = [{ "c937" = "48455", "c1" = "1,2" }]
+extra_set_levels = [["n1", "n2"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -3260,6 +3276,7 @@ max_rows = 195
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c1" = "1,2" }]
+extra_set_levels = [["n1"]]
 
 [datasets.silver]
 transformer = "sidra_observation"

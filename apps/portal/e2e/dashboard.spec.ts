@@ -261,7 +261,8 @@ test("POF 6715 completa: classes de rendimento e despesas de consumo", async ({ 
   ).toBeVisible();
   await expect(page.getByText("Classes de rendimento").first()).toBeVisible();
   await expect(page.getByText("Despesas de consumo").first()).toBeVisible();
-  await expect(page.getByText("2.1.1 Alimentação").first()).toBeAttached();
+  // Rótulo limpo, sem a numeração da fonte (DS 2.3.6): "2.1.1 Alimentação" → "Alimentação".
+  await expect(page.getByText(/(^|› )Alimentação( \(R\$\))?$/).first()).toBeAttached();
   // DS v2.3: muitas variáveis → tooltip em matriz (classes × despesas), inteiro na janela.
   const map = page.getByRole("img", { name: /Despesa média mensal familiar/ });
   await map.getByRole("button", { name: /^Bahia:/ }).hover();
@@ -557,4 +558,20 @@ test("agregação no tempo (ADR-0017): índice pela média, IPCA pelo último m�
   await page.goto("/dashboard?kpi=ipca&grao=ano&periodo=2024");
   await expect(page.getByText(/Valor do último período publicado/)).toBeVisible();
   await expect(page.locator(".data-table tbody")).toContainText("4,83");
+});
+
+test("escala do mapa sem colapso e unidade nas colunas (DS 2.3.6)", async ({ page }) => {
+  // Esperança de vida (7362): UFs entre 72 e 82 anos; antes, "Até 80 · Mais de 80".
+  await page.goto("/dashboard?kpi=esperanca_vida&nivel=uf");
+  const legend = page.locator(".legend li");
+  await expect(legend.first()).toBeVisible();
+  expect(await legend.count()).toBeGreaterThanOrEqual(5);
+  // Recorte do Nordeste: vários grupos, e não um só.
+  await page.goto("/dashboard?kpi=esperanca_vida&nivel=uf&foco=regiao:2");
+  await expect(legend.first()).toBeVisible();
+  expect(await legend.count()).toBeGreaterThanOrEqual(4);
+  await page.screenshot({ path: "test-results/escala-esperanca-vida-nordeste.png", fullPage: false });
+  // Unidade no cabeçalho: POF de 1995 em % ("Total (%)").
+  await page.goto("/dashboard?kpi=pof_despesa_distribuicao_antiga");
+  await expect(page.locator(".data-table thead")).toContainText("Total (%)");
 });

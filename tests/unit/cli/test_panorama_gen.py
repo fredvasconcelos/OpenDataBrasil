@@ -124,7 +124,12 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     assert ids["vendas_materiais"]["time_aggregation"] == "mean"
     assert ids["ipca"]["time_aggregation"] == "last"
     assert ids["abate_bovinos"]["time_aggregation"] == "sum"
-    assert "time_aggregation" not in ids["taxas_desocupacao"]
+    # Taxas: média com a ressalva de que não é a taxa oficial do período (ponto 14).
+    assert ids["taxas_desocupacao"]["time_aggregation"] == "mean"
+    assert any(c.startswith("Taxa: a média") for c in ids["taxas_desocupacao"]["caveats"])
+    # Detalhe só nos níveis da nota da tabela (ponto 11): situação do domicílio na PNS.
+    pns = next(d for d in gen.datasets if d["id"] == "ibge-sidra-4418")["params"]
+    assert pns["extra_set_levels"] == [["n1"]]
     # Classe de tamanho do município: detalhe só até UF (cada município está numa classe).
     plano_params = next(d for d in gen.datasets if d["official_id"] == "5882")["params"]
     assert plano_params["extra_levels"] == ["n1", "n2", "n3"]

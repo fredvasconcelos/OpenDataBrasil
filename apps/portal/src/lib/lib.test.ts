@@ -4,6 +4,7 @@ import { flattenDetail } from "./detail";
 import { formatBound, formatCompact, formatPeriod, formatShare, formatValue } from "./format";
 import { rewindForD3 } from "./geo";
 import { MISSING_COLOR, ZERO_COLOR, nextNice, niceCuts, quantileScale, snapNice } from "./scale";
+import { indexTitle, unitShort } from "./format";
 import { grainPeriods, readState, writeState } from "./state";
 import { fitView, levelOf, nextLevel, previousLevel, validFocus, zoomDecision, zoomLadder } from "./zoom";
 import type { GeoCollection, Kpi, Navigation } from "./types";
@@ -17,6 +18,19 @@ describe("format", () => {
     expect(formatShare(48.26)).toBe("48,3%");
     expect(formatShare(null)).toBe("");
     expect(formatCompact(203080756)).toMatch(/203,1\s?mi/);
+  });
+});
+
+describe("unidades (DS 2.3.6)", () => {
+  it("abrevia a unidade para colunas e legenda", () => {
+    expect(unitShort("%")).toBe("%");
+    expect(unitShort("Reais")).toBe("R$");
+    expect(unitShort("Milhões de Reais")).toBe("R$ milhões");
+    expect(unitShort("Número-índice")).toBe("índice");
+    expect(unitShort("Mil pessoas")).toBe("mil pessoas");
+    expect(indexTitle("PMC - Número-índice (2022=100)")).toBe("Índice (2022 = 100)");
+    expect(indexTitle("IPCA - Número-índice (base: dezembro de 1993 = 100)")).toBe("Índice (dezembro de 1993 = 100)");
+    expect(indexTitle(null)).toBe("Índice");
   });
 });
 
@@ -42,11 +56,25 @@ describe("quantileScale", () => {
     const ranked = [1318, 2000, 3000, 3643, 4100, 4440, 5000, 5380, 5900, 6475, 8000, 9835, 12000, 17500, 40000, 866300];
     const nice = niceCuts(ranked, 7, true);
     expect(nice.every((c, i) => i === 0 || c > (nice[i - 1] as number))).toBe(true);
-    expect(nice.every((c) => [1, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8, 9].some((n) => c / 10 ** Math.floor(Math.log10(c)) === n))).toBe(true);
+    // Redondos: no máximo dois algarismos significativos (4 mil, 25 mil, 3,5 mil).
+    expect(nice.every((c) => Number(c.toPrecision(2)) === c)).toBe(true);
     const scale = quantileScale(ranked);
     expect(scale.breaks[0]).toMatchObject({ kind: "first", to: nice[0] });
     expect(scale.breaks.at(-1)).toMatchObject({ kind: "last", from: nice.at(-1), to: 866300 });
     expect([formatBound(4000), formatBound(17500), formatBound(250), formatBound(0.25)]).toEqual(["4\u00a0mil", "17,5\u00a0mil", "250", "0,25"]);
+  });
+
+  it("não colapsa dados concentrados (esperança de vida, 7362, DS 2.3.6)", () => {
+    // UFs de uma região: 72,8 a 77,6 anos. Antes: "Até 80" num grupo só.
+    const life = [72.8, 73.1, 73.4, 74.0, 74.6, 75.2, 75.9, 76.7, 77.6];
+    const scale = quantileScale(life);
+    expect(scale.breaks.length).toBeGreaterThanOrEqual(5);
+    const cuts = scale.breaks.slice(0, -1).map((b) => b.to);
+    expect(cuts.every((c) => c > 72.8 && c < 77.6)).toBe(true);
+    expect(cuts.every((c) => Number(c.toPrecision(3)) === c)).toBe(true);
+    // Brasil inteiro (27 UFs de 71 a 80): vários grupos, não só "Até 80 · Mais de 80".
+    const brazil = Array.from({ length: 27 }, (_, i) => 71 + (i * 9) / 26);
+    expect(quantileScale(brazil).breaks.length).toBeGreaterThanOrEqual(6);
   });
 
   it("não cria grupos vazios e respeita inteiros e decimais", () => {

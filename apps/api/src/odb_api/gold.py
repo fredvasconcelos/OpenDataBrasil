@@ -13,6 +13,7 @@ substitui a Gold.
 from __future__ import annotations
 
 import json
+import re
 import threading
 from collections import OrderedDict
 from collections.abc import Callable, Mapping, Sequence
@@ -60,6 +61,29 @@ class _Lru:
 def rows(result: QueryResult) -> list[dict[str, Any]]:
     """Linhas como dicionários."""
     return [dict(zip(result.columns, r, strict=True)) for r in result.rows]
+
+
+# Numeração de tópicos no início do nome ("2.1.2 ", "12.", "1 ") seguida de texto.
+_OUTLINE = re.compile(r"^\s*\d+(?:\.\d+)*\.?\s*(?=[^\d\s.,%])")
+
+
+def clean_label(name: str) -> str:
+    """Nome de categoria sem a numeração de tópicos da fonte (DS 2.3.6).
+
+    "2.1.2 Habitação" → "Habitação"; "1.Cereais e leguminosas" → "Cereais e
+    leguminosas". Nomes que começam por número de verdade ("0 a 4 anos",
+    "1 morador", "2022") ficam como estão.
+    """
+    cleaned = _OUTLINE.sub("", name, count=1)
+    return cleaned if cleaned and cleaned != name and not _KEEP.match(name) else name
+
+
+# Começos numéricos que fazem parte do nome (faixas, contagens, anos).
+_KEEP = re.compile(
+    r"^\s*\d+(?:[.,]\d+)?\s*(?:a|até|ou|e|anos?|m[eê]s|meses|semanas?|dias?|horas?|morador|moradores|"
+    r"pessoas?|salários?|SM|%|kg|km|vezes|filhos?|cômodos?|banheiros?|dormitórios?)\b",
+    re.IGNORECASE,
+)
 
 
 class GoldGateway:
@@ -126,7 +150,17 @@ class GoldGateway:
                 {"cat": DIM_CATEGORY},
                 max_rows=100_000,
             )
-            return {r["category_key"]: r for r in rows(result)}
+            # Rótulo limpo para leitura (DS 2.3.6): sem a numeração da fonte ("2.1.2
+            # Habitação" → "Habitação"); a hierarquia aparece pelo recuo. O nome oficial
+            # fica em ``official_name``.
+            return {
+                r["category_key"]: {
+                    **r,
+                    "official_name": r["name"],
+                    "name": clean_label(str(r["name"])),
+                }
+                for r in rows(result)
+            }
 
         return self._meta.get((ctx.release_id, "categories"), build)
 

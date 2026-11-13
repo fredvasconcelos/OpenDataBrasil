@@ -12,7 +12,7 @@ import { MapView, type FitRequest } from "@/components/MapView";
 import { SeriesChart } from "@/components/SeriesChart";
 import { Sidebar } from "@/components/Sidebar";
 import { api } from "@/lib/api";
-import { formatPeriod, legendTitleKey } from "@/lib/format";
+import { formatPeriod, indexTitle, legendTitleKey, unitShort } from "@/lib/format";
 import {
   allKpis,
   defaultGeography,
@@ -341,7 +341,11 @@ export function Dashboard({ nav }: { nav: Navigation }) {
       ? values.data.measure_label
       : legendKey
         ? t(`dashboard.legend.title.${legendKey}`)
-        : kpi.unit;
+        : kpi.unit === "Número-índice"
+          ? indexTitle(kpi.source.source_variable_name)
+          : unitShort(kpi.unit) === kpi.unit.toLowerCase()
+            ? kpi.unit
+            : `${kpi.unit} (${unitShort(kpi.unit)})`;
 
   // Painel (Design System ODBr v2): filtros na barra lateral; exportações junto do
   // que exportam (imagem → cabeçalho do mapa; dados → "Gráfico e tabela"). Layout
@@ -512,6 +516,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
             ) : table.data ? (
               <DataTable
                 data={table.data}
+                additive={kpi.additivity === "additive"}
                 selected={state.geography}
                 sort={sort.sort}
                 order={sort.order}

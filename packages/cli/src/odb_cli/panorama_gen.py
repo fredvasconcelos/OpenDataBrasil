@@ -323,18 +323,46 @@ def _detail_of(
 MUNICIPAL_SIZE = "Classe de tamanho da população"
 # Agregação no tempo declarada no panorama (ADR-0017) → catálogo semântico e nota.
 TIME_AGGREGATION = {"soma": "sum", "media": "mean", "ultimo": "last"}
-TIME_AGGREGATION_NOTES = {
-    "soma": "Trimestre, semestre e ano: soma dos períodos publicados (valor derivado).",
-    "media": (
-        "Trimestre, semestre e ano: média dos períodos publicados (valor derivado), como o "
-        "IBGE calcula os números-índice anuais; não é a estimativa anual oficial quando a "
-        "pesquisa publica uma."
-    ),
-    "ultimo": (
-        "Trimestre, semestre e ano: valor do último período publicado (valor derivado; "
-        "para um acumulado em 12 meses, o de dezembro é o do ano)."
-    ),
+RATE_MEAN_NOTE = (
+    "Taxa: a média das taxas dos períodos é uma aproximação, não a taxa oficial do período "
+    "maior. A oficial divide os totais do período inteiro (por exemplo, desocupados ÷ força "
+    "de trabalho no ano) e usa os pesos da pesquisa; as duas podem diferir em décimos."
+)
+ROUNDING_NOTE = (
+    "Valores como a fonte publica, já arredondados: a soma das categorias pode diferir do "
+    "Total em poucas unidades. A plataforma não ajusta os valores."
+)
+
+
+# Notas da tabela que restringem uma classificação a alguns níveis (ponto 11 do
+# relatório de 2026-11-12): 'A classificação "Situação do domicílio" está disponível
+# apenas para os níveis territoriais Brasil e Grande Região.'
+_ONLY_AT = re.compile(
+    r"classifica[çc][ãa]o\s+\"?(?P<name>[^\".]+?)\"?\s+est[áa]\s+dispon[ií]ve(?:l|is)\s+"
+    r"apenas\s+para\s+(?:o|os)\s+n[íi]ve(?:l|is)\s+territoria(?:l|is)\s+(?P<levels>[^.]+)\.",
+    re.IGNORECASE,
+)
+_LEVEL_NAMES = {
+    "brasil": "n1",
+    "grande região": "n2",
+    "grandes regiões": "n2",
+    "unidade da federação": "n3",
+    "unidades da federação": "n3",
+    "município": "n6",
+    "municípios": "n6",
 }
+
+
+def level_limits(descriptor: Mapping[str, Any] | None) -> dict[str, tuple[str, ...]]:
+    """Classificação → níveis em que a fonte a publica, segundo as notas da tabela."""
+    text = " ".join(html_lines((descriptor or {}).get("Nota")))
+    out: dict[str, tuple[str, ...]] = {}
+    for m in _ONLY_AT.finditer(text):
+        parts = re.split(r",\s*|\s+e\s+", m["levels"].strip())
+        codes = [_LEVEL_NAMES.get(p.strip().lower()) for p in parts]
+        if codes and all(codes):
+            out[m["name"].strip()] = tuple(c for c in codes if c)
+    return out
 
 
 @dataclass
@@ -344,6 +372,9 @@ class Extras:
     details: list[Detail] = field(default_factory=list)
     levels: tuple[str, ...] = ()  # níveis das requisições extras (vazio: todos)
     rows: int = 0  # maior número de valores numa requisição extra
+    # Níveis próprios de cada detalhe, quando a nota da tabela restringe a
+    # classificação (vazio: vale ``levels``).
+    per_set: list[tuple[str, ...]] = field(default_factory=list)
 
 
 def plan_extras(  # noqa: PLR0917 - contexto da geração de um KPI
@@ -395,8 +426,16 @@ def plan_extras(  # noqa: PLR0917 - contexto da geração de um KPI
     if not lvls:
         gen.extra_skipped += [(kpi.id, d.cid, "sem nível Brasil, Região ou UF") for d, _ in planned]
         return out
+    limits = level_limits(descriptor)
     for detail, n in planned:
-        rows = _rows_per_period(info, lvls) * n * per_year
+        own: tuple[str, ...] = ()
+        if detail.name in limits:
+            own = tuple(lv for lv in lvls if lv in limits[detail.name])
+            if not own:
+                gen.extra_skipped.append((kpi.id, detail.cid, "níveis da nota da tabela"))
+                continue
+            own = () if own == tuple(lvls) else own
+        rows = _rows_per_period(info, list(own or lvls)) * n * per_year
         if rows > DETAIL_LIMIT:
             gen.extra_skipped.append((kpi.id, detail.cid, f"{rows} valores por requisição"))
             continue
@@ -405,6 +444,7 @@ def plan_extras(  # noqa: PLR0917 - contexto da geração de um KPI
             gen.extra_skipped.append((kpi.id, detail.cid, conflict))
             continue
         out.details.append(detail)
+        out.per_set.append(own)
         out.rows = max(out.rows, rows)
     out.levels = () if lvls == levels else tuple(lvls)
     return out
@@ -802,6 +842,16 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
             else:
                 why_total = f"{detail.cid}: {partial} valores por requisição mesmo sem municípios"
                 detail = None
+        limits = level_limits(descriptor)
+        if detail is not None and detail.name in limits:
+            # A fonte só publica a classificação em alguns níveis (nota da tabela).
+            current = detail.levels or tuple(levels)
+            allowed = tuple(lv for lv in current if lv in limits[detail.name])
+            if not allowed:
+                why_total = f"{detail.cid}: a nota da tabela não cobre os níveis do KPI"
+                detail = None
+            elif allowed != tuple(levels):
+                detail.levels = allowed
         if detail is not None:
             conflict = register_detail(out, detail, kpi.tabela, curated)
             if conflict:
@@ -852,6 +902,8 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 ]
                 if extras.levels:
                     detail_params["extra_levels"] = list(extras.levels)
+                if any(extras.per_set):
+                    detail_params["extra_set_levels"] = [list(x) for x in extras.per_set]
                 rows = max(rows, extras.rows)
         else:
             if fixed_params:
@@ -1020,14 +1072,24 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                     )
         out.facts.append(fact)
         caveats = [*reference_notes, *_caveats(kpi, info, levels, descriptor)]
-        if kpi.agregacao_tempo and period_type != "ano":
-            caveats.append(TIME_AGGREGATION_NOTES[kpi.agregacao_tempo])
+        # A nota de método da regra vem da Gold (odb_semantics.periods); aqui, só a
+        # ressalva própria das taxas.
+        is_rate = variable["units"][0] in ("%", "Proporção (%)")
+        if kpi.agregacao_tempo == "media" and period_type != "ano" and is_rate:
+            caveats.append(RATE_MEAN_NOTE)
         if detail is not None and detail.levels:
             shown = ", ".join(LEVEL_LABELS[lv] for lv in detail.levels)
             caveats.insert(
                 0,
                 f"As categorias de {detail.name} vêm até {shown}; nos municípios, só o Total "
                 "(a série municipal por categoria exigiria milhares de consultas à fonte).",
+            )
+        for d in [x for x in (detail, *extras.details) if x is not None and x.name in limits]:
+            shown_levels = ", ".join(LEVEL_LABELS.get(lv, lv) for lv in limits[d.name])
+            caveats.insert(
+                0,
+                f"{d.name}: só em {shown_levels}, como a fonte publica (nota da tabela "
+                f"{kpi.tabela}); nos demais níveis, só o Total.",
             )
         for extra in reversed(extras.details):
             if not extra.summable:
@@ -1050,6 +1112,10 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 f"Detalhes por {listed}: um de cada vez, com os demais no Total (a fonte "
                 "permite os cruzamentos, mas eles multiplicariam as consultas)." + where,
             )
+        if any(d.summable for d in (detail, *extras.details) if d is not None) and (
+            _additivity(descriptor, variable["id"]) == "additive"
+        ):
+            caveats.append(ROUNDING_NOTE)
         if detail is not None and not detail.summable:
             caveats.insert(
                 0,

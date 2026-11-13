@@ -42,6 +42,32 @@ export function legendTitleKey(unit: string): "people" | "percent" | "density" |
   return null;
 }
 
+/**
+ * Unidade curta para cabeçalhos de coluna e legenda (DS 2.3.6): "Total (%)",
+ * "Alimentação (R$)". Moeda vira "R$" (com a escala), número-índice vira "índice".
+ */
+export function unitShort(unit: string): string {
+  const u = unit.trim();
+  if (u === "%" || /^Proporção \(%\)$/i.test(u)) return "%";
+  if (/^Reais$/i.test(u)) return "R$";
+  if (/^Mil Reais$/i.test(u)) return "R$ mil";
+  if (/^Milhões de Reais$/i.test(u)) return "R$ milhões";
+  if (/^Bilhões de Reais$/i.test(u)) return "R$ bilhões";
+  if (/^Número-índice$/i.test(u)) return "índice";
+  if (u === "Quilômetros quadrados") return "km²";
+  if (u === "Habitante por quilômetro quadrado") return "hab/km²";
+  return u.toLowerCase();
+}
+
+/**
+ * Título da legenda de um número-índice, com a base tirada do nome da variável:
+ * "PMC - Número-índice (2022=100)" → "Índice (2022 = 100)". Sem base, "Índice".
+ */
+export function indexTitle(variableName: string | null | undefined): string {
+  const base = /\((?:base:\s*)?([^()]*?)\s*=\s*100\)/i.exec(variableName ?? "");
+  return base ? `Índice (${base[1]} = 100)` : "Índice";
+}
+
 export function formatShare(share: number | null | undefined): string {
   return share === null || share === undefined ? "" : `${percent.format(share)}%`;
 }

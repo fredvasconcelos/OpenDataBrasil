@@ -29,7 +29,13 @@ from odb_modeling.contracts import (
 )
 from odb_processing.contracts import Contract
 from odb_semantics import LEVELS, FactConfig, IndicatorConfig, SemanticCatalog
-from odb_semantics.periods import ancestor, coarser_grains, parse_period, parts
+from odb_semantics.periods import (
+    TIME_AGGREGATION_NOTES,
+    ancestor,
+    coarser_grains,
+    parse_period,
+    parts,
+)
 
 # Níveis territoriais do SIDRA (coluna NC) → níveis internos. Conferidos pelos
 # rótulos NN das respostas: 1 Brasil, 2 Grande Região, 3 Unidade da Federação,
@@ -563,6 +569,15 @@ def build_bridge_period_ancestor(observations: pl.DataFrame) -> pl.DataFrame:
     return _conform(frame, BRIDGE_PERIOD_ANCESTOR)
 
 
+def method_caveats(indicator: IndicatorConfig) -> list[str]:
+    """Notas do indicador mais a nota de método da agregação no tempo (ADR-0017)."""
+    out = list(indicator.caveats)
+    note = TIME_AGGREGATION_NOTES.get(indicator.time_aggregation or "")
+    if note and note not in out:
+        out.append(note)
+    return out
+
+
 def time_grains(indicator: IndicatorConfig, periods: Sequence[str]) -> list[str]:
     """Grãos em que o indicador pode ser consultado (ADR-0013).
 
@@ -762,7 +777,7 @@ def build_dim_indicator(
                 "available_levels": sorted(st["levels"], key=lambda lv: _RANK[lv]),
                 "periods": list(st["periods"]),
                 "observation_count": st["n"],
-                "caveats": list(ind.caveats),
+                "caveats": method_caveats(ind),
                 "incompatible_with": sorted(incompatible[ind.id], key=lambda d: d["indicator"]),
                 "reference_url": ds.reference_url,
                 "license_id": ds.license_id,

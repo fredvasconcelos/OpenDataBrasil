@@ -6,7 +6,7 @@ mais as revisões da beta) e mantêm todas as classes, rótulos e `aria-*` de qu
 
 ## Novidades da v2.3 (sobre a v2.1)
 
-> Versão do pacote: **2.3.5** (arquivo `VERSION`; ajustes da 2.3.1 a 2.3.5 na seção "Ajustes depois da 2.3.0"). Telas de referência em `reference/`.
+> Versão do pacote: **2.3.6** (arquivo `VERSION`; ajustes da 2.3.1 a 2.3.6 na seção "Ajustes depois da 2.3.0"). Telas de referência em `reference/`.
 >
 > **O que a API ainda não fornece (não inventado):** o canvas mostra indicadores
 > "em preparação" e o filtro de situação; o contrato `/navigation` só traz indicadores
@@ -88,6 +88,9 @@ anteriores a estes ajustes e ainda não os mostram.
 | Versão | Item | Onde | Regra |
 |---|---|---|---|
 | 2.3.1 | Busca da barra lateral fixa | `Sidebar.tsx` (`.tree-head`), `globals.css` | Título "Temas e indicadores", campo e resumo ficam fixos no topo da área que rola (a barra até 1599 px; o cartão da árvore em tela cheia). O fundo cobre a árvore que passa por baixo e o recuo de cima; `scroll-padding-top` mantém à vista o item focado pelo teclado. "Filtros" não é fixo. Captura: `reference/screens/busca-barra-lateral-fixa.png`. Especificação: `docs/DESIGN-SYSTEM.md`, "Páginas (v2.3)" |
+| 2.3.6 | Escala do mapa sem colapso | `lib/scale.ts` (`roundestIn`, `niceCuts`) | Cada corte é o número mais redondo dentro da janela entre os quantis vizinhos: grosso com dados espalhados (4 mil, 25 mil), fino com dados concentrados (73,5; 74; 75). Antes, a esperança de vida (7362) ficava em "Até 80 · Mais de 80" no Brasil e num grupo só no Nordeste. Captura: `reference/screens/escala-esperanca-vida-nordeste.png` |
+| 2.3.6 | Unidade nas colunas e % do Total | `DataTable.tsx` (cabeçalho "Rótulo (unidade)", `.share`), `lib/format.ts` (`unitShort`, `indexTitle`), `globals.css` (`.data-table td .share`) | Cada coluna mostra a unidade curta: "Total (%)", "Alimentação (R$)", "Total (índice)". Em KPIs aditivos, as categorias mostram também "(12,3%)" do Total do território, em `caption` / `text-muted`. A legenda de um número-índice diz a base: "Índice (2022 = 100)" |
+| 2.3.6 | Rótulos limpos | API (`clean_label`, rótulo sem a numeração da fonte) | "2.1.2 Habitação" → "Habitação"; "1.Cereais e leguminosas" → "Cereais e leguminosas"; códigos da CNAE também saem. A hierarquia aparece pelo recuo do tooltip; faixas e contagens ("0 a 4 anos", "1 morador") ficam como estão |
 | 2.3.5 | Nota de "Período por" conforme a regra | `Sidebar.tsx` (`.grain-note`), `messages/pt-BR.json` (`grainNotes.sum`, `.mean`, `.last`; sai `dashboard.grainNote`) | O seletor "Período por" aparece também em números-índice (PMC, PMS, PIM), acumulados (IPCA) e estimativas (LSPA). A nota diz como o período maior é calculado, conforme `time_aggregation` da API: soma, média ou último período publicado. Regra: ADR-0017 |
 | 2.3.4 | Detalhar por: uma dimensão por vez | `Sidebar.tsx` (`.hint` no `fieldset`), `lib/state.ts` (só a primeira dimensão da URL), `globals.css` (`.sidebar fieldset .hint`), `messages/pt-BR.json` (`dashboard.dimensionsExclusive`) | Em KPIs com dimensões marginais (`exclusive_dimensions` da API: cada detalhe vem com os demais no Total, sem cruzamentos), marcar uma caixa desmarca as outras, e o aviso "Uma por vez: cada detalhe vem com os demais no Total." aparece sob "Detalhar por" (12 px, `text-muted`). Os demais KPIs seguem com várias caixas. Tooltip e tabela não mostram categorias sem dado no período (faixas de rendimento de outra edição da POF). KPI sem nível Brasil (POF de 1987 e 1995) abre no "Total das áreas da POF" (`defaultGeography`), com a tabela nas regiões metropolitanas e o cartão "sem mapa" (`map_levels` vazio na configuração). Captura: `reference/screens/detalhar-uma-por-vez.png`. Regra: ADR-0016 |
 | 2.3.3 | Rodapé no fim da janela | `globals.css` (`body`, `#conteudo`) | Com pouco conteúdo, o rodapé fica no fim da janela, e não logo abaixo do cartão (correção pedida pelo mantenedor na página de erro). Painel e Início sem mudança |
@@ -132,7 +135,7 @@ design-system/
 ├── tokens/
 │   ├── tokens.css            ← variáveis CSS (claro, dark, prefers-color-scheme)
 │   └── tokens.json           ← os mesmos valores em JSON (para outras ferramentas)
-├── VERSION                   ← 2.3.5
+├── VERSION                   ← 2.3.6
 ├── reference/                ← telas do canvas (fontes) e capturas dos componentes
 ├── assets/brand/             ← logos em SVG (texto convertido em curvas) e ícones PNG
 ├── assets/icons/             ← github.svg (Bootstrap Icons, MIT) + licença

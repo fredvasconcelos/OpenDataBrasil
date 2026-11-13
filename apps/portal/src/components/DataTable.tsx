@@ -3,11 +3,13 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 
-import { formatValue } from "@/lib/format";
+import { formatShare, formatValue, unitShort } from "@/lib/format";
 import type { Table } from "@/lib/types";
 
 interface Props {
   data: Table;
+  /** KPI aditivo: as categorias mostram também o % do Total (DS 2.3.6). */
+  additive?: boolean;
   selected: string | null;
   sort: "value" | "name";
   order: "asc" | "desc";
@@ -16,7 +18,10 @@ interface Props {
   onSelect: (key: string) => void;
 }
 
-export function DataTable({ data, selected, sort, order, onSort, onPage, onSelect }: Props) {
+export function DataTable({ data, additive = false, selected, sort, order, onSort, onPage, onSelect }: Props) {
+  // Unidade no cabeçalho de cada coluna: "Total (%)", "Alimentação (R$)" (DS 2.3.6).
+  const unit = unitShort(data.unit);
+  const totalKey = data.columns[0]?.key;
   const t = useTranslations("table");
   const from = data.total_rows ? data.offset + 1 : 0;
   const to = Math.min(data.offset + data.limit, data.total_rows);
@@ -59,11 +64,11 @@ export function DataTable({ data, selected, sort, order, onSort, onPage, onSelec
                 <th scope="col" key={c.key} style={{ fontWeight: c.depth ? 400 : 600 }}>
                   {i === 0 ? (
                     <button type="button" onClick={() => onSort("value")} aria-label={t("sortByValue")}>
-                      {c.label}
+                      {c.label} ({unit})
                       {sort === "value" ? arrow : ""}
                     </button>
                   ) : (
-                    c.label
+                    `${c.label} (${unit})`
                   )}
                 </th>
               ))}
@@ -85,7 +90,18 @@ export function DataTable({ data, selected, sort, order, onSort, onPage, onSelec
                 </th>
                 {data.columns.map((c) => {
                   const cell = r.cells[c.key];
-                  return <td key={c.key}>{formatValue(cell?.value, cell?.status ?? "absent")}</td>;
+                  const total = totalKey ? r.cells[totalKey]?.value : null;
+                  // Aditivo: a categoria mostra também o % do Total do território.
+                  const share =
+                    additive && c.key !== totalKey && unit !== "%" && cell?.value != null && total
+                      ? (cell.value / total) * 100
+                      : null;
+                  return (
+                    <td key={c.key}>
+                      {formatValue(cell?.value, cell?.status ?? "absent")}
+                      {share !== null ? <span className="share"> ({formatShare(share)})</span> : null}
+                    </td>
+                  );
                 })}
               </tr>
             ))}

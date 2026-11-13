@@ -121,6 +121,10 @@ class SidraParams(BaseModel):
     extra_sets: tuple[dict[str, str], ...] = ()
     # Níveis das requisições extras (vazio: os do dataset).
     extra_levels: tuple[str, ...] = ()
+    # Níveis de cada conjunto extra, quando a fonte só publica a classificação em alguns
+    # (nota da tabela: "disponível apenas para o nível territorial Brasil"). Vazio no
+    # conjunto: vale ``extra_levels``.
+    extra_set_levels: tuple[tuple[str, ...], ...] = ()
     period_type: Literal["ano", "mes", "trimestre"] = "ano"
     # Meses ou trimestres do mesmo ano numa única requisição (partição "p<ano>").
     # Com isso, ``estimated_values_per_period``, ``min_rows`` e ``max_rows`` valem
@@ -257,7 +261,13 @@ class SidraParams(BaseModel):
             if bad:
                 msg = f"extra_sets com classificações inválidas: {bad}"
                 raise ValueError(msg)
-        outside = sorted(set(self.extra_levels) - set(self.territorial_levels))
+        if self.extra_set_levels and len(self.extra_set_levels) != len(self.extra_sets):
+            msg = "extra_set_levels precisa de um item por conjunto de extra_sets"
+            raise ValueError(msg)
+        outside = sorted(
+            {*self.extra_levels, *(lv for lvls in self.extra_set_levels for lv in lvls)}
+            - set(self.territorial_levels)
+        )
         if outside:
             msg = f"extra_levels fora dos níveis do dataset: {outside}"
             raise ValueError(msg)
@@ -313,15 +323,16 @@ class SidraParams(BaseModel):
                 else:
                     groups.append(RequestGroup(variables, classes, suffix))
             base = f"-v{variables[0]}" if self.split_by_variable else ""
-            for extra in self.extra_sets:
+            for n, extra in enumerate(self.extra_sets):
                 # Sufixo pela classificação detalhada (a última do conjunto), e não pela
                 # posição: incluir ou tirar um conjunto não muda as partições dos outros.
+                own = self.extra_set_levels[n] if self.extra_set_levels else ()
                 groups.append(
                     RequestGroup(
                         variables,
                         {**self.classifications, **extra},
                         f"{base}-x{list(extra)[-1]}",
-                        self.extra_levels,
+                        own or self.extra_levels,
                     )
                 )
         return groups

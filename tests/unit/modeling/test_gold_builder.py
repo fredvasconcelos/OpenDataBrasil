@@ -201,6 +201,22 @@ def test_incompatible_existing_schema_blocks_writes(env: GoldEnv) -> None:
     assert not DeltaTable.is_deltatable(env.gold.table_uri("dim_geography"))
 
 
+def test_unpublished_schema_change_is_undone_automatically(env: GoldEnv) -> None:
+    """ADR-0019: coluna gravada por uma construção que falhou não trava a próxima."""
+    first = env.gold.build()
+    assert first.status == "succeeded"
+    uri = env.gold.table_uri("dim_period")
+    published = first.tables["dim_period"].delta_version
+    extra = pl.read_delta(uri).with_columns(pl.lit("x").alias("coluna_orfa"))
+    extra.write_delta(uri, mode="overwrite", delta_write_options={"schema_mode": "overwrite"})
+    again = env.gold.build(force=True)
+    assert again.status == "succeeded", again.error
+    assert "coluna_orfa" not in pl.read_delta(uri).columns
+    assert "coluna_orfa" in pl.read_delta(uri, version=published + 1).columns
+    reset = next(c for c in again.checks if c.check_id == "schema.reset")
+    assert "dim_period" in reset.observed
+
+
 def _silver_rows(names: list[tuple[str, str]]) -> pl.DataFrame:
     """Linhas SINTÉTICAS (códigos fictícios) no formato da Silver."""
     return pl.DataFrame(

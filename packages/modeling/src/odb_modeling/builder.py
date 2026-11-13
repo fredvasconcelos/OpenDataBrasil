@@ -70,7 +70,7 @@ from odb_modeling.quality import (
     table_checks,
 )
 from odb_processing.contracts import SIDRA_OBSERVATION, Contract, SchemaChange, compare_schema
-from odb_processing.quality import CheckResult, blocking
+from odb_processing.quality import CheckResult, CheckStatus, blocking
 from odb_processing.silver import PreviousRun
 from odb_semantics import SemanticCatalog
 
@@ -132,6 +132,10 @@ class GoldRegistry(Protocol):
         """Grava os resultados de qualidade."""
         ...
 
+    def published_version(self, storage_uri: str) -> int | None:
+        """Maior versão Delta da tabela fixada em algum release (validado, ativo ou antigo)."""
+        ...
+
 
 @dataclass
 class GoldBuild:
@@ -185,6 +189,8 @@ class GoldBuilder:
         self._code_version = code_version
         self._reader = DeltaReader()
         self._reset_schema: frozenset[str] = frozenset()
+        # Tabela → motivo da troca de schema nesta construção (ADR-0019).
+        self._schema_resets: dict[str, str] = {}
 
     # ------------------------------------------------------------- configuração
 
@@ -329,6 +335,7 @@ class GoldBuilder:
         gravada por uma construção que falhou e nunca foi publicada.
         """
         self._reset_schema = frozenset(reset_schema)
+        self._schema_resets = {}
         build = GoldBuild(
             build_id=str(uuid.uuid4()),
             scope=self._catalog.scope,
@@ -538,6 +545,15 @@ class GoldBuilder:
         summary.pending_report = pending_report
         entry, rest = self._finish(build, summary, datasets, contracts, evolve)
         build.checks = [*entry, *observations_out.checks.results(), *table_results, *rest]
+        if self._schema_resets:
+            build.checks.append(
+                CheckResult(
+                    "schema.reset",
+                    CheckStatus.WARN,
+                    f"schema trocado em {len(self._schema_resets)} tabela(s)",
+                    observed=dict(self._schema_resets),
+                )
+            )
 
     def _finish(
         self,
@@ -791,16 +807,38 @@ class GoldBuilder:
                 existing = pl.scan_delta(uri).collect_schema()
                 comparison = compare_schema(existing, contract)
                 if comparison.change is SchemaChange.INCOMPATIBLE:
-                    if name in self._reset_schema:
-                        logger.warning(
-                            "gold schema reset",
-                            extra={"table": name, "details": list(comparison.details)},
-                        )
-                        continue
-                    msg = f"{name}: mudança de schema incompatível: {list(comparison.details)}"
-                    raise GoldBuildError(msg)
+                    why = self._schema_reset_reason(name, uri, contract)
+                    if why is None:
+                        msg = f"{name}: mudança de schema incompatível: {list(comparison.details)}"
+                        raise GoldBuildError(msg)
+                    self._schema_resets[name] = f"{why}: {list(comparison.details)}"
+                    logger.warning("gold schema reset", extra={"table": name, "reason": why})
+                    continue
                 evolve[name] = comparison.change is SchemaChange.COMPATIBLE_ADDITION
         return evolve
+
+    def _schema_reset_reason(self, name: str, uri: str, contract: Contract) -> str | None:
+        """Motivo para trocar o schema da tabela nesta construção, ou None (ADR-0019).
+
+        - pedido explícito do operador (``--reset-schema``);
+        - a versão mais recente nunca foi publicada (veio de uma construção que falhou) e
+          o schema da última versão publicada é compatível com o contrato: a mudança só
+          desfaz o que nenhum release usa.
+
+        Tabela nunca publicada com schema incompatível continua bloqueada: pode ter sido
+        escrita fora do pipeline, e só o operador decide (``--reset-schema``).
+
+        Os releases anteriores continuam lendo as versões fixadas (§17.3).
+        """
+        if name in self._reset_schema:
+            return "pedido explícito (--reset-schema)"
+        published = self._registry.published_version(uri)
+        if published is None or published >= DeltaTable(uri).version():
+            return None
+        schema = pl.scan_delta(uri, version=published).collect_schema()
+        if compare_schema(schema, contract).change is SchemaChange.INCOMPATIBLE:
+            return None
+        return f"versões após a {published} nunca publicadas"
 
     def _write_table(
         self,
@@ -821,7 +859,7 @@ class GoldBuilder:
             mode=mode,
             partition_by=list(contract.partition_by),
             evolve_schema=evolve[name],
-            overwrite_schema=name in self._reset_schema and mode == "overwrite",
+            overwrite_schema=name in self._schema_resets and mode == "overwrite",
         )
         build.tables[name] = GoldTable(
             table_id=name,

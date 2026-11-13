@@ -69,6 +69,17 @@ class InMemoryGoldRegistry:
     def record_checks(self, build_id: str, scope: str, results: Sequence[CheckResult]) -> None:
         self.checks[build_id] = list(results)
 
+    def published_version(self, storage_uri: str) -> int | None:
+        # Em memória, "publicada" = gravada por uma construção bem-sucedida.
+        versions = [
+            t.delta_version
+            for b in self.builds
+            if b.status == "succeeded"
+            for t in b.tables.values()
+            if t.storage_uri == storage_uri
+        ]
+        return max(versions, default=None)
+
 
 class GoldEnv:
     """Fontes simuladas (fixtures reais) → Bronze → Silver → Gold em diretório temporário."""

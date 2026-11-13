@@ -43,6 +43,17 @@ class PostgresGoldRegistry:
         """Última execução Silver válida do dataset."""
         return self._silver.last_success(dataset_id)
 
+    def published_version(self, storage_uri: str) -> int | None:
+        """Maior versão Delta da tabela fixada em algum release validado, ativo ou antigo."""
+        sql = text(
+            "SELECT max(rt.delta_version) FROM publication.release_table rt "
+            "JOIN publication.release r USING (release_id) "
+            "WHERE rt.storage_uri = :u AND r.status IN ('validated', 'active', 'superseded')"
+        )
+        with self._engine.connect() as conn:
+            value = conn.execute(sql, {"u": storage_uri}).scalar()
+        return None if value is None else int(value)
+
     def last_success(self, scope: str) -> PreviousGoldBuild | None:
         """Construção Gold mais recente com tabelas válidas."""
         sql = text(

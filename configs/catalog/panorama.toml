@@ -276,7 +276,7 @@ id = "ocupacao"
 label = "Ocupação e desocupação"
 kpis = [
   { id = "forca_trabalho", label = "Força de trabalho, ocupação e desocupação", tabela = "4093", pesquisa = "PNAD Contínua trimestral", filtros = ["sexo"], variavel = "4090", agregacao_tempo = "media" },
-  { id = "taxas_desocupacao", label = "Taxas de desocupação e de subutilização", tabela = "4099", pesquisa = "PNAD Contínua trimestral" },
+  { id = "taxas_desocupacao", label = "Taxas de desocupação e de subutilização", tabela = "4099", pesquisa = "PNAD Contínua trimestral", agregacao_tempo = "media" },
 ]
 
 [[temas.subtemas]]
@@ -672,7 +672,7 @@ label = "PIB do Brasil"
 kpis = [
   { id = "pib_per_capita", label = "PIB e PIB per capita", tabela = "6784", pesquisa = "Contas Nacionais Anuais" },
   { id = "pib_trimestral", label = "PIB trimestral a preços correntes", tabela = "1846", pesquisa = "Contas Nacionais Trimestrais", referencia = { c11255 = "90707" }, agregacao_tempo = "soma" },
-  { id = "variacao_pib_trimestral", label = "Taxa de variação do PIB trimestral", tabela = "5932", pesquisa = "Contas Nacionais Trimestrais", referencia = { c11255 = "90707" } },
+  { id = "variacao_pib_trimestral", label = "Taxa de variação do PIB trimestral", tabela = "5932", pesquisa = "Contas Nacionais Trimestrais", referencia = { c11255 = "90707" }, agregacao_tempo = "media" },
 ]
 
 [[temas.subtemas]]
@@ -686,8 +686,8 @@ kpis = [
 id = "investimento_poupanca"
 label = "Investimento e poupança"
 kpis = [
-  { id = "taxa_investimento", label = "Taxa de investimento", tabela = "6727", pesquisa = "Contas Nacionais Anuais" },
-  { id = "taxa_poupanca", label = "Taxa de poupança", tabela = "6726", pesquisa = "Contas Nacionais Anuais" },
+  { id = "taxa_investimento", label = "Taxa de investimento", tabela = "6727", pesquisa = "Contas Nacionais Anuais", agregacao_tempo = "media" },
+  { id = "taxa_poupanca", label = "Taxa de poupança", tabela = "6726", pesquisa = "Contas Nacionais Anuais", agregacao_tempo = "media" },
 ]
 
 # ======================================================================= 19
