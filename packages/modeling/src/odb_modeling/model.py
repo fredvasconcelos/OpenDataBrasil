@@ -597,6 +597,67 @@ def build_observations(
     )
 
 
+def derive_regions(observations: pl.DataFrame, catalog: SemanticCatalog) -> pl.DataFrame:
+    """Grandes Regiões pela soma das UFs, nos indicadores com ``derived_levels`` (§10.7).
+
+    O primeiro dígito do código da UF é o da região (regra do IBGE: 1 Norte, 2
+    Nordeste, 3 Sudeste, 4 Sul, 5 Centro-Oeste). A soma só tem valor quando todas as UFs
+    da região publicam o período (``derived_sum``); senão, fica sem valor
+    (``incomplete_sum``). As linhas levam a marca ``derived_region``.
+    """
+    ids = [i.id for i in catalog.indicators if "regiao" in i.derived_levels]
+    if not ids or observations.is_empty():
+        return observations
+    uf = observations.filter(pl.col("indicator_id").is_in(ids) & (pl.col("level_id") == "uf"))
+    if uf.is_empty():
+        return observations
+    quantitative = pl.col("value_status").is_in(["valid", "rounded_zero", "true_zero"])
+    region = (
+        uf.with_columns(
+            (pl.lit("regiao:") + pl.col("geography_key").str.slice(3, 1)).alias("geography_key")
+        )
+        .group_by("indicator_id", "geography_key", "period", "breakdown_key", maintain_order=True)
+        .agg(
+            pl.col("value").sum(),
+            quantitative.all().alias("_complete"),
+            pl.col("value_decimals").max(),
+            *(
+                pl.col(c).first()
+                for c in observations.columns
+                if c
+                not in {
+                    "indicator_id",
+                    "geography_key",
+                    "period",
+                    "breakdown_key",
+                    "value",
+                    "value_decimals",
+                    "value_status",
+                    "value_raw",
+                    "level_id",
+                    "flags",
+                }
+            ),
+        )
+        .with_columns(
+            pl.lit("regiao").alias("level_id"),
+            pl.when(pl.col("_complete")).then(pl.col("value")).otherwise(None).alias("value"),
+            pl.when(pl.col("_complete"))
+            .then(pl.lit("derived_sum"))
+            .otherwise(pl.lit("incomplete_sum"))
+            .alias("value_status"),
+            pl.lit(["derived_region"], dtype=pl.List(pl.String)).alias("flags"),
+        )
+    )
+    region = region.with_columns(
+        pl.when(pl.col("_complete"))
+        .then(pl.col("value").cast(pl.String))
+        .otherwise(pl.lit("..."))
+        .alias("value_raw")
+    ).drop("_complete")
+    return pl.concat([observations, region.select(observations.columns)], how="vertical_relaxed")
+
+
 def gold_period(period_type: str) -> pl.Expr:
     """Código SIDRA do período → chave da Gold.
 

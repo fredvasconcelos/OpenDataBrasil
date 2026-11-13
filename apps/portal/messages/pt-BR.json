@@ -98,7 +98,8 @@
     "sourceChange": "Mudança de fonte (veja as notas)",
     "seriesSource": "Fonte do ponto: tabela {table}",
     "dimensionOnly": "só {levels}",
-    "dimensionOnlyAt": "A fonte publica este detalhe só em: {levels}. Mude o nível territorial para vê-lo."
+    "dimensionOnlyAt": "A fonte publica este detalhe só em: {levels}. Mude o nível territorial para vê-lo.",
+    "partial": "(parcial)"
   },
   "grainNotes": {
     "sum": "Soma dos períodos publicados (valor derivado). Período com parte sem dado fica sem valor.",

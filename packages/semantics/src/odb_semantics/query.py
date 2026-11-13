@@ -92,6 +92,10 @@ class IndicatorQuery:
     sum_to: str | None = None
     # Grão de tempo pedido; ``None`` ou o grão publicado devolvem os valores publicados.
     grain: str | None = None
+    # Período do grão ainda em andamento (o que contém o último período publicado): sai
+    # com o valor acumulado até o último publicado e o status ``partial_period``, em vez
+    # de ficar sem valor (ex.: 2026 somando janeiro a setembro).
+    partial_period: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -302,14 +306,18 @@ def plan_query(query: IndicatorQuery, meta: Mapping[str, IndicatorMeta]) -> Quer
     # O SQL é composto só de fragmentos fixos deste módulo; valores entram como $parâmetros.
     if by_time:
         params["grain"] = query.grain
+        params["partial"] = query.partial_period or ""
         complete = "count(o.value) = any_value(p.parts)"
         rule = time_aggregation(query, meta)
         value, status = TIME_AGGREGATION_SQL[rule], TIME_AGGREGATION_STATUS[rule]
         sql = (
             "SELECT o.indicator_id, o.geography_key, g.name AS territory_name, o.level_id, "
             "p.ancestor_period AS period, o.breakdown_key, b.label AS breakdown_label, "
-            f"CASE WHEN {complete} THEN {value} END AS value, "
-            f"CASE WHEN {complete} THEN '{status}' ELSE 'incomplete_period' END "
+            f"CASE WHEN {complete} THEN {value} "
+            f"WHEN p.ancestor_period = $partial THEN {value} END AS value, "
+            f"CASE WHEN {complete} THEN '{status}' "
+            "WHEN p.ancestor_period = $partial THEN 'partial_period' "
+            "ELSE 'incomplete_period' END "
             "AS value_status, any_value(o.unit) AS unit, count(o.value) AS parts_with_value, "
             "any_value(p.parts) AS parts_expected, "
             "min(o.source_table_id) AS source_table_id FROM {{obs}} AS o "

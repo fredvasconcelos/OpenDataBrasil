@@ -60,6 +60,7 @@ from odb_semantics.periods import (
     GRAIN_LABELS,
     MONTH_SHORT,
     PeriodError,
+    ancestor,
     complete_periods_at,
     months_of,
     parse_period,
@@ -453,6 +454,15 @@ class KpiService:
         grain: str | None = None,
         correction: str | None = None,
     ) -> tuple[list[Observation], Provenance]:
+        partial = None
+        if grain:
+            # O período do grão em andamento (contém o último publicado) sai parcial.
+            published = list(self._gold.indicators(ctx)[kpi.indicator]["periods"] or ())
+            if published:
+                last = max(published, key=lambda p: (parse_period(p).end, p))
+                current = ancestor(last, grain)
+                if current not in complete_periods_at(published, grain):
+                    partial = current
         query = IndicatorQuery(
             indicators=(kpi.indicator,),
             level=level,
@@ -460,6 +470,7 @@ class KpiService:
             periods=tuple(periods),
             breakdown=self._breakdown(ctx, kpi, dims),
             grain=grain,
+            partial_period=partial,
         )
         plan = plan_query(query, self._gold.indicator_meta(ctx))
         result = self._gold.run_plan(ctx, plan, max_rows=max_rows)

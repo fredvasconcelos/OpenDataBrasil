@@ -17,7 +17,9 @@ export const MISSING: Record<string, string> = {
 
 export function formatValue(value: number | null | undefined, status = "valid"): string {
   if (value === null || value === undefined) return MISSING[status] ?? "sem dado";
-  return Number.isInteger(value) ? integer.format(value) : decimal.format(value);
+  const text = Number.isInteger(value) ? integer.format(value) : decimal.format(value);
+  // Período em andamento (ex.: 2026 até setembro): o acumulado até o último publicado.
+  return status === "partial_period" ? `${text} (parcial)` : text;
 }
 
 export function formatCompact(value: number | null | undefined): string {

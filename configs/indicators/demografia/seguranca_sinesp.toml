@@ -63,9 +63,12 @@ unit = "Vítimas"
 additivity = "additive"
 # Fluxo: o trimestre, o semestre e o ano são a soma dos meses (ADR-0013).
 time_aggregation = "sum"
+# Grandes Regiões: a fonte publica Brasil, UFs e municípios; a Gold soma as UFs.
+derived_levels = ["regiao"]
 concept = "vitimas_homicidio_doloso_registro_policial"
 path = ["Segurança e vitimização", "Registros policiais"]
 caveats = [
+  "Grandes Regiões: soma das UFs feita pelo portal (a fonte publica Brasil, UFs e municípios); sem valor no período em que alguma UF da região não publica o indicador.",
   "Registro policial por local da ocorrência, informado pelos gestores estaduais; não é a mesma série das declarações de óbito (SIM).",
   "Mato Grosso: até 2018, os feminicídios estão incluídos em homicídio doloso (nota do gestor).",
   "O total do Brasil é a soma das UFs e fica indisponível no mês em que alguma UF não informa.",
@@ -83,12 +86,16 @@ unit = "Vítimas"
 additivity = "additive"
 # Fluxo: o trimestre, o semestre e o ano são a soma dos meses (ADR-0013).
 time_aggregation = "sum"
+# Grandes Regiões: a fonte publica Brasil, UFs e municípios; a Gold soma as UFs.
+derived_levels = ["regiao"]
 concept = "vitimas_feminicidio_registro_policial"
 path = ["Segurança e vitimização", "Registros policiais"]
 caveats = [
+  "Grandes Regiões: soma das UFs feita pelo portal (a fonte publica Brasil, UFs e municípios); sem valor no período em que alguma UF da região não publica o indicador.",
   "Indisponível onde o estado ainda não separava o feminicídio: TO e MT até 2018, BA até 2016, CE até 2017 (notas dos gestores).",
   "O aumento no início da série reflete em parte a adoção da tipificação pelos estados.",
   "Ceará: mantém casos classificados como feminicídio pela unidade informante mesmo quando a vítima atingida é homem (art. 73 do Código Penal).",
+  "Sexo da vítima: a fonte registra alguns feminicídios com vítima do sexo masculino (no país: 4 em 2019, 5 em 2020, 4 em 2021, 5 em 2022, 7 em 2023, 0 em 2024 e 6 em 2025; em 2025, SP, MG, PA, GO e MA) e com sexo não informado (0 a 4 por ano). São casos de erro na execução (art. 73 do Código Penal: a vítima atingida não é a pretendida) ou de registro. Os totais seguem a fonte; por isso o portal não detalha este indicador por sexo.",
 ]
 
 [[indicators]]
@@ -103,9 +110,12 @@ unit = "Vítimas"
 additivity = "additive"
 # Fluxo: o trimestre, o semestre e o ano são a soma dos meses (ADR-0013).
 time_aggregation = "sum"
+# Grandes Regiões: a fonte publica Brasil, UFs e municípios; a Gold soma as UFs.
+derived_levels = ["regiao"]
 concept = "vitimas_latrocinio_registro_policial"
 path = ["Segurança e vitimização", "Registros policiais"]
 caveats = [
+  "Grandes Regiões: soma das UFs feita pelo portal (a fonte publica Brasil, UFs e municípios); sem valor no período em que alguma UF da região não publica o indicador.",
   "Registro policial por local da ocorrência, informado pelos gestores estaduais.",
 ]
 
@@ -121,9 +131,12 @@ unit = "Vítimas"
 additivity = "additive"
 # Fluxo: o trimestre, o semestre e o ano são a soma dos meses (ADR-0013).
 time_aggregation = "sum"
+# Grandes Regiões: a fonte publica Brasil, UFs e municípios; a Gold soma as UFs.
+derived_levels = ["regiao"]
 concept = "vitimas_estupro_registro_policial"
 path = ["Segurança e vitimização", "Registros policiais"]
 caveats = [
+  "Grandes Regiões: soma das UFs feita pelo portal (a fonte publica Brasil, UFs e municípios); sem valor no período em que alguma UF da região não publica o indicador.",
   "Publicado só por UF.",
   "Tocantins: até 2019, estupro de vulnerável estava agregado a estupro (nota do gestor).",
   "Crime com alta subnotificação: o registro policial não mede a ocorrência total.",
@@ -141,9 +154,12 @@ unit = "Vítimas"
 additivity = "additive"
 # Fluxo: o trimestre, o semestre e o ano são a soma dos meses (ADR-0013).
 time_aggregation = "sum"
+# Grandes Regiões: a fonte publica Brasil, UFs e municípios; a Gold soma as UFs.
+derived_levels = ["regiao"]
 concept = "mortes_intervencao_agente_estado"
 path = ["Segurança e vitimização", "Registros policiais"]
 caveats = [
+  "Grandes Regiões: soma das UFs feita pelo portal (a fonte publica Brasil, UFs e municípios); sem valor no período em que alguma UF da região não publica o indicador.",
   "Publicado só por UF.",
   "Indisponível onde o estado ainda não separava o indicador: MT até 2018 e BA até 2019 (notas dos gestores).",
 ]
@@ -160,8 +176,11 @@ unit = "Ocorrências"
 additivity = "additive"
 # Fluxo: o trimestre, o semestre e o ano são a soma dos meses (ADR-0013).
 time_aggregation = "sum"
+# Grandes Regiões: a fonte publica Brasil, UFs e municípios; a Gold soma as UFs.
+derived_levels = ["regiao"]
 concept = "roubos_veiculo_registro_policial"
 path = ["Segurança e vitimização", "Registros policiais"]
 caveats = [
+  "Grandes Regiões: soma das UFs feita pelo portal (a fonte publica Brasil, UFs e municípios); sem valor no período em que alguma UF da região não publica o indicador.",
   "Publicado só por UF; conta o veículo subtraído inteiro (não roubo de peças ou de passageiros).",
 ]

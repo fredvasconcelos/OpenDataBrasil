@@ -297,6 +297,17 @@ class IndicatorConfig(_Strict):
     # - "compound": variações percentuais encadeadas, (Π(1 + v/100) - 1) x 100 (o
     #   acumulado de um índice de preços a partir das variações mensais).
     time_aggregation: Literal["sum", "mean", "last", "compound"] | None = None
+    # Níveis que a fonte não publica e a Gold calcula pela soma dos filhos (§10.7): as
+    # Grandes Regiões pela soma das UFs (o primeiro dígito do código da UF é a região,
+    # regra do IBGE). Só para indicadores somáveis.
+    derived_levels: tuple[Literal["regiao"], ...] = ()
+
+    @model_validator(mode="after")
+    def _derived_only_additive(self) -> IndicatorConfig:
+        if self.derived_levels and self.additivity != "additive":
+            msg = f"{self.id}: derived_levels exige indicador somável (additive)"
+            raise ValueError(msg)
+        return self
 
 
 def _dimension_scope_problems(classifications: Sequence[Classification]) -> list[str]:

@@ -23,7 +23,8 @@ dimensions = [{ classification = "sexosinesp", partition = "sexo", label = "Sexo
 id = "sinesp_feminicidio"
 label = "Vítimas de feminicídio (registros policiais)"
 indicator = "sinesp_feminicidio"
-dimensions = [{ classification = "sexosinesp", partition = "sexo", label = "Sexo" }]
+# Sem detalhe por sexo: o crime é contra a mulher; os poucos registros masculinos da
+# fonte (erro na execução ou de registro) estão explicados nas notas.
 
 [[themes.subthemes.kpis]]
 id = "sinesp_latrocinio"

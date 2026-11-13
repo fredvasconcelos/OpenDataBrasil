@@ -362,3 +362,10 @@ describe("canCross (C1)", () => {
   });
 });
 
+describe("período parcial", () => {
+  it("marca o valor acumulado do período em andamento", () => {
+    expect(formatValue(1203, "partial_period")).toBe("1.203 (parcial)");
+    expect(formatValue(1203, "derived_sum")).toBe("1.203");
+  });
+});
+

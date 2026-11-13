@@ -107,11 +107,15 @@ export function Sidebar({
           <label className="field">
             {t("dashboard.period")}
             <select value={period} onChange={(e) => onPeriod(e.target.value)}>
-              {grainPeriods(kpi, grain).periods.map((p) => (
-                <option key={p} value={p}>
-                  {formatPeriod(p)}
-                </option>
-              ))}
+              {(() => {
+                const { periods, complete } = grainPeriods(kpi, grain);
+                return periods.map((p) => (
+                  <option key={p} value={p}>
+                    {formatPeriod(p)}
+                    {grain && p === periods.at(-1) && !complete.includes(p) ? ` ${t("dashboard.partial")}` : ""}
+                  </option>
+                ));
+              })()}
             </select>
           </label>
           {kpi.dimensions.length ? (

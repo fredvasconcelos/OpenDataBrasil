@@ -144,6 +144,17 @@ def test_grain_sql_sums_complete_periods_only() -> None:
     # Abril publicado, maio indisponível e junho ausente: o trimestre fica sem valor.
     assert (t2[cols.index("value")], t2[cols.index("value_status")]) == (None, "incomplete_period")
     assert (t2[cols.index("parts_with_value")], t2[cols.index("parts_expected")]) == (1, 3)
+    # O trimestre em andamento (o do último mês publicado) sai parcial, com o acumulado.
+    partial = plan_query(
+        IndicatorQuery(("vitimas",), "uf", grain="trimestre", partial_period="2025T2"), META
+    )
+    psql = partial.sql_template
+    for alias in partial.aliases:
+        psql = psql.replace("{{" + alias + "}}", alias)
+    got = {r[cols.index("period")]: r for r in con.execute(psql, dict(partial.params)).fetchall()}
+    t2 = got["2025T2"]
+    assert (t2[cols.index("value")], t2[cols.index("value_status")]) == (5.0, "partial_period")
+    assert got["2025T1"][cols.index("value_status")] == "derived_sum"
 
 
 @pytest.mark.parametrize(

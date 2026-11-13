@@ -510,13 +510,16 @@ class GoldBuilder:
                     self._catalog,
                 )
                 del silver
-                observations = model.build_observations(
-                    selected,
+                observations = model.derive_regions(
+                    model.build_observations(
+                        selected,
+                        self._catalog,
+                        silver_version=versions,
+                        build_id=build.build_id,
+                        pending=pending,
+                        period_types=period_types,
+                    ),
                     self._catalog,
-                    silver_version=versions,
-                    build_id=build.build_id,
-                    pending=pending,
-                    period_types=period_types,
                 )
                 summary.add(selected, observations, fixed_problems)
                 del selected
