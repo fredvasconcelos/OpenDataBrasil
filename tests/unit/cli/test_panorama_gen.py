@@ -89,7 +89,7 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     # Requisição extra: sexo no Total, cor ou raça sem o Total (já vem na principal).
     assert alfab["extra_sets"][0] == {"c2": "6794", "c86": "2776,2777,2778,2779,2780"}
     assert list(alfab["extra_sets"][1]) == ["c2", "c287"]  # na fonte, o código SIDRA
-    assert alfab["extra_levels"] == ["n1", "n2", "n3"]
+    assert "extra_levels" not in alfab  # município liberado (ponto 7)
     assert [d["classification"] for d in gen.extra_dimensions["taxa_alfabetizacao_censo"]] == [
         "c86",
         "c287t9543",
@@ -142,13 +142,14 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     }
     assert gen.dimensions["plano_diretor"]["classification"] == "c1480"
     assert gen.classifications["c1480"]["total"] == "58278"  # "Total", do descritor
-    # Lavouras: categorias até UF, Total também no município (volume).
+    # Município liberado em todas as séries (ponto 7): categorias em lotes de requisição.
     pam = next(d for d in gen.datasets if d["official_id"] == "5457")
-    assert pam["params"]["detail_levels"] == ["n1", "n2", "n3"]
-    assert any("nos municípios, só o Total" in c for c in ids["producao_lavouras"]["caveats"])
-    # Série longa com município: categorias só até UF; Censo (1 período): até município.
+    assert "detail_levels" not in pam["params"]
+    assert pam["params"]["category_chunk"] == 7  # 7 culturas x ~5.600 territórios
+    assert "," in pam["params"]["classifications"]["c782"]  # lista explícita, em lotes
     obitos = next(d for d in gen.datasets if d["official_id"] == "2654")
-    assert obitos["params"]["detail_levels"] == ["n1", "n2", "n3"]
+    assert "detail_levels" not in obitos["params"]
+    assert obitos["params"]["category_chunk"] >= 1
     censo = next(d for d in gen.datasets if d["official_id"] == "9543")
     assert "detail_levels" not in censo["params"]
     assert "n6" in censo["params"]["territorial_levels"]

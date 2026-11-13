@@ -146,14 +146,12 @@ table = "10159"
 variables = ["13339"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 5633
+max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c2083" = "77808,77809,77810,77814,77815,77816,77817,77818,77819,77820,77821,77822,77823,77824,77825,77826,77827,77828,77829,77830,77831,77832,77833,77834,77835,77836,77837,77838,77839,77840,77841" }
-detail_classification = "c2083"
-detail_total = "77808"
-detail_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -175,16 +173,13 @@ table = "2609"
 variables = ["217"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 5633
+max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c232" = "0,82135,77792,71500,58297,56680,48972,47550,46256,40523,40289,39331,33044,31660,15773,12029,7996,119202,118095,111751,109555,107161,104320,102883,98825,98824,98823,94126,90891,90797,90796,5198,5197,5196,5195,5194,5193,5192,5191,5190,90781,90780,90779,90778,90777,90776,90775,90774,90773,90772,90794,90793,90792,90791,90790,90789,90788,90787,90786,90785,90798,105276" }
-detail_classification = "c232"
-detail_total = "0"
-detail_levels = ["n1", "n2", "n3"]
 extra_sets = [{ "c232" = "0", "c2" = "4,5,104539" }, { "c232" = "0", "c240" = "5370,5414,5371,5372,5373,5374,5375,5376,5377,5378,5379,5380,5381,5382,5383,5384,5385,5386,5387,5388,5389,5390,5391,5392,5393,5394,5395,5396,5397,5398,5399,5400,5401,5402,5403,5404,5405,5406,5407,5408,5409,5410,5411,5412,5413" }]
-extra_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -206,16 +201,13 @@ table = "2654"
 variables = ["343"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 5633
+max_rows = 39431
 refresh_recent_periods = 1
-classifications = { "c1836" = "0,26877,99818,26881,26882" }
-detail_classification = "c1836"
-detail_total = "0"
-detail_levels = ["n1", "n2", "n3"]
+classifications = { "c1836" = "all" }
 extra_sets = [{ "c1836" = "0", "c2" = "4,5,104539" }, { "c1836" = "0", "c244" = "5586,5587,5588,5589,5590,5591,5592,5593,5594,5595,5596,5597,102885" }, { "c1836" = "0", "c257" = "5832,5833,107166,100296,100297" }, { "c1836" = "0", "c260" = "5922,5923,5924,5925,5926,5927,5928,5929,5930,5931,5932,5933,5934,5935,5936,109550,5937,5938,5939,5940,5941,5942,5943,5944,5945,5946,5947,5948,5949,5950,5951,5952,5953,5954,5955,5956,5957,5958,5959,5960,5961,5962,5963,5964,5965,5966,5967,5968,5969,5970,5971,5972,5973,5974,5975,5976,5977,5978,5979,5980,106181,5981,5982,5983,5984,5985,106182,5986,5987,5988,5989,5990,106183,5991,5992,5993,5994,5995,5996,5997" }]
-extra_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -237,16 +229,13 @@ table = "4412"
 variables = ["4993"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 5633
+max_rows = 39431
 refresh_recent_periods = 1
-classifications = { "c664" = "0,32960,32961,32962,32963" }
-detail_classification = "c664"
-detail_total = "0"
-detail_levels = ["n1", "n2", "n3"]
+classifications = { "c664" = "all" }
 extra_sets = [{ "c664" = "0", "c244" = "5585,5586,5587,5588,5589,5590,5591,5592,5593,5594,5595,5596,5597,102885" }, { "c664" = "0", "c665" = "32964,32965,32966,32967" }, { "c664" = "0", "c666" = "32968,32969,32970,32971,32972,32973,32974,32975,32976,32977,32978,32979,32980,32981,32982,32983,32984,32985,32986,32987,32988,32989,32990,32991,32992,32993,32994,32995,32996,32997,32998,32999,33000,33001,33002,33003,33004,33005" }, { "c664" = "0", "c667" = "33006,33007,33008,33009,33010,33011,33012,33013,33014,33015,33016,33017,33018,33019,33020,33021,33022,33023,33024,33025,33026,33027,33028,33029,33030,33031,33032,33033,33034,33035,33036,33037,33038,33039,33040,33041,33042,33043" }]
-extra_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -268,16 +257,13 @@ table = "1695"
 variables = ["393"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 5633
+max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c345" = "0,8074,8075,8076,8077,8078,8079,8080,8081,8082,8083,8084,8085,8086,8087,8088,8089,8090,8091,8092,8093,8094,8095,8097,8098,8099,8100,8101,8102,8103,8104,8105" }
-detail_classification = "c345"
-detail_total = "0"
-detail_levels = ["n1", "n2", "n3"]
 extra_sets = [{ "c345" = "0", "c269" = "6090,6091,6092,6093" }, { "c345" = "0", "c274" = "6121,6122,6123,6124,6125,6126,6127,6128,6129,6130,6131,6132,6133,6134" }, { "c345" = "0", "c275" = "6135,6136,6137,6138,6139,6140,6141,6142,6143,6144,6145,6146,6147,6148" }]
-extra_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -324,16 +310,12 @@ table = "6788"
 variables = ["162"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 132
+estimated_values_per_period = 325
 min_rows = 1
-max_rows = 132
+max_rows = 325
 refresh_recent_periods = 1
-classifications = { "c460" = "45902,12076,12077,12078,12079" }
-detail_classification = "c460"
-detail_total = "45902"
-detail_levels = ["n1", "n2", "n3"]
+classifications = { "c460" = "all" }
 extra_sets = [{ "c460" = "45902", "c293" = "100312,100313" }]
-extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -355,14 +337,11 @@ table = "6821"
 variables = ["162"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 165
+estimated_values_per_period = 390
 min_rows = 1
-max_rows = 165
+max_rows = 390
 refresh_recent_periods = 1
-classifications = { "c63" = "95826,4342,4343,1055,2519,1058" }
-detail_classification = "c63"
-detail_total = "95826"
-detail_levels = ["n1", "n2", "n3"]
+classifications = { "c63" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -384,14 +363,11 @@ table = "6822"
 variables = ["162"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 132
+estimated_values_per_period = 325
 min_rows = 1
-max_rows = 132
+max_rows = 325
 refresh_recent_periods = 1
-classifications = { "c338" = "7982,7983,45903,45904,45905" }
-detail_classification = "c338"
-detail_total = "7982"
-detail_levels = ["n1", "n2", "n3"]
+classifications = { "c338" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -413,14 +389,11 @@ table = "6677"
 variables = ["162"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 165
+estimated_values_per_period = 390
 min_rows = 1
-max_rows = 165
+max_rows = 390
 refresh_recent_periods = 1
-classifications = { "c845" = "47557,47552,47553,47554,47555,47556" }
-detail_classification = "c845"
-detail_total = "47557"
-detail_levels = ["n1", "n2", "n3"]
+classifications = { "c845" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -492,14 +465,12 @@ table = "6803"
 variables = ["381"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 5633
+max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c1821" = "72129,72144,72145,72146,72147,72148,72149,72150,72151,72152,72153,72154,72155,72156,72157,72158,72159,72160" }
-detail_classification = "c1821"
-detail_total = "72129"
-detail_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -574,14 +545,12 @@ table = "6805"
 variables = ["381"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 5633
+max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c11558" = "46292,46290,72110,72111,72112,72113,92858,72114,72115,92861" }
-detail_classification = "c11558"
-detail_total = "46292"
-detail_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -603,16 +572,13 @@ table = "7192"
 variables = ["9986"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 132
+estimated_values_per_period = 325
 min_rows = 1
-max_rows = 132
+max_rows = 325
 refresh_recent_periods = 1
-classifications = { "c11558" = "46292,47930,47931,47936,119522" }
-detail_classification = "c11558"
-detail_total = "46292"
-detail_levels = ["n1", "n2", "n3"]
+classifications = { "c11558" = "all" }
 extra_sets = [{ "c11558" = "46292", "c1" = "1,2" }]
-extra_levels = ["n1", "n2", "n3"]
+extra_set_levels = [["n1", "n2", "n3"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -660,14 +626,12 @@ table = "6892"
 variables = ["381"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 5633
+max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c67" = "10972,2520,72120,72121,72122,72123,72124,1091" }
-detail_classification = "c67"
-detail_total = "10972"
-detail_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -689,16 +653,13 @@ table = "6736"
 variables = ["162"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 132
+estimated_values_per_period = 325
 min_rows = 1
-max_rows = 132
+max_rows = 325
 refresh_recent_periods = 1
-classifications = { "c67" = "10972,4661,92864,1087,1091" }
-detail_classification = "c67"
-detail_total = "10972"
-detail_levels = ["n1", "n2", "n3"]
+classifications = { "c67" = "all" }
 extra_sets = [{ "c67" = "10972", "c1" = "1,2" }]
-extra_levels = ["n1", "n2", "n3"]
+extra_set_levels = [["n1", "n2", "n3"]]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -720,13 +681,13 @@ table = "9543"
 variables = ["2513"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 16899
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 16899
+max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c86" = "2776,2777,2778,2779,2780" }, { "c2" = "6794", "c287" = "93086,6572,6573,6574,6575,6576,93087,6577,6578,6579,6580,6581,2999,6582,6656,6657,6658,6659,6583,6584,6585,6586,6587,9482,6588,6589,6590,6591,6592,6593,6594,6595,6596,6597,9483,6598,6599,6600,6601,6602,6603,6604,6605,6606,6607,9484,6608,6609,6610,6611,6612,6613,6614,6615,6616,6617,3000,9486,113623" }]
-extra_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -748,9 +709,9 @@ table = "7113"
 variables = ["10267"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 132
+estimated_values_per_period = 99
 min_rows = 1
-max_rows = 132
+max_rows = 99
 refresh_recent_periods = 1
 classifications = { "c58" = "2795", "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c58" = "100452,108866,109012,3302" }]
@@ -805,16 +766,12 @@ table = "7138"
 variables = ["10276"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 231
+estimated_values_per_period = 195
 min_rows = 1
-max_rows = 231
+max_rows = 195
 refresh_recent_periods = 1
-classifications = { "c2" = "6794,4,5" }
-detail_classification = "c2"
-detail_total = "6794"
-detail_levels = ["n1", "n2", "n3"]
+classifications = { "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c58" = "41126,99749,47813,31615,2792,100052,108866" }]
-extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -919,16 +876,12 @@ table = "7126"
 variables = ["3593"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 231
+estimated_values_per_period = 195
 min_rows = 1
-max_rows = 231
+max_rows = 195
 refresh_recent_periods = 1
-classifications = { "c58" = "2795", "c2" = "6794,4,5" }
-detail_classification = "c2"
-detail_total = "6794"
-detail_levels = ["n1", "n2", "n3"]
+classifications = { "c58" = "2795", "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c58" = "2792,33061,100052,108866,108875,99127,3302" }]
-extra_levels = ["n1", "n2", "n3"]
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -950,13 +903,13 @@ table = "10061"
 variables = ["2667"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 28165
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 28165
+max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c1568" = "all" }
 extra_sets = [{ "c1568" = "120704", "c2" = "4,5" }, { "c1568" = "120704", "c58" = "100052,2793,1144,108866,100754,1145,1146,1147,1148,1149,1150,1151,1152,6798,1153,1154,1155,2503" }, { "c1568" = "120704", "c86" = "2776,2777,2778,2779,2780" }]
-extra_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -978,16 +931,13 @@ table = "4093"
 variables = ["4090"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 264
+estimated_values_per_period = 780
 min_rows = 1
-max_rows = 264
+max_rows = 780
 refresh_recent_periods = 1
 period_type = "trimestre"
 group_periods_by_year = true
-classifications = { "c2" = "6794,4,5" }
-detail_classification = "c2"
-detail_total = "6794"
-detail_levels = ["n1", "n2", "n3"]
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1061,16 +1011,13 @@ table = "5436"
 variables = ["5932"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 264
+estimated_values_per_period = 780
 min_rows = 1
-max_rows = 264
+max_rows = 780
 refresh_recent_periods = 1
 period_type = "trimestre"
 group_periods_by_year = true
-classifications = { "c2" = "6794,4,5" }
-detail_classification = "c2"
-detail_total = "6794"
-detail_levels = ["n1", "n2", "n3"]
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1144,13 +1091,13 @@ table = "10295"
 variables = ["13431"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 16899
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 16899
+max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c58" = "33269,6744,118282,114535,100052,2793,1144,108866,100754,1145,1146,1147,1148,1149,1150,1151,1152,6798,1153,1154,1155,2503" }, { "c2" = "6794", "c86" = "2776,2777,2778,2779,2780" }]
-extra_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -1253,14 +1200,11 @@ table = "7015"
 variables = ["10192"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 66
+estimated_values_per_period = 195
 min_rows = 1
-max_rows = 66
+max_rows = 195
 refresh_recent_periods = 1
-classifications = { "c2" = "6794,4,5" }
-detail_classification = "c2"
-detail_total = "6794"
-detail_levels = ["n1", "n2", "n3"]
+classifications = { "c2" = "all" }
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -2719,9 +2663,9 @@ table = "4277"
 variables = ["11754"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 264
+estimated_values_per_period = 99
 min_rows = 1
-max_rows = 264
+max_rows = 99
 refresh_recent_periods = 1
 classifications = { "c58" = "56742", "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c58" = "1146,1147,1148,1149,1150,1151,1152,1153" }]
@@ -2827,9 +2771,9 @@ table = "9730"
 variables = ["8992"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 198
+estimated_values_per_period = 99
 min_rows = 1
-max_rows = 198
+max_rows = 99
 refresh_recent_periods = 1
 classifications = { "c2" = "all" }
 extra_sets = [{ "c2" = "6794", "c58" = "100448,71509,71510,100452,71511,3302" }]
@@ -2881,9 +2825,9 @@ table = "6974"
 variables = ["388"]
 territorial_levels = ["n1", "n2", "n3"]
 period_discovery_level = "n1"
-estimated_values_per_period = 528
+estimated_values_per_period = 264
 min_rows = 1
-max_rows = 528
+max_rows = 264
 refresh_recent_periods = 1
 classifications = { "c339" = "all" }
 extra_sets = [{ "c339" = "7999", "c4908" = "103423,103424,103425,103426,103427,103428,8050,103429,103430,8051,103432,8052,103434,8053,103442,8054" }]
@@ -3437,14 +3381,12 @@ table = "5457"
 variables = ["8331"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 5633
+max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c782" = "0,40129,40092,83388,45982,83399,40329,83389,40130,40099,40100,40101,40102,40103,40131,40136,40104,40105,40137,40468,40138,40139,40140,40141,40330,40106,40331,83390,40142,40143,40107,83391,40108,40109,40144,83392,40145,83400,40146,40147,40110,40111,40112,40148,40113,83395,40114,40149,83401,40150,83393,40115,40151,40152,40116,40260,40117,40261,40118,40119,40262,40263,40264,40120,40121,40122,83394,83396,40265,40266,40267,40268,40269,83397,40123,83398,40270,40124,40125,40271,40126,40127,40128,40272,40273,40274" }
-detail_classification = "c782"
-detail_total = "0"
-detail_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -3607,14 +3549,12 @@ table = "5930"
 variables = ["6549"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 5633
+max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c734" = "0,83436,83437,39326,83438,39327,83439,39328" }
-detail_classification = "c734"
-detail_total = "0"
-detail_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -3636,16 +3576,13 @@ table = "6878"
 variables = ["183"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 5633
+max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c829" = "46302,46303,46304,46305,46306,46307,46422,46423" }
-detail_classification = "c829"
-detail_total = "46302"
-detail_levels = ["n1", "n2", "n3"]
 extra_sets = [{ "c829" = "46302", "c218" = "46503,46504,46505,46506,46507,4783,111518" }, { "c829" = "46302", "c12517" = "111519,111520,111521,111522,111523,111524,111525,114349,111526" }, { "c829" = "46302", "c12564" = "112634,112635,41146" }, { "c829" = "46302", "c12771" = "118190,118191,118192,118193,118194,46437,46501,47177" }]
-extra_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -4824,16 +4761,14 @@ table = "9985"
 variables = ["603"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 5633
+max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c1329" = "57146,15608,15609,15675,15676,15677,15678,15679,15680,15681,15682,15683,15684,15685,15686,15687" }
-detail_classification = "c1329"
-detail_total = "57146"
-detail_levels = ["n1", "n2", "n3"]
 extra_sets = [{ "c1329" = "57146", "c12446" = "110088,110089,110090,110091,110092,110093,110094" }]
 extra_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"
@@ -4855,16 +4790,14 @@ table = "9987"
 variables = ["603"]
 territorial_levels = ["n1", "n2", "n3", "n6"]
 period_discovery_level = "n1"
-estimated_values_per_period = 5633
+estimated_values_per_period = 39431
 min_rows = 1
-max_rows = 5633
+max_rows = 39431
 refresh_recent_periods = 1
 classifications = { "c1328" = "57131,77667,77668,77669,77670,77671,77672,77673,77674,77675,77676,77677,77678,77679,77680,77681,77682,77683,77684,77685,77686,77687,77688,77689,77690,77691,77692,77693,77694,77695,77696,77697,77698,77699,77700,77701,77702" }
-detail_classification = "c1328"
-detail_total = "57131"
-detail_levels = ["n1", "n2", "n3"]
 extra_sets = [{ "c1328" = "57131", "c12446" = "110088,110089,110090,110091,110092,110093,110094" }]
 extra_levels = ["n1", "n2", "n3"]
+category_chunk = 7
 
 [datasets.silver]
 transformer = "sidra_observation"

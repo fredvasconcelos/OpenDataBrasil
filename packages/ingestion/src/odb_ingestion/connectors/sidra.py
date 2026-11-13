@@ -125,6 +125,11 @@ class SidraParams(BaseModel):
     # (nota da tabela: "disponível apenas para o nível territorial Brasil"). Vazio no
     # conjunto: vale ``extra_levels``.
     extra_set_levels: tuple[tuple[str, ...], ...] = ()
+    # Categorias por requisição nos grupos que pedem municípios (n6), quando a lista
+    # inteira passaria do limite de valores da API (ponto 7 do relatório de
+    # 2026-11-12). A lista é dividida em lotes na ordem declarada, com sufixo -k<n>;
+    # grupos só até UF não são divididos.
+    category_chunk: int | None = Field(default=None, ge=1)
     period_type: Literal["ano", "mes", "trimestre"] = "ano"
     # Meses ou trimestres do mesmo ano numa única requisição (partição "p<ano>").
     # Com isso, ``estimated_values_per_period``, ``min_rows`` e ``max_rows`` valem
@@ -335,7 +340,32 @@ class SidraParams(BaseModel):
                         own or self.extra_levels,
                     )
                 )
-        return groups
+        return self._chunked(groups) if self.category_chunk else groups
+
+    def _chunked(self, groups: list[RequestGroup]) -> list[RequestGroup]:
+        """Divide em lotes a lista de categorias dos grupos que pedem municípios."""
+        size = self.category_chunk or 0
+        out: list[RequestGroup] = []
+        for group in groups:
+            levels = group.levels or self.territorial_levels
+            lists = {c: v.split(",") for c, v in group.classifications.items() if "," in v}
+            if "n6" not in levels or not lists:
+                out.append(group)
+                continue
+            cid, cats = max(lists.items(), key=lambda kv: len(kv[1]))
+            if len(cats) <= size:
+                out.append(group)
+                continue
+            for n, start in enumerate(range(0, len(cats), size), start=1):
+                out.append(
+                    RequestGroup(
+                        group.variables,
+                        {**group.classifications, cid: ",".join(cats[start : start + size])},
+                        f"{group.suffix}-k{n}",
+                        group.levels,
+                    )
+                )
+        return out
 
     def partition_key(self, period: str, group: RequestGroup | None = None) -> str:
         """Chave de partição; inclui os níveis (mudar os níveis gera partições novas).

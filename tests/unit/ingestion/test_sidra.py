@@ -523,3 +523,28 @@ def test_extra_sets_bring_marginal_details() -> None:
         )
     with pytest.raises(ValueError, match="extra_levels exige"):
         SidraConnector.params(_ds({**base, "extra_levels": ["n1"]}))
+
+
+def test_category_chunks_only_for_municipal_groups() -> None:
+    """Ponto 7: categorias em lotes nos grupos com município; até UF, uma requisição."""
+    params = SidraConnector.params(
+        _ds(
+            {
+                "table": "2654",
+                "variables": ["343"],
+                "territorial_levels": ["n1", "n2", "n3", "n6"],
+                "estimated_values_per_period": 45000,
+                "classifications": {"c1836": "all"},
+                "extra_sets": [
+                    {"c1836": "99818", "c260": "1,2,3,4,5"},
+                    {"c1836": "99818", "c2": "4,5"},
+                ],
+                "extra_set_levels": [[], ["n1", "n2", "n3"]],
+                "category_chunk": 2,
+            }
+        )
+    )
+    suffixes = [g.suffix for g in params.request_groups()]
+    assert suffixes == ["", "-xc260-k1", "-xc260-k2", "-xc260-k3", "-xc2"]
+    k3 = params.request_group("n1n2n3n6-p2024-xc260-k3")
+    assert k3.classifications["c260"] == "5"

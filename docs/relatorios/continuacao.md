@@ -52,8 +52,37 @@ Ponto de partida: commit `db711cc` (release local `7e2eb607`).
 
 ### Bloco C: volume
 
+Estimativa de 2026-11-13, em 50 tabelas com município e detalhe:
+- **Município, detalhe a detalhe:** cerca de 1.911 requisições. A fonte leva de 60 a
+  120 s por consulta municipal com categorias, o que dá 30 a 60 h de carga, a rodar
+  em blocos e de noite.
+- **Cruzamento completo no município:** cerca de 1,33 milhão de requisições (só a 4412,
+  casamentos, teria 38 bilhões de valores). Inviável.
+- **Cruzamento completo até UF:** viável só nas tabelas pequenas (Censo, POF).
+- **Decisão:**
+  - liberar o município detalhe a detalhe (C2), com a divisão das categorias em lotes
+    de requisição (`category_chunk`);
+  - cruzamentos (C1/C3) só até UF e por KPI, em blocos.
+- **Swagger do dados.gov.br:** <https://dados.gov.br/swagger-ui/index.html> (documento
+  em /v3/api-docs).
+
 - [ ] **C1 (ponto 6):** carga dos cruzamentos completos nos KPIs com detalhes
   marginais; implementar os que couberem.
+- [ ] **C2 (ponto 7): em andamento.**
+  - **Feito no código:** `category_chunk` no conector, `ALL_MUNICIPAL` no gerador e
+    testes verdes.
+  - **Carga desde 2026-11-13:** contêiner destacado `odb-carga-municipal`, com 31
+    datasets (lista em `docs/relatorios/blocoC-datasets.txt`), rodando
+    `odb ingest run`, depois `odb silver build` e `odb gold build`.
+  - **Acompanhar:** `docker logs --tail 5 odb-carga-municipal` e
+    `docker ps -a | grep carga`.
+  - **No fim:**
+    1. conferir as falhas (`odb ingest status`);
+    2. repetir só os que falharam;
+    3. conferir a Gold (`odb quality gold`);
+    4. `odb release check` e `odb release activate`;
+    5. reconstruir a API e o portal;
+    6. rodar os testes e marcar este item.
 - [ ] **C2 (ponto 7):** liberar o município em todas as séries (divisão das
   requisições por categoria) e otimizar o modelo para as consultas.
 - [ ] **C3 (ponto 17):** levantar no acervo as tabelas com cruzamentos, avaliar a
@@ -61,16 +90,26 @@ Ponto de partida: commit `db711cc` (release local `7e2eb607`).
 
 ### Bloco D: documentação e registros
 
-- [ ] **D1 (ponto 16):** lista de todas as tabelas-irmãs recusadas ou pendentes, para
+- [x] **D1 (ponto 16):** feito ([tabelas-irmas-conferencia.md](../data_catalog/tabelas-irmas-conferencia.md)). lista de todas as tabelas-irmãs recusadas ou pendentes, para
   a conferência manual.
-- [ ] **D2 (ponto 12):** avaliação da Bronze. Comparar o peso de guardar tudo (FTP
+- [x] **D2 (ponto 12):** feito (relatório, ponto 20). avaliação da Bronze. Comparar o peso de guardar tudo (FTP
   externo para curadoria) com o de guardar só a vigente.
-- [ ] **D3 (pontos 9, 10, 12 e 5):** a chave do dados.gov.br está no `.env` (`ODB_DADOSGOV_API_KEY`, validada com HTTP 200 em 2026-11-13); a varredura começa depois desta rodada. registros:
+- [x] **D3 (pontos 9, 10, 12 e 5):** registrado (relatório, ponto 21). a chave do dados.gov.br está no `.env` (`ODB_DADOSGOV_API_KEY`, validada com HTTP 200 em 2026-11-13); a varredura começa depois desta rodada. registros:
   - dados.gov.br no fim;
   - teste de carga e OpenTelemetry no fim do projeto;
   - licenças no fim;
   - RM e RIDE (DF) mais tarde.
-- [ ] **D4:** relatório de pontos críticos atualizado, com as perguntas novas.
+- [x] **D4:** feito (relatório, rodada 3). relatório de pontos críticos atualizado, com as perguntas novas.
+
+## Depois desta rodada (ordem do mantenedor, 2026-11-13)
+
+1. **Série histórica completa do Censo Demográfico,** antes do dados.gov.br.
+   - Referência:
+     <https://www.ibge.gov.br/estatisticas/sociais/trabalho/25089-censo-1991-6.html?edicao=25091&t=series-historicas>
+   - A página do IBGE responde 403 a clientes automatizados (§7.3). O levantamento
+     vai pelo acervo do SIDRA (tabelas das séries históricas dos Censos), pelos
+     descritores e pelo FTP oficial.
+2. **Varredura do dados.gov.br** (Onda 0, inventário), com a chave no `.env`.
 
 ## Comandos de carga (referência)
 

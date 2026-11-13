@@ -284,3 +284,75 @@ Incidentes da rodada, resolvidos:
 - **Para decidir:** se a conferência de schema deve comparar com a última versão
   publicada, e não com a última gravada. Assim, construções que falham não
   "contaminariam" o schema, e a opção manual ficaria para casos raros.
+
+---
+
+# Rodada 3 (2026-11-13): respostas do mantenedor e o que foi feito
+
+Plano vivo e estado de cada item: [continuacao.md](continuacao.md).
+
+| Ponto | Decisão do mantenedor | Feito |
+|---|---|---|
+| 1. POF a preços de | IPCA geral e por grupo, com "Corrigir por" | ADR-0020: IPCA por grupo em série (655, 2938, 1419, 7060); fator igual à razão do número-índice oficial (2,3641 de 2003 a 2018); seletor no portal (DS 2.3.7) |
+| 2. POF 2002, faixas | dimensão própria com o rótulo "Classes de rendimento" | faixas da c12191 renomeadas para a dimensão do fato, cada edição com as suas; decisão nas notas |
+| 3. POF 2002, 18 tipos | categorias equivalentes e rótulos limpos | 18 recodificadas (12 iguais no nome, 6 aproximadas, nas notas); rótulos sem numeração (DS 2.3.6) |
+| 4. POF 1987 e 1995 | sem hierarquia; explicar o que se mostra | nota "o que se mostra" (percentual do total, com exemplo de Belém em 1995); unidade nas colunas ("Total (%)", "(R$)") e % do Total em KPIs aditivos |
+| 5. RM | manter; RIDE depois | mantido |
+| 6. Cruzamentos | quanto custa? | ver o ponto 19 |
+| 7. Municípios | liberar | carga em andamento (contêiner `odb-carga-municipal`, 31 tabelas, cerca de 1.900 requisições) |
+| 8. Legenda e índices | corrigir a escala; índice claro | escala sem colapso (`roundestIn`); legenda "Índice (2022 = 100)" |
+| 11, 13, 14. Notas | registrar tudo; taxas também agregadas | nota de método na Gold para todo KPI com agregação; taxas pela média com ressalva; arredondamento; divergências entre fontes; detalhe só nos níveis da nota da tabela |
+| 15. IPCA | composição, se a literatura usar | composição (Π(1 + v) − 1), que é o método do IBGE para o acumulado; o ano confere com a inflação oficial |
+| 16. Irmãs | listar para conferência | [tabelas-irmas-conferencia.md](../data_catalog/tabelas-irmas-conferencia.md) (67 tabelas) |
+| 18. Schema | decidir a melhor estratégia | ADR-0019: conferência contra a última versão publicada |
+
+## 19. Cruzamentos completos: a carga (resposta ao ponto 6)
+
+| Opção | Requisições | Situação |
+|---|---|---|
+| Município, um detalhe por vez | ~1.900 | em carga |
+| Cruzamento completo no município | ~1,33 milhão (só a 4412 teria 38 bilhões de valores) | inviável |
+| Cruzamento completo até UF | dezenas a centenas por KPI | viável, KPI a KPI |
+
+**Para decidir:** quais cruzamentos até UF entram primeiro. Proposta:
+- óbitos (sexo × idade);
+- nascidos vivos (idade da mãe × sexo);
+- alfabetização (sexo × cor ou raça × idade);
+- PNS (sexo × idade).
+
+## 20. Bronze: o que guardar (resposta ao ponto 12)
+
+Medido em 2026-11-13:
+- versões vigentes: 20,3 GB (DATASUS 14,9 GB, IBGE 5,0 GB, MJSP 0,4 GB);
+- versões antigas: 0,05 GB.
+
+Com a carga municipal, a Bronze deve passar de 40 GB. O histórico pesa pouco; o
+espaço vai quase todo para o vigente.
+
+**Recomendação:**
+- **Manter a Bronze inteira na máquina local.** É o original preservado (§6) e
+  permite reprocessar sem baixar de novo. O espelho do DATASUS levou cerca de 8 h.
+- **Cópia externa só como backup** (§25.1), num disco ou num armazenamento de
+  objetos, e não num FTP público. Republicar a Bronze esbarraria nas licenças
+  (§23).
+- **Produção recebe só o release da Gold**, porque o portal não lê Bronze nem Silver
+  (§5.3).
+
+**Para decidir:**
+- onde fica o backup da Bronze;
+- se a Silver também vai para o backup (ela se reconstrói a partir da Bronze).
+
+## 21. Outras perguntas novas
+
+- **Correção pelo IPCA em outros KPIs em moeda**, como rendimento médio, massa de
+  rendimento e custo do m². A configuração é pronta, mas cada caso tem a sua regra de
+  data de referência.
+- **POF de 1995, irmãs 434 e 435** (idade e instrução do chefe): curar à mão.
+- **Equivalências aproximadas da POF 2002**, como "viagens" e "viagens esporádicas":
+  confirmar.
+- **Registros para o fim do projeto:**
+  - licenças;
+  - teste de carga extensivo e otimização das consultas;
+  - OpenTelemetry com verificação de consultas em produção.
+- **Próxima onda:** série histórica do Censo Demográfico (pedido de 2026-11-13) e, em
+  seguida, a varredura do dados.gov.br (chave no `.env`, validada).

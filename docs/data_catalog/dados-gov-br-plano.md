@@ -30,6 +30,23 @@ Endpoints de leitura que interessam:
 Os arquivos de cada conjunto ficam, em geral, no site do órgão publicador. Baixá-los
 não passa pela API, e cada fonte segue as próprias condições.
 
+## Referências indicadas pelo mantenedor (2026-11-13)
+
+Ainda não lidas. Serão lidas no início da varredura.
+
+- Swagger da API: <https://dados.gov.br/swagger-ui/index.html> (documento em
+  `/v3/api-docs`, lido em 2026-11-12)
+- Governo aberto no Brasil (CGU):
+  <https://www.gov.br/cgu/pt-br/governo-aberto/governo-aberto-no-brasil>
+- Instrução Normativa INDA nº 4/2012 (Infraestrutura Nacional de Dados Abertos):
+  <https://www.gov.br/governodigital/pt-br/dados-abertos/InstrucaoNormativaINDA42012.pdf>
+- Portal Brasileiro de Dados Abertos (Governo Digital):
+  <https://www.gov.br/governodigital/pt-br/dados-abertos/portal-brasileiro-de-dados-abertos>
+
+**Estado da chave (2026-11-13):** chave de Consumidor no `.env` local
+(`ODB_DADOSGOV_API_KEY`), conferida com HTTP 200 em `/dados/api/publico/organizacao`.
+A varredura (Onda 0) começa depois da rodada atual.
+
 ## Plano em ondas (cada onda precisa de aprovação)
 
 ### Onda 0: chave e inventário (só metadados)

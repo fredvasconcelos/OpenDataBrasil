@@ -215,6 +215,10 @@ DETAIL_LIMIT = 45_000  # margem sob o limite de 50.000 valores por requisição
 # Categorias no nível municipal só em tabelas com poucos períodos (os Censos):
 # cada consulta municipal com categorias leva de 60 a 120 s na fonte.
 MAX_MUNICIPAL_DETAIL_UNITS = 3
+# Município liberado em todas as séries (ponto 7 do relatório de 2026-11-12): acima do
+# limite, as categorias vão em lotes de requisição (``category_chunk``). Só fica até UF
+# quando uma categoria sozinha passa do limite (séries mensais no município).
+ALL_MUNICIPAL = True
 
 
 @dataclass
@@ -372,12 +376,13 @@ class Extras:
     details: list[Detail] = field(default_factory=list)
     levels: tuple[str, ...] = ()  # níveis das requisições extras (vazio: todos)
     rows: int = 0  # maior número de valores numa requisição extra
+    chunk: int | None = None  # categorias por requisição municipal (None: sem divisão)
     # Níveis próprios de cada detalhe, quando a nota da tabela restringe a
     # classificação (vazio: vale ``levels``).
     per_set: list[tuple[str, ...]] = field(default_factory=list)
 
 
-def plan_extras(  # noqa: PLR0917 - contexto da geração de um KPI
+def plan_extras(  # noqa: PLR0912, PLR0917 - regras de volume e de nota da tabela, por KPI
     gen: Generated,
     kpi: PanoramaKpi,
     info: Mapping[str, Any],
@@ -398,7 +403,7 @@ def plan_extras(  # noqa: PLR0917 - contexto da geração de um KPI
     units = len(
         {p[:4] for p in info.get("periods") or []} if per_year > 1 else info.get("periods") or []
     )
-    municipal = "n6" in levels and units <= MAX_MUNICIPAL_DETAIL_UNITS
+    municipal = "n6" in levels and (ALL_MUNICIPAL or units <= MAX_MUNICIPAL_DETAIL_UNITS)
     out = Extras()
     planned: list[tuple[Detail, int]] = []
     for label, category in fixed.items():
@@ -421,8 +426,12 @@ def plan_extras(  # noqa: PLR0917 - contexto da geração de um KPI
     # Cada município está numa só classe de tamanho: o detalhe municipal não informa nada.
     by_size = any(d.name.startswith(MUNICIPAL_SIZE) for d, _ in planned)
     lvls = levels if municipal and not by_size else [lv for lv in levels if lv in DETAIL_LEVELS]
-    if lvls and _rows_per_period(info, lvls) * widest * per_year > DETAIL_LIMIT:
-        lvls = [lv for lv in lvls if lv in DETAIL_LEVELS]
+    per_category = _rows_per_period(info, lvls) * per_year if lvls else 0
+    if lvls and per_category * widest > DETAIL_LIMIT:
+        if "n6" in lvls and 0 < per_category <= DETAIL_LIMIT:
+            out.chunk = DETAIL_LIMIT // per_category  # município em lotes de categorias
+        else:
+            lvls = [lv for lv in lvls if lv in DETAIL_LEVELS]
     if not lvls:
         gen.extra_skipped += [(kpi.id, d.cid, "sem nível Brasil, Região ou UF") for d, _ in planned]
         return out
@@ -435,7 +444,8 @@ def plan_extras(  # noqa: PLR0917 - contexto da geração de um KPI
                 gen.extra_skipped.append((kpi.id, detail.cid, "níveis da nota da tabela"))
                 continue
             own = () if own == tuple(lvls) else own
-        rows = _rows_per_period(info, list(own or lvls)) * n * per_year
+        size = min(n, out.chunk) if out.chunk and not own else n
+        rows = _rows_per_period(info, list(own or lvls)) * size * per_year
         if rows > DETAIL_LIMIT:
             gen.extra_skipped.append((kpi.id, detail.cid, f"{rows} valores por requisição"))
             continue
@@ -461,6 +471,7 @@ class Complement:
     common: dict[str, str]  # classificações em comum com a base → Total pedido
     rows: int
     names: dict[str, str] = field(default_factory=dict)  # cNNN → nome, das comuns
+    chunk: int | None = None  # categorias por requisição municipal
 
 
 def _total_of(cls: Mapping[str, Any]) -> str | None:
@@ -506,10 +517,16 @@ def _complement(  # noqa: PLR0911, PLR0917 - um retorno por motivo de recusa
         return None, why
     available = {f"n{n['Id']}" for n in sd.get("NiveisTerritoriais") or []}
     lvls = [lv for lv in _levels(info) if lv in available]
-    if "n6" in lvls and len({p[:4] for p in periods}) > MAX_MUNICIPAL_DETAIL_UNITS:
+    per_category = _rows_per_period(info, lvls) * per_year
+    if "n6" in lvls and (per_category > DETAIL_LIMIT or not ALL_MUNICIPAL):
         lvls = [lv for lv in lvls if lv in DETAIL_LEVELS]
-    rows = _rows_per_period(info, lvls) * (len(detail.categories) - 1) * per_year
-    if not lvls or rows > DETAIL_LIMIT:
+        per_category = _rows_per_period(info, lvls) * per_year
+    n = len(detail.categories) - 1
+    chunk = (
+        DETAIL_LIMIT // per_category if per_category and per_category * n > DETAIL_LIMIT else None
+    )
+    rows = per_category * (min(n, chunk) if chunk else n)
+    if not lvls or rows > DETAIL_LIMIT or (chunk is not None and chunk < 1):
         return None, f"{rows} valores por requisição"
     cats = ",".join(c for c in detail.categories if c != detail.total)
     totals = {cid: str(total) for cid, total in common.items()}
@@ -519,6 +536,7 @@ def _complement(  # noqa: PLR0911, PLR0917 - um retorno por motivo de recusa
             detail=detail,
             levels=lvls,
             params={**totals, detail.source_cid: cats},
+            chunk=chunk,
             common=totals,
             rows=rows,
             names={f"c{c['Id']}": str(c["Nome"]) for c in classes},
@@ -824,6 +842,7 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
             )
             continue
         detail_params: dict[str, Any] = {}
+        main_chunk: int | None = None
         if detail is not None:
             n_detail = len(detail.categories) - 1
             full = rows * (n_detail + 1)
@@ -837,6 +856,11 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
             municipal = "n6" in levels and units > MAX_MUNICIPAL_DETAIL_UNITS
             if full <= DETAIL_LIMIT and not municipal:
                 detail.levels = ()
+            elif ALL_MUNICIPAL and "n6" in levels and 0 < rows <= DETAIL_LIMIT:
+                # Uma categoria por vez cabe no limite: todas, em lotes de requisição.
+                detail.levels = ()
+                if full > DETAIL_LIMIT:
+                    main_chunk = DETAIL_LIMIT // rows
             elif partial <= DETAIL_LIMIT and any(lv in DETAIL_LEVELS for lv in levels):
                 detail.levels = tuple(lv for lv in levels if lv in DETAIL_LEVELS)
             else:
@@ -889,6 +913,15 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                     "detail_levels": list(detail.levels),
                 }
                 rows = max(rows, partial)
+            elif main_chunk:
+                # Lista explícita, dividida em lotes pelo conector (``category_chunk``).
+                detail_params = {
+                    "classifications": {
+                        **fixed_params,
+                        detail.source_cid: ",".join(detail.categories),
+                    }
+                }
+                rows = rows * main_chunk
             else:
                 detail_params = {"classifications": {**fixed_params, detail.source_cid: "all"}}
                 rows = full
@@ -904,6 +937,9 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                     detail_params["extra_levels"] = list(extras.levels)
                 if any(extras.per_set):
                     detail_params["extra_set_levels"] = [list(x) for x in extras.per_set]
+            chunks = [c for c in (main_chunk, extras.chunk) if c]
+            if chunks:
+                detail_params["category_chunk"] = min(chunks)
                 rows = max(rows, extras.rows)
         else:
             if fixed_params:
@@ -1003,6 +1039,7 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                                 else {}
                             ),
                             "classifications": comp.params,
+                            **({"category_chunk": comp.chunk} if comp.chunk else {}),
                         },
                         "silver": {
                             "transformer": "sidra_observation",
