@@ -169,7 +169,7 @@ describe("SeriesChart", () => {
         cat("2777", "Preta", 120),
       ],
     } as unknown as Series;
-    const { container } = wrap(<SeriesChart data={data} />);
+    const { container } = wrap(<SeriesChart data={data} additive />);
     const legend = container.querySelector(".series-legend")?.textContent ?? "";
     expect(legend).toContain("Branca");
     expect(legend).not.toContain("Total");
@@ -181,6 +181,9 @@ describe("SeriesChart", () => {
     const tip = screen.getByRole("tooltip");
     expect(tip.querySelector(".series-tip-total")?.textContent).toContain("Total");
     expect(tip.textContent).toContain("900.000");
+    // % do Total do período nas categorias (KPI aditivo): Branca 400 de 900.000.
+    expect(tip.textContent).toContain("400 (0,0%)");
+    expect(tip.querySelector(".series-tip-total .share")).toBeNull();
   });
 });
 

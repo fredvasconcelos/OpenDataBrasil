@@ -263,9 +263,6 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
 .sidebar .field select { width: 100%; min-height: 40px; padding: 0 10px; }
 .sidebar fieldset { border: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
 .sidebar legend { font-size: var(--odbr-fs-caption); font-weight: 800; color: var(--odbr-text-muted); padding: 0 0 4px; }
-.sidebar fieldset .method { margin: 4px 0 0; font-size: var(--odbr-fs-caption); color: var(--odbr-text-muted); }
-.sidebar fieldset .method summary { cursor: pointer; font-weight: 700; color: var(--odbr-text-body); }
-.sidebar fieldset .method p { margin: 4px 0 0; }
 .sidebar fieldset .hint { margin: 0 0 4px; font-size: var(--odbr-fs-caption); color: var(--odbr-text-muted); }
 .sidebar .check {
   display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 var(--odbr-space-2);
@@ -474,7 +471,7 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
 .series-legend { display: flex; flex-wrap: wrap; gap: 2px 14px; list-style: none; padding: 0; margin: 8px 0 0; }
 .series-plot svg:focus-visible { outline: 2px solid var(--odbr-focus); outline-offset: 2px; border-radius: 6px; }
 .series-tip {
-  position: absolute; z-index: 5; pointer-events: none; min-width: 120px; max-width: min(280px, calc(100% - 8px));
+  position: absolute; z-index: 5; pointer-events: none; min-width: 120px; max-width: min(320px, calc(100% - 8px));
   padding: 8px 10px; border-radius: 10px; border: 1px solid var(--odbr-border);
   background: var(--odbr-bg-surface); color: var(--odbr-text); box-shadow: var(--odbr-shadow-2);
   font-size: var(--odbr-fs-small); font-variant-numeric: tabular-nums;
@@ -484,8 +481,9 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
 .series-tip li { display: flex; align-items: center; gap: 6px; }
 .series-tip-total { padding-bottom: 4px; margin-bottom: 2px; border-bottom: 1px solid var(--odbr-border); }
 .series-tip-dot { width: 8px; height: 8px; border-radius: 2px; flex: none; }
-.series-tip-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--odbr-text-muted); font-weight: 700; }
-.series-tip-value { margin-left: auto; font-size: 16px; font-weight: 900; }
+.series-tip-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--odbr-text-muted); font-size: var(--odbr-fs-caption); font-weight: 700; }
+.series-tip-value { margin-left: auto; font-size: var(--odbr-fs-small); font-weight: 800; white-space: nowrap; }
+.series-tip-value .share { font-size: var(--odbr-fs-caption); font-weight: 700; color: var(--odbr-text-muted); }
 .series-tip-more, .series-tip-unit { font-size: var(--odbr-fs-micro); font-weight: 700; color: var(--odbr-text-muted); }
 .series-legend-gap svg { overflow: visible; }
 .series-legend li { display: inline-flex; align-items: center; gap: 6px; color: var(--odbr-text-muted); font-weight: 700; }
@@ -600,7 +598,16 @@ p.error { margin: var(--odbr-space-2) 0 0; font-size: var(--odbr-fs-small); }
   .area-meta .meta-more { margin-top: 0; }
   .area-meta .meta-more:not([open]) { display: inline; }
   .area-meta .meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--odbr-space-2) var(--odbr-space-4); }
-  .area-meta .meta-more[open] { flex-basis: 100%; }
+  /* Aberto na tela cheia (DS 2.3.10): painel opaco acima da linha da fonte, com rolagem
+     própria, sem empurrar o painel (a página não rola nessa largura). */
+  .area-meta { position: relative; }
+  .area-meta .meta-more[open] { display: inline; }
+  .area-meta .meta-more[open] .meta-body {
+    position: absolute; z-index: 20; left: 0; right: 0; bottom: calc(100% + 8px);
+    max-height: 60vh; overflow: auto; padding: var(--odbr-space-4) var(--odbr-space-6);
+    background: var(--odbr-bg-surface); border: 1px solid var(--odbr-divider); border-radius: 12px;
+    box-shadow: var(--odbr-shadow-2);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -811,3 +818,4 @@ mark { background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px; 
 .share-base details[open] p { position: absolute; z-index: 3; left: 0; right: 0; margin: 4px 0 0; padding: 8px 12px; background: var(--odbr-bg-surface); border: 1px solid var(--odbr-divider); border-radius: var(--odbr-radius-md); box-shadow: var(--odbr-shadow-md, 0 4px 12px rgb(0 0 0 / 12%)); font-weight: 400; color: var(--odbr-text-body); }
 .share-base select { height: auto; min-height: 0; padding: 2px 8px; }
 .data-table thead th .th-toggle { display: block; margin-left: auto; font-size: var(--odbr-fs-caption); font-weight: 700; color: var(--odbr-text-link, var(--odbr-text-active)); }
+.meta-more .method-list li + li { margin-top: 6px; }

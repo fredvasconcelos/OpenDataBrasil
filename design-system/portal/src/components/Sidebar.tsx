@@ -102,12 +102,6 @@ export function Sidebar({
                   {c.label}
                 </label>
               ))}
-              {correction ? (
-                <details className="method">
-                  <summary>{t("dashboard.howCalculated")}</summary>
-                  <p>{kpi.corrections.find((c) => c.correction_id === correction)?.note}</p>
-                </details>
-              ) : null}
             </fieldset>
           ) : null}
           <label className="field">

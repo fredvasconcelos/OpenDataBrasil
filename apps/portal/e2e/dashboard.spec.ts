@@ -554,10 +554,10 @@ test("detalhes marginais (ADR-0016): uma dimensão por vez e POF antiga sem Bras
 
 test("agregação no tempo (ADR-0017): índice pela média, IPCA pela composição", async ({ page }) => {
   await page.goto("/dashboard?kpi=vendas_materiais&grao=ano&periodo=2024");
-  await expect(page.getByText(/Média dos períodos publicados/)).toBeVisible();
+  await expect(page.locator(".grain-note").getByText(/Média dos períodos publicados/)).toBeVisible();
   await page.goto("/dashboard?kpi=ipca&grao=ano&periodo=2024");
   // Variação mensal composta: o ano é a inflação do ano (4,83% em 2024).
-  await expect(page.getByText(/Composição das variações mensais/)).toBeVisible();
+  await expect(page.locator(".grain-note").getByText(/Composição das variações mensais/)).toBeVisible();
   await expect(page.locator(".data-table tbody")).toContainText("4,83");
 });
 
@@ -599,7 +599,12 @@ test("POF corrigida pelo IPCA (ADR-0020): seletor, unidade e valores", async ({ 
   await group.getByRole("radio", { name: "IPCA geral" }).click();
   await expect(page).toHaveURL(/correcao=ipca(&|$)/);
   await expect(page.locator(".data-table thead")).toContainText("R$ de jan/2018");
-  await page.getByText("Como é calculado").click();
-  await expect(page.getByText(/Método \(ADR-0020\)/).first()).toBeVisible();
+  // Método no rodapé "Sobre este indicador" (DS 2.3.10), e não mais na barra lateral.
+  await expect(group.getByText("Como é calculado")).toHaveCount(0);
+  const more = page.locator(".meta-more");
+  await expect(more.locator("summary")).toContainText("Método");
+  if (!(await more.evaluate((el) => (el as HTMLDetailsElement).open))) await more.locator("summary").click();
+  await expect(more.getByRole("heading", { name: "Método" })).toBeVisible();
+  await expect(more.locator(".method-list li").first()).toContainText("Corrigido por IPCA geral (em uso)");
   await page.screenshot({ path: "test-results/pof-corrigir-por.png", fullPage: false });
 });

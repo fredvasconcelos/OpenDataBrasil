@@ -267,3 +267,17 @@ SVG e PNG exportados devem levar as cores já calculadas (`resolveSvgColors`) e 
 - **Rolagem:** a tabela rola nos dois sentidos, com o cabeçalho e a primeira coluna
   fixos.
 
+## Ajustes da 2.3.10 (método no rodapé e tooltip da série)
+
+- **Método:** "Como é calculado" sai da barra lateral. O rodapé "Sobre este indicador"
+  ganha a seção **Método**, logo antes de Limitações: cada correção por índice de
+  preços (a em uso primeiro, marcada "(em uso)") e a regra de agregação no tempo. O
+  resumo do rodapé fica "Sobre este indicador · Método · Limitações (n)".
+- **Rodapé aberto na tela cheia:** painel opaco acima da linha da fonte, com no máximo
+  60% da altura da janela e rolagem própria. Não empurra nem cobre de forma
+  transparente o mapa e a tabela.
+- **Tooltip da série:** valores em `fs-small` (13 px) e peso 800, rótulos em `caption`.
+  Em KPIs aditivos, cada categoria traz o % do Total do período entre parênteses, como
+  na tabela. Com muitas séries, o tooltip mostra as 8 primeiras e "+ N séries · veja a
+  tabela".
+

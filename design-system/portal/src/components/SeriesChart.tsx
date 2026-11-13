@@ -6,7 +6,7 @@ import { area, line } from "d3-shape";
 import { useTranslations } from "next-intl";
 import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 
-import { formatCompact, formatValue, unitSuffix } from "@/lib/format";
+import { formatCompact, formatShare, formatValue, unitShort, unitSuffix } from "@/lib/format";
 import {
   formatPeriod,
   GROUPED,
@@ -44,7 +44,7 @@ type XY = { x: number; y: number };
 //   sai do quadro (mede a própria caixa antes de pintar). Guia vertical tracejada.
 // - Teclado: foco no gráfico, ← → percorrem os períodos, Home/End, Esc fecha.
 // - Desenhado no tamanho real do contêiner (o texto não encolhe com o cartão).
-export function SeriesChart({ data }: { data: Series }) {
+export function SeriesChart({ data, additive = false }: { data: Series; additive?: boolean }) {
   const t = useTranslations("dashboard");
   const box = useRef<HTMLDivElement>(null);
   const tip = useRef<HTMLDivElement>(null);
@@ -260,6 +260,12 @@ export function SeriesChart({ data }: { data: Series }) {
   });
 
   const unit = unitSuffix(data.unit);
+  // KPI aditivo: cada categoria mostra também o % do Total do período (como na tabela).
+  const totalValue = rows.find((r) => r.color === null)?.value ?? null;
+  const shareOf = (r: (typeof rows)[number]) =>
+    additive && r.color !== null && totalValue && r.value !== null && unitShort(data.unit) !== "%"
+      ? (r.value / totalValue) * 100
+      : null;
   const shown = rows.slice(0, TIP_MAX_ROWS);
   const hidden = rows.length - shown.length;
   const summary = period === null ? "" : `${label(period)}: ${rows.map((r) => `${r.label} ${formatValue(r.value, r.status)}`).join("; ")}`;
@@ -411,7 +417,10 @@ export function SeriesChart({ data }: { data: Series }) {
                 <li key={r.key} className={r.color === null ? "series-tip-total" : undefined}>
                   <span className="series-tip-dot" style={{ background: r.color ?? "transparent" }} aria-hidden="true" />
                   {data.series.length > 1 ? <span className="series-tip-label">{r.label}</span> : null}
-                  <span className="series-tip-value">{formatValue(r.value, r.status)}</span>
+                  <span className="series-tip-value">
+                    {formatValue(r.value, r.status)}
+                    {shareOf(r) !== null ? <span className="share"> ({formatShare(shareOf(r))})</span> : null}
+                  </span>
                 </li>
               ))}
             </ul>

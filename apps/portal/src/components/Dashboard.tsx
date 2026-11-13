@@ -510,7 +510,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
                 onRetry={() => setRetry((r) => r + 1)}
               />
             ) : series.data ? (
-              <SeriesChart data={series.data} />
+              <SeriesChart data={series.data} additive={kpi.additivity === "additive"} />
             ) : (
               <p className="muted">{t("dashboard.loading")}</p>
             )}
@@ -556,7 +556,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
           </section>
 
           <div className="area-meta">
-            <KpiInfo kpi={kpi} releaseId={nav.release_id} />
+            <KpiInfo kpi={kpi} releaseId={nav.release_id} correction={state.correction} />
           </div>
         </div>
       </main>

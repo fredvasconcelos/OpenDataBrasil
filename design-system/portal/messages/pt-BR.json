@@ -93,7 +93,6 @@
     "grain": "Período por",
     "correction": "Corrigir por",
     "nominal": "Nominal (valores da época)",
-    "howCalculated": "Como é calculado",
     "dimensionsCrossed": "Neste nível, os detalhes se cruzam (ex.: sexo e idade juntos).",
     "dimensionsCrossedElsewhere": "Neste nível, um detalhe por vez; os cruzamentos existem em Brasil, região e UF."
   },
@@ -162,7 +161,11 @@
     "license": "Licença",
     "release": "Versão dos dados (release)",
     "caveats": "Limitações",
-    "official": "Ver na fonte oficial"
+    "official": "Ver na fonte oficial",
+    "method": "Método",
+    "correctedBy": "Corrigido por {label}",
+    "inUse": "(em uso)",
+    "timeAggregation": "Período maior que o publicado (trimestre, semestre, ano)"
   },
   "about": {
     "title": "Sobre os dados",

@@ -8,11 +8,18 @@ import { formatPeriod } from "@/lib/format";
 
 // Metadados visíveis do indicador (§19.4). Design System ODBr:
 // - a linha da fonte (fonte, tabela, link oficial, licença, release) fica sempre visível;
-// - descrição, unidade, períodos e limitações ficam em "Sobre este indicador".
+// - descrição, unidade, períodos, método e limitações ficam em "Sobre este indicador".
+// - "Método" (DS 2.3.10): como os valores derivados são calculados (correção por índice de
+//   preços, agregação no tempo); a correção em uso aparece primeiro.
 // Na tela cheia (≥ 1600 px) o bloco vira o rodapé do painel e começa fechado;
 // nas telas menores começa aberto, como cartão no fim da página.
-export function KpiInfo({ kpi, releaseId }: { kpi: Kpi; releaseId: string }) {
+export function KpiInfo({ kpi, releaseId, correction = null }: { kpi: Kpi; releaseId: string; correction?: string | null }) {
   const t = useTranslations("meta");
+  const tg = useTranslations("grainNotes");
+  const corrections = [...(kpi.corrections ?? [])].sort(
+    (a, b) => Number(b.correction_id === correction) - Number(a.correction_id === correction),
+  );
+  const hasMethod = corrections.length > 0 || Boolean(kpi.time_aggregation);
   const wide = useMediaQuery(WIDE_QUERY);
   const periods =
     kpi.periods.length > 1
@@ -46,8 +53,10 @@ export function KpiInfo({ kpi, releaseId }: { kpi: Kpi; releaseId: string }) {
       <details key={wide ? "wide" : "narrow"} className="meta-more" open={!wide}>
         <summary>
           {t("title")}
+          {hasMethod ? ` · ${t("method")}` : ""}
           {kpi.caveats.length ? ` · ${t("caveats")} (${kpi.caveats.length})` : ""}
         </summary>
+        <div className="meta-body">
         <p>{kpi.description}</p>
         <dl>
           <dt>{t("unit")}</dt>
@@ -59,6 +68,27 @@ export function KpiInfo({ kpi, releaseId }: { kpi: Kpi; releaseId: string }) {
             <code>{releaseId}</code>
           </dd>
         </dl>
+        {hasMethod ? (
+          <>
+            <h3 id="metodo">{t("method")}</h3>
+            <ul className="small method-list">
+              {corrections.map((c) => (
+                <li key={c.correction_id}>
+                  <strong>
+                    {t("correctedBy", { label: c.label })}
+                    {c.correction_id === correction ? ` ${t("inUse")}` : ""}:
+                  </strong>{" "}
+                  {c.note}
+                </li>
+              ))}
+              {kpi.time_aggregation ? (
+                <li>
+                  <strong>{t("timeAggregation")}:</strong> {tg(kpi.time_aggregation)}
+                </li>
+              ) : null}
+            </ul>
+          </>
+        ) : null}
         {kpi.caveats.length ? (
           <>
             <h3>{t("caveats")}</h3>
@@ -69,6 +99,7 @@ export function KpiInfo({ kpi, releaseId }: { kpi: Kpi; releaseId: string }) {
             </ul>
           </>
         ) : null}
+        </div>
       </details>
     </section>
   );
