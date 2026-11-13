@@ -98,7 +98,7 @@ kpis = [
   { id = "area_territorial", label = "Área territorial", tabela = "4714", pesquisa = "Censo Demográfico", kpi = "area_territorial" },
   { id = "densidade_demografica", label = "Densidade demográfica", tabela = "4714", pesquisa = "Censo Demográfico", kpi = "densidade_demografica" },
   { id = "crescimento_populacional", label = "Taxa de crescimento da população", tabela = "4709", pesquisa = "Censo Demográfico", variavel = "10605" },
-  { id = "populacao_nos_censos", label = "População nos Censos (série histórica)", tabela = "1286", pesquisa = "Censo Demográfico" },
+  { id = "populacao_nos_censos", label = "População nos Censos (série histórica)", tabela = "1286", pesquisa = "Censo Demográfico", edicoes = ["1209"] },
 ]
 
 [[temas.subtemas]]

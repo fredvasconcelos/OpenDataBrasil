@@ -53,6 +53,37 @@ refresh_recent_periods = 1
 [datasets.silver]
 transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
+series = "ibge-serie-1286"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-1209"
+source = "ibge-sidra"
+official_id = "1209"
+title = "População, por grupos de idade"
+description = "Outra edição da 1286 (ADR-0021): variável 606 em 2022, os anos que a 1286 não tem. KPI de panorama 'População nos Censos (série histórica)'."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/1209"
+
+[datasets.params]
+table = "1209"
+variables = ["606"]
+territorial_levels = ["n1", "n2", "n3"]
+period_discovery_level = "n1"
+estimated_values_per_period = 33
+min_rows = 1
+max_rows = 33
+refresh_recent_periods = 0
+periods = ["2022"]
+classifications = { "c58" = "0" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-serie-1286"
+series_order = 1
 
 [[datasets]]
 id = "ibge-sidra-9515"

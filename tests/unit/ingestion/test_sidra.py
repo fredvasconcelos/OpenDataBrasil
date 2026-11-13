@@ -548,3 +548,18 @@ def test_category_chunks_only_for_municipal_groups() -> None:
     assert suffixes == ["", "-xc260-k1", "-xc260-k2", "-xc260-k3", "-xc2"]
     k3 = params.request_group("n1n2n3n6-p2024-xc260-k3")
     assert k3.classifications["c260"] == "5"
+
+
+def test_explicit_periods_restrict_the_plan(http: HttpClient) -> None:
+    """Edição de uma série (ADR-0021): só os anos que a tabela-base não tem."""
+    catalog = load_sources(TEST_SOURCES)
+    datasets = [
+        d.model_copy(update={"params": {**d.params, "periods": ["2001", "2025", "1990"]}})
+        if d.id == "ibge-sidra-6579"
+        else d
+        for d in catalog.datasets_of("ibge-sidra")
+    ]
+    connector = SidraConnector(catalog.sources["ibge-sidra"], datasets)
+    plan = connector.plan("ibge-sidra-6579", http, Watermark(), full=True)
+    # 1990 não existe na tabela: fica de fora sem erro.
+    assert [r.reference_period for r in plan.requests] == ["2001", "2025"]

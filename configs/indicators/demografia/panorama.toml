@@ -2232,10 +2232,11 @@ fixed_categories = {}
 
 [[facts]]
 id = "fact_sidra_1286"
-dataset = "ibge-sidra-1286"
+dataset = "ibge-serie-1286"
 grain = "território (Brasil, Grande Região, UF) x ano"
 description = "População nos Censos (série histórica): tabela SIDRA 1286 (População e Distribuição da população pelas Grandes Regiões e Unidades da Federação nos Censos Demográficos), no Total."
-fixed_categories = {}
+classifications = {}
+table_rules = { "1286" = { "fixed_categories" = {}, "missing_as_total" = [] }, "1209" = { "fixed_categories" = { "Grupo de idade" = "0" }, "missing_as_total" = [] } }
 
 [[facts]]
 id = "fact_sidra_9515"
@@ -3207,7 +3208,7 @@ caveats = ["Nota da tabela 4709: 1- Dados do Universo.", "Nota da tabela 4709: 2
 id = "populacao_nos_censos"
 name = "População"
 description = "População (Censo Demográfico, tabela SIDRA 1286). Tabela sem classificações. Fonte: IBGE - Censo Demográfico."
-dataset = "ibge-sidra-1286"
+dataset = "ibge-serie-1286"
 variable = "606"
 fact = "fact_sidra_1286"
 column = "valor"
@@ -3215,7 +3216,7 @@ unit = "Pessoas"
 additivity = "non_additive"
 concept = "populacao_nos_censos"
 path = ["População e demografia", "Tamanho e crescimento"]
-caveats = ["Série encerrada na fonte em 2010: é a série publicada, sem atualização.", "Nota da tabela 1286: 1 - Para 1872 até 1950: População presente;", "Nota da tabela 1286: 2 - Para 1960 até 1980: População recenseada;", "Nota da tabela 1286: 3 - Para 1991 até 2010: População residente;", "Nota da tabela 1286: 4 - Para 1940, 1950 e 1960: Os dados referentes ao Brasil e à região Sudeste incluem a população da região de Serra dos Aimorés, área de litigio entre Minas Gerais e Espírito Santo;", "Nota da tabela 1286: 5 - Os dados referentes à unidade da federação Pernambuco, referentes aos anos 1950, 1960, 1970 e 1980, incluem os do território federal de Fernando de Noronha;", "Nota da tabela 1286: 6 - Os dados referentes à unidade da federação Pernambuco, a partir de 1991, incluem os do distrito estadual de Fernando de Noronha, criado em 06.10.1988;", "Nota da tabela 1286: 7 - Para 1940, 1950 e 1960: Os dados para a unidade da federação Minas Gerais incluem a população recenseada na parte da Serra dos Aimorés anexada à unidade da federação Minas Gerais;", "Nota da tabela 1286: 8 - Para 1940, 1950 e 1960: Os dados para a unidade da federação Espírito Santo incluem a população recenseada na parte da Serra dos Aimorés anexada à unidade da federação Espírito Santo;", "Mais 5 notas na tabela oficial (SIDRA 1286)."]
+caveats = ["Série com outra edição (ADR-0021): 2022 vêm da tabela 1209, com a mesma variável (606), em Brasil, Grande Região, UF.", "Série encerrada na fonte em 2010: é a série publicada, sem atualização.", "Nota da tabela 1286: 1 - Para 1872 até 1950: População presente;", "Nota da tabela 1286: 2 - Para 1960 até 1980: População recenseada;", "Nota da tabela 1286: 3 - Para 1991 até 2010: População residente;", "Nota da tabela 1286: 4 - Para 1940, 1950 e 1960: Os dados referentes ao Brasil e à região Sudeste incluem a população da região de Serra dos Aimorés, área de litigio entre Minas Gerais e Espírito Santo;", "Nota da tabela 1286: 5 - Os dados referentes à unidade da federação Pernambuco, referentes aos anos 1950, 1960, 1970 e 1980, incluem os do território federal de Fernando de Noronha;", "Nota da tabela 1286: 6 - Os dados referentes à unidade da federação Pernambuco, a partir de 1991, incluem os do distrito estadual de Fernando de Noronha, criado em 06.10.1988;", "Nota da tabela 1286: 7 - Para 1940, 1950 e 1960: Os dados para a unidade da federação Minas Gerais incluem a população recenseada na parte da Serra dos Aimorés anexada à unidade da federação Minas Gerais;", "Nota da tabela 1286: 8 - Para 1940, 1950 e 1960: Os dados para a unidade da federação Espírito Santo incluem a população recenseada na parte da Serra dos Aimorés anexada à unidade da federação Espírito Santo;", "Mais 5 notas na tabela oficial (SIDRA 1286)."]
 
 [[indicators]]
 id = "envelhecimento"

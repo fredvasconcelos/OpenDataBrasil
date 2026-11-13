@@ -221,11 +221,11 @@ def descrever(
     settings = _settings()
     config = load_panorama(panorama)
     check_against_acervo(config, panorama.parent / config.acervo)
-    unknown = sorted(set(tabela or ()) - set(config.tables()))
+    unknown = sorted(set(tabela or ()) - set(config.all_tables()))
     if unknown:
         typer.echo(f"tabelas fora do panorama: {unknown}", err=True)
         raise typer.Exit(code=2)
-    tables = [t for t in config.tables() if not tabela or t in tabela]
+    tables = [t for t in config.all_tables() if not tabela or t in tabela]
     source = load_sources(settings.sources_config_dir).sources[SIDRA_SOURCE]
     out_dir = panorama.parent / DESCRIPTORS_DIR
     out_dir.mkdir(exist_ok=True)

@@ -6,6 +6,13 @@
   "sha256": "8e4dbb6e6284facffc238e21811550cdf366328b61a89ae966497100bc0c25d6",
   "size_bytes": 23651
  },
+ "136": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/136",
+  "retrieved_at": "2026-11-13T14:38:47.074161+00:00",
+  "status": "ok",
+  "sha256": "2188581306e2766b9691b0a782847afab3dcc62a49d87de652c55ee498dc0984",
+  "size_bytes": 24403
+ },
  "211": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/211",
   "retrieved_at": "2026-11-11T09:05:50.753657+00:00",
@@ -111,12 +118,26 @@
   "sha256": "231793d88da01d731fed7d2ebf3f3e221fcd2169c222c5e9521f023ef290dee5",
   "size_bytes": 4506
  },
+ "1209": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/1209",
+  "retrieved_at": "2026-11-13T14:38:45.263521+00:00",
+  "status": "ok",
+  "sha256": "d294ba4b4e922a94b0c22c2da3c9d97eef37ad1b085f7c2ede64fc65f708de0f",
+  "size_bytes": 7184
+ },
  "1286": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/1286",
   "retrieved_at": "2026-11-11T09:03:49.241299+00:00",
   "status": "ok",
   "sha256": "7d7bed9c630dae941e3a7c38d76339de6ad6cfe14bc869189ac5b26226f12931",
   "size_bytes": 5988
+ },
+ "1298": {
+  "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/1298",
+  "retrieved_at": "2026-11-13T14:38:44.859528+00:00",
+  "status": "ok",
+  "sha256": "54034953bff20029cc69be784002a65e08c6e289a875e1995e94ed52f2a04e50",
+  "size_bytes": 5666
  },
  "1594": {
   "url": "https://apisidra.ibge.gov.br/DescritoresTabela/t/1594",

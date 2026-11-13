@@ -83,6 +83,9 @@ class PanoramaKpi(_Strict):
     # Tabelas-irmãs (ADR-0018): a mesma variável com uma classificação a mais (cor ou
     # raça, idade, instrução...), que entra como detalhe do KPI.
     complementos: tuple[str, ...] = Field(default=(), max_length=12)
+    # Edições (ADR-0021): tabelas com a mesma variável em outros períodos (Censos
+    # anteriores). Cada uma traz só os anos que a base e as anteriores da lista não têm.
+    edicoes: tuple[str, ...] = Field(default=(), max_length=12)
     # Correção de valores em moeda (ADR-0020): "ipca" põe o "Corrigir por: IPCA geral",
     # com o índice do próprio período (mês, ou média dos meses do trimestre ou do ano).
     # Só para valores nominais: rendimentos já deflacionados pela fonte ficam de fora.
@@ -169,6 +172,14 @@ class Panorama(_Strict):
     def tables(self) -> list[str]:
         """Códigos SIDRA referenciados, sem repetição, na ordem do arquivo."""
         return list(dict.fromkeys(k.tabela for _, _, k in self.items()))
+
+    def all_tables(self) -> list[str]:
+        """Bases, tabelas-irmãs e edições (ADR-0021): as que precisam de descritor."""
+        return list(
+            dict.fromkeys(
+                t for _, _, k in self.items() for t in (k.tabela, *k.complementos, *k.edicoes)
+            )
+        )
 
 
 def _repeated(kind: str, ids: Iterable[str]) -> list[str]:

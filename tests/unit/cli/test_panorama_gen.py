@@ -300,11 +300,11 @@ def test_gerar_command_writes_three_fragments(tmp_path: Path) -> None:
         path.unlink()
     result = CliRunner().invoke(app, ["panorama", "gerar", "--raiz", str(tmp_path)])
     assert result.exit_code == 0, result.output
-    assert "127 KPIs gerados (176 tabelas), 77 com categorias" in result.output
+    assert "127 KPIs gerados (177 tabelas), 77 com categorias" in result.output
     assert "50 com detalhes marginais (117 classificações a mais)" in result.output
     assert "15 com tabelas-irmãs (49 tabelas)" in result.output  # ADR-0018
     data = tomllib.loads((tmp_path / "sources" / "ibge-panorama.toml").read_text("utf-8"))
-    assert len(data["datasets"]) == 176  # 127 bases + 49 tabelas-irmãs (ADR-0018)
+    assert len(data["datasets"]) == 177  # 127 bases + 49 irmãs (ADR-0018) + 1 edição (ADR-0021)
     assert "institution" not in data
 
 
@@ -380,3 +380,22 @@ def test_proposal_of_main_dimension_from_descriptors() -> None:
     doc = render_proposal(list(rows.values()), {"ipca"})
     assert doc.count("\n| ") == 153 + 1  # cabeçalho + 153 KPIs
     assert "c1480 Existência de Plano Diretor" in doc
+
+
+def test_editions_bring_only_the_missing_periods() -> None:
+    """Edições (ADR-0021): a 1209 traz 2022 para a série histórica da 1286."""
+    gen = _generate()
+    ed = next(d for d in gen.datasets if d["id"] == "ibge-sidra-1209")
+    assert ed["params"]["periods"] == ["2022"]
+    assert ed["params"]["variables"] == ["606"]  # a mesma variável da base
+    assert ed["params"]["classifications"] == {"c58": "0"}  # idade fora do fato: Total
+    assert ed["params"]["territorial_levels"] == ["n1", "n2", "n3"]
+    assert ed["silver"]["series"] == "ibge-serie-1286"
+    base = next(d for d in gen.datasets if d["id"] == "ibge-sidra-1286")
+    assert base["silver"]["series_order"] == 2
+    fact = next(f for f in gen.facts if f["id"] == "fact_sidra_1286")
+    assert fact["dataset"] == "ibge-serie-1286"
+    assert fact["table_rules"]["1209"]["fixed_categories"] == {"Grupo de idade": "0"}
+    ind = next(i for i in gen.indicators if i["id"] == "populacao_nos_censos")
+    assert ind["dataset"] == "ibge-serie-1286"
+    assert any("2022 vêm da tabela 1209" in c for c in ind["caveats"])

@@ -22,7 +22,7 @@ from __future__ import annotations
 import html
 import json
 import re
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from itertools import pairwise
 from typing import Any
@@ -583,6 +583,113 @@ def plan_complements(  # noqa: PLR0917 - contexto da geração de um KPI
     return out
 
 
+# Edições de uma série (ADR-0021): só até UF. Os municípios de 1991 e 2000 incluem
+# códigos de municípios que mudaram depois, e a harmonização territorial (§13.3) é outra
+# etapa.
+EDITION_LEVELS = ("n1", "n2", "n3")
+
+
+@dataclass
+class Edition:
+    """Outra edição da tabela-base: mesma variável, outros períodos (ADR-0021)."""
+
+    table: str
+    periods: list[str]
+    levels: list[str]
+    params: dict[str, str]  # cNNN da fonte → categorias pedidas (o Total primeiro)
+    rows: int
+    rule: dict[str, Any]  # regra da tabela no fato em série (table_rules)
+    dropped: list[str] = field(default_factory=list)  # categorias só desta edição
+
+
+def plan_editions(  # noqa: PLR0912, PLR0915, PLR0917 - um caso por motivo de recusa
+    gen: Generated,
+    kpi: PanoramaKpi,
+    descriptor: Mapping[str, Any] | None,
+    descriptors: Mapping[str, Mapping[str, Any]],
+    variable: Mapping[str, Any],
+    info: Mapping[str, Any],
+    levels: Sequence[str],
+    details: Sequence[Detail],
+) -> list[Edition]:
+    """Tabelas de outras edições com a mesma variável, para os períodos que a base não tem.
+
+    Cada edição pede só os anos que nem a base nem as edições anteriores da lista têm.
+    As classificações em comum com o fato vêm com o Total e as categorias que o fato já
+    tem (as próprias da edição ficam de fora e vão para a nota); as demais da edição
+    ficam fixas no Total; as do fato que a edição não tem entram no Total delas.
+    """
+    taken = {str(p["Codigo"]) for p in (descriptor or {}).get("Periodos") or []}
+    by_cid = {d.source_cid or d.cid: d for d in details}
+    unit = variable["units"][0]
+    out: list[Edition] = []
+    for table in kpi.edicoes:
+        sd = descriptors.get(table)
+        if sd is None:
+            gen.complement_skipped.append((kpi.id, table, "sem descritor gravado"))
+            continue
+        var = next((v for v in sd.get("Variaveis") or [] if str(v["Id"]) == variable["id"]), None)
+        if var is None or var.get("UnidadeMedida") != unit:
+            why = "variável ausente" if var is None else f"unidade {var.get('UnidadeMedida')}"
+            gen.complement_skipped.append((kpi.id, table, f"{why} (base: {unit})"))
+            continue
+        periods = sorted({str(p["Codigo"]) for p in sd.get("Periodos") or []} - taken)
+        if not periods:
+            gen.complement_skipped.append((kpi.id, table, "nenhum período novo"))
+            continue
+        available = {f"n{n['Id']}" for n in sd.get("NiveisTerritoriais") or []}
+        lvls = [lv for lv in levels if lv in available and lv in EDITION_LEVELS]
+        if not lvls:
+            gen.complement_skipped.append((kpi.id, table, "sem níveis em comum até UF"))
+            continue
+        params: dict[str, str] = {}
+        fixed: dict[str, str] = {}
+        rename: dict[str, str] = {}
+        recode: dict[str, dict[str, str]] = {}
+        dropped: list[str] = []
+        present: set[str] = set()
+        size = 1
+        refused = ""
+        for cls in sd.get("Classificacoes") or []:
+            cid, name = f"c{cls['Id']}", str(cls["Nome"])
+            total = _total_of(cls)
+            if total is None:
+                refused = f"{name}: sem Total"
+                break
+            detail = by_cid.get(cid)
+            if detail is None:
+                params[cid], fixed[name] = total, total
+                continue
+            names = {str(c["Id"]): str(c["Nome"]) for c in cls.get("Categorias") or []}
+            cats = [c for c in detail.categories if c in names and c != detail.total]
+            dropped += [n for c, n in names.items() if c != total and c not in detail.categories]
+            params[cid] = ",".join([total, *cats])
+            size *= len(cats) + 1
+            present.add(detail.cid)
+            if name != detail.name:
+                rename[name] = detail.name
+            if total != detail.total:
+                recode[detail.name] = {total: detail.total}
+        if refused:
+            gen.complement_skipped.append((kpi.id, table, refused))
+            continue
+        rows = _rows_per_period(info, lvls) * size
+        if rows > DETAIL_LIMIT:
+            gen.complement_skipped.append((kpi.id, table, f"{rows} valores por requisição"))
+            continue
+        rule: dict[str, Any] = {
+            "fixed_categories": fixed,
+            "missing_as_total": [d.cid for d in details if d.cid not in present],
+        }
+        if rename:
+            rule["rename_dimensions"] = rename
+        if recode:
+            rule["recode_categories"] = recode
+        taken |= set(periods)
+        out.append(Edition(table, periods, lvls, params, rows, rule, dropped))
+    return out
+
+
 def _class_id(descriptor: Mapping[str, Any] | None, label: str) -> str:
     """Código da classificação (sem o "c") pelo nome, no descritor."""
     for c in (descriptor or {}).get("Classificacoes") or []:
@@ -951,7 +1058,24 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
             if kpi.complementos
             else []
         )
-        series_id = f"ibge-serie-{kpi.tabela}" if comps else None
+        eds = (
+            plan_editions(
+                out,
+                kpi,
+                descriptor,
+                descriptors,
+                variable,
+                info,
+                levels,
+                [
+                    *(d for d in (detail, *extras.details) if d is not None),
+                    *(c.detail for c in comps),
+                ],
+            )
+            if kpi.edicoes
+            else []
+        )
+        series_id = f"ibge-serie-{kpi.tabela}" if comps or eds else None
         title = titles[kpi.tabela]
         fonte = official_source(descriptor)
         names = {
@@ -1004,9 +1128,9 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 "silver": {"transformer": "sidra_observation", "territorial_reference": "ibge-dtb"},
             }
         )
-        if comps:
+        if comps or eds:
             base = out.datasets[-1]
-            base["silver"].update(series=series_id, series_order=len(comps) + 1)
+            base["silver"].update(series=series_id, series_order=len(comps) + len(eds) + 1)
             for order, comp in enumerate(comps, start=1):
                 sd = descriptors[comp.table]
                 out.datasets.append(
@@ -1049,7 +1173,45 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                         },
                     }
                 )
-            out.complements[kpi.id] = [c.table for c in comps]
+            for order, ed in enumerate(eds, start=len(comps) + 1):
+                sd = descriptors[ed.table]
+                out.datasets.append(
+                    {
+                        "id": f"ibge-sidra-{ed.table}",
+                        "source": SOURCE_ID,
+                        "official_id": ed.table,
+                        "title": str(sd.get("Nome") or ed.table),
+                        "description": (
+                            f"Outra edição da {kpi.tabela} (ADR-0021): variável "
+                            f"{variable['id']} em {', '.join(ed.periods)}, os anos que a "
+                            f"{kpi.tabela} não tem. KPI de panorama '{kpi.label}'."
+                        ),
+                        "license": LICENSE_ID,
+                        "access_classification": "public_conditional",
+                        "periodicity": base["periodicity"],
+                        "reference_url": f"https://sidra.ibge.gov.br/tabela/{ed.table}",
+                        "params": {
+                            "table": ed.table,
+                            "variables": [variable["id"]],
+                            "territorial_levels": ed.levels,
+                            "period_discovery_level": ed.levels[0],
+                            "estimated_values_per_period": ed.rows,
+                            "min_rows": 1,
+                            "max_rows": ed.rows,
+                            "refresh_recent_periods": 0,
+                            "periods": ed.periods,
+                            **({"classifications": ed.params} if ed.params else {}),
+                        },
+                        "silver": {
+                            "transformer": "sidra_observation",
+                            "territorial_reference": "ibge-dtb",
+                            "series": series_id,
+                            "series_order": order,
+                        },
+                    }
+                )
+            if comps:
+                out.complements[kpi.id] = [c.table for c in comps]
         territories = ", ".join(LEVEL_LABELS[lv] for lv in levels)
         grain = f"território ({territories}) x {period_type}"
         if kpi.pausado:
@@ -1072,7 +1234,7 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
             if extras.details:
                 fact["grain"] += "".join(f" | {d.name.lower()}" for d in extras.details)
         fact["fixed_categories"] = fixed
-        if comps and series_id:
+        if series_id:
             details = [d for d in (detail, *extras.details) if d is not None]
             classes = fact.setdefault("classifications", {})
             for comp in comps:
@@ -1086,6 +1248,8 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                     "missing_as_total": [c.detail.cid for c in comps],
                 }
             }
+            for ed in eds:
+                rules[ed.table] = ed.rule
             for comp in comps:
                 present = {d.cid for d in details if d.source_cid in comp.common}
                 in_fact = {d.source_cid for d in details}
@@ -1101,7 +1265,10 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 }
             fact["table_rules"] = rules
             # Classificações próprias da base ou das irmãs são da série (dataset da Gold).
-            members = {f"ibge-sidra-{t}" for t in (kpi.tabela, *(c.table for c in comps))}
+            members = {
+                f"ibge-sidra-{t}"
+                for t in (kpi.tabela, *(c.table for c in comps), *(e.table for e in eds))
+            }
             for entry in out.classifications.values():
                 if entry.get("datasets"):
                     entry["datasets"] = list(
@@ -1179,6 +1346,19 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 if comp.levels != levels:
                     shown_levels = ", ".join(LEVEL_LABELS.get(lv, lv) for lv in comp.levels)
                     caveats.append(f"{comp.detail.name}: só em {shown_levels}.")
+        for ed in eds:
+            where = ", ".join(LEVEL_LABELS.get(lv, lv) for lv in ed.levels)
+            caveats.insert(
+                0,
+                f"Série com outra edição (ADR-0021): {', '.join(ed.periods)} vêm da tabela "
+                f"{ed.table}, com a mesma variável ({variable['id']}), em {where}."
+                + (
+                    f" Categorias que só existem nessa edição ficam no Total: "
+                    f"{', '.join(ed.dropped)}."
+                    if ed.dropped
+                    else ""
+                ),
+            )
         if detail is not None and kpi.requer_categoria:
             # O Total é só o universo: o mapa mostra o % da categoria principal.
             out.map_share[kpi.id] = kpi.categoria_mapa or detail.edges[detail.total][0]

@@ -121,6 +121,12 @@ Estimativa de 2026-11-13, em 50 tabelas com município e detalhe:
 ## Depois desta rodada (ordem do mantenedor, 2026-11-13)
 
 1. **Série histórica completa do Censo Demográfico,** antes do dados.gov.br.
+   **Em andamento (2026-11-13):** ADR-0021 (`edicoes` no panorama, conector com
+   `periods`); a 1209 traz 2022 para "População nos Censos" (na Bronze, entra no
+   próximo build). Inventário e decisões por KPI em
+   [censo-serie-historica.md](../data_catalog/censo-serie-historica.md). Próximos:
+   descritores de educação e rendimento (em leitura), edições limpas nos KPIs curados
+   (1298, 136, 202) e as equivalências que dependem do mantenedor.
    - Referência:
      <https://www.ibge.gov.br/estatisticas/sociais/trabalho/25089-censo-1991-6.html?edicao=25091&t=series-historicas>
    - A página do IBGE responde 403 a clientes automatizados (§7.3). O levantamento

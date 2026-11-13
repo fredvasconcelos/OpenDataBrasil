@@ -135,6 +135,9 @@ class SidraParams(BaseModel):
     # Com isso, ``estimated_values_per_period``, ``min_rows`` e ``max_rows`` valem
     # por requisição (todos os períodos do ano).
     group_periods_by_year: bool = False
+    # Só estes períodos (vazio: todos os descobertos). Edições de uma série (ADR-0021):
+    # a tabela antiga traz só os anos que a tabela-base não tem.
+    periods: tuple[str, ...] = ()
 
     @field_validator("variables")
     @classmethod
@@ -478,6 +481,8 @@ class SidraConnector(BaseConnector):
         dataset = self.describe(dataset_id)
         params = self.params(dataset)
         periods = self.discover_periods(dataset, http)
+        if params.periods:
+            periods = [p for p in periods if p in params.periods]
         invalid = [p for p in periods if not params.period_valid(p)]
         if invalid:
             msg = f"{dataset_id}: períodos fora do formato '{params.period_type}': {invalid[:5]}"
