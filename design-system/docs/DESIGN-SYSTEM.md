@@ -291,7 +291,7 @@ SVG e PNG exportados devem levar as cores já calculadas (`resolveSvgColors`) e 
 - **Nome oficial sempre à mão:** no `title` (passar o mouse), no painel ⓘ e nas
   exportações, que não mudam.
 - **ⓘ "Sobre esta tabela":** ícone de informação (círculo com "i", contorno, cor de
-  link) ao lado de "Calcular % por". Abre um painel com a unidade, os nomes completos
+  link) no canto direito, acima da tabela. Abre um painel com a unidade, os nomes completos
   das colunas abreviadas, a regra do % escolhido e a linha de totais. Substitui "Como
   ler os %".
 - **Cabeçalhos:** quebram linha, com largura entre 9 e 22 caracteres.

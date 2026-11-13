@@ -818,7 +818,7 @@ mark { background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px; 
 .meta-more .method-list li + li { margin-top: 6px; }
 
 /* DS 2.3.11: rótulos curtos, ícone de informação da tabela e cabeçalhos com quebra. */
-.share-base .info-button { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--odbr-text-active); cursor: pointer; }
+.share-base .info-button { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--odbr-text-active); cursor: pointer; }
 .share-base .info-button:hover { background: var(--odbr-bg-hover); }
 .share-base .info-button[aria-expanded="true"] { background: var(--odbr-bg-selected); }
 .table-info { position: absolute; z-index: 3; top: 100%; left: 0; right: 0; margin-top: 4px; max-height: 50vh; overflow: auto; padding: 10px 14px; background: var(--odbr-bg-surface); border: 1px solid var(--odbr-divider); border-radius: var(--odbr-radius-md); box-shadow: var(--odbr-shadow-2); font-weight: 400; color: var(--odbr-text-body); }
