@@ -3902,6 +3902,111 @@ transformer = "sidra_observation"
 territorial_reference = "ibge-dtb"
 
 [[datasets]]
+id = "ibge-sidra-3940"
+source = "ibge-sidra"
+official_id = "3940"
+title = "Produção da aquicultura, por tipo de produto"
+description = "Tabela SIDRA 3940, variável 215 (Valor da produção), no Total das classificações. KPI de panorama 'Valor da produção da aquicultura' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/3940"
+
+[datasets.params]
+table = "3940"
+variables = ["215"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 39431
+min_rows = 1
+max_rows = 39431
+refresh_recent_periods = 1
+classifications = { "c654" = "0,79366,32861,32865,32866,32867,32868,32869,32870,32871,32872,32873,32874,32875,32876,32877,32878,32879,32880,32881,32886,32887,32888,32889,32890,32891" }
+category_chunk = 7
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-3940-peixes"
+source = "ibge-sidra"
+official_id = "3940"
+title = "Produção da aquicultura, por tipo de produto"
+description = "Tabela SIDRA 3940, variável 4146 (Produção da aquicultura), no Total das classificações (Tipo de produto da aquicultura: Peixes). KPI de panorama 'Produção de peixes (aquicultura)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/3940"
+
+[datasets.params]
+table = "3940"
+variables = ["4146"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c654" = "79366" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-3940-camarao"
+source = "ibge-sidra"
+official_id = "3940"
+title = "Produção da aquicultura, por tipo de produto"
+description = "Tabela SIDRA 3940, variável 4146 (Produção da aquicultura), no Total das classificações (Tipo de produto da aquicultura: Camarão). KPI de panorama 'Produção de camarão (aquicultura)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/3940"
+
+[datasets.params]
+table = "3940"
+variables = ["4146"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c654" = "32887" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-3940-moluscos"
+source = "ibge-sidra"
+official_id = "3940"
+title = "Produção da aquicultura, por tipo de produto"
+description = "Tabela SIDRA 3940, variável 4146 (Produção da aquicultura), no Total das classificações (Tipo de produto da aquicultura: Ostras, vieiras e mexilhões). KPI de panorama 'Produção de ostras, vieiras e mexilhões (aquicultura)' (ADR-0010)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/3940"
+
+[datasets.params]
+table = "3940"
+variables = ["4146"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 5633
+min_rows = 1
+max_rows = 5633
+refresh_recent_periods = 1
+classifications = { "c654" = "32889" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
 id = "ibge-sidra-1092"
 source = "ibge-sidra"
 official_id = "1092"

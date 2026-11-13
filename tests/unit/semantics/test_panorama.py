@@ -33,7 +33,7 @@ def test_repository_panorama_is_valid() -> None:
     assert len(panorama.temas) == 20
     assert len(panorama.subthemes()) == 64
     # + POF de 1987 e 1995 (387, 400, 414; ADR-0016) e 3 séries compostas (ADR-0022).
-    assert len(panorama.items()) == 172  # + mensais e PPM (2026-11-13)
+    assert len(panorama.items()) == 176  # + mensais, PPM e aquicultura (2026-11-13)
     # + 9514 → 9606; + POF de 1987 e 1995 (387, 400, 414 e 417)
     assert sum(k.kpi is not None for _, _, k in panorama.items()) == 22  # + 3 compostas + 2 mensais
     # Variáveis fixadas e KPIs cujo Total é só o universo (esperam as categorias).

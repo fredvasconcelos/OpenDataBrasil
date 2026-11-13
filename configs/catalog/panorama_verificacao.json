@@ -4,8 +4,8 @@
  "acervo_sha256": "a9ec32ee30cf69c19f532e3a2b8d8b0f08384f2fc6509d7ad4d1cf8325b97c5c",
  "source_id": "ibge-sidra",
  "base_url": "https://apisidra.ibge.gov.br",
- "started_at": "2026-11-13T19:58:23.371385+00:00",
- "updated_at": "2026-11-13T19:58:23.390670+00:00",
+ "started_at": "2026-11-13T20:07:26.217773+00:00",
+ "updated_at": "2026-11-13T20:07:34.977782+00:00",
  "tables": [
   {
    "title": "População residente estimada",
@@ -10759,6 +10759,107 @@
      "status": 200,
      "sha256": "834925a7744a7701d069a72b0cadbc12b283040b873318b8e08b30e95052d08b",
      "size_bytes": 1618943,
+     "error": null
+    }
+   ]
+  },
+  {
+   "title": "Produção da aquicultura, por tipo de produto",
+   "checked_at": "2026-11-13T20:07:34.971186+00:00",
+   "table": "3940",
+   "status": "ok",
+   "error": null,
+   "base_level": "n1",
+   "variables": [
+    {
+     "id": "4146",
+     "name": "Produção da aquicultura",
+     "units": []
+    },
+    {
+     "id": "215",
+     "name": "Valor da produção",
+     "units": [
+      "Mil Reais"
+     ]
+    },
+    {
+     "id": "1000215",
+     "name": "Valor da produção - percentual do total geral",
+     "units": [
+      "Percentual"
+     ]
+    }
+   ],
+   "period_label": "Ano",
+   "periods": [
+    "2013",
+    "2014",
+    "2015",
+    "2016",
+    "2017",
+    "2018",
+    "2019",
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025"
+   ],
+   "periods_complete": true,
+   "classifications": [
+    {
+     "label": "Tipo de produto da aquicultura",
+     "categories": [
+      {
+       "id": "0",
+       "name": "Total"
+      }
+     ]
+    }
+   ],
+   "levels": {
+    "n1": 1,
+    "n2": null,
+    "n3": null,
+    "n7": null,
+    "n6": null
+   },
+   "requests": [
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/3940/n1/all/v/all/p/all",
+     "status": 200,
+     "sha256": "855f5398735a41922f18500924cb478e4081193eb022e793d6c5e74a6728e83a",
+     "size_bytes": 11655,
+     "error": null
+    },
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/3940/n2/all/v/4146/p/last%201",
+     "status": 200,
+     "sha256": "15c2dfdb6633dfdafd3e2b9a69222edc95e2bd396e4b2891dc5ccafcb3416fc1",
+     "size_bytes": 1862,
+     "error": null
+    },
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/3940/n3/all/v/4146/p/last%201",
+     "status": 200,
+     "sha256": "37308996242196402fff35824d52ff31db66b33ee1063fef341eb72491b34d07",
+     "size_bytes": 8357,
+     "error": null
+    },
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/3940/n7/all/v/4146/p/last%201",
+     "status": 400,
+     "sha256": null,
+     "size_bytes": 0,
+     "error": "HTTP 400 em https://apisidra.ibge.gov.br/values/t/3940/n7/all/v/4146/p/last%201: Parâmetro N7 (Nível territorial) incompatível com a tabela"
+    },
+    {
+     "url": "https://apisidra.ibge.gov.br/values/t/3940/n6/all/v/4146/p/last%201",
+     "status": 200,
+     "sha256": "94c7996b60ffc244b23eaedaef11d77a7e562180a560507e176b1cfd5cfabe05",
+     "size_bytes": 1251425,
      "error": null
     }
    ]

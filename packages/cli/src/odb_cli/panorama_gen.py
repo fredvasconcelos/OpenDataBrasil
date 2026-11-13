@@ -136,7 +136,10 @@ def _level_counts(
     74: a verificação pelo Total não responde fora do Brasil).
     """
     counts = {lv: int(n) for lv, n in (info.get("levels") or {}).items() if n}
-    if counts and not from_descriptor:
+    # Verificação só com o Brasil (o Total da primeira variável muda de unidade, como na
+    # 74 e na 3940): valem os níveis do descritor.
+    only_brazil = set(counts) == {"n1"}
+    if counts and not from_descriptor and not only_brazil:
         return counts
     return {
         f"n{lvl['Id']}": int(lvl.get("QuantidadeUnidadesAtivas") or 0)

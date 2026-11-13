@@ -172,8 +172,9 @@ docker compose --profile test run --rm tests pytest -q   # + portal (vitest) e e
 - [x] Lavouras em 9 grupos (5457); ícones de agropecuária (22).
 - [x] PPM: um KPI por produto da 74, por rebanho da 3939, e as tabelas 94 e 95. **A
   carga está em andamento**; depois, Gold, ativação e conferência visual.
-- [ ] Aquicultura (3940): verificar o descritor (unidades por produto: kg e milheiros)
-  e decidir os produtos.
+- [x] Aquicultura (3940, 2013 a 2025): valor da produção por produto (mil reais,
+  somável) e quantidade de peixes, camarão e ostras/vieiras/mexilhões (kg, um KPI
+  cada). Alevinos, larvas e sementes (milheiros) ficam no valor. **Carga pendente.**
 - [ ] Claude Design: o mantenedor roda `/design-sync` para criar o projeto e enviar o
   design system 2.3.14 (a sessão `cse_…` citada não é acessível daqui).
 

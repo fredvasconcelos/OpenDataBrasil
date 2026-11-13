@@ -123,6 +123,10 @@ A proposta vem dos descritores oficiais (`configs/catalog/descritores/`). A dime
 | Agropecuária | Efetivo de codornas | [3939](https://sidra.ibge.gov.br/tabela/3939) | publicado (Total) | c79 Tipo de rebanho | Bovino; Bubalino; Equino; Suíno - total; Caprino; Ovino; Galináceos - total; Codornas | não (sem Total) | — |
 | Agropecuária | Vacas ordenhadas | [94](https://sidra.ibge.gov.br/tabela/94) | publicado (Total) | — (só o Total) | — | — | — |
 | Agropecuária | Ovinos tosquiados | [95](https://sidra.ibge.gov.br/tabela/95) | publicado (Total) | — (só o Total) | — | — | — |
+| Agropecuária | Valor da produção da aquicultura | [3940](https://sidra.ibge.gov.br/tabela/3940) | publicado (Total) | c654 Tipo de produto da aquicultura | — | sim | — |
+| Agropecuária | Produção de peixes (aquicultura) | [3940](https://sidra.ibge.gov.br/tabela/3940) | publicado (Total) | c654 Tipo de produto da aquicultura | — | sim | — |
+| Agropecuária | Produção de camarão (aquicultura) | [3940](https://sidra.ibge.gov.br/tabela/3940) | publicado (Total) | c654 Tipo de produto da aquicultura | — | sim | — |
+| Agropecuária | Produção de ostras, vieiras e mexilhões (aquicultura) | [3940](https://sidra.ibge.gov.br/tabela/3940) | publicado (Total) | c654 Tipo de produto da aquicultura | — | sim | — |
 | Agropecuária | Abate de bovinos | [1092](https://sidra.ibge.gov.br/tabela/1092) | publicado (Total) | c18 Tipo de rebanho bovino | Bois; Vacas; Novilhos; Novilhas; Vitelos e vitelas | sim | c12716 Referência temporal; c12529 Tipo de inspeção |
 | Agropecuária | Leite adquirido e industrializado | [1086](https://sidra.ibge.gov.br/tabela/1086) | publicado (Total) | c12716 Referência temporal *(recorte comum)* | Total do trimestre | sim | c12529 Tipo de inspeção |
 | Agropecuária | Produção de ovos de galinha | [7524](https://sidra.ibge.gov.br/tabela/7524) | publicado (Total) | c1835 Finalidade da produção | Consumo; Incubação | sim | c12716 Referência temporal |

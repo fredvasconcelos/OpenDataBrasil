@@ -54,7 +54,7 @@ def test_generates_only_kpis_whose_value_is_the_total() -> None:  # noqa: PLR091
     ids = {i["id"]: i for i in gen.indicators}
     skipped = {k: why for k, _, why in gen.skipped}
     # A 9514 saiu (passou à 9606 curada); a 10061 entrou com uma classificação própria.
-    assert len(ids) == 144  # + mensais, PPM (6 produtos da 74, 7 rebanhos, 94, 95)
+    assert len(ids) == 148  # + mensais, PPM (74, 3939, 94, 95) e aquicultura (3940)
     # Variável fixada no panorama e regra automática (sem coeficientes de variação).
     assert ids["homicidios"]["variable"] == "13532"
     assert ids["taxa_escolarizacao"]["variable"] == "10276"
@@ -243,7 +243,7 @@ def test_rendered_fragments_load_with_the_curated_configs(tmp_path: Path) -> Non
     series = {d.silver.get("series") for d in sources.datasets.values()} - {None}
     assert all(d in sources.datasets or d in series for d in catalog.datasets())
     assert {k.indicator for k in portal.kpis()} <= {i.id for i in catalog.indicators}
-    assert len(portal.kpis()) == 14 + 144  # 14 curados no arquivo principal + 144 gerados
+    assert len(portal.kpis()) == 14 + 148  # 14 curados no arquivo principal + 148 gerados
 
 
 def test_repository_fragments_are_up_to_date() -> None:
@@ -319,11 +319,11 @@ def test_gerar_command_writes_three_fragments(tmp_path: Path) -> None:
         path.unlink()
     result = CliRunner().invoke(app, ["panorama", "gerar", "--raiz", str(tmp_path)])
     assert result.exit_code == 0, result.output
-    assert "144 KPIs gerados (193 tabelas), 77 com categorias" in result.output
+    assert "148 KPIs gerados (197 tabelas), 78 com categorias" in result.output
     assert "50 com detalhes marginais (115 classificações a mais)" in result.output
     assert "15 com tabelas-irmãs (49 tabelas)" in result.output  # ADR-0018
     data = tomllib.loads((tmp_path / "sources" / "ibge-panorama.toml").read_text("utf-8"))
-    assert len(data["datasets"]) == 193  # 142 bases + 49 irmãs (ADR-0018) + 2 edições (ADR-0021)
+    assert len(data["datasets"]) == 197  # 146 bases + 49 irmãs (ADR-0018) + 2 edições (ADR-0021)
     assert "institution" not in data
 
 
@@ -397,7 +397,7 @@ def test_proposal_of_main_dimension_from_descriptors() -> None:
     assert rows["efetivo_rebanhos"]["has_total"] is False
     assert "Bovino" in rows["efetivo_rebanhos"]["categories"]
     doc = render_proposal(list(rows.values()), {"ipca"})
-    assert doc.count("\n| ") == 172 + 1  # cabeçalho + 172 KPIs
+    assert doc.count("\n| ") == 176 + 1  # cabeçalho + 176 KPIs
     assert "c1480 Existência de Plano Diretor" in doc
 
 

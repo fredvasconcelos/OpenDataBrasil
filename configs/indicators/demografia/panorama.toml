@@ -1735,6 +1735,18 @@ categories = ["39454", "39455"]
 exhaustive = false
 
 [[classifications]]
+id = "c654"
+name = "Tipo de produto da aquicultura"
+silver_dimension = "Tipo de produto da aquicultura"
+total = "0"
+
+[[classifications.partitions]]
+id = "p0"
+label = "Tipo de produto da aquicultura"
+categories = ["79366", "32861", "32865", "32866", "32867", "32868", "32869", "32870", "32871", "32872", "32873", "32874", "32875", "32876", "32877", "32878", "32879", "32880", "32881", "32886", "32887", "32888", "32889", "32890", "32891"]
+exhaustive = false
+
+[[classifications]]
 id = "c18"
 name = "Tipo de rebanho bovino"
 silver_dimension = "Tipo de rebanho bovino"
@@ -3021,6 +3033,38 @@ dataset = "ibge-sidra-95"
 grain = "território (Brasil, Grande Região, UF, Município) x ano"
 description = "Ovinos tosquiados: tabela SIDRA 95 (Ovinos tosquiados), no Total."
 fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_3940"
+dataset = "ibge-sidra-3940"
+grain = "território (Brasil, Grande Região, UF, Município) x ano x tipo de produto da aquicultura"
+description = "Valor da produção da aquicultura: tabela SIDRA 3940 (Produção da aquicultura, por tipo de produto), por tipo de produto da aquicultura."
+classifications = { "c654" = "c654_category_key" }
+fixed_categories = {}
+
+[[facts]]
+id = "fact_sidra_3940_peixes"
+dataset = "ibge-sidra-3940-peixes"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Produção de peixes (aquicultura): tabela SIDRA 3940 (Produção da aquicultura, por tipo de produto), no Total."
+fixed_categories = { "Tipo de produto da aquicultura" = "79366" }
+table_rules = { "3940" = { "keep_categories" = { "Tipo de produto da aquicultura" = ["79366"] } } }
+
+[[facts]]
+id = "fact_sidra_3940_camarao"
+dataset = "ibge-sidra-3940-camarao"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Produção de camarão (aquicultura): tabela SIDRA 3940 (Produção da aquicultura, por tipo de produto), no Total."
+fixed_categories = { "Tipo de produto da aquicultura" = "32887" }
+table_rules = { "3940" = { "keep_categories" = { "Tipo de produto da aquicultura" = ["32887"] } } }
+
+[[facts]]
+id = "fact_sidra_3940_moluscos"
+dataset = "ibge-sidra-3940-moluscos"
+grain = "território (Brasil, Grande Região, UF, Município) x ano"
+description = "Produção de ostras, vieiras e mexilhões (aquicultura): tabela SIDRA 3940 (Produção da aquicultura, por tipo de produto), no Total."
+fixed_categories = { "Tipo de produto da aquicultura" = "32889" }
+table_rules = { "3940" = { "keep_categories" = { "Tipo de produto da aquicultura" = ["32889"] } } }
 
 [[facts]]
 id = "fact_sidra_1092"
@@ -4714,6 +4758,62 @@ additivity = "non_additive"
 concept = "ovinos_tosquiados"
 path = ["Agropecuária", "Pecuária e produção animal"]
 caveats = ["Nota da tabela 95: 1 - Os municípios sem informação para ovinos tosquiados não aparecem nas listas.", "Nota da tabela 95: 2 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "aquicultura_valor"
+name = "Valor da produção"
+description = "Valor da produção (Pesquisa da Pecuária Municipal, tabela SIDRA 3940). Tabela sem classificações. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-3940"
+variable = "215"
+fact = "fact_sidra_3940"
+column = "valor"
+unit = "Mil Reais"
+additivity = "non_additive"
+concept = "aquicultura_valor"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Nota da tabela 3940: 1 - A categoria \"Outros produtos\" foi pesquisada apenas para a variável Valor da produção.", "Nota da tabela 3940: 2 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "aquicultura_peixes"
+name = "Produção da aquicultura"
+description = "Produção da aquicultura (Pesquisa da Pecuária Municipal, tabela SIDRA 3940). Recorte: Tipo de produto da aquicultura: Peixes. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-3940-peixes"
+variable = "4146"
+fact = "fact_sidra_3940_peixes"
+column = "valor"
+unit = "Quilogramas"
+additivity = "non_additive"
+concept = "aquicultura_peixes"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de produto da aquicultura: Peixes (um KPI por categoria: cada uma tem a sua unidade, Quilogramas nesta).", "Nota da tabela 3940: 1 - A categoria \"Outros produtos\" foi pesquisada apenas para a variável Valor da produção.", "Nota da tabela 3940: 2 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "aquicultura_camarao"
+name = "Produção da aquicultura"
+description = "Produção da aquicultura (Pesquisa da Pecuária Municipal, tabela SIDRA 3940). Recorte: Tipo de produto da aquicultura: Camarão. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-3940-camarao"
+variable = "4146"
+fact = "fact_sidra_3940_camarao"
+column = "valor"
+unit = "Quilogramas"
+additivity = "non_additive"
+concept = "aquicultura_camarao"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de produto da aquicultura: Camarão (um KPI por categoria: cada uma tem a sua unidade, Quilogramas nesta).", "Nota da tabela 3940: 1 - A categoria \"Outros produtos\" foi pesquisada apenas para a variável Valor da produção.", "Nota da tabela 3940: 2 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "aquicultura_moluscos"
+name = "Produção da aquicultura"
+description = "Produção da aquicultura (Pesquisa da Pecuária Municipal, tabela SIDRA 3940). Recorte: Tipo de produto da aquicultura: Ostras, vieiras e mexilhões. Fonte: IBGE - Pesquisa da Pecuária Municipal."
+dataset = "ibge-sidra-3940-moluscos"
+variable = "4146"
+fact = "fact_sidra_3940_moluscos"
+column = "valor"
+unit = "Quilogramas"
+additivity = "non_additive"
+concept = "aquicultura_moluscos"
+path = ["Agropecuária", "Pecuária e produção animal"]
+caveats = ["Valor de referência em Tipo de produto da aquicultura: Ostras, vieiras e mexilhões (um KPI por categoria: cada uma tem a sua unidade, Quilogramas nesta).", "Nota da tabela 3940: 1 - A categoria \"Outros produtos\" foi pesquisada apenas para a variável Valor da produção.", "Nota da tabela 3940: 2 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
 
 [[indicators]]
 id = "abate_bovinos"
