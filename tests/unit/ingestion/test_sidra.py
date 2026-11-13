@@ -563,3 +563,25 @@ def test_explicit_periods_restrict_the_plan(http: HttpClient) -> None:
     plan = connector.plan("ibge-sidra-6579", http, Watermark(), full=True)
     # 1990 não existe na tabela: fica de fora sem erro.
     assert [r.reference_period for r in plan.requests] == ["2001", "2025"]
+
+
+def test_cross_sets_request_the_full_crossing_up_to_uf() -> None:
+    """C1: o produto das categorias, sem os Totais, em Brasil, regiões e UFs."""
+    params = SidraConnector.params(
+        _ds(
+            {
+                "table": "2654",
+                "variables": ["343"],
+                "territorial_levels": ["n1", "n2", "n3", "n6"],
+                "estimated_values_per_period": 1,
+                "classifications": {"c1836": "all"},
+                "extra_sets": [{"c1836": "0", "c2": "4,5"}],
+                "cross_sets": [{"c1836": "0", "c2": "4,5", "c260": "5922,5923"}],
+            }
+        )
+    )
+    groups = {g.suffix: g for g in params.request_groups()}
+    assert set(groups) == {"", "-xc2", "-cc1836-c2-c260"}
+    cross = groups["-cc1836-c2-c260"]
+    assert cross.levels == ("n1", "n2", "n3")
+    assert cross.classifications == {"c1836": "0", "c2": "4,5", "c260": "5922,5923"}

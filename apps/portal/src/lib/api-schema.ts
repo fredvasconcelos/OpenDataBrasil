@@ -724,6 +724,16 @@ export interface components {
              */
             exclusive_dimensions: boolean;
             /**
+             * Crossed
+             * @default []
+             */
+            crossed: string[][];
+            /**
+             * Crossed Levels
+             * @default []
+             */
+            crossed_levels: string[];
+            /**
              * Corrections
              * @default []
              */

@@ -193,17 +193,25 @@ class KpiService:
             raise NotFoundError(msg)
         return kpi
 
-    def _dims(self, kpi: KpiConfig, requested: Sequence[str]) -> list[str]:
+    def _dims(
+        self, kpi: KpiConfig, requested: Sequence[str], level: str | None = None
+    ) -> list[str]:
+        """Dimensões pedidas, na ordem do portal. ``level``: nível da consulta (C1)."""
         exposed = [d.classification for d in kpi.dimensions]
         unknown = [d for d in requested if d not in exposed]
         if unknown:
             msg = f"{kpi.id}: dimensões não disponíveis {unknown} (disponíveis: {exposed})"
             raise SemanticError(msg)
         chosen = [d for d in exposed if d in set(requested)]  # ordem do portal, sem repetição
-        if kpi.exclusive_dimensions and len(chosen) > 1:
+        if kpi.exclusive_dimensions and len(chosen) > 1 and not kpi.can_cross(chosen, level):
+            where = (
+                f" (cruzamentos só em {', '.join(kpi.crossed_levels)})"
+                if kpi.crossed_levels
+                else ""
+            )
             msg = (
                 f"{kpi.id}: detalhe uma dimensão por vez (cada uma vem com as demais no Total,"
-                " sem os cruzamentos)"
+                f" sem os cruzamentos){where}"
             )
             raise SemanticError(msg)
         return chosen
@@ -256,6 +264,8 @@ class KpiService:
             ],
             dimensions=self._dimension_out(ctx, kpi),
             exclusive_dimensions=kpi.exclusive_dimensions,
+            crossed=[list(g) for g in kpi.crossed],
+            crossed_levels=list(kpi.crossed_levels),
             corrections=[
                 CorrectionOut(correction_id=c.id, label=c.label, note=c.note)
                 for c in kpi.corrections
@@ -789,7 +799,7 @@ class KpiService:
     ) -> DetailOut:
         """Sub-KPIs aninhados de um território (tooltip)."""
         kpi = self.kpi(ctx, kpi_id)
-        dims = self._dims(kpi, dimensions)
+        dims = self._dims(kpi, dimensions, geography.split(":", 1)[0])
         grain = self._grain(ctx, kpi, grain)
         chosen = self._period(ctx, kpi, period, grain)
         ref = self._ref(ctx, geography)
@@ -863,7 +873,7 @@ class KpiService:
     ) -> SeriesOut:
         """Todos os períodos de um território, por combinação de categorias."""
         kpi = self.kpi(ctx, kpi_id)
-        dims = self._dims(kpi, dimensions)
+        dims = self._dims(kpi, dimensions, geography.split(":", 1)[0])
         grain = self._grain(ctx, kpi, grain)
         ref = self._ref(ctx, geography)
         obs, prov = self._observations(
@@ -931,7 +941,7 @@ class KpiService:
         ele não estiver na tabela, vale ``offset``.
         """
         kpi = self.kpi(ctx, kpi_id)
-        dims = self._dims(kpi, dimensions)
+        dims = self._dims(kpi, dimensions, level)
         grain = self._grain(ctx, kpi, grain)
         chosen = self._period(ctx, kpi, period, grain)
         limit = min(limit, self._page_max)
@@ -1052,7 +1062,7 @@ class KpiService:
     ) -> tuple[KpiConfig, list[str], list[Observation], Provenance]:
         """Observações para exportação (formato longo)."""
         kpi = self.kpi(ctx, kpi_id)
-        dims = self._dims(kpi, dimensions)
+        dims = self._dims(kpi, dimensions, level)
         grain = self._grain(ctx, kpi, grain)
         for p in periods:
             self._period(ctx, kpi, p, grain)

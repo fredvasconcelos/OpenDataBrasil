@@ -5,7 +5,7 @@ import { formatBound, formatCompact, formatPeriod, formatShare, formatValue } fr
 import { rewindForD3 } from "./geo";
 import { MISSING_COLOR, ZERO_COLOR, nextNice, niceCuts, quantileScale, snapNice } from "./scale";
 import { indexTitle, unitShort } from "./format";
-import { grainPeriods, readState, writeState } from "./state";
+import { canCross, grainPeriods, readState, writeState } from "./state";
 import { fitView, levelOf, nextLevel, previousLevel, validFocus, zoomDecision, zoomLadder } from "./zoom";
 import type { GeoCollection, Kpi, Navigation } from "./types";
 
@@ -171,6 +171,8 @@ describe("state", () => {
     map_levels: levels.filter((l) => l !== "terra_indigena"),
     dimensions: dims.map((d) => ({ classification_id: d, label: d, partition_id: d, total_category_key: `${d}:0`, categories: [] })),
     exclusive_dimensions: false,
+    crossed: [],
+    crossed_levels: [],
     corrections: [],
     caveats: [],
     time_grains,
@@ -336,3 +338,15 @@ describe("formatPeriod", () => {
     expect(formatPeriod("2026M13")).toBe("2026M13");
   });
 });
+
+describe("canCross (C1)", () => {
+  const kpi = { crossed: [["c2", "c260"]], crossed_levels: ["brasil", "regiao", "uf"] };
+  it("cruza só no grupo e nos níveis declarados", () => {
+    expect(canCross(kpi, ["c2", "c260"], "uf")).toBe(true);
+    expect(canCross(kpi, ["c2", "c260"], "municipio")).toBe(false);
+    expect(canCross(kpi, ["c2", "c244"], "uf")).toBe(false);
+    expect(canCross(kpi, ["c2"], "municipio")).toBe(true);
+    expect(canCross({}, ["c2", "c260"], "uf")).toBe(false);
+  });
+});
+

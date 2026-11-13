@@ -2867,6 +2867,25 @@
             "title": "Exclusive Dimensions",
             "default": false
           },
+          "crossed": {
+            "items": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Crossed",
+            "default": []
+          },
+          "crossed_levels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Crossed Levels",
+            "default": []
+          },
           "corrections": {
             "items": {
               "$ref": "#/components/schemas/CorrectionOut"

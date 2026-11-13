@@ -210,6 +210,9 @@ class KpiOut(_Out):
     dimensions: list[DimensionOut]
     # Dimensões marginais: detalhar uma por vez (ADR-0016).
     exclusive_dimensions: bool = False
+    # Cruzamentos completos (C1): grupos de dimensões que se cruzam nesses níveis.
+    crossed: list[list[str]] = []
+    crossed_levels: list[str] = []
     # Correções por índice de preços (ADR-0020); vazio: só o valor nominal.
     corrections: list[CorrectionOut] = []
     caveats: list[str]

@@ -71,6 +71,8 @@ label = "Nascidos vivos"
 indicator = "nascidos_vivos"
 dimensions = [{ "classification" = "c232", "partition" = "p0", "label" = "Ano de nascimento" }, { "classification" = "c2t2609", "partition" = "p0", "label" = "Sexo" }, { "classification" = "c240", "partition" = "p0", "label" = "Idade da mãe na ocasião do parto" }]
 exclusive_dimensions = true
+crossed = [["c2t2609", "c240"]]
+crossed_levels = ["brasil", "regiao", "uf"]
 
 [[themes.subthemes.kpis]]
 id = "obitos"
@@ -78,6 +80,8 @@ label = "Óbitos"
 indicator = "obitos"
 dimensions = [{ "classification" = "c1836", "partition" = "p0", "label" = "Natureza do óbito" }, { "classification" = "c2t2654", "partition" = "p0", "label" = "Sexo" }, { "classification" = "c244", "partition" = "p0", "label" = "Mês de ocorrência" }, { "classification" = "c257", "partition" = "p0", "label" = "Local de ocorrência" }, { "classification" = "c260", "partition" = "p0", "label" = "Idade do(a) falecido(a)" }]
 exclusive_dimensions = true
+crossed = [["c2t2654", "c260"]]
+crossed_levels = ["brasil", "regiao", "uf"]
 
 [[themes.subthemes]]
 id = "casamentos_divorcios"
@@ -241,6 +245,8 @@ label = "Taxa de alfabetização (15 anos ou mais, Censo)"
 indicator = "taxa_alfabetizacao_censo"
 dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c287t9543", "partition" = "p100362", "label" = "Idade" }]
 exclusive_dimensions = true
+crossed = [["c2", "c86", "c287t9543"]]
+crossed_levels = ["brasil", "regiao", "uf"]
 
 [[themes.subthemes.kpis]]
 id = "taxa_analfabetismo"

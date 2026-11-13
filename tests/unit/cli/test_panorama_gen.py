@@ -399,3 +399,19 @@ def test_editions_bring_only_the_missing_periods() -> None:
     ind = next(i for i in gen.indicators if i["id"] == "populacao_nos_censos")
     assert ind["dataset"] == "ibge-serie-1286"
     assert any("2022 vêm da tabela 1209" in c for c in ind["caveats"])
+
+
+def test_crossings_up_to_uf() -> None:
+    """C1: óbitos (sexo x idade) cruzados até UF; no município, marginais."""
+    gen = _generate()
+    obitos = next(d for d in gen.datasets if d["official_id"] == "2654")["params"]
+    (cross,) = obitos["cross_sets"]
+    assert list(cross) == ["c1836", "c2", "c260"]
+    assert cross["c1836"] == "0"  # a principal fora do cruzamento fica no Total
+    assert "0" not in cross["c2"].split(",")  # sem os Totais (já vêm nos marginais)
+    assert gen.crossed["obitos"] == [["c2t2654", "c260"]]
+    portal = render_portal(gen, "demografia")
+    assert 'crossed = [["c2t2654", "c260"]]' in portal
+    ind = next(i for i in gen.indicators if i["id"] == "obitos")
+    assert any("Cruzamentos completos" in c for c in ind["caveats"])
+

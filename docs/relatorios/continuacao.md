@@ -76,6 +76,13 @@ Estimativa de 2026-11-13, em 50 tabelas com município e detalhe:
   - **Portal:** `crossed_levels` no KPI. Nesses níveis, as dimensões se cruzam; no
     município, continua uma por vez.
   - **Município:** cruzamento só KPI a KPI, com a carga estimada antes (ponto 19).
+  - **Código feito (2026-11-13):** `cross_sets` no conector (sufixo `-c<cids>`, só
+    até UF), `cruzar` no panorama, `crossed`/`crossed_levels` no KPI, API com a regra
+    por nível e portal ("Neste nível, os detalhes se cruzam"). Óbitos (sexo × idade),
+    nascidos vivos (idade da mãe × sexo) e alfabetização (sexo × cor ou raça × idade)
+    marcados. **Falta:** ingerir as partições `-c…` depois da C2, construir a Gold e
+    conferir. PNS: sexo e idade vêm em tabelas-irmãs diferentes; o cruzamento exige
+    pedir a irmã com o sexo aberto (a decidir).
 - [ ] **C2 (ponto 7): em andamento.**
   - **Feito no código:** `category_chunk` no conector, `ALL_MUNICIPAL` no gerador e
     testes verdes.

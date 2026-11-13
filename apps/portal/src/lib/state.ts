@@ -71,7 +71,11 @@ export function readState(params: URLSearchParams, nav: Navigation): DashboardSt
     correction,
     period: period && periods.includes(period) ? period : null,
     // Dimensões marginais (exclusive_dimensions): uma por vez.
-    dimensions: nav.dimension_order.filter((d) => dims.includes(d)).slice(0, kpi?.exclusive_dimensions ? 1 : undefined),
+    // Cruzamentos completos (C1): até UF, as dimensões de um mesmo grupo se cruzam.
+    dimensions: (() => {
+      const asked = nav.dimension_order.filter((d) => dims.includes(d));
+      return kpi?.exclusive_dimensions && !canCross(kpi, asked, chosen) ? asked.slice(0, 1) : asked;
+    })(),
     // Território de um nível que o KPI não publica (ex.: o Brasil nas POF antigas) volta ao inicial.
     geography:
       geography && GEOGRAPHY_KEY.test(geography) && (!kpi || kpi.levels.includes(geography.split(":")[0] ?? ""))
@@ -100,4 +104,15 @@ export function writeState(state: DashboardState): string {
   if (state.geography !== DEFAULT_GEOGRAPHY) params.set("territorio", state.geography);
   if (state.focus) params.set("foco", state.focus);
   return params.toString();
+}
+
+/** As dimensões se cruzam nesse nível? (C1: grupos em `crossed`, níveis em `crossed_levels`.) */
+export function canCross(
+  kpi: { crossed?: string[][]; crossed_levels?: string[] },
+  dims: readonly string[],
+  level: string | null,
+): boolean {
+  if (dims.length < 2) return true;
+  if (!level || !(kpi.crossed_levels ?? []).includes(level)) return false;
+  return (kpi.crossed ?? []).some((g) => dims.every((d) => g.includes(d)));
 }

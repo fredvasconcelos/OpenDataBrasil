@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { flatten, flattenPlanned, highlight, matchKpi, matchPlanned, snippet } from "@/lib/catalog";
 import type { Kpi, Navigation } from "@/lib/types";
 import { formatPeriod } from "@/lib/format";
-import { grainPeriods, timeGrains } from "@/lib/state";
+import { canCross, grainPeriods, timeGrains } from "@/lib/state";
 
 interface Props {
   nav: Navigation;
@@ -123,15 +123,26 @@ export function Sidebar({
           {kpi.dimensions.length ? (
             <fieldset>
               <legend>{t("dashboard.dimensions")}</legend>
-              {kpi.exclusive_dimensions ? <p className="hint">{t("dashboard.dimensionsExclusive")}</p> : null}
+              {kpi.exclusive_dimensions ? (
+                <p className="hint">
+                  {kpi.crossed_levels?.length
+                    ? kpi.crossed_levels.includes(level)
+                      ? t("dashboard.dimensionsCrossed")
+                      : t("dashboard.dimensionsCrossedElsewhere")
+                    : t("dashboard.dimensionsExclusive")}
+                </p>
+              ) : null}
               {kpi.dimensions.map((d) => (
                 <label key={d.classification_id} className="check">
                   <input
                     type="checkbox"
                     checked={dimensions.includes(d.classification_id)}
                     onChange={(e) => {
-                      // Dimensões marginais: marcar uma desmarca as outras (sem cruzamentos).
-                      const next = new Set(kpi.exclusive_dimensions ? [] : dimensions);
+                      // Dimensões marginais: marcar uma desmarca as outras, salvo quando o
+                      // grupo se cruza nesse nível (C1, até UF).
+                      const keep =
+                        !kpi.exclusive_dimensions || canCross(kpi, [...dimensions, d.classification_id], level);
+                      const next = new Set(keep ? dimensions : []);
                       if (e.target.checked) next.add(d.classification_id);
                       else next.delete(d.classification_id);
                       onDimensions(nav.dimension_order.filter((x) => next.has(x)));

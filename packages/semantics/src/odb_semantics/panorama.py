@@ -86,6 +86,10 @@ class PanoramaKpi(_Strict):
     # Edições (ADR-0021): tabelas com a mesma variável em outros períodos (Censos
     # anteriores). Cada uma traz só os anos que a base e as anteriores da lista não têm.
     edicoes: tuple[str, ...] = Field(default=(), max_length=12)
+    # Cruzamentos completos até UF (C1): grupos de classificações da fonte ("c2",
+    # "c260") que vêm cruzadas em Brasil, Grandes Regiões e UFs; no município, os
+    # detalhes continuam marginais.
+    cruzar: tuple[tuple[str, ...], ...] = ()
     # Correção de valores em moeda (ADR-0020): "ipca" põe o "Corrigir por: IPCA geral",
     # com o índice do próprio período (mês, ou média dos meses do trimestre ou do ano).
     # Só para valores nominais: rendimentos já deflacionados pela fonte ficam de fora.

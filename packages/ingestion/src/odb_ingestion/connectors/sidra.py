@@ -130,6 +130,11 @@ class SidraParams(BaseModel):
     # 2026-11-12). A lista é dividida em lotes na ordem declarada, com sufixo -k<n>;
     # grupos só até UF não são divididos.
     category_chunk: int | None = Field(default=None, ge=1)
+    # Cruzamentos completos (C1, 2026-11-13): cada conjunto pede o produto das categorias
+    # das classificações listadas, sem os Totais (que já vêm na principal e nos
+    # marginais), só em ``cross_levels``. Sufixo ``-c<cids>``.
+    cross_sets: tuple[dict[str, str], ...] = ()
+    cross_levels: tuple[str, ...] = ("n1", "n2", "n3")
     period_type: Literal["ano", "mes", "trimestre"] = "ano"
     # Meses ou trimestres do mesmo ano numa única requisição (partição "p<ano>").
     # Com isso, ``estimated_values_per_period``, ``min_rows`` e ``max_rows`` valem
@@ -341,6 +346,15 @@ class SidraParams(BaseModel):
                         {**self.classifications, **extra},
                         f"{base}-x{list(extra)[-1]}",
                         own or self.extra_levels,
+                    )
+                )
+            for cross in self.cross_sets:
+                groups.append(
+                    RequestGroup(
+                        variables,
+                        {**self.classifications, **cross},
+                        f"{base}-c{'-'.join(cross)}",
+                        self.cross_levels,
                     )
                 )
         return self._chunked(groups) if self.category_chunk else groups

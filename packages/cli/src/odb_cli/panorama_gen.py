@@ -75,6 +75,7 @@ class Generated:
     extensions: dict[str, dict[str, dict[str, Any]]] = field(default_factory=dict)
     dimensions: dict[str, dict[str, str]] = field(default_factory=dict)
     map_share: dict[str, str] = field(default_factory=dict)  # KPI → categoria do mapa (%)
+    crossed: dict[str, list[list[str]]] = field(default_factory=dict)  # KPI → grupos (C1)
     total_only: list[tuple[str, str, str]] = field(default_factory=list)
     # Detalhes marginais (ADR-0016): KPI → dimensões além da principal, e as
     # classificações que ficaram no Total, com o motivo (para o relatório).
@@ -583,6 +584,46 @@ def plan_complements(  # noqa: PLR0917 - contexto da geração de um KPI
     return out
 
 
+CROSS_LEVELS = ("n1", "n2", "n3")
+CROSS_LEVEL_IDS = {"n1": "brasil", "n2": "regiao", "n3": "uf"}
+
+
+def plan_crosses(
+    kpi: PanoramaKpi,
+    info: Mapping[str, Any],
+    detail: Detail,
+    extras: Sequence[Detail],
+    per_year: int,
+) -> tuple[list[dict[str, str]], str]:
+    """Conjuntos de cruzamento completo até UF (C1), ou o motivo da recusa.
+
+    Cada grupo pede o produto das categorias (sem os Totais, que já vêm na requisição
+    principal e nos marginais) em Brasil, Grandes Regiões e UFs. A classificação
+    principal fora do grupo fica no Total.
+    """
+    by_cid = {d.source_cid or d.cid: d for d in (detail, *extras)}
+    out: list[dict[str, str]] = []
+    for group in kpi.cruzar:
+        missing = [c for c in group if c not in by_cid]
+        if missing:
+            return [], f"cruzamento {list(group)}: {missing} não são detalhes do KPI"
+        cross: dict[str, str] = {}
+        main = detail.source_cid or detail.cid
+        if main not in group:
+            cross[main] = detail.total
+        size = 1
+        for cid in group:
+            d = by_cid[cid]
+            cats = [c for c in d.categories if c != d.total]
+            cross[cid] = ",".join(cats)
+            size *= len(cats)
+        rows = _rows_per_period(info, list(CROSS_LEVELS)) * size * per_year
+        if rows > DETAIL_LIMIT:
+            return [], f"cruzamento {list(group)}: {rows} valores por requisição"
+        out.append(cross)
+    return out, ""
+
+
 # Edições de uma série (ADR-0021): só até UF. Os municípios de 1991 e 2000 incluem
 # códigos de municípios que mudaram depois, e a harmonização territorial (§13.3) é outra
 # etapa.
@@ -1044,6 +1085,15 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                     detail_params["extra_levels"] = list(extras.levels)
                 if any(extras.per_set):
                     detail_params["extra_set_levels"] = [list(x) for x in extras.per_set]
+            crosses, cross_why = plan_crosses(kpi, info, detail, extras.details, per_year)
+            if crosses:
+                detail_params["cross_sets"] = crosses
+                out.crossed[kpi.id] = [
+                    [d.cid for d in (detail, *extras.details) if d.source_cid in group]
+                    for group in kpi.cruzar
+                ]
+            elif cross_why:
+                out.complement_skipped.append((kpi.id, kpi.tabela, cross_why))
             chunks = [c for c in (main_chunk, extras.chunk) if c]
             if chunks:
                 detail_params["category_chunk"] = min(chunks)
@@ -1346,6 +1396,13 @@ def generate(  # noqa: PLR0912, PLR0915 - regras de elegibilidade em sequência,
                 if comp.levels != levels:
                     shown_levels = ", ".join(LEVEL_LABELS.get(lv, lv) for lv in comp.levels)
                     caveats.append(f"{comp.detail.name}: só em {shown_levels}.")
+        if kpi.id in out.crossed:
+            names = {d.cid: d.name for d in (detail, *extras.details) if d is not None}
+            groups = "; ".join(" × ".join(names[c] for c in g) for g in out.crossed[kpi.id])  # noqa: RUF001
+            caveats.append(
+                f"Cruzamentos completos ({groups}) em Brasil, Grandes Regiões e UFs. "
+                "No município, um detalhe por vez, com os demais no Total."
+            )
         for ed in eds:
             where = ", ".join(LEVEL_LABELS.get(lv, lv) for lv in ed.levels)
             caveats.insert(
@@ -1547,6 +1604,9 @@ def render_portal(gen: Generated, scope: str) -> str:
             lines.append(f"map_share = {_value(gen.map_share[kpi.id])}")
         if kpi.correcao:
             lines.append(f"corrections = [{_value(CORRECTIONS[kpi.correcao])}]")
+        if kpi.id in gen.crossed:
+            lines.append(f"crossed = {_value(gen.crossed[kpi.id])}")
+            lines.append(f"crossed_levels = {_value([CROSS_LEVEL_IDS[lv] for lv in CROSS_LEVELS])}")
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 

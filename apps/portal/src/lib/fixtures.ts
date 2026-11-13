@@ -15,6 +15,8 @@ const kpi = (over: Partial<Kpi> & Pick<Kpi, "kpi_id" | "label">): Kpi =>
     map_levels: ["uf"],
     dimensions: [],
     exclusive_dimensions: false,
+    crossed: [],
+    crossed_levels: [],
     corrections: [],
     caveats: [],
     time_grains: [],

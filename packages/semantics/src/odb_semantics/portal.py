@@ -92,6 +92,15 @@ class KpiConfig(_Strict):
     # Dimensões marginais (ADR-0016): cada uma vem com as demais no Total, sem os
     # cruzamentos. O portal detalha uma por vez, e a API recusa duas juntas.
     exclusive_dimensions: bool = False
+    # Cruzamentos completos (C1): grupos de dimensões que se cruzam, só nos níveis de
+    # ``crossed_levels`` (Brasil, região, UF). Nos demais, continua uma por vez.
+    crossed: tuple[tuple[str, ...], ...] = ()
+    crossed_levels: tuple[str, ...] = ()
+
+    def can_cross(self, dims: Sequence[str], level: str | None) -> bool:
+        """As dimensões pedidas se cruzam nesse nível?"""
+        return level in self.crossed_levels and any(set(dims) <= set(g) for g in self.crossed)
+
     # Níveis com mapa, se diferentes dos que têm geometria. Vazio: sem mapa (POF de
     # 1987 e 1995: só Brasília e Goiânia teriam cor na malha municipal, ADR-0016).
     map_levels: tuple[str, ...] | None = None
