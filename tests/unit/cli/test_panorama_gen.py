@@ -432,3 +432,12 @@ def test_multi_source_note_only_when_surveys_differ() -> None:
     assert "Fontes distintas (ADR-0022)" in note
     assert "Censo Demográfico (tabela 6805)" in note
     assert "Contínua anual (tabela 7192)" in note
+
+
+def test_crossing_only_where_all_details_exist() -> None:
+    """Pré-natal (8289): situação do domicílio só no Brasil (nota); o cruzamento também."""
+    gen = _generate()
+    params = next(d for d in gen.datasets if d["official_id"] == "8289")["params"]
+    assert params["cross_sets"] == [{"c86": "2776,2777,2779", "c1": "1,2"}]
+    assert params["cross_levels"] == ["n1"]
+    assert 'crossed_levels = ["brasil"]' in render_portal(gen, "demografia")

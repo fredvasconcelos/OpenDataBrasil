@@ -2570,6 +2570,8 @@ refresh_recent_periods = 1
 classifications = { "c86" = "all" }
 extra_sets = [{ "c86" = "95251", "c1" = "1,2" }]
 extra_set_levels = [["n1"]]
+cross_sets = [{ "c86" = "2776,2777,2779", "c1" = "1,2" }]
+cross_levels = ["n1"]
 
 [datasets.silver]
 transformer = "sidra_observation"

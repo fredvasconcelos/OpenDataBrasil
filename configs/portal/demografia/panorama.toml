@@ -481,6 +481,8 @@ label = "Mulheres que realizaram pré-natal"
 indicator = "pre_natal"
 dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c652t8288", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita", "levels" = ["brasil"] }, { "classification" = "c1568t8290", "partition" = "p120704", "label" = "Nível de instrução" }]
 exclusive_dimensions = true
+crossed = [["c86", "c1"]]
+crossed_levels = ["brasil"]
 
 [[themes.subthemes.kpis]]
 id = "aleitamento_exclusivo"

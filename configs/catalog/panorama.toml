@@ -353,7 +353,7 @@ kpis = [
 id = "materno_infantil"
 label = "Saúde materno-infantil"
 kpis = [
-  { id = "pre_natal", label = "Mulheres que realizaram pré-natal", tabela = "8289", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["cor_raca"], complementos = ["8288", "8290"] },
+  { id = "pre_natal", label = "Mulheres que realizaram pré-natal", tabela = "8289", pesquisa = "Pesquisa Nacional de Saúde", filtros = ["cor_raca"], complementos = ["8288", "8290"], cruzar = [["c86", "c1"]] },
   { id = "aleitamento_exclusivo", label = "Aleitamento materno exclusivo (menos de 6 meses)", tabela = "5905", pesquisa = "Pesquisa Nacional de Saúde" },
 ]
 
