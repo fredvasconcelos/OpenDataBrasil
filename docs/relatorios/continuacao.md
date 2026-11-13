@@ -164,6 +164,29 @@ docker compose --profile test run --rm tests pytest -q   # + portal (vitest) e e
   (9841 + 9543 + 7113). O Censo nos municípios completa depois da carga municipal
   (C2), no build pós-carga.
 
+## Cubo completo (cruzamentos em tudo): avaliado, adiado (2026-11-13)
+
+O mantenedor pediu os cruzamentos em todos os KPIs, inclusive no município, e depois
+decidiu esperar a carga atual e avaliar mais tarde. O código ficou guardado em
+`git stash` ("Avaliação do cubo completo"), sem aplicar. Ele cobre:
+- cada subconjunto de detalhes como conjunto cruzado, nos níveis que todos têm;
+- divisão das requisições pelo limite de valores;
+- `crossings` com níveis por grupo no portal.
+
+| Teto por KPI | Valores | Bronze (~380 B/valor, medido) | Requisições |
+|---|---|---|---|
+| sem teto | 60 bilhões | ~23 TB | 1,5 milhão (só a 4412: 38,5 bilhões) |
+| 300 milhões | 615 milhões | ~234 GB | 15,6 mil (~30 h) |
+| 400 milhões | 1,26 bilhão | ~480 GB | 32 mil |
+
+Para retomar:
+- **Disco:** compactar a Bronze sem perda (o JSON do SIDRA reduz ~10x) ou usar um disco
+  externo para o backup, que hoje fica no mesmo disco.
+- **Ordem:** começar pelos cruzamentos até UF (pequenos) e pelos pares no município.
+- **Pendentes de avaliação:** a 6378 (PeNSE: sexo × dependência administrativa × grupo
+  de idade, Brasil e regiões) e os outros 34 KPIs de tabela única com cruzamento
+  permitido pela fonte.
+
 ## Depois que a carga municipal (C2) terminar: roteiro
 
 A imagem do contêiner `odb-carga-municipal` é anterior às mudanças da rodada 4. Ao
