@@ -25,10 +25,10 @@ Em 2022, o único ano em comum, os valores do Brasil diferem:
 | Água (6803 × 6731) | ligação à rede e forma principal | principal fonte de abastecimento | — | quesitos diferentes; a 6731 não está no portal |
 | População (9606 × 6579) | Censo | estimativas anuais | — | a estimativa de 2022 foi substituída pelo Censo; anos distintos |
 
-Uma série única mostraria uma quebra falsa: em 2022, a cobertura de esgoto "cairia"
-4,6 pontos só pela troca de fonte. O §15.4 do CLAUDE.md classifica esse caso como
-"compatível mediante transformação documentada" no melhor dos casos, e nunca como a
-mesma série.
+Sem aviso, uma série única mostraria uma quebra falsa: em 2022, a cobertura de esgoto
+"cairia" 4,6 pontos só pela troca de fonte. Por isso a série composta é "compatível
+mediante transformação documentada" (§15.4): leva a nota de fontes distintas, uma fonte
+por período e nível, e a marcação da troca de fonte no gráfico (ADR-0022).
 
 ## Como cada par vira série composta (ADR-0022)
 

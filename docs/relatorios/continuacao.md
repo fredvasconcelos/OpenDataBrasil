@@ -154,6 +154,16 @@ docker compose --profile data run --rm worker odb release activate <release_id> 
 docker compose --profile test run --rm tests pytest -q   # + portal (vitest) e e2e
 ```
 
+## Séries compostas de fontes distintas (ADR-0022, decisão de 2026-11-13)
+
+- [x] Regra e nota automática no gerador ("Fontes distintas").
+- [ ] Transformações de escala (mil unidades → unidades) e de complemento (100 − x) na
+  regra da tabela, com teste.
+- [ ] Marcar a troca de fonte no gráfico de evolução e no tooltip.
+- [ ] Primeiras séries: esgoto (6805 + 7192), lixo (6892 + 6736) e alfabetização
+  (9543 + 9841 + 7113). Plano em
+  [fontes-comparaveis.md](../data_catalog/fontes-comparaveis.md).
+
 ## Depois que a carga municipal (C2) terminar: roteiro
 
 A imagem do contêiner `odb-carga-municipal` é anterior às mudanças da rodada 4. Ao
