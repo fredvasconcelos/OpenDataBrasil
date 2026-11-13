@@ -71,6 +71,7 @@ from odb_semantics.portal import (
     PortalConfig,
     PortalConfigError,
     ShortLabels,
+    allows_category_shares,
     describe_problems,
     release_problems,
 )
@@ -260,6 +261,7 @@ class KpiService:
             description=meta["description"],
             unit=meta["unit"],
             additivity=meta["additivity"],
+            category_shares=allows_category_shares(str(meta["unit"]), str(meta["additivity"])),
             periods=list(meta["periods"] or ()),
             levels=levels,
             map_levels=[
@@ -827,7 +829,8 @@ class KpiService:
             correction=correction,
         )
         meta = self._gold.indicators(ctx)[kpi.indicator]
-        additive = meta["additivity"] == "additive"
+        # % das categorias: indicadores somáveis ou de quantidade (DS 2.3.12).
+        additive = allows_category_shares(str(meta["unit"]), str(meta["additivity"]))
         values = {o.combo: o for o in obs if o.geography_key == geography}
         categories = self._gold.categories(ctx)
         totals = [self._gold.total_category(ctx, d)["category_key"] for d in dims]

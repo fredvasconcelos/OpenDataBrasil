@@ -510,7 +510,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
                 onRetry={() => setRetry((r) => r + 1)}
               />
             ) : series.data ? (
-              <SeriesChart data={series.data} additive={kpi.additivity === "additive"} />
+              <SeriesChart data={series.data} additive={kpi.category_shares} />
             ) : (
               <p className="muted">{t("dashboard.loading")}</p>
             )}
@@ -528,7 +528,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
             ) : table.data ? (
               <DataTable
                 data={table.data}
-                additive={kpi.additivity === "additive"}
+                additive={kpi.category_shares}
                 selected={state.geography}
                 sort={sort.sort}
                 order={sort.order}

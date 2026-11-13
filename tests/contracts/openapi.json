@@ -2858,6 +2858,11 @@
             "type": "string",
             "title": "Additivity"
           },
+          "category_shares": {
+            "type": "boolean",
+            "title": "Category Shares",
+            "default": false
+          },
           "periods": {
             "items": {
               "type": "string"

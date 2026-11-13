@@ -168,6 +168,7 @@ describe("state", () => {
     description: "",
     unit: "Pessoas",
     additivity: "additive",
+    category_shares: true,
     periods,
     levels,
     map_levels: levels.filter((l) => l !== "terra_indigena"),

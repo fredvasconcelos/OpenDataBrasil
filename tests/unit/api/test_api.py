@@ -354,6 +354,8 @@ def test_non_additive_kpi_has_no_shares(stack: dict[str, Any]) -> None:
     detail = _get(stack, "/api/v1/kpis/percentual_indigenas/detail?geography=uf:13")
     assert detail["additivity"] == "non_additive"
     assert detail["root"]["share_pct"] is None
+    kpi = _get(stack, "/api/v1/kpis/percentual_indigenas")
+    assert kpi["category_shares"] is False  # taxa em %: sem % das categorias
     error = _get(
         stack, "/api/v1/kpis/percentual_indigenas/detail?geography=uf:13&dimensions=c2", 422
     )

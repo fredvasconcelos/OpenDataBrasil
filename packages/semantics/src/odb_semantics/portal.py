@@ -26,6 +26,40 @@ if TYPE_CHECKING:
 _ID = r"^[a-z][a-z0-9_]{0,63}$"
 
 
+# Unidades de quantidade (contagens e totais): as categorias somam o Total do território,
+# e o % de cada uma faz sentido mesmo quando a fonte não deixa somar entre territórios
+# (estimativas da PNAD, por exemplo). Taxas, médias, índices e valores per capita
+# ("%", "Reais" médios, "Anos", "Quilogramas" per capita) ficam de fora.
+QUANTITY_UNITS = frozenset(
+    {
+        "Pessoas",
+        "Mil pessoas",
+        "Unidades",
+        "Mil unidades",
+        "Domicílios",
+        "Famílias",
+        "Estabelecimentos",
+        "Empresas",
+        "Cabeças",
+        "Hectares",
+        "Mil hectares",
+        "Toneladas",
+        "Mil toneladas",
+        "Mil Reais",
+        "Milhões de Reais",
+        "Mil dúzias",
+        "Mil litros",
+        "Vítimas",
+        "Óbitos",
+    }
+)
+
+
+def allows_category_shares(unit: str, additivity: str) -> bool:
+    """O % de cada categoria sobre o Total vale para este indicador? (DS 2.3.12)."""
+    return additivity == "additive" or unit.strip() in QUANTITY_UNITS
+
+
 class PortalConfigError(ValueError):
     """Configuração do portal inválida ou incoerente com o release."""
 

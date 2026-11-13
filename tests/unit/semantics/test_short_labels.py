@@ -29,3 +29,14 @@ def test_category_keys_are_exact_and_missing_file_is_empty(tmp_path: Path) -> No
     bad.write_text("[dimensoes]\nc1 = 3\n", encoding="utf-8")
     with pytest.raises(PortalConfigError):
         load_short_labels(bad)
+
+
+def test_category_shares_for_additive_or_quantity_units() -> None:
+    """DS 2.3.12: % das categorias em somáveis e em contagens (ex.: PNAD em mil unidades)."""
+    from odb_semantics.portal import allows_category_shares  # noqa: PLC0415
+
+    assert allows_category_shares("Mil unidades", "non_additive")  # PNAD (7192)
+    assert allows_category_shares("Pessoas", "additive")
+    assert not allows_category_shares("%", "non_additive")
+    assert not allows_category_shares("Reais", "non_additive")  # rendimento médio
+    assert not allows_category_shares("Quilogramas", "non_additive")  # per capita (POF)

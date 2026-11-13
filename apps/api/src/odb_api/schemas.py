@@ -210,6 +210,8 @@ class KpiOut(_Out):
     description: str
     unit: str
     additivity: str
+    # % das categorias sobre o Total (tabela, tooltip, série): somável ou quantidade.
+    category_shares: bool = False
     periods: list[str]
     levels: list[str]
     map_levels: list[str]

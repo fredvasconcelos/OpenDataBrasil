@@ -734,6 +734,11 @@ export interface components {
             unit: string;
             /** Additivity */
             additivity: string;
+            /**
+             * Category Shares
+             * @default false
+             */
+            category_shares: boolean;
             /** Periods */
             periods: string[];
             /** Levels */
