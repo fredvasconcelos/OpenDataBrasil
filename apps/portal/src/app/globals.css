@@ -831,3 +831,7 @@ mark { background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px; 
 .data-table thead th:first-child { max-width: none; }
 .sidebar .check.is-unavailable { color: var(--odbr-text-muted); cursor: not-allowed; }
 .sidebar .check .check-note { margin-left: 6px; font-size: var(--odbr-fs-caption); font-weight: 700; color: var(--odbr-text-muted); }
+
+/* DS 2.3.14: ícones de agropecuária (assets/icons/agro), cor do texto, alinhados ao rótulo. */
+.agro-icon { flex: none; vertical-align: -0.2em; margin-right: 6px; color: var(--odbr-text-active); }
+h1 .agro-icon { margin-right: 10px; vertical-align: -0.12em; }

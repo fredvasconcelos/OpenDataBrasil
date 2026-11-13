@@ -98,7 +98,11 @@
     "sourceChange": "Mudança de fonte (veja as notas)",
     "seriesSource": "Fonte do ponto: tabela {table}",
     "dimensionOnly": "só {levels}",
-    "dimensionOnlyAt": "A fonte publica este detalhe só em: {levels}. Mude o nível territorial para vê-lo."
+    "dimensionOnlyAt": "A fonte publica este detalhe só em: {levels}. Mude o nível territorial para vê-lo.",
+    "partial": "(parcial)",
+    "isolate": "Isolar período",
+    "isolateSum": "Cada barra soma a mesma parte do ano em todos os anos publicados ({years} anos), para comparar os meses, trimestres ou semestres.",
+    "isolateMean": "Cada barra é a média da mesma parte do ano nos anos publicados ({years} anos)."
   },
   "grainNotes": {
     "sum": "Soma dos períodos publicados (valor derivado). Período com parte sem dado fica sem valor.",

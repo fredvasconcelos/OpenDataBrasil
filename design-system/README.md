@@ -6,7 +6,7 @@ mais as revisões da beta) e mantêm todas as classes, rótulos e `aria-*` de qu
 
 ## Novidades da v2.3 (sobre a v2.1)
 
-> Versão do pacote: **2.3.13** (arquivo `VERSION`; ajustes da 2.3.1 a 2.3.13 na seção "Ajustes depois da 2.3.0"). Telas de referência em `reference/`.
+> Versão do pacote: **2.3.14** (arquivo `VERSION`; ajustes da 2.3.1 a 2.3.14 na seção "Ajustes depois da 2.3.0"). Telas de referência em `reference/`.
 >
 > **O que a API ainda não fornece (não inventado):** o canvas mostra indicadores
 > "em preparação" e o filtro de situação; o contrato `/navigation` só traz indicadores
@@ -88,6 +88,7 @@ anteriores a estes ajustes e ainda não os mostram.
 | Versão | Item | Onde | Regra |
 |---|---|---|---|
 | 2.3.1 | Busca da barra lateral fixa | `Sidebar.tsx` (`.tree-head`), `globals.css` | Título "Temas e indicadores", campo e resumo ficam fixos no topo da área que rola (a barra até 1599 px; o cartão da árvore em tela cheia). O fundo cobre a árvore que passa por baixo e o recuo de cima; `scroll-padding-top` mantém à vista o item focado pelo teclado. "Filtros" não é fixo. Captura: `reference/screens/busca-barra-lateral-fixa.png`. Especificação: `docs/DESIGN-SYSTEM.md`, "Páginas (v2.3)" |
+| 2.3.14 | Isolar período, período parcial e ícones de agropecuária | `SeasonChart.tsx`, `Sidebar.tsx` (`.check.isolate`, "(parcial)" no período), `lib/format.ts` (`partial_period`), `agroIcons.tsx` (gerado por `infrastructure/scripts/agro_icons.py`), `agroIconMap.ts`, `assets/icons/agro/*.svg` (22), `globals.css` (`.agro-icon`) | "Isolar período" (caixa em "Período por", só com grão menor que o ano): o gráfico de evolução vira barras por mês, trimestre ou semestre, com o acumulado de todos os anos (fluxos) ou a média (taxas, índices). Período em andamento: o valor acumulado até o último mês publicado, com "(parcial)" no valor e no seletor ("2026 (parcial)"). Ícones de traço único (24 × 24, 1,8 px, `currentColor`): 9 grupos de lavoura (no tooltip da 5457 e da 6588), 8 rebanhos e 5 produtos de origem animal (no título do KPI). Captura: `reference/screens/icones-agro.png` |
 | 2.3.13 | Detalhe só em alguns níveis | `Sidebar.tsx` (`.check.is-unavailable`, `.check-note`), `lib/state.ts` (detalhe fora do nível sai do estado), API `DimensionOut.levels`, gerador (`levels` por dimensão, da nota da tabela) | Quando a fonte publica um detalhe só em alguns níveis (ex.: situação do domicílio na PNS, "disponível apenas para o nível territorial Brasil"), a opção de "Detalhar por" fica desabilitada nos outros níveis, com "só Brasil" ao lado e a explicação no `title`, em vez de mostrar uma tabela vazia. 26 dimensões em 2026-11-13. Captura: `reference/screens/detalhe-so-em-alguns-niveis.png` |
 | 2.3.12 | % em contagens; mudança de fonte | `Dashboard.tsx` (`kpi.category_shares`), `SeriesChart.tsx` (`.series-source-change`, `source_table_id`), `messages/pt-BR.json` (`dashboard.sourceChange`, `seriesSource`) | O % das categorias aparece em todo indicador somável **ou** de quantidade (pessoas, unidades, mil unidades, toneladas…), como as estimativas da PNAD; taxas, médias, índices e per capita seguem sem %. Séries compostas de fontes distintas (ADR-0022): linha vertical tracejada onde a tabela de origem muda, legenda "Mudança de fonte (veja as notas)" e, no tooltip, "Fonte do ponto: tabela N". Captura: `reference/screens/serie-mudanca-de-fonte.png` |
 | 2.3.11 | Rótulos curtos e informação da tabela | `configs/portal/rotulos.toml` (API: `label` curto e `full_label`/`full_name` oficial), `DataTable.tsx` (`InfoIcon`, `.table-info`), `icons.tsx` (`InfoIcon`), `Sidebar.tsx` (`title` com o nome completo; dica dos cruzamentos por grupo), `globals.css` (cabeçalhos com quebra, `.info-button`) | Princípio 80/20: nomes longos da fonte viram rótulos curtos curados (até ~35 caracteres; o termo comum na frente: "Rede geral: forma principal") em Detalhar por, colunas, série, tooltip e legenda do mapa. O nome oficial fica no ⓘ "Sobre esta tabela" (unidade, nomes completos das colunas, como ler os %, linha de totais), no `title` e nas exportações. "% em relação a" vira "Calcular % por". Cabeçalhos quebram linha (9 a 22 ch). Captura: `reference/screens/tabela-rotulos-curtos.png` |
@@ -142,7 +143,7 @@ design-system/
 ├── tokens/
 │   ├── tokens.css            ← variáveis CSS (claro, dark, prefers-color-scheme)
 │   └── tokens.json           ← os mesmos valores em JSON (para outras ferramentas)
-├── VERSION                   ← 2.3.13
+├── VERSION                   ← 2.3.14
 ├── reference/                ← telas do canvas (fontes) e capturas dos componentes
 ├── assets/brand/             ← logos em SVG (texto convertido em curvas) e ícones PNG
 ├── assets/icons/             ← github.svg (Bootstrap Icons, MIT) + licença

@@ -9,6 +9,9 @@ import { DetailTooltip } from "@/components/DetailTooltip";
 import { DataExport, MapImageExport } from "@/components/ExportMenu";
 import { KpiInfo } from "@/components/KpiInfo";
 import { MapView, type FitRequest } from "@/components/MapView";
+import { AgroIcon } from "@/components/agroIcons";
+import { kpiIcon } from "@/components/agroIconMap";
+import { SeasonChart } from "@/components/SeasonChart";
 import { SeriesChart } from "@/components/SeriesChart";
 import { Sidebar } from "@/components/Sidebar";
 import { api } from "@/lib/api";
@@ -366,12 +369,14 @@ export function Dashboard({ nav }: { nav: Navigation }) {
         nav={nav}
         kpi={kpi}
         dimensions={state.dimensions}
-        onKpi={(id) => update({ kpi: id, dimensions: [], period: null, grain: null, correction: null })}
+        onKpi={(id) => update({ kpi: id, dimensions: [], period: null, grain: null, correction: null, isolate: false })}
         onDimensions={(dims) => update({ dimensions: dims })}
         level={state.level}
         period={period}
         grain={state.grain}
-        onGrain={(grain) => update({ grain, period: null })}
+        onGrain={(grain) => update({ grain, period: null, isolate: grain === "ano" ? false : state.isolate })}
+        isolate={state.isolate}
+        onIsolate={(isolate) => update({ isolate })}
         correction={state.correction}
         onCorrection={(correction) => update({ correction })}
         onLevel={(level) =>
@@ -391,7 +396,10 @@ export function Dashboard({ nav }: { nav: Navigation }) {
               <p className="crumb">
                 {[crumb, scope, periodLabel].filter(Boolean).join(" · ")}
               </p>
-              <h1>{kpi.label}</h1>
+              <h1>
+                {kpiIcon(kpi.kpi_id) ? <AgroIcon name={kpiIcon(kpi.kpi_id) as string} size={28} /> : null}
+                {kpi.label}
+              </h1>
             </div>
             {hasMap ? (
               <MapImageExport
@@ -510,7 +518,11 @@ export function Dashboard({ nav }: { nav: Navigation }) {
                 onRetry={() => setRetry((r) => r + 1)}
               />
             ) : series.data ? (
-              <SeriesChart data={series.data} additive={kpi.category_shares} />
+              state.isolate ? (
+                <SeasonChart data={series.data} rule={kpi.time_aggregation} />
+              ) : (
+                <SeriesChart data={series.data} additive={kpi.category_shares} />
+              )
             ) : (
               <p className="muted">{t("dashboard.loading")}</p>
             )}

@@ -9,6 +9,8 @@ import { DetailTooltip } from "@/components/DetailTooltip";
 import { DataExport, MapImageExport } from "@/components/ExportMenu";
 import { KpiInfo } from "@/components/KpiInfo";
 import { MapView, type FitRequest } from "@/components/MapView";
+import { AgroIcon } from "@/components/agroIcons";
+import { kpiIcon } from "@/components/agroIconMap";
 import { SeasonChart } from "@/components/SeasonChart";
 import { SeriesChart } from "@/components/SeriesChart";
 import { Sidebar } from "@/components/Sidebar";
@@ -394,7 +396,10 @@ export function Dashboard({ nav }: { nav: Navigation }) {
               <p className="crumb">
                 {[crumb, scope, periodLabel].filter(Boolean).join(" · ")}
               </p>
-              <h1>{kpi.label}</h1>
+              <h1>
+                {kpiIcon(kpi.kpi_id) ? <AgroIcon name={kpiIcon(kpi.kpi_id) as string} size={28} /> : null}
+                {kpi.label}
+              </h1>
             </div>
             {hasMap ? (
               <MapImageExport

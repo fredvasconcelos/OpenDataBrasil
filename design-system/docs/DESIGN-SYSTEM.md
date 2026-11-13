@@ -317,3 +317,24 @@ SVG e PNG exportados devem levar as cores já calculadas (`resolveSvgColors`) e 
   Grande Região, UF") ao lado e a explicação no `title`. Um detalhe pedido na URL num
   nível sem ele é ignorado. Antes, a tabela mostrava só o Total, sem aviso.
 
+## Ajustes da 2.3.14 (Isolar período, período parcial e ícones de agropecuária)
+
+- **Isolar período:** caixa de seleção em "Período por", habilitada com mês, trimestre
+  ou semestre. O gráfico de evolução vira barras por parte do ano (jan a dez, T1 a T4,
+  S1 e S2), com o acumulado de todos os anos publicados (fluxos) ou a média (taxas,
+  índices, médias). Com detalhe, uma barra por categoria. A legenda diz quantos anos
+  entram. Uso: sazonalidade (em que mês há mais feminicídios, óbitos, casamentos).
+- **Período parcial:** o período do grão ainda em andamento (2026 com dados até
+  setembro) mostra o acumulado até o último mês publicado, com "(parcial)" depois do
+  valor e no seletor de período. Os períodos incompletos do meio da série seguem sem
+  valor.
+- **Ícones de agropecuária** (`assets/icons/agro/`, 22): traço único, grade 24 × 24,
+  1,8 px, pontas arredondadas, `currentColor` (cor de destaque do texto).
+  - Grupos de lavoura (grãos, frutas, raízes e tubérculos, hortaliças, café e
+    estimulantes, cana, fibras, fumo, outras): ao lado do nome do grupo no tooltip da
+    5457 e dos produtos do LSPA (6588).
+  - Rebanhos (bovino, bubalino, equino, suíno, caprino, ovino, galináceo, codorna) e
+    produtos de origem animal (leite, ovos, mel, casulos, lã): no título do KPI.
+  - Fonte única: `infrastructure/scripts/agro_icons.py` gera os SVGs e o
+    `agroIcons.tsx`.
+

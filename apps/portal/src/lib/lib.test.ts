@@ -369,3 +369,15 @@ describe("período parcial", () => {
   });
 });
 
+describe("ícones de agropecuária (DS 2.3.14)", () => {
+  it("mapeia grupos de lavoura, produtos do LSPA e KPIs de rebanho", async () => {
+    const { categoryIcon, kpiIcon } = await import("@/components/agroIconMap");
+    const { AGRO_ICONS } = await import("@/components/agroIcons");
+    expect(categoryIcon("c782:g_frutas")).toBe("frutas");
+    expect(categoryIcon("c782:40151")).toBeNull(); // produto: o ícone é o do grupo
+    expect(categoryIcon("c48:39428")).toBe("graos");
+    expect(kpiIcon("efetivo_suinos")).toBe("suino");
+    for (const name of ["graos", "frutas", "suino", "leite", "mel"]) expect(AGRO_ICONS[name]).toBeTruthy();
+  });
+});
+

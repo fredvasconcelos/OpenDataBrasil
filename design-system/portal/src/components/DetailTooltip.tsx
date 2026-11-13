@@ -1,5 +1,7 @@
 "use client";
 
+import { AgroIcon } from "@/components/agroIcons";
+import { categoryIcon } from "@/components/agroIconMap";
 import { useTranslations } from "next-intl";
 import { useLayoutEffect, useRef } from "react";
 
@@ -159,7 +161,10 @@ function Categories({ nodes }: { nodes: DetailNode[] }) {
             <li key={keyOf(n)} className="tt-item">
               <div className="tt-row">
                 <span className="tt-dot" style={{ background: color }} aria-hidden="true" />
-                <span className="tt-label">{n.label}</span>
+                <span className="tt-label">
+                  <CategoryIcon category={n.category_key} />
+                  {n.label}
+                </span>
                 <span className="tt-value">{formatValue(n.value, n.status)}</span>
                 <span className="tt-share">{formatShare(n.share_pct)}</span>
               </div>
@@ -229,7 +234,10 @@ function Matrix({ nodes, side, sharesNote }: { nodes: DetailNode[]; side: boolea
               <span className="tt-num" style={{ borderColor: color }} aria-hidden="true">
                 {i + 1}
               </span>
-              <span className="tt-label">{n.label}</span>
+              <span className="tt-label">
+                  <CategoryIcon category={n.category_key} />
+                  {n.label}
+                </span>
               <span className="tt-value">{formatValue(n.value, n.status)}</span>
               {withShare ? <span className="tt-share">{formatShare(n.share_pct)}</span> : null}
               <span className="tt-bar" aria-hidden="true">
@@ -301,7 +309,10 @@ function Columns({ nodes }: { nodes: DetailNode[] }) {
         {sorted.map((n, i) => (
           <li key={keyOf(n)} className="tt-row">
             <span className="tt-dot" style={{ background: SERIES[i % SERIES.length] }} aria-hidden="true" />
-            <span className="tt-label">{n.label}</span>
+            <span className="tt-label">
+                  <CategoryIcon category={n.category_key} />
+                  {n.label}
+                </span>
             <span className="tt-value">{formatValue(n.value, n.status)}</span>
             <span className="tt-share">{formatShare(n.share_pct)}</span>
           </li>
@@ -430,4 +441,10 @@ export function DetailTooltip({ name, detail, loading, x, y }: Props) {
       </div>
     </div>
   );
+}
+
+/** Ícone de agropecuária da categoria (grupos de lavoura, produtos do LSPA), se houver. */
+function CategoryIcon({ category }: { category: string | null | undefined }) {
+  const name = categoryIcon(category);
+  return name ? <AgroIcon name={name} size={16} /> : null;
 }
