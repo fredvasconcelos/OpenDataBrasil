@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# O commit só avança depois de conferir a árvore efetiva do índice.
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+exec python3 -I infrastructure/scripts/public_boundary.py

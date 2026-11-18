@@ -1,0 +1,93 @@
+# Raiz virtual do workspace uv (não é um pacote instalável).
+# Cada pacote em packages/ declara suas próprias dependências.
+
+[tool.uv.workspace]
+members = ["packages/*", "apps/api"]
+
+[tool.uv]
+required-version = "==0.13.2"
+default-groups = ["dev"]
+# Transitivas fixadas pela regra dos 14 dias (docs/development/compatibility-matrix.md).
+constraint-dependencies = ["anyio==4.15.1"]
+
+[dependency-groups]
+dev = [
+    "ruff==0.17.1",
+    "mypy==2.4.0",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+]
+
+# ---------------------------------------------------------------- ruff
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["packages/*/src", "apps/*/src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "B", "UP", "N", "S", "SIM", "RUF", "PL", "PT", "DTZ", "TID", "ANN",
+]
+ignore = [
+    "PLR0913", # muitos argumentos: aceitável em construtores de configuração
+    "ANN401",  # Any explícito permitido em fronteiras de bibliotecas
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "PLR2004", "ANN", "S608"]
+# SQL montado só com fragmentos fixos do planejador; valores entram como $parâmetros.
+"packages/semantics/src/odb_semantics/query.py" = ["S608"]
+# Mesma regra: fragmentos fixos e $parâmetros. Rotas FastAPI recebem parâmetros nomeados.
+"apps/api/src/odb_api/gold.py" = ["S608"]
+"apps/api/src/odb_api/routes/*.py" = ["PLR0917"]
+# FTP anônimo, só leitura, é o protocolo oficial de transferência de arquivos do DATASUS (§7.3).
+"packages/ingestion/src/odb_ingestion/connectors/ftp_file.py" = ["S321"]
+"tests/unit/ingestion/test_ftp_file.py" = ["S321"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+# ---------------------------------------------------------------- mypy
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+# Atualizar ao criar novos pacotes (mypy não expande globs aqui).
+mypy_path = ["packages/common/src", "packages/lakehouse/src", "packages/query_engine/src", "packages/catalog/src", "packages/cli/src", "packages/ingestion/src", "packages/processing/src", "packages/semantics/src", "packages/modeling/src", "apps/api/src"]
+files = ["packages", "apps/api/src", "tests", "infrastructure/scripts/public_boundary.py"]
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = [
+    "deltalake.*", "duckdb.*", "pyarrow.*", "shapely", "shapely.*", "shapefile", "xlsxwriter",
+    "dbfread", "dbfread.*", "datasus_dbc",
+]
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config", "--import-mode=importlib"]
+markers = [
+    "integration: requer serviços externos locais (PostgreSQL)",
+    "interop: testes de interoperabilidade Delta entre Polars, delta-rs e DuckDB",
+]
+xfail_strict = true
+filterwarnings = [
+    "error",
+    # Starlette 1.9 recomenda o httpx2 no TestClient; o httpx 0.28.1 já é fixado (ADR-0002).
+    "ignore:Using `httpx` with `starlette.testclient` is deprecated:UserWarning",
+]
+
+# ---------------------------------------------------------------- coverage
+[tool.coverage.run]
+branch = true
+source = ["packages", "apps/api/src"]
+omit = ["*/migrations/versions/*"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_covered = true
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError", "@overload"]

@@ -1,0 +1,32 @@
+# Mesmo conceito e unidade publicados pelo IBGE, com uma origem por célula.
+# Sem somar municípios, regiões metropolitanas ou grupos para obter o Brasil.
+config_version = "1.0.0"
+scope = "demografia"
+
+[[facts]]
+id = "fact_sidra_1737"
+dataset = "composta-ipca-territorial"
+grain = "território (Brasil, municípios e regiões metropolitanas pesquisados) x mês"
+description = "Variação mensal do índice geral do IPCA: série nacional preservada da 1737 e recortes territoriais oficiais das tabelas 655, 2938, 1419 e 7060."
+table_rules = { "655" = { "levels" = ["6", "7"], "keep_categories" = { "Geral, grupo, subgrupo, item e subitem" = ["7169"] }, "fixed_categories" = { "Geral, grupo, subgrupo, item e subitem" = "7169" } }, "2938" = { "levels" = ["6", "7"], "keep_categories" = { "Geral, grupo, subgrupo, item e subitem" = ["7169"] }, "fixed_categories" = { "Geral, grupo, subgrupo, item e subitem" = "7169" } }, "1419" = { "levels" = ["6", "7"], "keep_categories" = { "Geral, grupo, subgrupo, item e subitem" = ["7169"] }, "fixed_categories" = { "Geral, grupo, subgrupo, item e subitem" = "7169" } }, "7060" = { "levels" = ["6", "7"], "keep_categories" = { "Geral, grupo, subgrupo, item e subitem" = ["7169"] }, "fixed_categories" = { "Geral, grupo, subgrupo, item e subitem" = "7169" } } }
+
+[[indicators]]
+id = "ipca"
+name = "IPCA - Variação mensal"
+description = "Variação mensal do IPCA no Brasil e nas áreas pesquisadas pelo IBGE. A cobertura territorial segue cada estrutura de ponderação e seu período de disponibilidade."
+dataset = "composta-ipca-territorial"
+variable = "63"
+fact = "fact_sidra_1737"
+column = "valor"
+unit = "%"
+additivity = "non_additive"
+time_aggregation = "compound"
+first_period = "1998"
+concept = "ipca"
+path = ["Preços", "Inflação ao consumidor"]
+caveats = [
+    "Brasil: série oficial da tabela 1737, preservada sem soma das áreas pesquisadas.",
+    "Municípios e regiões metropolitanas: índice geral (c315=7169) nas tabelas 655 (ago/1999 a jun/2006), 2938 (jul/2006 a dez/2011), 1419 (2012 a 2019) e 7060 (2020 em diante), conforme a cobertura publicada em cada período.",
+    "A estrutura atual publica seis municípios (Rio Branco, São Luís, Aracaju, Campo Grande, Goiânia e Brasília) e dez regiões metropolitanas. Uma região metropolitana não é o município da capital nem uma Grande Região ou UF. Os demais municípios e os níveis estadual e de Grande Região não foram estimados.",
+    "A entrada de uma área na pesquisa varia no tempo. Ausência e sigilo permanecem identificados; não representam inflação zero.",
+]

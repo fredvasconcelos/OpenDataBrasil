@@ -1,0 +1,571 @@
+{
+  "site": {
+    "name": "Open Data Brasil",
+    "tagline": "Indicadores oficiais em um só lugar",
+    "internalNotice": "Versão de desenvolvimento, só para uso interno: as licenças de reutilização dos dados ainda estão em revisão.",
+    "description": "Portal independente e gratuito que reúne dados oficiais de instituições públicas brasileiras, com a fonte de cada número, mapas, séries históricas e exportação."
+  },
+  "nav": {
+    "home": "Início",
+    "dashboard": "Painel de análise",
+    "about": "Sobre os dados",
+    "metrics": "Métricas",
+    "api": "API",
+    "skip": "Pular para o conteúdo",
+    "contact": "Contato",
+    "repo": "Repositório do projeto no GitHub",
+    "code": "Código no GitHub",
+    "footer": "Rodapé",
+    "support": "Apoie",
+    "supportLong": "Apoie o projeto",
+    "menu": "Menu",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "theme": "Tema",
+    "instagram": "Instagram do projeto",
+    "instagramShort": "Instagram",
+    "links": "Contato e redes",
+    "social": "Redes do projeto",
+    "preferences": "Preferências",
+    "language": "Idioma",
+    "languageCurrent": "Idioma: {language}",
+    "languageSoon": "em breve"
+  },
+  "theme": {
+    "toDark": "Ativar tema escuro",
+    "toLight": "Ativar tema claro"
+  },
+  "valueStatus": {
+    "partial": "parcial"
+  },
+  "home": {
+    "title": "Dados oficiais do Brasil, prontos para consultar",
+    "lead": "Explore indicadores oficiais de instituições públicas brasileiras por território e período, veja a fonte de cada número e baixe os dados.",
+    "searchLabel": "Buscar indicador",
+    "searchPlaceholder": "Ex.: IPCA, desocupação, quilombolas, tabela 6579",
+    "searchEmpty": "Nenhum indicador encontrado.",
+    "open": "Abrir no painel",
+    "themes": "Temas",
+    "plannedCount": "{count, plural, =0 {} one {# indicador em preparação} other {# indicadores em preparação}}"
+  },
+  "dashboard": {
+    "menu": "Temas e indicadores",
+    "dimensions": "Detalhar por",
+    "dimensionsExclusive": "Uma por vez: cada detalhe vem com os demais no Total.",
+    "level": "Nível territorial",
+    "period": "Período",
+    "loading": "Carregando…",
+    "error": "Não foi possível carregar os dados.",
+    "retry": "Tentar de novo",
+    "selectKpi": "Escolha um indicador no menu.",
+    "mapTitle": "Distribuição por território",
+    "partialValues": "Valores parciais: soma dos componentes disponíveis. Consulte as limitações nas notas e métodos.",
+    "noMap": "Este nível não tem mapa. Os valores aparecem na tabela.",
+    "seriesTitle": "Evolução temporal",
+    "singlePeriod": "Só há um período publicado para esta combinação.",
+    "tableTitle": "Dados",
+    "selected": "Território selecionado",
+    "resetSelection": "Voltar para o Brasil",
+    "hoverHint": "Duplo clique ou roda do mouse aproxima o recorte (Região → UF → Município); clique seleciona.",
+    "derivedNote": "Percentuais calculados pela plataforma a partir dos valores publicados.",
+    "filterSum": "Total = soma das categorias marcadas (recalculado em mapa, gráfico, tooltip e tabela).",
+    "filterOfficial": "Indicador não somável: o Total continua o oficial; o filtro só limita as categorias mostradas.",
+    "showCategories": "Mostrar {count} categorias",
+    "categoriesOf": "Categorias: {dimension}",
+    "hideCategories": "Ocultar categorias",
+    "emptyChildren": "+ {count, plural, one {# item} other {# itens}} com zero ou sem dado (veja a tabela)",
+    "clearFilters": "Limpar filtros",
+    "zoom": {
+      "group": "Zoom do mapa",
+      "in": "Aproximar",
+      "out": "Afastar (subir um nível)",
+      "reset": "Ver o Brasil inteiro"
+    },
+    "figureNote": "Cada figura ≈ 10% do total.",
+    "focus": {
+      "trail": "Recorte do mapa",
+      "outside": "Fora do recorte",
+      "all": "Brasil"
+    },
+    "legend": {
+      "label": "Legenda",
+      "upTo": "Até {value}",
+      "over": "Mais de {value}",
+      "title": {
+        "people": "Pessoas",
+        "percent": "Percentual (%)",
+        "density": "Densidade (hab/km²)",
+        "area": "Área (km²)"
+      }
+    },
+    "filters": "Filtros",
+    "chartAndTable": "Gráfico e tabela",
+    "planned": "em preparação",
+    "plannedSource": "Em preparação · tabela SIDRA {table} ({survey})",
+    "gapNote": "Períodos sem publicação",
+    "seriesKeys": "Use as setas para percorrer os períodos.",
+    "seriesMore": "+ {count} séries · veja a tabela",
+    "relativeNote": "Barras proporcionais ao maior valor (indicador não aditivo).",
+    "searchLabel": "Buscar tema ou indicador",
+    "searchPlaceholder": "Buscar tema ou indicador…",
+    "searchAll": "Todos os temas",
+    "searchCount": "{count, plural, one {# indicador} other {# indicadores}} em {themes, plural, one {# tema} other {# temas}}",
+    "searchNone": "Nenhum resultado",
+    "searchPlannedOnly": "{count, plural, one {# indicador em preparação} other {# indicadores em preparação}}",
+    "searchClear": "Limpar",
+    "searchEmptyTitle": "Nenhum indicador para “{q}”",
+    "searchEmptyHint": "A busca ignora acentos e maiúsculas. Tente outra palavra ou o número da tabela.",
+    "searchTable": "Tabela {id}",
+    "switchKpi": "Trocar indicador",
+    "chooseKpi": "Escolher indicador",
+    "catalogTitle": "Escolher indicador",
+    "catalogClose": "Fechar",
+    "catalogThemes": "Temas",
+    "catalogSearch": "Buscar tema, indicador ou nº da tabela",
+    "catalogCurrent": "atual",
+    "catalogHint": "Digite para buscar em todos os temas · Esc fecha",
+    "periodsChoose": "Escolher",
+    "categoriesCount": "{marked} de {total}",
+    "grain": "Período por",
+    "correction": "Corrigir por",
+    "nominal": "Nominal (valores da época)",
+    "dimensionsCrossed": "Neste nível, cruzam-se {groups}; os demais detalhes, um por vez.",
+    "dimensionsCrossedElsewhere": "Neste nível, um detalhe por vez; os cruzamentos existem em Brasil, região e UF.",
+    "sourceChange": "Mudança de fonte (veja as notas)",
+    "seriesSource": "Fonte do ponto: tabela {table}",
+    "dimensionOnly": "só {levels}",
+    "dimensionOnlyAt": "A fonte publica este detalhe só em: {levels}. Mude o nível territorial para vê-lo.",
+    "partial": "(parcial)",
+    "isolate": "Isolar período",
+    "isolateSum": "Cada barra soma a mesma parte do ano em todos os anos publicados ({years} anos), para comparar os meses, trimestres ou semestres.",
+    "isolateMean": "Cada barra é a média da mesma parte do ano nos anos publicados ({years} anos).",
+    "mobile": {
+      "bar": "Ações do painel",
+      "indicators": "Indicadores",
+      "filters": "Filtros",
+      "apply": "Ver resultado",
+      "close": "Fechar",
+      "views": "Visualização",
+      "view": {
+        "map": "Mapa",
+        "chart": "Série",
+        "table": "Tabela"
+      },
+      "seeSeries": "Ver série",
+      "seeTable": "Ver na tabela",
+      "zoomIn": "Aproximar"
+    },
+    "touchHint": "Toque seleciona o território. Use a pinça ou o botão Aproximar para ver o recorte por dentro.",
+    "accumulate": "Acumular",
+    "accumulateHint": "Soma os períodos marcados (variações %: composição). Com Isolar período, o acumulado no ano.",
+    "accumulateOff": "Este indicador não acumula: taxas, médias e números-índice não se somam no tempo.",
+    "periodShow": "Mostrar as partes de {period}",
+    "periodHide": "Esconder as partes de {period}",
+    "periodsNote": "{count} períodos marcados: a tabela mostra um por coluna e o mapa, o mais recente. Marque Acumular para somá-los.",
+    "accumulated": "acumulado",
+    "periodRange": "{from} a {to}",
+    "isolateParts": "Cada barra é uma parte do ano, uma cor por ano marcado ({years}).",
+    "isolateAccumulated": "Cada barra é o acumulado no ano até aquela parte ({years}).",
+    "periodOnly": "Só {period}"
+  },
+  "grainNotes": {
+    "sum": "Soma dos períodos publicados (valor derivado). Período com parte sem dado fica sem valor.",
+    "mean": "Média dos períodos publicados (valor derivado), como o IBGE faz com os números-índice anuais. Período com parte sem dado fica sem valor.",
+    "last": "Valor do último período publicado (por exemplo, o acumulado em 12 meses de dezembro). Período incompleto fica sem valor.",
+    "compound": "Composição das variações mensais, (Π(1 + v/100) − 1) × 100: a variação acumulada no período, como o IBGE calcula. Período incompleto fica sem valor."
+  },
+  "levels": {
+    "brasil": "Brasil",
+    "regiao": "Grande Região",
+    "uf": "Estado (UF)",
+    "municipio": "Município",
+    "territorio_quilombola": "Território quilombola",
+    "territorio_quilombola_uf": "Território quilombola por UF",
+    "terra_indigena": "Terra indígena",
+    "terra_indigena_uf": "Terra indígena por UF",
+    "coordenacao_regional_funai": "Coordenação Regional da Funai",
+    "amazonia_legal": "Amazônia Legal",
+    "amazonia_legal_uf": "Amazônia Legal por UF",
+    "regiao_metropolitana": "Região Metropolitana",
+    "areas_pof": "Total das áreas da POF"
+  },
+  "table": {
+    "territory": "Território",
+    "previous": "Anterior",
+    "next": "Próxima",
+    "page": "{from}–{to} de {total}",
+    "sortByName": "Ordenar por nome",
+    "sortByValue": "Ordenar por valor",
+    "footer": "Total: {name}",
+    "shareOf": "Calcular % por",
+    "share": {
+      "row": "Território (linha)",
+      "group": "Grupo",
+      "column": "Coluna ({name})",
+      "overall": "Total geral"
+    },
+    "shareNote": {
+      "row": "Entre parênteses: % do Total do território (a linha).",
+      "group": "Entre parênteses: % do grupo em que a categoria está (ex.: Homens dentro de Branca); no grupo, % do Total do território.",
+      "column": "Entre parênteses: % que o território representa no total da coluna, a linha de totais no fim da tabela.",
+      "overall": "Entre parênteses: % do total geral, o Total da linha de totais no fim da tabela."
+    },
+    "shareNoteAll": "Os % podem ser calculados sobre o território, o grupo, a coluna ou o total geral (\"Calcular % por\").",
+    "collapse": "− recolher",
+    "expand": "+ {count} detalhes",
+    "about": "Sobre esta tabela",
+    "aboutUnit": "Unidade dos valores:",
+    "aboutColumns": "Nomes completos das colunas (a fonte usa nomes longos; a tabela mostra a forma curta):",
+    "aboutFooter": "A última linha (Total: {name}) traz o valor publicado pela fonte para {name}, e não a soma das linhas da página.",
+    "period": "Período",
+    "derived": "derivado",
+    "derivedHint": "Calculado pelo portal com a regra do indicador (soma ou média das partes publicadas).",
+    "historyGrains": "Mostrar",
+    "historyNote": "Série completa de {territory}: clique num território no mapa ou na tabela para trocar.",
+    "viewCurrent": "Recorte",
+    "viewHistory": "Série completa",
+    "views": "Tabela",
+    "viewPivot": "Tabela dinâmica"
+  },
+  "export": {
+    "title": "Exportar",
+    "data": "Dados",
+    "image": "Imagem do mapa",
+    "running": "Gerando arquivo…",
+    "failed": "A exportação falhou: {message}",
+    "download": "Baixar",
+    "openDialog": "Exportar dados…",
+    "dialogTitle": "Exportar dados",
+    "dialogLead": "Escolha os níveis territoriais, os períodos e os detalhes. O arquivo sai em formato longo: uma linha por território, período e categoria, com a fonte e a versão dos dados.",
+    "levels": "Níveis territoriais",
+    "grains": "Períodos",
+    "published": "publicado",
+    "derived": "derivado",
+    "dimensions": "Detalhar por",
+    "marginal": "A fonte publica estes detalhes um por vez: cada um sai em linhas próprias, com os demais no Total.",
+    "format": "Formato",
+    "selectAll": "Selecionar tudo",
+    "selectCurrent": "Voltar ao painel",
+    "estimate": "Cerca de {rows} linhas (limite: {max}).",
+    "estimateTooMany": "Cerca de {rows} linhas: acima do limite de {max}. Desmarque níveis, períodos ou detalhes.",
+    "neverAccumulated": "Sai só o que a fonte publicou e o que o portal deriva pela regra do indicador (marcado na coluna tipo); valores acumulados nunca são exportados.",
+    "cancel": "Cancelar"
+  },
+  "meta": {
+    "title": "Sobre este indicador",
+    "source": "Fonte",
+    "table": "Tabela SIDRA {table}, variável {variable}",
+    "tableOther": "{table}, variável {variable}",
+    "unit": "Unidade",
+    "periods": "Períodos",
+    "license": "Licença",
+    "release": "Versão dos dados (release)",
+    "caveats": "Limitações",
+    "official": "Ver na fonte oficial",
+    "method": "Método",
+    "correctedBy": "Corrigido por {label}",
+    "inUse": "(em uso)",
+    "timeAggregation": "Período maior que o publicado (trimestre, semestre, ano)",
+    "tableTotal": "Total",
+    "tablesSidra": "Tabelas SIDRA",
+    "tablesOther": "Tabelas",
+    "and": "e",
+    "variable": "variável {variable}",
+    "officialTable": "Tabela {table} na fonte oficial",
+    "moreTables": "{count} tabelas de origem",
+    "sourceTables": "Tabelas de origem",
+    "sourceTablesLead": "Este indicador junta tabelas da fonte com a mesma variável. Cada uma traz uma parte; os detalhes vêm com os demais no Total.",
+    "tableSidraShort": "Tabela {table}"
+  },
+  "about": {
+    "title": "Sobre os dados",
+    "lead": "Cada número vem de uma versão publicada e conferida dos dados, identificada abaixo. A fonte oficial continua sendo a instituição que publicou os dados: siga os links para a origem.",
+    "release": "Versão publicada dos dados",
+    "activated": "ativado em {date}",
+    "datasets": "Conjuntos de dados",
+    "license": "Licença",
+    "review": "situação: {status}",
+    "searchLabel": "Buscar indicador ou tabela",
+    "searchPlaceholder": "Ex.: IPCA, óbitos, 9606",
+    "licenseReview": "Licenças: {status}",
+    "colKpi": "Indicador",
+    "colTable": "Tabela",
+    "colStatus": "Situação",
+    "tableAtSource": "Tabela {id} na fonte ↗",
+    "sourcesTitle": "De onde vêm os dados",
+    "sourcesLead": "Instituições e sistemas oficiais de onde o portal obtém os dados hoje. A lista cresce à medida que novas fontes são incorporadas.",
+    "sourceDatasets": "{count, plural, one {# conjunto de dados} other {# conjuntos de dados}}",
+    "newTab": "(abre em nova aba)",
+    "reviewStatus": {
+      "requires_review": "algumas em revisão",
+      "approved": "todas aprovadas"
+    }
+  },
+  "unavailable": {
+    "title": "Dados temporariamente indisponíveis",
+    "lead": "O serviço de dados não respondeu. Isso costuma durar alguns segundos, por exemplo logo depois de um reinício. A página tenta de novo sozinha a cada 15 segundos.",
+    "retry": "Tentar de novo",
+    "code": "Código do erro: {digest}"
+  },
+  "catalog": {
+    "all": "Todos",
+    "filterByTheme": "Filtrar por tema",
+    "statKpis": "indicadores publicados",
+    "statPlanned": "em preparação",
+    "plannedCount": "{count, plural, one {# em preparação} other {# em preparação}}",
+    "planned": "Em preparação",
+    "plannedNote": "Ainda sem dados no portal. Fonte prevista: tabela SIDRA {table} ({survey}).",
+    "statusFilter": "Situação",
+    "statusAll": "Todos",
+    "statusPublished": "Publicados",
+    "statusPlanned": "Em preparação",
+    "statThemes": "temas",
+    "statTables": "tabelas da fonte",
+    "kpiCount": "{count, plural, =0 {nenhum indicador} one {# indicador} other {# indicadores}}",
+    "found": "{count, plural, =0 {Nenhum indicador encontrado} one {# indicador encontrado} other {# indicadores encontrados}}",
+    "searchHint": "Busca no nome do indicador, no tema, no subtema e pelo número da tabela · ignora acentos",
+    "seeAll": "Ver todos os {count} →",
+    "seeTheme": "Ver o tema →",
+    "empty": "Nenhum indicador encontrado. A busca ignora acentos e maiúsculas e também procura pelo número da tabela.",
+    "published": "Publicado",
+    "close": "Fechar",
+    "source": "Fonte",
+    "table": "Tabela {id}",
+    "officialSource": "Ver na fonte oficial",
+    "mainDimension": "Detalhar por",
+    "otherDimensions": "Outras classificações",
+    "totalOnly": "Não se aplica (só o Total)",
+    "unit": "Unidade",
+    "periods": "Períodos",
+    "mapLevels": "Níveis com mapa",
+    "license": "Licença",
+    "version": "Versão dos dados",
+    "caveats": "Limitações",
+    "escCloses": "Esc fecha",
+    "statInstitutions": "{count, plural, one {instituição} other {instituições}}"
+  },
+  "grains": {
+    "mes": "Mês",
+    "trimestre": "Trimestre",
+    "semestre": "Semestre",
+    "ano": "Ano"
+  },
+  "support": {
+    "metaTitle": "Apoie o projeto · Open Data Brasil",
+    "eyebrow": "Apoie o projeto",
+    "title": "Ajude a manter os dados do Brasil abertos e fáceis de consultar",
+    "lead": "O Open Data Brasil reúne dados oficiais de várias instituições públicas, confere cada número com a fonte e o deixa pronto para consultar e baixar, de graça. O projeto é independente e se mantém com doações de quem acredita que informação pública deve ser fácil de usar.",
+    "newTab": "(abre em nova aba)",
+    "why": {
+      "title": "Por que apoiar",
+      "free": {
+        "title": "Gratuito para todos.",
+        "text": "Consultar, comparar e baixar os dados não custa nada e não exige cadastro."
+      },
+      "independent": {
+        "title": "Independente.",
+        "text": "Sem anúncios e sem venda de dados. O projeto depende só de quem o apoia."
+      },
+      "open": {
+        "title": "Aberto.",
+        "text": "O código é aberto e cada número mostra de onde veio, para qualquer pessoa conferir."
+      }
+    },
+    "donate": {
+      "title": "Como doar",
+      "pending": "As contas de doação estão sendo criadas. Enquanto isso, você pode ajudar de outras formas, logo abaixo.",
+      "pix": {
+        "name": "PIX",
+        "text": "Doação avulsa, de qualquer valor, direto pelo app do seu banco.",
+        "copy": "Copiar chave PIX",
+        "copyCode": "Copiar PIX copia e cola",
+        "copied": "Chave copiada.",
+        "codeCopied": "Código copia e cola copiado. Cole no app do seu banco, em PIX copia e cola.",
+        "qrAlt": "QR Code PIX do Open Data Brasil: aponte a câmera do app do seu banco",
+        "copyFail": "Não foi possível copiar. Selecione a chave e copie manualmente."
+      },
+      "apoiase": {
+        "name": "Apoia.se",
+        "text": "Apoio mensal, no valor que você escolher. É o que mais ajuda a planejar.",
+        "action": "Apoiar no Apoia.se"
+      },
+      "coffee": {
+        "name": "Buy Me a Coffee",
+        "text": "Uma doação avulsa e rápida, com cartão.",
+        "action": "Doar no Buy Me a Coffee",
+        "qrAlt": "QR Code da página do Open Data Brasil no Buy Me a Coffee"
+      }
+    },
+    "spending": {
+      "title": "Para onde vai o dinheiro",
+      "lead": "As doações pagam a estrutura que mantém o portal no ar:",
+      "server": {
+        "title": "Servidor no Brasil",
+        "text": "Hospeda o portal e a API, com os dados perto de quem consulta."
+      },
+      "domain": {
+        "title": "Domínio",
+        "text": "O endereço do portal na internet."
+      },
+      "backup": {
+        "title": "Cópias de segurança",
+        "text": "Guardam os arquivos originais e o histórico fora do servidor, para nada se perder."
+      },
+      "growth": {
+        "title": "Mais dados",
+        "text": "Espaço e capacidade para incluir novas fontes e manter as atuais em dia."
+      }
+    },
+    "help": {
+      "title": "Outras formas de ajudar",
+      "share": {
+        "title": "Divulgue",
+        "text": "Mostre o portal para colegas, estudantes e quem trabalha com dados públicos."
+      },
+      "report": {
+        "title": "Reporte um erro",
+        "text": "Achou um número estranho ou algo que não funciona? Conte para nós.",
+        "action": "Abrir um relato no GitHub"
+      },
+      "suggest": {
+        "title": "Sugira uma fonte",
+        "text": "Indique dados oficiais que deveriam estar aqui.",
+        "action": "Fale conosco"
+      },
+      "code": {
+        "title": "Contribua com código",
+        "text": "Conectores, testes, documentação e design: toda ajuda é bem-vinda.",
+        "action": "Ver o código no GitHub"
+      }
+    }
+  },
+  "pivot": {
+    "rows": "Linhas",
+    "cols": "Colunas",
+    "addField": "+ campo",
+    "add": "Adicionar campo em {zone}",
+    "remove": "Tirar {field}",
+    "moveUp": "Mover {field} para antes",
+    "swap": "Trocar linhas e colunas",
+    "caption": "Tabela dinâmica com {rows} linhas e {cols} colunas",
+    "note": "Campos fora da tabela ficam no Total publicado. Os valores são os da fonte (ou derivados pela regra do indicador); nada é somado aqui.",
+    "share": {
+      "none": "Sem %",
+      "total": "Total das categorias",
+      "parent": "Grupo (categoria acima)",
+      "column": "Coluna ({name})",
+      "overall": "Total geral ({name})"
+    },
+    "shareNote": {
+      "total": "Entre parênteses: % do Total das categorias, no mesmo território e período.",
+      "parent": "Entre parênteses: % da categoria acima (ex.: Homens dentro de Branca).",
+      "column": "Entre parênteses: % que o território representa na linha de totais, no fim da tabela.",
+      "overall": "Entre parênteses: % do Total das categorias da linha de totais, no fim da tabela."
+    },
+    "sortByLabel": "Ordenar por {field}",
+    "sortByColumn": "Ordenar por {column}",
+    "aboutAlert": "Aviso sobre esta tabela",
+    "alertTitle": "Sem este nível de detalhe",
+    "alertEmpty": "{dimension}: a fonte não traz este detalhe para o recorte escolhido; a tabela mostra só o Total.",
+    "alertLevel": "{dimension}: a fonte não publica este detalhe por {level}. Há detalhe em: {levels}.",
+    "accumulateNote": "A tabela mostra cada período separado; o acumulado aparece no mapa e no gráfico."
+  },
+  "metrics": {
+    "title": "Métricas do portal",
+    "lead": "Quantas vezes o portal foi acessado e de onde vêm os acessos. Contamos visualizações, não pessoas: sem cookies e sem guardar IP.",
+    "period": {
+      "label": "Período",
+      "7d": "7 dias",
+      "30d": "30 dias",
+      "12m": "12 meses",
+      "custom": "Personalizado",
+      "from": "De",
+      "to": "Até",
+      "apply": "Aplicar",
+      "errors": {
+        "missing": "Escolha as duas datas.",
+        "order": "A data inicial vem depois da final.",
+        "length": "O período personalizado vai até {days} dias."
+      }
+    },
+    "total": "Número de acessos ao portal",
+    "totalUnit": "visualizações de página",
+    "source": "{range} · fonte: registros de acesso do portal",
+    "since": "Coleta desde {date}",
+    "cards": {
+      "kpiOpens": "Indicadores abertos",
+      "downloads": "Downloads de dados",
+      "countries": "Países de origem",
+      "apiCalls": "Consultas à API"
+    },
+    "noAccess": "sem acessos",
+    "lessThan": "menos de {n}",
+    "map": {
+      "title": "De onde vêm os acessos",
+      "level": "Nível do mapa",
+      "levels": {
+        "pais": "País",
+        "regiao": "Grande Região",
+        "uf": "Estado"
+      },
+      "trail": "Trilha do mapa",
+      "world": "Mundo",
+      "brazil": "Brasil",
+      "zoomIn": "Aproximar",
+      "zoomOut": "Afastar",
+      "reset": "Voltar à visão inicial",
+      "asTable": "Ver o mapa como tabela",
+      "asMap": "Ver o mapa",
+      "attribution": "Limites: Natural Earth · IBGE",
+      "legend": "Legenda do mapa",
+      "less": "menos",
+      "more": "mais",
+      "point": "{name}: {value}",
+      "views": "visualizações",
+      "globeHint": "Arraste para girar o globo. Os pontos e o ranking também funcionam pelo teclado.",
+      "brazilHint": "Escolha uma Grande Região ou um estado no mapa, no ranking ou pela tabela.",
+      "loading": "Carregando o mapa…",
+      "empty": "Nenhum acesso registrado neste nível e período.",
+      "controls": "Controles do mapa"
+    },
+    "tip": {
+      "share": "{pct} do total"
+    },
+    "card": {
+      "close": "Fechar"
+    },
+    "ranking": {
+      "title": "Ranking de acessos",
+      "hint": "País › Grande Região › Estado. Escolha um lugar para levá-lo ao mapa.",
+      "expand": "Abrir {name}",
+      "collapse": "Fechar {name}"
+    },
+    "datasets": {
+      "title": "Conjuntos de dados mais acessados",
+      "sort": "Ordenar por",
+      "byViews": "Mais visualizados",
+      "byDownloads": "Mais baixados",
+      "rank": "Posição",
+      "name": "Indicador",
+      "theme": "Tema",
+      "views": "Visualizações",
+      "downloads": "Downloads",
+      "empty": "Nenhum indicador com 5 ou mais acessos no período."
+    },
+    "table": {
+      "caption": "Acessos por {level}",
+      "place": "Lugar",
+      "views": "Visualizações",
+      "share": "% do total"
+    },
+    "empty": {
+      "title": "A coleta de acessos ainda não começou",
+      "text": "Os números aparecem aqui assim que o portal começar a registrar os acessos. Enquanto isso, nada é estimado nem inventado."
+    },
+    "error": "Não foi possível carregar as métricas agora. Tente de novo em alguns minutos.",
+    "how": {
+      "title": "Como contamos",
+      "text": "Sem cookies e sem guardar IP: cada acesso soma uma visualização por dia, página e local aproximado (país e estado, nunca a cidade). Lugares e indicadores com menos de 5 acessos aparecem como \"menos de 5\". O estado vem da localização aproximada do endereço de internet: em redes móveis e com VPN, o acesso pode aparecer no estado da sede da operadora ou como \"Estado não identificado\"."
+    }
+  }
+}

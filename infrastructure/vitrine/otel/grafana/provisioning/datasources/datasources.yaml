@@ -1,0 +1,10 @@
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    uid: prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+# Traces: interface do próprio Jaeger (http://localhost:16686 pelo túnel SSH). O
+# Jaeger 2.22 só expõe a API v3, e a fonte de dados Jaeger do Grafana 13.3 usa a v1.

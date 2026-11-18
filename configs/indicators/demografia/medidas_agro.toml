@@ -1,0 +1,325 @@
+# Gerado por `odb panorama gerar-agro`. Edite configs/catalog/medidas-agro.toml.
+
+config_version = "1.0.0"
+scope = "demografia"
+
+[[classifications]]
+id = "c782ag"
+name = "Produto das lavouras temporárias e permanentes"
+silver_dimension = "Produto das lavouras temporárias e permanentes"
+total = "0"
+datasets = ["ibge-agro-5457-216-ha", "ibge-agro-5457-215-reais", "ibge-agro-5457-214-ton", "ibge-agro-5457-214-frutos", "ibge-agro-5457-112-kg-ha", "ibge-agro-5457-112-frutos-ha"]
+
+[[classifications.partitions]]
+id = "p0"
+label = "Produto das lavouras temporárias e permanentes"
+categories = ["40129", "40092", "83388", "45982", "83399", "40329", "83389", "40130", "40099", "40100", "40101", "40102", "40103", "40131", "40136", "40104", "40105", "40137", "40468", "40138", "40139", "40140", "40141", "40330", "40106", "40331", "83390", "40142", "40143", "40107", "83391", "40108", "40109", "40144", "83392", "40145", "83400", "40146", "40147", "40110", "40111", "40112", "40148", "40113", "83395", "40114", "40149", "83401", "40150", "83393", "40115", "40151", "40152", "40116", "40260", "40117", "40261", "40118", "40119", "40262", "40263", "40264", "40120", "40121", "40122", "83394", "83396", "40265", "40266", "40267", "40268", "40269", "83397", "40123", "83398", "40270", "40124", "40125", "40271", "40126", "40127", "40128", "40272", "40273", "40274"]
+exhaustive = false
+
+[[classifications]]
+id = "c80ag"
+name = "Tipo de produto de origem animal"
+silver_dimension = "Tipo de produto de origem animal"
+total = "0"
+datasets = ["ibge-agro-74-215-reais"]
+
+[[classifications.partitions]]
+id = "p0"
+label = "Tipo de produto de origem animal"
+categories = ["2682", "2685", "2686", "2687", "2683", "2684"]
+exhaustive = false
+
+[[classifications]]
+id = "c48ag"
+name = "Produto das lavouras"
+silver_dimension = "Produto das lavouras"
+total = "0"
+datasets = ["ibge-agro-6588-216-ha", "ibge-agro-6588-35-ton", "ibge-agro-6588-35-frutos", "ibge-agro-6588-36-kg-ha", "ibge-agro-6588-36-frutos-ha"]
+
+[[classifications.partitions]]
+id = "p0"
+label = "Produto das lavouras"
+categories = ["39428", "39447", "39448", "39449", "39450", "39451", "39452", "39453", "40527", "39456", "39457", "39458", "39459", "39460", "39461", "39462", "39463", "39464", "39465", "39467", "39468", "39469", "39470", "39471"]
+exhaustive = false
+
+[[classifications.partitions]]
+id = "p39428"
+label = "Produto das lavouras"
+parent = "39428"
+categories = ["39429", "39430", "39431", "39432", "39433", "82223", "39434", "39435", "39436", "39437", "39438", "82224", "39439", "39440", "39441", "39442", "39443", "39444", "39445", "39446"]
+exhaustive = false
+
+[[classifications.partitions]]
+id = "p40527"
+label = "Produto das lavouras"
+parent = "40527"
+categories = ["39454", "39455"]
+exhaustive = false
+
+[[facts]]
+id = "fact_agro_5457_216_ha"
+dataset = "ibge-agro-5457-216-ha"
+grain = "território x ano x produto"
+description = "Área colhida das lavouras"
+classifications = { "c782ag" = "c782ag_category_key" }
+
+[[facts]]
+id = "fact_agro_5457_215_reais"
+dataset = "ibge-agro-5457-215-reais"
+grain = "território x ano x produto"
+description = "Valor da produção das lavouras"
+classifications = { "c782ag" = "c782ag_category_key" }
+
+[[facts]]
+id = "fact_agro_74_215_reais"
+dataset = "ibge-agro-74-215-reais"
+grain = "território x ano x produto"
+description = "Valor da produção de origem animal"
+classifications = { "c80ag" = "c80ag_category_key" }
+
+[[facts]]
+id = "fact_agro_5457_214_ton"
+dataset = "ibge-agro-5457-214-ton"
+grain = "território x ano x produto"
+description = "Quantidade produzida das lavouras (Toneladas)"
+classifications = { "c782ag" = "c782ag_category_key" }
+
+[[facts]]
+id = "fact_agro_5457_214_frutos"
+dataset = "ibge-agro-5457-214-frutos"
+grain = "território x ano x produto"
+description = "Quantidade produzida de abacaxi e coco (Mil frutos)"
+classifications = { "c782ag" = "c782ag_category_key" }
+table_rules = { "5457" = { "unit" = "Mil frutos" } }
+
+[[facts]]
+id = "fact_agro_5457_112_kg_ha"
+dataset = "ibge-agro-5457-112-kg-ha"
+grain = "território x ano x produto"
+description = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+classifications = { "c782ag" = "c782ag_category_key" }
+
+[[facts]]
+id = "fact_agro_5457_112_frutos_ha"
+dataset = "ibge-agro-5457-112-frutos-ha"
+grain = "território x ano x produto"
+description = "Rendimento médio de abacaxi e coco (Frutos por Hectare)"
+classifications = { "c782ag" = "c782ag_category_key" }
+table_rules = { "5457" = { "unit" = "Frutos por Hectare" } }
+
+[[facts]]
+id = "fact_agro_6588_216_ha"
+dataset = "ibge-agro-6588-216-ha"
+grain = "território x mês x produto"
+description = "Estimativa da safra: área colhida"
+classifications = { "c48ag" = "c48ag_category_key" }
+
+[[facts]]
+id = "fact_agro_6588_35_ton"
+dataset = "ibge-agro-6588-35-ton"
+grain = "território x mês x produto"
+description = "Estimativa da safra: produção (toneladas)"
+classifications = { "c48ag" = "c48ag_category_key" }
+
+[[facts]]
+id = "fact_agro_6588_35_frutos"
+dataset = "ibge-agro-6588-35-frutos"
+grain = "território x mês x produto"
+description = "Estimativa da safra: produção de abacaxi e coco"
+classifications = { "c48ag" = "c48ag_category_key" }
+table_rules = { "6588" = { "unit" = "Mil frutos" } }
+
+[[facts]]
+id = "fact_agro_6588_36_kg_ha"
+dataset = "ibge-agro-6588-36-kg-ha"
+grain = "território x mês x produto"
+description = "Estimativa da safra: rendimento (kg/ha)"
+classifications = { "c48ag" = "c48ag_category_key" }
+
+[[facts]]
+id = "fact_agro_6588_36_frutos_ha"
+dataset = "ibge-agro-6588-36-frutos-ha"
+grain = "território x mês x produto"
+description = "Estimativa da safra: rendimento de abacaxi e coco"
+classifications = { "c48ag" = "c48ag_category_key" }
+table_rules = { "6588" = { "unit" = "Frutos por Hectare" } }
+
+[[indicators]]
+id = "area_colhida_lavouras"
+name = "Área colhida das lavouras"
+description = "Área colhida"
+dataset = "ibge-agro-5457-216-ha"
+variable = "216"
+fact = "fact_agro_5457_216_ha"
+column = "valor"
+unit = "Hectares"
+additivity = "additive"
+concept = "area_colhida_lavouras"
+path = ["Agropecuária", "Lavouras"]
+first_period = "1988"
+caveats = ["Área colhida desde 1988, mantendo a mesma janela inicial da área plantada existente, por decisão do mantenedor em 2026-11-17. Valores oficiais em hectares; áreas de culturas sucessivas ou simultâneas podem exceder a área geográfica.", "1 - Os municípios sem informação para pelo menos um produto da lavoura não aparecem nas listas;", "2 - A partir do ano de 2001 as quantidades produzidas dos produtos abacate, banana, caqui, figo, goiaba, laranja, limão, maçã, mamão, manga, maracujá, marmelo, melancia, melão, pera, pêssego e tangerina passam a ser expressas em toneladas. Nos anos anteriores eram expressas em mil frutos, com exceção da banana, que era expressa em mil cachos. O rendimento médio passa a ser expresso em Kg/ha. Nos anos anteriores era expresso em frutos/ha, com exceção da banana, que era expressa em cachos/ha.", "3 - Veja em https://sidra.ibge.gov.br/content/documentos/pam/AlteracoesUnidadesMedidaFrutas.pdf um documento com as alterações de unidades de medida das frutíferas ocorridas em 2001 e a tabela de conversão fruto x quilograma.", "4 - Até 2001, café (em coco), a partir de 2002, café (beneficiado ou em grão).", "5 - Os produtos girassol e triticale só apresentam informação a partir de 2005.", "6 - As quantidades produzidas de abacaxi e de coco-da-baía são expressas em mil frutos e o rendimento médio em frutos/ha.", "7 - Valores para a categoria Total indisponíveis para as variáveis Quantidade produzida e Rendimento médio, pois as unidades de medida diferem para determinados produtos.", "8 - Subentende a possibilidade de cultivos sucessivos ou simultâneos (simples, associados e/ou intercalados) no mesmo ano e no mesmo local, podendo, por isto, a área informada da cultura exceder a área geográfica do município.", "9 - As culturas de abacaxi, cana-de-açúcar, mamona e mandioca são consideradas culturas temporárias de longa duração. Elas costumam ter ciclo vegetativo que ultrapassa 12 meses e, por isso, as informações são computadas nas colheitas realizadas dentro de cada ano civil (12 meses).", "Nestas culturas a área plantada refere-se a área destinada à colheita no ano.", "10 - A diferença entre a área plantada ou destinada à colheita e a área colhida na lavoura é considerada como área perdida.", "11 - A variável Área plantada ou destinada à colheita só passou a ser informada a partir de 1988.", "12 - Valor da produção: Variável derivada calculada pela média ponderada das informações de quantidade e preço médio corrente pago ao produtor, de acordo com os períodos de colheita e comercialização de cada produto. As despesas de frete, taxas e impostos não são incluídas no preço.", "13 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "valor_producao_lavouras"
+name = "Valor da produção das lavouras"
+description = "Valor da produção"
+dataset = "ibge-agro-5457-215-reais"
+variable = "215"
+fact = "fact_agro_5457_215_reais"
+column = "valor"
+unit = "Mil Reais"
+additivity = "additive"
+concept = "valor_producao_lavouras"
+path = ["Agropecuária", "Lavouras"]
+first_period = "1994"
+caveats = ["Valores nominais em mil reais desde 1994. Períodos em moedas anteriores ficam fora da série por decisão do mantenedor em 2026-11-17. Não há conversão de moedas nem correção pela inflação.", "1 - Os municípios sem informação para pelo menos um produto da lavoura não aparecem nas listas;", "2 - A partir do ano de 2001 as quantidades produzidas dos produtos abacate, banana, caqui, figo, goiaba, laranja, limão, maçã, mamão, manga, maracujá, marmelo, melancia, melão, pera, pêssego e tangerina passam a ser expressas em toneladas. Nos anos anteriores eram expressas em mil frutos, com exceção da banana, que era expressa em mil cachos. O rendimento médio passa a ser expresso em Kg/ha. Nos anos anteriores era expresso em frutos/ha, com exceção da banana, que era expressa em cachos/ha.", "3 - Veja em https://sidra.ibge.gov.br/content/documentos/pam/AlteracoesUnidadesMedidaFrutas.pdf um documento com as alterações de unidades de medida das frutíferas ocorridas em 2001 e a tabela de conversão fruto x quilograma.", "4 - Até 2001, café (em coco), a partir de 2002, café (beneficiado ou em grão).", "5 - Os produtos girassol e triticale só apresentam informação a partir de 2005.", "6 - As quantidades produzidas de abacaxi e de coco-da-baía são expressas em mil frutos e o rendimento médio em frutos/ha.", "7 - Valores para a categoria Total indisponíveis para as variáveis Quantidade produzida e Rendimento médio, pois as unidades de medida diferem para determinados produtos.", "8 - Subentende a possibilidade de cultivos sucessivos ou simultâneos (simples, associados e/ou intercalados) no mesmo ano e no mesmo local, podendo, por isto, a área informada da cultura exceder a área geográfica do município.", "9 - As culturas de abacaxi, cana-de-açúcar, mamona e mandioca são consideradas culturas temporárias de longa duração. Elas costumam ter ciclo vegetativo que ultrapassa 12 meses e, por isso, as informações são computadas nas colheitas realizadas dentro de cada ano civil (12 meses).", "Nestas culturas a área plantada refere-se a área destinada à colheita no ano.", "10 - A diferença entre a área plantada ou destinada à colheita e a área colhida na lavoura é considerada como área perdida.", "11 - A variável Área plantada ou destinada à colheita só passou a ser informada a partir de 1988.", "12 - Valor da produção: Variável derivada calculada pela média ponderada das informações de quantidade e preço médio corrente pago ao produtor, de acordo com os períodos de colheita e comercialização de cada produto. As despesas de frete, taxas e impostos não são incluídas no preço.", "13 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "valor_producao_animal"
+name = "Valor da produção de origem animal"
+description = "Valor da produção"
+dataset = "ibge-agro-74-215-reais"
+variable = "215"
+fact = "fact_agro_74_215_reais"
+column = "valor"
+unit = "Mil Reais"
+additivity = "non_additive"
+concept = "valor_producao_animal"
+path = ["Agropecuária", "Pecuária e produção animal"]
+first_period = "1994"
+caveats = ["Valor oficial da produção de leite, ovos, mel, casulos e lã, em mil reais desde 1994. O Total é o publicado na fonte. Períodos em moedas anteriores ficam fora da série; não há conversão ou correção inflacionária.", "1 - Os municípios sem informação para pelo menos um produto de origem animal não aparecem nas listas.", "2 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "lavouras_v214_ton"
+name = "Quantidade produzida das lavouras (Toneladas)"
+description = "Quantidade produzida"
+dataset = "ibge-agro-5457-214-ton"
+variable = "214"
+fact = "fact_agro_5457_214_ton"
+column = "valor"
+unit = "Toneladas"
+additivity = "additive"
+concept = "lavouras_v214_ton"
+path = ["Agropecuária", "Lavouras"]
+first_period = "1974"
+caveats = ["Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude.", "1 - Os municípios sem informação para pelo menos um produto da lavoura não aparecem nas listas;", "2 - A partir do ano de 2001 as quantidades produzidas dos produtos abacate, banana, caqui, figo, goiaba, laranja, limão, maçã, mamão, manga, maracujá, marmelo, melancia, melão, pera, pêssego e tangerina passam a ser expressas em toneladas. Nos anos anteriores eram expressas em mil frutos, com exceção da banana, que era expressa em mil cachos. O rendimento médio passa a ser expresso em Kg/ha. Nos anos anteriores era expresso em frutos/ha, com exceção da banana, que era expressa em cachos/ha.", "3 - Veja em https://sidra.ibge.gov.br/content/documentos/pam/AlteracoesUnidadesMedidaFrutas.pdf um documento com as alterações de unidades de medida das frutíferas ocorridas em 2001 e a tabela de conversão fruto x quilograma.", "4 - Até 2001, café (em coco), a partir de 2002, café (beneficiado ou em grão).", "5 - Os produtos girassol e triticale só apresentam informação a partir de 2005.", "6 - As quantidades produzidas de abacaxi e de coco-da-baía são expressas em mil frutos e o rendimento médio em frutos/ha.", "7 - Valores para a categoria Total indisponíveis para as variáveis Quantidade produzida e Rendimento médio, pois as unidades de medida diferem para determinados produtos.", "8 - Subentende a possibilidade de cultivos sucessivos ou simultâneos (simples, associados e/ou intercalados) no mesmo ano e no mesmo local, podendo, por isto, a área informada da cultura exceder a área geográfica do município.", "9 - As culturas de abacaxi, cana-de-açúcar, mamona e mandioca são consideradas culturas temporárias de longa duração. Elas costumam ter ciclo vegetativo que ultrapassa 12 meses e, por isso, as informações são computadas nas colheitas realizadas dentro de cada ano civil (12 meses).", "Nestas culturas a área plantada refere-se a área destinada à colheita no ano.", "10 - A diferença entre a área plantada ou destinada à colheita e a área colhida na lavoura é considerada como área perdida.", "11 - A variável Área plantada ou destinada à colheita só passou a ser informada a partir de 1988.", "12 - Valor da produção: Variável derivada calculada pela média ponderada das informações de quantidade e preço médio corrente pago ao produtor, de acordo com os períodos de colheita e comercialização de cada produto. As despesas de frete, taxas e impostos não são incluídas no preço.", "13 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "lavouras_v214_frutos"
+name = "Quantidade produzida de abacaxi e coco (Mil frutos)"
+description = "Quantidade produzida"
+dataset = "ibge-agro-5457-214-frutos"
+variable = "214"
+fact = "fact_agro_5457_214_frutos"
+column = "valor"
+unit = "Mil frutos"
+additivity = "additive"
+concept = "lavouras_v214_frutos"
+path = ["Agropecuária", "Lavouras"]
+first_period = "1974"
+caveats = ["Abacaxi e coco-da-baía mantêm a unidade específica da nota 6 da 5457. O cabeçalho genérico da API informa toneladas ou kg/ha, mas a nota oficial especifica mil frutos ou frutos/ha. A Gold corrige somente o rótulo da unidade, sem converter ou alterar valores; a Silver preserva o cabeçalho original. Sem Total agregado entre produtos.", "1 - Os municípios sem informação para pelo menos um produto da lavoura não aparecem nas listas;", "2 - A partir do ano de 2001 as quantidades produzidas dos produtos abacate, banana, caqui, figo, goiaba, laranja, limão, maçã, mamão, manga, maracujá, marmelo, melancia, melão, pera, pêssego e tangerina passam a ser expressas em toneladas. Nos anos anteriores eram expressas em mil frutos, com exceção da banana, que era expressa em mil cachos. O rendimento médio passa a ser expresso em Kg/ha. Nos anos anteriores era expresso em frutos/ha, com exceção da banana, que era expressa em cachos/ha.", "3 - Veja em https://sidra.ibge.gov.br/content/documentos/pam/AlteracoesUnidadesMedidaFrutas.pdf um documento com as alterações de unidades de medida das frutíferas ocorridas em 2001 e a tabela de conversão fruto x quilograma.", "4 - Até 2001, café (em coco), a partir de 2002, café (beneficiado ou em grão).", "5 - Os produtos girassol e triticale só apresentam informação a partir de 2005.", "6 - As quantidades produzidas de abacaxi e de coco-da-baía são expressas em mil frutos e o rendimento médio em frutos/ha.", "7 - Valores para a categoria Total indisponíveis para as variáveis Quantidade produzida e Rendimento médio, pois as unidades de medida diferem para determinados produtos.", "8 - Subentende a possibilidade de cultivos sucessivos ou simultâneos (simples, associados e/ou intercalados) no mesmo ano e no mesmo local, podendo, por isto, a área informada da cultura exceder a área geográfica do município.", "9 - As culturas de abacaxi, cana-de-açúcar, mamona e mandioca são consideradas culturas temporárias de longa duração. Elas costumam ter ciclo vegetativo que ultrapassa 12 meses e, por isso, as informações são computadas nas colheitas realizadas dentro de cada ano civil (12 meses).", "Nestas culturas a área plantada refere-se a área destinada à colheita no ano.", "10 - A diferença entre a área plantada ou destinada à colheita e a área colhida na lavoura é considerada como área perdida.", "11 - A variável Área plantada ou destinada à colheita só passou a ser informada a partir de 1988.", "12 - Valor da produção: Variável derivada calculada pela média ponderada das informações de quantidade e preço médio corrente pago ao produtor, de acordo com os períodos de colheita e comercialização de cada produto. As despesas de frete, taxas e impostos não são incluídas no preço.", "13 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "lavouras_v112_kg_ha"
+name = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Rendimento médio da produção"
+dataset = "ibge-agro-5457-112-kg-ha"
+variable = "112"
+fact = "fact_agro_5457_112_kg_ha"
+column = "valor"
+unit = "Quilogramas por Hectare"
+additivity = "non_additive"
+concept = "lavouras_v112_kg_ha"
+path = ["Agropecuária", "Lavouras"]
+first_period = "1974"
+caveats = ["Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude.", "1 - Os municípios sem informação para pelo menos um produto da lavoura não aparecem nas listas;", "2 - A partir do ano de 2001 as quantidades produzidas dos produtos abacate, banana, caqui, figo, goiaba, laranja, limão, maçã, mamão, manga, maracujá, marmelo, melancia, melão, pera, pêssego e tangerina passam a ser expressas em toneladas. Nos anos anteriores eram expressas em mil frutos, com exceção da banana, que era expressa em mil cachos. O rendimento médio passa a ser expresso em Kg/ha. Nos anos anteriores era expresso em frutos/ha, com exceção da banana, que era expressa em cachos/ha.", "3 - Veja em https://sidra.ibge.gov.br/content/documentos/pam/AlteracoesUnidadesMedidaFrutas.pdf um documento com as alterações de unidades de medida das frutíferas ocorridas em 2001 e a tabela de conversão fruto x quilograma.", "4 - Até 2001, café (em coco), a partir de 2002, café (beneficiado ou em grão).", "5 - Os produtos girassol e triticale só apresentam informação a partir de 2005.", "6 - As quantidades produzidas de abacaxi e de coco-da-baía são expressas em mil frutos e o rendimento médio em frutos/ha.", "7 - Valores para a categoria Total indisponíveis para as variáveis Quantidade produzida e Rendimento médio, pois as unidades de medida diferem para determinados produtos.", "8 - Subentende a possibilidade de cultivos sucessivos ou simultâneos (simples, associados e/ou intercalados) no mesmo ano e no mesmo local, podendo, por isto, a área informada da cultura exceder a área geográfica do município.", "9 - As culturas de abacaxi, cana-de-açúcar, mamona e mandioca são consideradas culturas temporárias de longa duração. Elas costumam ter ciclo vegetativo que ultrapassa 12 meses e, por isso, as informações são computadas nas colheitas realizadas dentro de cada ano civil (12 meses).", "Nestas culturas a área plantada refere-se a área destinada à colheita no ano.", "10 - A diferença entre a área plantada ou destinada à colheita e a área colhida na lavoura é considerada como área perdida.", "11 - A variável Área plantada ou destinada à colheita só passou a ser informada a partir de 1988.", "12 - Valor da produção: Variável derivada calculada pela média ponderada das informações de quantidade e preço médio corrente pago ao produtor, de acordo com os períodos de colheita e comercialização de cada produto. As despesas de frete, taxas e impostos não são incluídas no preço.", "13 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "lavouras_v112_frutos_ha"
+name = "Rendimento médio de abacaxi e coco (Frutos por Hectare)"
+description = "Rendimento médio da produção"
+dataset = "ibge-agro-5457-112-frutos-ha"
+variable = "112"
+fact = "fact_agro_5457_112_frutos_ha"
+column = "valor"
+unit = "Frutos por Hectare"
+additivity = "non_additive"
+concept = "lavouras_v112_frutos_ha"
+path = ["Agropecuária", "Lavouras"]
+first_period = "1974"
+caveats = ["Abacaxi e coco-da-baía mantêm a unidade específica da nota 6 da 5457. O cabeçalho genérico da API informa toneladas ou kg/ha, mas a nota oficial especifica mil frutos ou frutos/ha. A Gold corrige somente o rótulo da unidade, sem converter ou alterar valores; a Silver preserva o cabeçalho original. Sem Total agregado entre produtos.", "1 - Os municípios sem informação para pelo menos um produto da lavoura não aparecem nas listas;", "2 - A partir do ano de 2001 as quantidades produzidas dos produtos abacate, banana, caqui, figo, goiaba, laranja, limão, maçã, mamão, manga, maracujá, marmelo, melancia, melão, pera, pêssego e tangerina passam a ser expressas em toneladas. Nos anos anteriores eram expressas em mil frutos, com exceção da banana, que era expressa em mil cachos. O rendimento médio passa a ser expresso em Kg/ha. Nos anos anteriores era expresso em frutos/ha, com exceção da banana, que era expressa em cachos/ha.", "3 - Veja em https://sidra.ibge.gov.br/content/documentos/pam/AlteracoesUnidadesMedidaFrutas.pdf um documento com as alterações de unidades de medida das frutíferas ocorridas em 2001 e a tabela de conversão fruto x quilograma.", "4 - Até 2001, café (em coco), a partir de 2002, café (beneficiado ou em grão).", "5 - Os produtos girassol e triticale só apresentam informação a partir de 2005.", "6 - As quantidades produzidas de abacaxi e de coco-da-baía são expressas em mil frutos e o rendimento médio em frutos/ha.", "7 - Valores para a categoria Total indisponíveis para as variáveis Quantidade produzida e Rendimento médio, pois as unidades de medida diferem para determinados produtos.", "8 - Subentende a possibilidade de cultivos sucessivos ou simultâneos (simples, associados e/ou intercalados) no mesmo ano e no mesmo local, podendo, por isto, a área informada da cultura exceder a área geográfica do município.", "9 - As culturas de abacaxi, cana-de-açúcar, mamona e mandioca são consideradas culturas temporárias de longa duração. Elas costumam ter ciclo vegetativo que ultrapassa 12 meses e, por isso, as informações são computadas nas colheitas realizadas dentro de cada ano civil (12 meses).", "Nestas culturas a área plantada refere-se a área destinada à colheita no ano.", "10 - A diferença entre a área plantada ou destinada à colheita e a área colhida na lavoura é considerada como área perdida.", "11 - A variável Área plantada ou destinada à colheita só passou a ser informada a partir de 1988.", "12 - Valor da produção: Variável derivada calculada pela média ponderada das informações de quantidade e preço médio corrente pago ao produtor, de acordo com os períodos de colheita e comercialização de cada produto. As despesas de frete, taxas e impostos não são incluídas no preço.", "13 - Os dados do último ano divulgado são RESULTADOS PRELIMINARES e podem sofrer alterações até a próxima divulgação."]
+
+[[indicators]]
+id = "safra_area_colhida"
+name = "Estimativa da safra: área colhida"
+description = "Área colhida"
+dataset = "ibge-agro-6588-216-ha"
+variable = "216"
+fact = "fact_agro_6588_216_ha"
+column = "valor"
+unit = "Hectares"
+additivity = "additive"
+concept = "safra_area_colhida"
+path = ["Agropecuária", "Lavouras"]
+first_period = "200609"
+caveats = ["LSPA: área colhida da estimativa anual publicada mensalmente, em hectares nativos. Não se somam previsões de meses sucessivos nem produtos hierarquicamente sobrepostos. O Total é o publicado pela fonte; cada produto mantém seu calendário.", "1 - Para as Unidades da Federação que, por força do calendário agrícola, ainda não dispõem das estimativas iniciais, os dados correspondem a uma projeção obtida a partir das informações de anos anteriores;", "2 - As produções de abacaxi e de coco-da-baía são expressas em mil frutos e os seus rendimentos médios em frutos/ha.", "3 - Utilizou-se a padronização de 61% para a conversão da produção do algodão em caroço para caroço de algodão, apenas para a totalização da produção dos cereais, leguminosas e oleaginosas.", "4 - Possíveis diferenças entre somas de parcelas e respectivos totais são provenientes do critério de arredondamento.", "5 - As informações mensais que compõem a série histórica estão disponível a partir de setembro de 2006.", "6 - A partir de janeiro de 2018 foram retirados da divulgação os seguintes produtos: abacaxi, alho, cebola, coco-da-baía, guaraná, maçã, malva, pimenta-do-reino, sisal/agave. Os mesmos continuam sendo acompanhados na pesquisa anual da Produção Agrícola Municipal."]
+
+[[indicators]]
+id = "safra_producao_ton"
+name = "Estimativa da safra: produção (toneladas)"
+description = "Produção"
+dataset = "ibge-agro-6588-35-ton"
+variable = "35"
+fact = "fact_agro_6588_35_ton"
+column = "valor"
+unit = "Toneladas"
+additivity = "additive"
+concept = "safra_producao_ton"
+path = ["Agropecuária", "Lavouras"]
+first_period = "200609"
+caveats = ["LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal.", "1 - Para as Unidades da Federação que, por força do calendário agrícola, ainda não dispõem das estimativas iniciais, os dados correspondem a uma projeção obtida a partir das informações de anos anteriores;", "2 - As produções de abacaxi e de coco-da-baía são expressas em mil frutos e os seus rendimentos médios em frutos/ha.", "3 - Utilizou-se a padronização de 61% para a conversão da produção do algodão em caroço para caroço de algodão, apenas para a totalização da produção dos cereais, leguminosas e oleaginosas.", "4 - Possíveis diferenças entre somas de parcelas e respectivos totais são provenientes do critério de arredondamento.", "5 - As informações mensais que compõem a série histórica estão disponível a partir de setembro de 2006.", "6 - A partir de janeiro de 2018 foram retirados da divulgação os seguintes produtos: abacaxi, alho, cebola, coco-da-baía, guaraná, maçã, malva, pimenta-do-reino, sisal/agave. Os mesmos continuam sendo acompanhados na pesquisa anual da Produção Agrícola Municipal."]
+
+[[indicators]]
+id = "safra_producao_frutos"
+name = "Estimativa da safra: produção de abacaxi e coco"
+description = "Produção"
+dataset = "ibge-agro-6588-35-frutos"
+variable = "35"
+fact = "fact_agro_6588_35_frutos"
+column = "valor"
+unit = "Mil frutos"
+additivity = "additive"
+concept = "safra_producao_frutos"
+path = ["Agropecuária", "Lavouras"]
+first_period = "200609"
+caveats = ["LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal. A nota 2 da tabela 6588 especifica mil frutos ou frutos/ha para abacaxi e coco; o cabeçalho genérico da API usa toneladas/kg por hectare. A Gold corrige apenas o rótulo da unidade, mantendo valores e originais Silver.", "1 - Para as Unidades da Federação que, por força do calendário agrícola, ainda não dispõem das estimativas iniciais, os dados correspondem a uma projeção obtida a partir das informações de anos anteriores;", "2 - As produções de abacaxi e de coco-da-baía são expressas em mil frutos e os seus rendimentos médios em frutos/ha.", "3 - Utilizou-se a padronização de 61% para a conversão da produção do algodão em caroço para caroço de algodão, apenas para a totalização da produção dos cereais, leguminosas e oleaginosas.", "4 - Possíveis diferenças entre somas de parcelas e respectivos totais são provenientes do critério de arredondamento.", "5 - As informações mensais que compõem a série histórica estão disponível a partir de setembro de 2006.", "6 - A partir de janeiro de 2018 foram retirados da divulgação os seguintes produtos: abacaxi, alho, cebola, coco-da-baía, guaraná, maçã, malva, pimenta-do-reino, sisal/agave. Os mesmos continuam sendo acompanhados na pesquisa anual da Produção Agrícola Municipal."]
+
+[[indicators]]
+id = "safra_rendimento_kg_ha"
+name = "Estimativa da safra: rendimento (kg/ha)"
+description = "Rendimento médio"
+dataset = "ibge-agro-6588-36-kg-ha"
+variable = "36"
+fact = "fact_agro_6588_36_kg_ha"
+column = "valor"
+unit = "Quilogramas por Hectare"
+additivity = "non_additive"
+concept = "safra_rendimento_kg_ha"
+path = ["Agropecuária", "Lavouras"]
+first_period = "200609"
+caveats = ["LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal.", "1 - Para as Unidades da Federação que, por força do calendário agrícola, ainda não dispõem das estimativas iniciais, os dados correspondem a uma projeção obtida a partir das informações de anos anteriores;", "2 - As produções de abacaxi e de coco-da-baía são expressas em mil frutos e os seus rendimentos médios em frutos/ha.", "3 - Utilizou-se a padronização de 61% para a conversão da produção do algodão em caroço para caroço de algodão, apenas para a totalização da produção dos cereais, leguminosas e oleaginosas.", "4 - Possíveis diferenças entre somas de parcelas e respectivos totais são provenientes do critério de arredondamento.", "5 - As informações mensais que compõem a série histórica estão disponível a partir de setembro de 2006.", "6 - A partir de janeiro de 2018 foram retirados da divulgação os seguintes produtos: abacaxi, alho, cebola, coco-da-baía, guaraná, maçã, malva, pimenta-do-reino, sisal/agave. Os mesmos continuam sendo acompanhados na pesquisa anual da Produção Agrícola Municipal."]
+
+[[indicators]]
+id = "safra_rendimento_frutos_ha"
+name = "Estimativa da safra: rendimento de abacaxi e coco"
+description = "Rendimento médio"
+dataset = "ibge-agro-6588-36-frutos-ha"
+variable = "36"
+fact = "fact_agro_6588_36_frutos_ha"
+column = "valor"
+unit = "Frutos por Hectare"
+additivity = "non_additive"
+concept = "safra_rendimento_frutos_ha"
+path = ["Agropecuária", "Lavouras"]
+first_period = "200609"
+caveats = ["LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal. A nota 2 da tabela 6588 especifica mil frutos ou frutos/ha para abacaxi e coco; o cabeçalho genérico da API usa toneladas/kg por hectare. A Gold corrige apenas o rótulo da unidade, mantendo valores e originais Silver.", "1 - Para as Unidades da Federação que, por força do calendário agrícola, ainda não dispõem das estimativas iniciais, os dados correspondem a uma projeção obtida a partir das informações de anos anteriores;", "2 - As produções de abacaxi e de coco-da-baía são expressas em mil frutos e os seus rendimentos médios em frutos/ha.", "3 - Utilizou-se a padronização de 61% para a conversão da produção do algodão em caroço para caroço de algodão, apenas para a totalização da produção dos cereais, leguminosas e oleaginosas.", "4 - Possíveis diferenças entre somas de parcelas e respectivos totais são provenientes do critério de arredondamento.", "5 - As informações mensais que compõem a série histórica estão disponível a partir de setembro de 2006.", "6 - A partir de janeiro de 2018 foram retirados da divulgação os seguintes produtos: abacaxi, alho, cebola, coco-da-baía, guaraná, maçã, malva, pimenta-do-reino, sisal/agave. Os mesmos continuam sendo acompanhados na pesquisa anual da Produção Agrícola Municipal."]

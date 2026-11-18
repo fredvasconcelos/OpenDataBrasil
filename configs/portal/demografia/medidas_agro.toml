@@ -1,0 +1,45 @@
+# Gerado por `odb panorama gerar-agro`. Edite configs/catalog/medidas-agro.toml.
+
+config_version = "1.0.0"
+scope = "demografia"
+dimension_order = ["c782ag", "c80ag", "c48ag"]
+
+[[themes]]
+id = "agropecuaria"
+label = "Agropecuária"
+
+[[themes.subthemes]]
+id = "lavouras"
+label = "Lavouras"
+
+[[themes.subthemes.kpis]]
+id = "area_colhida_lavouras"
+label = "Área colhida das lavouras"
+indicator = "area_colhida_lavouras"
+dimensions = [{ "classification" = "c782ag", "partition" = "p0", "label" = "Produto das lavouras temporárias e permanentes" }]
+
+[[themes.subthemes.kpis]]
+id = "valor_producao_lavouras"
+label = "Valor da produção das lavouras"
+indicator = "valor_producao_lavouras"
+dimensions = [{ "classification" = "c782ag", "partition" = "p0", "label" = "Produto das lavouras temporárias e permanentes" }]
+
+[[themes.subthemes]]
+id = "pecuaria"
+label = "Pecuária e produção animal"
+
+[[themes.subthemes.kpis]]
+id = "valor_producao_animal"
+label = "Valor da produção de origem animal"
+indicator = "valor_producao_animal"
+dimensions = [{ "classification" = "c80ag", "partition" = "p0", "label" = "Tipo de produto de origem animal" }]
+
+[[themes.subthemes]]
+id = "lavouras"
+label = "Lavouras"
+
+[[themes.subthemes.kpis]]
+id = "safra_area_colhida"
+label = "Estimativa da safra: área colhida"
+indicator = "safra_area_colhida"
+dimensions = [{ "classification" = "c48ag", "partition" = "p0", "label" = "Produto das lavouras" }]

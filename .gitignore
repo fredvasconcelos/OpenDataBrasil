@@ -1,0 +1,73 @@
+# --- Dados do lakehouse (nunca versionar) ---
+/data/
+/lakehouse/
+*.parquet
+*.delta/
+
+# --- Segredos e configuração local ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# --- Backups, temporários e logs ---
+/backups/
+*.dump
+*.bak
+*.tmp
+tmp/
+logs/
+*.log
+
+# --- Editores e SO ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Pacotes do Design System trocados com o Claude Design (o conteúdo fica em design-system/)
+odbr-design-system_*.zip
+
+# Material do acervo SIDRA salvo manualmente no navegador (inclui scripts de terceiros).
+# O inventário curado vai para configs/ com procedência.
+pagina_web/
+
+# --- Continuidade entre agentes (local, por enquanto fora do Git) ---
+/AGENTS.md
+
+# Sincronização do design system com o Claude Design (/design-sync): scripts, saída e estado local
+/.ds-sync/
+/ds-bundle/
+/.design-sync/.cache/
+/.design-sync/learnings/
+/.design-sync/node_modules
+/apps/portal/index.d.ts
+
+# Documentos locais (não vão para o GitHub): acessos da homologação etc.
+/docs-local/
+
+# Material interno e artefatos de operação não fazem parte da distribuição pública.
+/docs/relatorios/
+/design-system/portal/
+/design-system/reference/
+/design-system/README.md
+/design-system/VERSION
+/.design-sync/

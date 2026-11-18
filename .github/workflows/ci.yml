@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "fase-*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  boundary:
+    name: Guarda da distribuição pública
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - run: python3 -I infrastructure/scripts/public_boundary.py
+
+  lint:
+    name: Lint, formatação e tipos
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: "0.13.2"
+      - run: uv sync --frozen --all-packages
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+      - name: Log de acesso da Vitrine sem IP (ADR-0027)
+        run: PYTHON="uv run python" bash infrastructure/scripts/caddy_log_check.sh
+
+  portal:
+    name: Portal (tipos, lint, testes, build e contrato)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: Tipos, lint e testes de componentes
+        run: |
+          docker build -f infrastructure/docker/portal/Dockerfile --target test -t odb-portal-test .
+          docker run --rm odb-portal-test
+      - name: Imagem de produção
+        run: docker build -f infrastructure/docker/portal/Dockerfile --target runtime -t odb-portal .
+      - name: Tipos da API em dia com o contrato OpenAPI
+        run: |
+          docker run --rm -v "$PWD":/repo -w /repo/apps/portal \
+            node:24.22.1-bookworm-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c \
+            sh -c 'npm ci --no-audit --no-fund && npm run -s gen:api'
+          git diff --exit-code apps/portal/src/lib/api-schema.ts
+
+  compose:
+    name: Testes, migração, doctor e smoke (Docker Compose)
+    runs-on: ubuntu-24.04
+    needs: lint
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: Gerar .env efêmero
+        run: |
+          gen() { python3 -c 'import secrets; print(secrets.token_urlsafe(24))'; }
+          sed -e "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$(gen)/" \
+              -e "s/^ODB_OWNER_PASSWORD=.*/ODB_OWNER_PASSWORD=$(gen)/" \
+              -e "s/^ODB_PIPELINE_PASSWORD=.*/ODB_PIPELINE_PASSWORD=$(gen)/" \
+              -e "s/^ODB_READER_PASSWORD=.*/ODB_READER_PASSWORD=$(gen)/" \
+              -e "s/^ODB_METRICS_WRITER_PASSWORD=.*/ODB_METRICS_WRITER_PASSWORD=$(gen)/" \
+              -e "s/^ODB_METRICS_READER_PASSWORD=.*/ODB_METRICS_READER_PASSWORD=$(gen)/" \
+              .env.example > .env
+          # Runner do GitHub: 4 vCPUs e 16 GB.
+          cat >> .env <<'ENV'
+          ODB_WORKER_CPUS=2
+          ODB_WORKER_MEMORY=4g
+          ODB_TESTS_CPUS=2
+          ODB_TESTS_MEMORY=4g
+          ODB_POSTGRES_CPUS=1
+          ODB_POSTGRES_MEMORY=1g
+          POLARS_MAX_THREADS=2
+          ENV
+      - name: Build
+        run: docker compose --profile test --profile data build --build-arg ODB_CODE_VERSION=${GITHUB_SHA::12}
+      - name: Suíte completa (unit, contratos, integração; cobertura >= 80%)
+        run: docker compose --profile test run --rm tests
+      - name: Migrações
+        run: docker compose --profile data run --rm migrate
+      - name: odb doctor
+        run: docker compose --profile data run --rm worker odb doctor
+      - name: odb smoke lakehouse
+        run: docker compose --profile data run --rm worker odb smoke lakehouse
+      - name: Logs do PostgreSQL em caso de falha
+        if: failure()
+        run: docker compose --profile data logs postgres
+      - name: Encerrar
+        if: always()
+        run: docker compose --profile data --profile test down -v

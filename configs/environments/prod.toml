@@ -1,0 +1,16 @@
+# Valores não secretos da Vitrine (ADR-0025): servidor que só serve o release aprovado.
+# Variáveis de ambiente ODB_* têm precedência sobre este arquivo.
+env = "prod"
+lakehouse_root_uri = "file:///lakehouse"
+log_level = "INFO"
+
+pg_host = "postgres"
+pg_port = 5432
+pg_database = "odb"
+
+# Por processo da API (2 workers por padrão): medir na V5 antes de mudar.
+duckdb_memory_limit = "1GB"
+duckdb_threads = 2
+duckdb_temp_directory = "/lakehouse/tmp/duckdb"
+# O tmpfs de /lakehouse/tmp tem 1 GB no compose da Vitrine.
+duckdb_max_temp_directory_size = "900MB"

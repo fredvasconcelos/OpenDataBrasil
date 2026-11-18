@@ -1,0 +1,187 @@
+from pathlib import Path
+
+import pytest
+
+from odb_ingestion import ConfigError, build_connectors, load_sources
+from tests.ingestion_support import TEST_SOURCES
+
+REPO_SOURCES = Path(__file__).parents[3] / "configs" / "sources"
+
+
+def test_repository_sources_are_valid() -> None:
+    catalog = load_sources(REPO_SOURCES)
+    curated = {d for d in catalog.datasets if d in _curated_ids()}
+    assert curated == {
+        "ibge-sidra-6579",
+        "ibge-sidra-4714",
+        "ibge-sidra-9605",
+        "ibge-sidra-9718",
+        "ibge-sidra-9578",
+        "ibge-sidra-9971",
+        "ibge-sidra-9970",
+        "ibge-sidra-9723",
+        "ibge-sidra-9954",
+        "ibge-sidra-9606",
+        "ibge-sidra-8176",
+        "ibge-sidra-9765",
+        "ibge-dtb",
+        "ibge-malha-uf-2022",
+        "ibge-malha-municipios-2022",
+        "ibge-sidra-6715",
+        # POF 2008-2009 e 2002-2003, em série com a 6715 (ADR-0016).
+        "ibge-sidra-1594",
+        "ibge-sidra-2309",
+        # POF de 1987 e 1995 (regiões metropolitanas), opção A do mantenedor (ADR-0016).
+        "ibge-sidra-387",
+        "ibge-sidra-400",
+        "ibge-sidra-414",
+        "ibge-sidra-417",
+        # IPCA por grupo em série (655, 2938, 1419, 7060): correção da POF (ADR-0020).
+        "ibge-sidra-655",
+        "ibge-sidra-2938",
+        "ibge-sidra-1419",
+        "ibge-sidra-7060",
+    }
+    # O fragmento gerado do panorama só acrescenta datasets SIDRA.
+    datasus = {d for d in catalog.datasets if d.startswith("datasus-")}
+    assert len(datasus) == 32  # espelho do SIM e do SINASC, uma pasta do FTP por dataset
+    assert catalog.source_institution["datasus-ftp"] == "ms"
+    assert {catalog.datasets[d].access_classification for d in datasus} == {"restricted"}
+    # MJSP (ADR-0012): Sinesp VDE 2015-2026, notas, Mapa (PDF) e Pesquisa Perfil (ZIP).
+    mjsp = {d for d in catalog.datasets if d.startswith("mjsp-")}
+    assert len(mjsp) == 29
+    assert {d for d in mjsp if catalog.datasets[d].silver} == {
+        f"mjsp-sinesp-vde-{y}" for y in range(2015, 2027)
+    }
+    assert catalog.source_institution["mjsp-estatistica"] == "mjsp"
+    assert catalog.licenses["mjsp-portal-cc-by-nd"].review_status == "requires_review"
+    # Sinesp VDE: dados abertos do PDA do MJSP (licença aprovada pelo mantenedor).
+    assert catalog.licenses["mjsp-dados-abertos"].review_status == "approved"
+    assert {catalog.datasets[f"mjsp-sinesp-vde-{y}"].license for y in range(2015, 2027)} == {
+        "mjsp-dados-abertos"
+    }
+    generated = set(catalog.datasets) - curated - datasus - mjsp
+    assert generated
+    assert all(d.startswith(("ibge-sidra-", "ibge-medida-t")) for d in generated)
+    assert catalog.source_institution["ibge-sidra"] == "ibge"
+    assert catalog.licenses["ibge-reuso-com-citacao"].review_status == "requires_review"
+    assert set(build_connectors(catalog)) == {
+        "ibge-sidra",
+        "ibge-geoftp",
+        "datasus-ftp",
+        "mjsp-estatistica",
+    }
+    assert [d.id for d in catalog.datasets_of("ibge-geoftp")] == [
+        "ibge-dtb",
+        "ibge-malha-uf-2022",
+        "ibge-malha-municipios-2022",
+    ]
+
+
+def _curated_ids() -> set[str]:
+    import tomllib  # noqa: PLC0415
+
+    data = tomllib.loads((REPO_SOURCES / "ibge.toml").read_text(encoding="utf-8"))
+    return {d["id"] for d in data["datasets"]}
+
+
+def test_config_checksum_is_stable_and_sensitive() -> None:
+    a = load_sources(TEST_SOURCES).dataset("ibge-dtb")
+    b = load_sources(TEST_SOURCES).dataset("ibge-dtb")
+    assert a.config_sha256() == b.config_sha256()
+    assert a.model_copy(update={"title": "x"}).config_sha256() != a.config_sha256()
+
+
+def _write(tmp_path: Path, name: str, body: str) -> Path:
+    (tmp_path / name).write_text(body, encoding="utf-8")
+    return tmp_path
+
+
+BASE = """
+config_version = "1"
+[institution]
+id = "inst"
+name = "n"
+acronym = "N"
+url = "https://x"
+[[licenses]]
+id = "lic"
+name = "l"
+conditions = "c"
+review_status = "approved"
+[[sources]]
+id = "src"
+name = "s"
+connector = "http_file"
+base_url = "https://x/"
+"""
+
+DATASET = """
+[[datasets]]
+id = "ds"
+source = "{source}"
+official_id = "1"
+title = "t"
+description = "d"
+license = "{license}"
+access_classification = "public_authorized"
+periodicity = "anual"
+[datasets.params]
+url = "https://x/f.zip"
+artifact_name = "f.zip"
+"""
+
+
+@pytest.mark.parametrize(
+    ("body", "message"),
+    [
+        (BASE + DATASET.format(source="nope", license="lic"), "fonte desconhecida"),
+        (BASE + DATASET.format(source="src", license="nope"), "licença desconhecida"),
+        ("not toml = = =", "inst.toml"),
+        (BASE.replace('id = "src"', 'id = "Bad Id"'), "inst.toml"),
+    ],
+)
+def test_invalid_files_rejected(tmp_path: Path, body: str, message: str) -> None:
+    with pytest.raises(ConfigError, match=message):
+        load_sources(_write(tmp_path, "inst.toml", body))
+
+
+def test_duplicates_across_files_and_unknowns(tmp_path: Path) -> None:
+    _write(tmp_path, "a.toml", BASE + DATASET.format(source="src", license="lic"))
+    _write(tmp_path, "b.toml", BASE)
+    with pytest.raises(ConfigError, match="duplicada"):
+        load_sources(tmp_path)
+    with pytest.raises(ConfigError, match="nenhum arquivo"):
+        load_sources(tmp_path / "vazio")
+
+
+def test_fragment_adds_datasets_only(tmp_path: Path) -> None:
+    _write(tmp_path, "a.toml", BASE)
+    _write(
+        tmp_path, "b.toml", 'config_version = "1"\n' + DATASET.format(source="src", license="lic")
+    )
+    catalog = load_sources(tmp_path)
+    assert set(catalog.datasets) == {"ds"}
+    assert catalog.source_institution == {"src": "inst"}
+    _write(tmp_path, "b.toml", 'config_version = "1"\n' + DATASET.format(source="x", license="lic"))
+    with pytest.raises(ConfigError, match="fonte desconhecida"):
+        load_sources(tmp_path)
+    _write(
+        tmp_path,
+        "b.toml",
+        'config_version = "1"\n[[sources]]\nid = "s2"\nname = "s"\n'
+        'connector = "http_file"\nbase_url = "https://y/"\n',
+    )
+    with pytest.raises(ConfigError, match="fragmento"):
+        load_sources(tmp_path)
+
+
+def test_unknown_connector_and_bad_params(tmp_path: Path) -> None:
+    catalog = load_sources(_write(tmp_path, "a.toml", BASE.replace("http_file", "ftp")))
+    with pytest.raises(ConfigError, match="tipo de conector desconhecido"):
+        build_connectors(catalog)
+    with pytest.raises(ConfigError, match="não configurado"):
+        catalog.dataset("x")
+    body = BASE + DATASET.format(source="src", license="lic").replace("https://x/f.zip", "http://x")
+    with pytest.raises(ConfigError, match="http_file inválidos"):
+        build_connectors(load_sources(_write(tmp_path, "a.toml", body)))

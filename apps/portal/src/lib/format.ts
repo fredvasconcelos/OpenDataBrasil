@@ -1,0 +1,94 @@
+// Formatação de números e unidades em pt-BR. Valor ausente nunca vira zero.
+import { formatPeriod as formatParsedPeriod, parsePeriod } from "@/lib/period";
+import messages from "../../messages/pt-BR.json";
+
+const integer = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+const decimal = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+const compact = new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 });
+const percent = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+export const MISSING: Record<string, string> = {
+  suppressed: "X (sigilo)",
+  not_available: "…",
+  not_applicable: "não se aplica",
+  absent: "sem dado",
+  // Soma no tempo (ADR-0013) com alguma parte sem valor: o período fica sem valor.
+  incomplete_period: "período incompleto",
+};
+
+export function formatValue(value: number | null | undefined, status = "valid"): string {
+  if (value === null || value === undefined) return MISSING[status] ?? "sem dado";
+  const text = Number.isInteger(value) ? integer.format(value) : decimal.format(value);
+  // Período em andamento (ex.: 2026 até setembro): o acumulado até o último publicado.
+  return status === "partial_period" || status === "partial_sum"
+    ? `${text} (${messages.valueStatus.partial})` : text;
+}
+
+export function formatCompact(value: number | null | undefined): string {
+  if (value === null || value === undefined) return "–";
+  return Math.abs(value) < 10_000 ? formatValue(value) : compact.format(value);
+}
+
+const bound = new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 });
+const small = new Intl.NumberFormat("pt-BR", { maximumSignificantDigits: 3 });
+
+/** Limite de grupo da legenda: "4 mil", "1,5 mil", "250", "0,25". */
+export function formatBound(value: number): string {
+  return Math.abs(value) >= 1000 ? bound.format(value) : small.format(value);
+}
+
+/** Chave da mensagem de título da legenda para a unidade do indicador. */
+export function legendTitleKey(unit: string): "people" | "percent" | "density" | "area" | null {
+  if (unit === "Pessoas") return "people";
+  if (unit === "%") return "percent";
+  if (unit === "Habitante por quilômetro quadrado") return "density";
+  if (unit === "Quilômetros quadrados") return "area";
+  return null;
+}
+
+/**
+ * Unidade curta para cabeçalhos de coluna e legenda (DS 2.3.6): "Total (%)",
+ * "Alimentação (R$)". Moeda vira "R$" (com a escala), número-índice vira "índice".
+ */
+export function unitShort(unit: string): string {
+  const u = unit.trim();
+  if (u === "%" || /^Proporção \(%\)$/i.test(u)) return "%";
+  if (/^Reais$/i.test(u)) return "R$";
+  if (/^Mil Reais$/i.test(u)) return "R$ mil";
+  if (/^Milhões de Reais$/i.test(u)) return "R$ milhões";
+  if (/^Bilhões de Reais$/i.test(u)) return "R$ bilhões";
+  if (/^Número-índice$/i.test(u)) return "índice";
+  if (u === "Quilômetros quadrados") return "km²";
+  if (u === "Habitante por quilômetro quadrado") return "hab/km²";
+  return u.toLowerCase();
+}
+
+/**
+ * Título da legenda de um número-índice, com a base tirada do nome da variável:
+ * "PMC - Número-índice (2022=100)" → "Índice (2022 = 100)". Sem base, "Índice".
+ */
+export function indexTitle(variableName: string | null | undefined): string {
+  const base = /\((?:base:\s*)?([^()]*?)\s*=\s*100\)/i.exec(variableName ?? "");
+  return base ? `Índice (${base[1]} = 100)` : "Índice";
+}
+
+export function formatShare(share: number | null | undefined): string {
+  return share === null || share === undefined ? "" : `${percent.format(share)}%`;
+}
+
+export function unitSuffix(unit: string): string {
+  if (unit === "%") return "%";
+  if (unit === "Quilômetros quadrados") return "km²";
+  if (unit === "Habitante por quilômetro quadrado") return "hab/km²";
+  return unit.toLowerCase();
+}
+
+/**
+ * Período da Gold para exibição, no mesmo formato do eixo e do tooltip da série
+ * (lib/period): "2022", "2026M09" → "set 2026", "2026T2" → "T2 2026", "2026S1" → "S1 2026".
+ * Código não reconhecido volta como veio.
+ */
+export function formatPeriod(period: string): string {
+  const parsed = parsePeriod(period);
+  return parsed ? formatParsedPeriod(parsed) : period;
+}

@@ -1,0 +1,1244 @@
+# Seleção nativa da revisão municipal e do lote N1; agropecuária em receita própria.
+config_version = "1.0.0"
+scope = "demografia"
+
+[[measures]]
+parent = "envelhecimento"
+table = "9515"
+variable = "8845"
+id = "razao_sexo"
+label = "Razão de sexo (Censo)"
+publish = true
+
+[[measures]]
+parent = "envelhecimento"
+table = "9515"
+variable = "10613"
+id = "idade_mediana"
+label = "Idade mediana (Censo)"
+publish = true
+
+[[measures]]
+parent = "domicilios_ocupados"
+table = "4712"
+variable = "382"
+id = "moradores_domicilios_ocupados"
+label = "Moradores em domicílios ocupados"
+publish = true
+
+[[measures]]
+parent = "domicilios_ocupados"
+table = "4712"
+variable = "5930"
+id = "media_moradores_domicilio"
+label = "Média de moradores por domicílio"
+publish = true
+
+[[measures]]
+parent = "populacao_favelas"
+table = "9888"
+variable = "9911"
+id = "area_favelas"
+label = "Área territorial de favelas"
+publish = true
+
+[[measures]]
+parent = "populacao_favelas"
+table = "9888"
+variable = "13096"
+id = "densidade_favelas"
+label = "Densidade demográfica em favelas"
+publish = true
+
+[[measures]]
+parent = "forca_trabalho"
+table = "4093"
+variable = "1641"
+id = "forca_trabalho_v1641"
+label = "Pessoas de 14 anos ou mais de idade"
+publish = true
+
+[[measures]]
+parent = "forca_trabalho"
+table = "4093"
+variable = "4088"
+id = "forca_trabalho_v4088"
+label = "Pessoas de 14 anos ou mais de idade, na força de trabalho, na semana de referência"
+publish = true
+
+[[measures]]
+parent = "forca_trabalho"
+table = "4093"
+variable = "4092"
+id = "forca_trabalho_v4092"
+label = "Pessoas de 14 anos ou mais de idade, desocupadas na semana de referência"
+publish = true
+
+[[measures]]
+parent = "forca_trabalho"
+table = "4093"
+variable = "4094"
+id = "forca_trabalho_v4094"
+label = "Pessoas de 14 anos ou mais de idade, fora da força de trabalho, na semana de referência"
+publish = true
+
+[[measures]]
+parent = "forca_trabalho"
+table = "4093"
+variable = "4096"
+id = "forca_trabalho_v4096"
+label = "Taxa de participação na força de trabalho, na semana de referência, das pessoas de 14 anos ou mais de idade"
+publish = true
+
+[[measures]]
+parent = "forca_trabalho"
+table = "4093"
+variable = "4099"
+id = "forca_trabalho_v4099"
+label = "Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade"
+publish = true
+
+[[measures]]
+parent = "taxas_desocupacao"
+table = "4099"
+variable = "4114"
+id = "taxas_desocupacao_v4114"
+label = "Taxa combinada de desocupação e de subocupação por insuficiência de horas trabalhadas, na semana de referência, das pessoas de 14 anos ou mais de idade"
+publish = true
+
+[[measures]]
+parent = "taxas_desocupacao"
+table = "4099"
+variable = "4116"
+id = "taxas_desocupacao_v4116"
+label = "Taxa combinada de desocupação e força de trabalho potencial, na semana de referência, das pessoas de 14 anos ou mais de idade"
+publish = true
+
+[[measures]]
+parent = "taxas_desocupacao"
+table = "4099"
+variable = "4118"
+id = "taxas_desocupacao_v4118"
+label = "Taxa composta de subutilização da força de trabalho, na semana de referência, das pessoas de 14 anos ou mais de idade"
+publish = true
+
+[[measures]]
+parent = "rendimento_medio_trabalho"
+table = "5436"
+variable = "5933"
+id = "rendimento_medio_trabalho_v5933"
+label = "Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente recebido em todos os trabalhos"
+publish = true
+
+[[measures]]
+parent = "rendimento_medio_trabalho"
+table = "5436"
+variable = "5934"
+id = "rendimento_medio_trabalho_v5934"
+label = "Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, efetivamente recebido no trabalho principal"
+publish = true
+
+[[measures]]
+parent = "rendimento_medio_trabalho"
+table = "5436"
+variable = "5935"
+id = "rendimento_medio_trabalho_v5935"
+label = "Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, efetivamente recebido em todos os trabalhos"
+publish = true
+
+[[measures]]
+parent = "massa_rendimento"
+table = "5606"
+variable = "6295"
+id = "massa_rendimento_v6295"
+label = "Massa de rendimento mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, efetivamente recebido em todos os trabalhos"
+publish = true
+
+[[measures]]
+parent = "rendimento_domiciliar_censo"
+table = "10295"
+variable = "13534"
+id = "rendimento_domiciliar_censo_v13534"
+label = "Valor do rendimento nominal mediano mensal domiciliar per capita dos moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a)"
+publish = true
+
+[[measures]]
+parent = "rendimento_domiciliar_censo"
+table = "10295"
+variable = "13604"
+id = "rendimento_domiciliar_censo_v13604"
+label = "Moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a)"
+publish = true
+
+[[measures]]
+parent = "doenca_cronica"
+table = "7972"
+variable = "11220"
+id = "doenca_cronica_v11220"
+label = "Pessoas com pelo menos uma doença crônica (%)"
+publish = true
+
+[[measures]]
+parent = "doenca_cronica"
+table = "7972"
+variable = "11221"
+id = "ic95_doenca_cronica_v11221"
+label = "Percentual de pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica, considerando um intervalo de confiança de 95% - limite inferior"
+publish = false
+
+[[measures]]
+parent = "doenca_cronica"
+table = "7972"
+variable = "11222"
+id = "ic95_doenca_cronica_v11222"
+label = "Percentual de pessoas de 18 anos ou mais de idade que possuem pelo menos uma doença crônica, considerando um intervalo de confiança de 95% - limite superior"
+publish = false
+
+[[measures]]
+parent = "hipertensao"
+table = "4418"
+variable = "4399"
+id = "hipertensao_v4399"
+label = "Diagnóstico de hipertensão arterial (%)"
+publish = true
+
+[[measures]]
+parent = "hipertensao"
+table = "4418"
+variable = "4400"
+id = "ic95_hipertensao_v4400"
+label = "Percentual de pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial, considerando um intervalo de confiança de 95% - limite inferior"
+publish = false
+
+[[measures]]
+parent = "hipertensao"
+table = "4418"
+variable = "4401"
+id = "ic95_hipertensao_v4401"
+label = "Percentual de pessoas de 18 anos ou mais de idade que referem diagnóstico médico de hipertensão arterial, considerando um intervalo de confiança de 95% - limite superior"
+publish = false
+
+[[measures]]
+parent = "diabetes"
+table = "4487"
+variable = "4465"
+id = "diabetes_v4465"
+label = "Diagnóstico de diabetes (%)"
+publish = true
+
+[[measures]]
+parent = "diabetes"
+table = "4487"
+variable = "4466"
+id = "ic95_diabetes_v4466"
+label = "Percentual de pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes, considerando um intervalo de confiança de 95% - limite inferior"
+publish = false
+
+[[measures]]
+parent = "diabetes"
+table = "4487"
+variable = "4467"
+id = "ic95_diabetes_v4467"
+label = "Percentual de pessoas de 18 anos ou mais de idade que referem diagnóstico médico de diabetes, considerando um intervalo de confiança de 95% - limite superior"
+publish = false
+
+[[measures]]
+parent = "fumantes"
+table = "4173"
+variable = "4163"
+id = "fumantes_v4163"
+label = "Fumantes atuais de tabaco (%)"
+publish = true
+
+[[measures]]
+parent = "fumantes"
+table = "4173"
+variable = "4164"
+id = "ic95_fumantes_v4164"
+label = "Percentual de pessoas de 18 anos ou mais de idade fumantes atuais de tabaco, considerando um intervalo de confiança de 95% - limite inferior"
+publish = false
+
+[[measures]]
+parent = "fumantes"
+table = "4173"
+variable = "4165"
+id = "ic95_fumantes_v4165"
+label = "Percentual de pessoas de 18 anos ou mais de idade fumantes atuais de tabaco, considerando um intervalo de confiança de 95% - limite superior"
+publish = false
+
+[[measures]]
+parent = "consumo_abusivo_alcool"
+table = "7726"
+variable = "4301"
+id = "consumo_abusivo_alcool_v4301"
+label = "Consumo abusivo de álcool (%)"
+publish = true
+
+[[measures]]
+parent = "consumo_abusivo_alcool"
+table = "7726"
+variable = "4302"
+id = "ic95_consumo_abusivo_alcool_v4302"
+label = "Percentual de pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa, considerando um intervalo de confiança de 95% - limite inferior"
+publish = false
+
+[[measures]]
+parent = "consumo_abusivo_alcool"
+table = "7726"
+variable = "4303"
+id = "ic95_consumo_abusivo_alcool_v4303"
+label = "Percentual de pessoas de 18 anos ou mais de idade com consumo abusivo de álcool nos últimos 30 dias anteriores à pesquisa, considerando um intervalo de confiança de 95% - limite superior"
+publish = false
+
+[[measures]]
+parent = "insuficientemente_ativos"
+table = "7740"
+variable = "4265"
+id = "insuficientemente_ativos_v4265"
+label = "Pessoas insuficientemente ativas (%)"
+publish = true
+
+[[measures]]
+parent = "insuficientemente_ativos"
+table = "7740"
+variable = "4266"
+id = "ic95_insuficientemente_ativos_v4266"
+label = "Percentual de pessoas de 18 anos ou mais de idade insuficientemente ativas, considerando um intervalo de confiança de 95% - limite inferior"
+publish = false
+
+[[measures]]
+parent = "insuficientemente_ativos"
+table = "7740"
+variable = "4267"
+id = "ic95_insuficientemente_ativos_v4267"
+label = "Percentual de pessoas de 18 anos ou mais de idade insuficientemente ativas, considerando um intervalo de confiança de 95% - limite superior"
+publish = false
+
+[[measures]]
+parent = "plano_saude"
+table = "4938"
+variable = "5264"
+id = "plano_saude_v5264"
+label = "Pessoas com plano de saúde (%)"
+publish = true
+
+[[measures]]
+parent = "plano_saude"
+table = "4938"
+variable = "5265"
+id = "ic95_plano_saude_v5265"
+label = "Percentual de pessoas que tinham algum plano de saúde (médico ou odontológico), considerando um intervalo de confiança de 95% - limite inferior"
+publish = false
+
+[[measures]]
+parent = "plano_saude"
+table = "4938"
+variable = "5266"
+id = "ic95_plano_saude_v5266"
+label = "Percentual de pessoas que tinham algum plano de saúde (médico ou odontológico), considerando um intervalo de confiança de 95% - limite superior"
+publish = false
+
+[[measures]]
+parent = "consulta_medica"
+table = "5055"
+variable = "5362"
+id = "consulta_medica_v5362"
+label = "Consultaram médico nos últimos 12 meses (%)"
+publish = true
+
+[[measures]]
+parent = "consulta_medica"
+table = "5055"
+variable = "5363"
+id = "ic95_consulta_medica_v5363"
+label = "Percentual de pessoas que consultaram médico nos últimos 12 meses, considerando um intervalo de confiança de 95% - limite inferior"
+publish = false
+
+[[measures]]
+parent = "consulta_medica"
+table = "5055"
+variable = "5364"
+id = "ic95_consulta_medica_v5364"
+label = "Percentual de pessoas que consultaram médico nos últimos 12 meses, considerando um intervalo de confiança de 95% - limite superior"
+publish = false
+
+[[measures]]
+parent = "estabelecimentos_area"
+table = "6878"
+variable = "184"
+id = "estabelecimentos_area_v184"
+label = "Área dos estabelecimentos agropecuários"
+publish = true
+
+[[measures]]
+parent = "empresas_emprego_formal"
+table = "9509"
+variable = "367"
+id = "empresas_emprego_formal_v367"
+label = "Número de empresas e outras organizações atuantes"
+publish = true
+
+[[measures]]
+parent = "empresas_emprego_formal"
+table = "9509"
+variable = "662"
+id = "empresas_emprego_formal_v662"
+label = "Salários e outras remunerações"
+publish = true
+
+[[measures]]
+parent = "empresas_emprego_formal"
+table = "9509"
+variable = "707"
+id = "empresas_emprego_formal_v707"
+label = "Pessoal ocupado total"
+publish = true
+
+[[measures]]
+parent = "empresas_emprego_formal"
+table = "9509"
+variable = "708"
+id = "empresas_emprego_formal_v708"
+label = "Pessoal ocupado assalariado"
+publish = true
+
+[[measures]]
+parent = "empresas_emprego_formal"
+table = "9509"
+variable = "10143"
+id = "empresas_emprego_formal_v10143"
+label = "Salário médio mensal em reais"
+publish = true
+
+[[measures]]
+parent = "microempreendedores"
+table = "9597"
+variable = "8890"
+id = "microempreendedores_v8890"
+label = "Número de microempreendedores individuais (MEIs) (entrada)"
+publish = true
+
+[[measures]]
+parent = "microempreendedores"
+table = "9597"
+variable = "8891"
+id = "microempreendedores_v8891"
+label = "Taxa de entrada de microempreendedores individuais (MEIs)"
+publish = true
+
+[[measures]]
+parent = "microempreendedores"
+table = "9597"
+variable = "8892"
+id = "microempreendedores_v8892"
+label = "Número de microempreendedores individuais (MEIs) (saída)"
+publish = true
+
+[[measures]]
+parent = "microempreendedores"
+table = "9597"
+variable = "8893"
+id = "microempreendedores_v8893"
+label = "Taxa de saída de microempreendedores individuais (MEIs)"
+publish = true
+
+[[measures]]
+parent = "microempreendedores"
+table = "9597"
+variable = "8894"
+id = "microempreendedores_v8894"
+label = "Número de microempreendedores individuais (MEIs) (saldo)"
+publish = true
+
+[[measures]]
+parent = "pib_municipios"
+table = "5938"
+variable = "498"
+id = "pib_municipios_v498"
+label = "Valor adicionado bruto a preços correntes total"
+publish = true
+
+[[measures]]
+parent = "pib_municipios"
+table = "5938"
+variable = "513"
+id = "pib_municipios_v513"
+label = "Valor adicionado bruto a preços correntes da agropecuária"
+publish = true
+
+[[measures]]
+parent = "pib_municipios"
+table = "5938"
+variable = "516"
+id = "pib_municipios_v516"
+label = "Participação do valor adicionado bruto a preços correntes da agropecuária no valor adicionado bruto a preços correntes total"
+publish = true
+
+[[measures]]
+parent = "pib_municipios"
+table = "5938"
+variable = "525"
+id = "pib_municipios_v525"
+label = "Valor adicionado bruto a preços correntes da administração, defesa, educação e saúde públicas e seguridade social"
+publish = true
+
+[[measures]]
+parent = "pib_municipios"
+table = "5938"
+variable = "543"
+id = "pib_municipios_v543"
+label = "Impostos, líquidos de subsídios, sobre produtos a preços correntes"
+publish = true
+
+[[measures]]
+parent = "pib_municipios"
+table = "5938"
+variable = "6575"
+id = "pib_municipios_v6575"
+label = "Valor adicionado bruto a preços correntes dos serviços, exclusive administração, defesa, educação e saúde públicas e seguridade social"
+publish = true
+
+# N1 — medidas anuais, taxas trimestrais nativas e comércio exterior histórico.
+[[measures]]
+parent = "pib_per_capita"
+table = "6784"
+variable = "9812"
+id = "pib_per_capita_v9812"
+label = "PIB per capita a preços correntes"
+publish = true
+notes = ["PIB per capita oficial em reais por habitante, sem dividir o PIB pela população em mil pessoas. Esta medida não herda a correção monetária do PIB total."]
+
+[[measures]]
+parent = "pib_per_capita"
+table = "6784"
+variable = "93"
+id = "pib_per_capita_v93"
+label = "População de referência das Contas Nacionais"
+publish = true
+notes = ["População residente em mil pessoas, no universo das Contas Nacionais Anuais. Não substitui as séries populacionais de outras pesquisas."]
+
+[[measures]]
+parent = "pib_per_capita"
+table = "6784"
+variable = "9810"
+id = "pib_per_capita_v9810"
+label = "PIB: variação anual em volume"
+publish = true
+
+[[measures]]
+parent = "pib_per_capita"
+table = "6784"
+variable = "9811"
+id = "pib_per_capita_v9811"
+label = "Deflator do PIB: variação anual"
+publish = true
+
+[[measures]]
+parent = "variacao_pib_trimestral"
+table = "5932"
+variable = "6562"
+id = "variacao_pib_trimestral_v6562"
+label = "PIB: variação acumulada em quatro trimestres"
+publish = true
+referencia = { c11255 = "90707" }
+notes = ["Taxa oficial em relação aos quatro trimestres anteriores. Não se soma nem se calcula a média das taxas para obter outro período."]
+
+[[measures]]
+parent = "variacao_pib_trimestral"
+table = "5932"
+variable = "6563"
+id = "variacao_pib_trimestral_v6563"
+label = "PIB: variação acumulada no ano"
+publish = true
+referencia = { c11255 = "90707" }
+notes = ["Taxa oficial do acumulado no ano em relação ao mesmo período do ano anterior. Não herda a média temporal do KPI de comparação trimestral."]
+
+[[measures]]
+parent = "variacao_pib_trimestral"
+table = "5932"
+variable = "6564"
+id = "variacao_pib_trimestral_v6564"
+label = "PIB: variação contra o trimestre anterior"
+publish = true
+referencia = { c11255 = "90707" }
+notes = ["Taxa oficial contra o trimestre imediatamente anterior; disponível desde o segundo trimestre de 1996. Sem soma ou média temporal das taxas."]
+
+[[measures]]
+parent = "exportacoes_importacoes"
+table = "5945"
+variable = "2152"
+id = "exportacoes_importacoes_v2152"
+label = "Valor das importações (2013–2015)"
+publish = true
+notes = ["Série histórica de 2013 a 2015 em mil dólares FOB, apenas para Grandes Regiões e UFs. Não representa o comércio exterior atual nem oferece um total Brasil."]
+
+[[measures]]
+parent = "exportacoes_importacoes"
+table = "5945"
+variable = "2154"
+id = "exportacoes_importacoes_v2154"
+label = "Saldo comercial (2013–2015)"
+publish = true
+notes = ["Saldo nativo da fonte, inclusive valores negativos, em mil dólares FOB. Série de 2013 a 2015 somente para Grandes Regiões e UFs; não se deriva Brasil pela soma das UFs."]
+
+# N2 — saúde e segurança alimentar; IC95 somente como suporte.
+[[measures]]
+parent = "mortalidade_doencas_cronicas"
+table = "4277"
+variable = "93"
+id = "mortalidade_doencas_cronicas_v93"
+label = "População de 30 a 69 anos (ODS)"
+publish = true
+notes = ["Universo da própria tabela ODS: pessoas de 30 a 69 anos, no Total de sexo. Não se reconstrói a probabilidade de mortalidade como taxa bruta de óbitos por população."]
+referencia = { "c58" = "56742" }
+
+[[measures]]
+parent = "mortalidade_doencas_cronicas"
+table = "4277"
+variable = "12948"
+id = "mortalidade_doencas_cronicas_v12948"
+label = "Óbitos por doenças crônicas (30 a 69 anos)"
+publish = true
+notes = ["Universo da própria tabela ODS: pessoas de 30 a 69 anos, no Total de sexo. Não se reconstrói a probabilidade de mortalidade como taxa bruta de óbitos por população."]
+referencia = { "c58" = "56742" }
+
+[[measures]]
+parent = "aleitamento_exclusivo"
+table = "5905"
+variable = "7179"
+id = "aleitamento_exclusivo_v7179"
+label = "Aleitamento materno exclusivo (%)"
+publish = true
+notes = ["Pesquisa Nacional de Saúde, 2019: crianças menores de seis meses, apenas a única ou mais nova criança menor de dois anos residente no domicílio. Prevalência nativa, sem soma ou média temporal."]
+
+[[measures]]
+parent = "aleitamento_exclusivo"
+table = "5905"
+variable = "7180"
+id = "ic95_aleitamento_exclusivo_v7180"
+label = "Percentual de crianças com menos de 6 meses de idade que são amamentadas exclusivamente com leite materno, considerando um intervalo de confiança de 95% - limite inferior"
+publish = false
+notes = ["Pesquisa Nacional de Saúde, 2019: crianças menores de seis meses, apenas a única ou mais nova criança menor de dois anos residente no domicílio. Prevalência nativa, sem soma ou média temporal.", "Limite de IC95 da estimativa aleitamento_exclusivo_v7179; dado de suporte, sem publicação como prevalência ou quantidade independente."]
+support_of = "aleitamento_exclusivo_v7179"
+
+[[measures]]
+parent = "aleitamento_exclusivo"
+table = "5905"
+variable = "7181"
+id = "ic95_aleitamento_exclusivo_v7181"
+label = "Percentual de crianças com menos de 6 meses de idade que são amamentadas exclusivamente com leite materno, considerando um intervalo de confiança de 95% - limite superior"
+publish = false
+notes = ["Pesquisa Nacional de Saúde, 2019: crianças menores de seis meses, apenas a única ou mais nova criança menor de dois anos residente no domicílio. Prevalência nativa, sem soma ou média temporal.", "Limite de IC95 da estimativa aleitamento_exclusivo_v7179; dado de suporte, sem publicação como prevalência ou quantidade independente."]
+support_of = "aleitamento_exclusivo_v7179"
+
+[[measures]]
+parent = "homicidios"
+table = "6606"
+variable = "606"
+id = "homicidios_v606"
+label = "População de referência dos homicídios (ODS)"
+publish = true
+notes = ["Contagens e população da própria fonte ODS da taxa de homicídios; não equivalem à cobertura dos registros do Sinesp e não são usados para misturar denominadores de outras fontes."]
+
+[[measures]]
+parent = "homicidios"
+table = "6606"
+variable = "13533"
+id = "homicidios_v13533"
+label = "Vítimas de homicídios intencionais (ODS)"
+publish = true
+notes = ["Contagens e população da própria fonte ODS da taxa de homicídios; não equivalem à cobertura dos registros do Sinesp e não são usados para misturar denominadores de outras fontes."]
+
+[[measures]]
+parent = "mortalidade_materna"
+table = "6694"
+variable = "9435"
+id = "mortalidade_materna_v9435"
+label = "Óbitos maternos (ODS)"
+publish = true
+notes = ["Contagem publicada pela própria fonte ODS. A razão de mortalidade materna tem correção metodológica pela Vigilância de Óbitos de Mulher em Idade Fértil; não é recalculada por divisão destas contagens."]
+
+[[measures]]
+parent = "mortalidade_materna"
+table = "6694"
+variable = "9436"
+id = "mortalidade_materna_v9436"
+label = "Nascidos vivos de mães residentes (ODS)"
+publish = true
+notes = ["Contagem publicada pela própria fonte ODS. A razão de mortalidade materna tem correção metodológica pela Vigilância de Óbitos de Mulher em Idade Fértil; não é recalculada por divisão destas contagens."]
+
+[[measures]]
+parent = "pre_natal"
+table = "8288"
+variable = "6639"
+id = "pre_natal_v6639"
+label = "Mulheres que realizaram pré-natal (%)"
+publish = true
+notes = ["Pesquisa Nacional de Saúde, 2019, somente Brasil: mulheres de 15 anos ou mais cujo último parto ocorreu no período de referência. A tabela complementar 8288 mantém seu próprio universo, calendário e limites de confiança."]
+
+[[measures]]
+parent = "pre_natal"
+table = "8288"
+variable = "6640"
+id = "ic95_pre_natal_v6640"
+label = "Percentual de mulheres que realizaram pré-natal, considerando um intervalo de confiança de 95% - limite inferior"
+publish = false
+notes = ["Pesquisa Nacional de Saúde, 2019, somente Brasil: mulheres de 15 anos ou mais cujo último parto ocorreu no período de referência. A tabela complementar 8288 mantém seu próprio universo, calendário e limites de confiança.", "Limite de IC95 da estimativa pre_natal_v6639; dado de suporte, sem publicação como prevalência ou quantidade independente."]
+support_of = "pre_natal_v6639"
+
+[[measures]]
+parent = "pre_natal"
+table = "8288"
+variable = "6641"
+id = "ic95_pre_natal_v6641"
+label = "Percentual de mulheres que realizaram pré-natal, considerando um intervalo de confiança de 95% - limite superior"
+publish = false
+notes = ["Pesquisa Nacional de Saúde, 2019, somente Brasil: mulheres de 15 anos ou mais cujo último parto ocorreu no período de referência. A tabela complementar 8288 mantém seu próprio universo, calendário e limites de confiança.", "Limite de IC95 da estimativa pre_natal_v6639; dado de suporte, sem publicação como prevalência ou quantidade independente."]
+support_of = "pre_natal_v6639"
+
+[[measures]]
+parent = "excesso_peso"
+table = "8476"
+variable = "11675"
+id = "excesso_peso_v11675"
+label = "Excesso de peso em adultos (%)"
+publish = true
+notes = ["Pesquisa Nacional de Saúde, edição 2013: pessoas de 18 anos ou mais com excesso de peso. Não representa a prevalência atual nem recebe soma de territórios ou categorias."]
+
+[[measures]]
+parent = "excesso_peso"
+table = "8476"
+variable = "11676"
+id = "ic95_excesso_peso_v11676"
+label = "Percentual de pessoas de 18 anos ou mais de idade com excesso de peso, considerando um intervalo de confiança de 95% - limite inferior"
+publish = false
+notes = ["Pesquisa Nacional de Saúde, edição 2013: pessoas de 18 anos ou mais com excesso de peso. Não representa a prevalência atual nem recebe soma de territórios ou categorias.", "Limite de IC95 da estimativa excesso_peso_v11675; dado de suporte, sem publicação como prevalência ou quantidade independente."]
+support_of = "excesso_peso_v11675"
+
+[[measures]]
+parent = "excesso_peso"
+table = "8476"
+variable = "11677"
+id = "ic95_excesso_peso_v11677"
+label = "Percentual de pessoas de 18 anos ou mais de idade com excesso de peso, considerando um intervalo de confiança de 95% - limite superior"
+publish = false
+notes = ["Pesquisa Nacional de Saúde, edição 2013: pessoas de 18 anos ou mais com excesso de peso. Não representa a prevalência atual nem recebe soma de territórios ou categorias.", "Limite de IC95 da estimativa excesso_peso_v11675; dado de suporte, sem publicação como prevalência ou quantidade independente."]
+support_of = "excesso_peso_v11675"
+
+[[measures]]
+parent = "tiveram_covid"
+table = "9373"
+variable = "9448"
+id = "tiveram_covid_v9448"
+label = "Pessoas que tiveram COVID-19 (%)"
+publish = true
+notes = ["PNAD Contínua, 2023: pessoas de cinco anos ou mais que tiveram ou consideram ter tido COVID-19, no Total de sexo e situação do domicílio. Percentual nativo, sem denominador de outra fonte."]
+
+[[measures]]
+parent = "seguranca_alimentar"
+table = "9552"
+variable = "9784"
+id = "seguranca_alimentar_v9784"
+label = "Distribuição dos domicílios por segurança alimentar (%)"
+publish = true
+notes = ["PNAD Contínua, 2023–2024, com a ponderação atualizada indicada na nota oficial. Categorias de insegurança alimentar incluem um agregado e seus graus: não se somam pais e filhos. A situação do domicílio fica fixa no Total.", "O Total da distribuição é 100% por definição. Em Detalhar por, consulte segurança e insegurança alimentar. Os graus leve, moderado e grave são preservados na Gold e consultáveis pela API estruturada; não são recalculados pela plataforma."]
+detail = "c12404"
+
+[[measures]]
+parent = "seguranca_alimentar"
+table = "9552"
+variable = "10114"
+id = "seguranca_alimentar_v10114"
+label = "Moradores por situação de segurança alimentar"
+publish = true
+notes = ["PNAD Contínua, 2023–2024, com a ponderação atualizada indicada na nota oficial. Categorias de insegurança alimentar incluem um agregado e seus graus: não se somam pais e filhos. A situação do domicílio fica fixa no Total."]
+detail = "c12404"
+
+[[measures]]
+parent = "seguranca_alimentar"
+table = "9552"
+variable = "10117"
+id = "seguranca_alimentar_v10117"
+label = "Distribuição dos moradores por segurança alimentar (%)"
+publish = true
+notes = ["PNAD Contínua, 2023–2024, com a ponderação atualizada indicada na nota oficial. Categorias de insegurança alimentar incluem um agregado e seus graus: não se somam pais e filhos. A situação do domicílio fica fixa no Total.", "O Total da distribuição é 100% por definição. Em Detalhar por, consulte segurança e insegurança alimentar. Os graus leve, moderado e grave são preservados na Gold e consultáveis pela API estruturada; não são recalculados pela plataforma."]
+detail = "c12404"
+
+[[measures]]
+parent = "vacinacao_covid"
+table = "9730"
+variable = "9004"
+id = "vacinacao_covid_v9004"
+label = "Vacinação contra a COVID-19 (%)"
+publish = true
+notes = ["PNAD Contínua, 2023: pessoas de cinco anos ou mais vacinadas pelo menos uma vez contra a COVID-19, no Total de sexo e grupos de idade. Não é percentual da população de todas as idades."]
+
+# N3 — estrutura econômica e empresas; CV somente como suporte.
+[[measures]]
+parent = "servicos_nao_financeiros"
+table = "2581"
+variable = "630"
+id = "servicos_nao_financeiros_v630"
+label = "Número de empresas de serviços não financeiros"
+publish = true
+notes = ["Pesquisa Anual de Serviços, 2007–2023: Total nacional nativo. Pessoal ocupado é posição em 31/12; não recebe soma no tempo. Valores monetários mantêm mil reais correntes, sem correção herdada."]
+
+[[measures]]
+parent = "servicos_nao_financeiros"
+table = "2581"
+variable = "631"
+id = "servicos_nao_financeiros_v631"
+label = "Pessoal ocupado nos serviços não financeiros"
+publish = true
+notes = ["Pesquisa Anual de Serviços, 2007–2023: Total nacional nativo. Pessoal ocupado é posição em 31/12; não recebe soma no tempo. Valores monetários mantêm mil reais correntes, sem correção herdada."]
+
+[[measures]]
+parent = "servicos_nao_financeiros"
+table = "2581"
+variable = "635"
+id = "servicos_nao_financeiros_v635"
+label = "Valor adicionado bruto dos serviços não financeiros"
+publish = true
+notes = ["Pesquisa Anual de Serviços, 2007–2023: Total nacional nativo. Pessoal ocupado é posição em 31/12; não recebe soma no tempo. Valores monetários mantêm mil reais correntes, sem correção herdada."]
+
+[[measures]]
+parent = "empresas_inovadoras"
+table = "5453"
+variable = "630"
+id = "empresas_inovadoras_v630"
+label = "Empresas no universo da pesquisa de inovação"
+publish = true
+notes = ["Pesquisa de Inovação: edições 2008, 2011, 2014 e 2017, cada uma referente ao triênio indicado pela fonte. Inovação de produto e de processo pode ocorrer na mesma empresa; não se somam esses conjuntos nem se calcula taxa com denominador de outra pesquisa."]
+
+[[measures]]
+parent = "empresas_inovadoras"
+table = "5453"
+variable = "5982"
+id = "empresas_inovadoras_v5982"
+label = "Empresas com inovação de produto"
+publish = true
+notes = ["Pesquisa de Inovação: edições 2008, 2011, 2014 e 2017, cada uma referente ao triênio indicado pela fonte. Inovação de produto e de processo pode ocorrer na mesma empresa; não se somam esses conjuntos nem se calcula taxa com denominador de outra pesquisa."]
+
+[[measures]]
+parent = "empresas_inovadoras"
+table = "5453"
+variable = "5985"
+id = "empresas_inovadoras_v5985"
+label = "Empresas com inovação de processo"
+publish = true
+notes = ["Pesquisa de Inovação: edições 2008, 2011, 2014 e 2017, cada uma referente ao triênio indicado pela fonte. Inovação de produto e de processo pode ocorrer na mesma empresa; não se somam esses conjuntos nem se calcula taxa com denominador de outra pesquisa."]
+
+[[measures]]
+parent = "empresas_inovadoras"
+table = "5453"
+variable = "5988"
+id = "empresas_inovadoras_v5988"
+label = "Empresas com inovação de produto e processo"
+publish = true
+notes = ["Pesquisa de Inovação: edições 2008, 2011, 2014 e 2017, cada uma referente ao triênio indicado pela fonte. Inovação de produto e de processo pode ocorrer na mesma empresa; não se somam esses conjuntos nem se calcula taxa com denominador de outra pesquisa."]
+
+[[measures]]
+parent = "viagens"
+table = "7204"
+variable = "10391"
+id = "cv_viagens_v10391"
+label = "Coeficiente de variação - Viagens realizadas pelos moradores dos domicílios"
+publish = false
+notes = ["PNAD Contínua: 2019–2021 e 2023–2024; 2022 não foi publicado. Distribuição e coeficientes de variação preservam a finalidade nativa. O Total da distribuição é 100%; Detalhar por apresenta finalidade pessoal/profissional. CVs são suporte de qualidade amostral, não participação ou prevalência."]
+detail = "c892"
+support_of_primary = "10390"
+
+[[measures]]
+parent = "viagens"
+table = "7204"
+variable = "10392"
+id = "viagens_v10392"
+label = "Distribuição das viagens por finalidade (%)"
+publish = true
+notes = ["PNAD Contínua: 2019–2021 e 2023–2024; 2022 não foi publicado. Distribuição e coeficientes de variação preservam a finalidade nativa. O Total da distribuição é 100%; Detalhar por apresenta finalidade pessoal/profissional. CVs são suporte de qualidade amostral, não participação ou prevalência."]
+detail = "c892"
+
+[[measures]]
+parent = "viagens"
+table = "7204"
+variable = "10393"
+id = "cv_viagens_v10393"
+label = "Coeficiente de variação - Distribuição percentual das viagens realizadas pelos moradores dos domicílios"
+publish = false
+notes = ["PNAD Contínua: 2019–2021 e 2023–2024; 2022 não foi publicado. Distribuição e coeficientes de variação preservam a finalidade nativa. O Total da distribuição é 100%; Detalhar por apresenta finalidade pessoal/profissional. CVs são suporte de qualidade amostral, não participação ou prevalência."]
+detail = "c892"
+support_of = "viagens_v10392"
+
+[[measures]]
+parent = "nascimentos_empresas"
+table = "9949"
+variable = "13235"
+id = "nascimentos_empresas_v13235"
+label = "Sobrevivência de empresas após um ano (%)"
+publish = true
+notes = ["Demografia das Empresas: o período identifica a coorte de nascimento, não o ano corrente da sobrevivência. Um, dois e três anos mantêm horizontes e calendários próprios. Não se recompõem taxas pela soma de coortes."]
+
+[[measures]]
+parent = "nascimentos_empresas"
+table = "9949"
+variable = "13236"
+id = "nascimentos_empresas_v13236"
+label = "Sobrevivência de empresas após dois anos (%)"
+publish = true
+notes = ["Demografia das Empresas: o período identifica a coorte de nascimento, não o ano corrente da sobrevivência. Um, dois e três anos mantêm horizontes e calendários próprios. Não se recompõem taxas pela soma de coortes."]
+
+[[measures]]
+parent = "nascimentos_empresas"
+table = "9949"
+variable = "13237"
+id = "nascimentos_empresas_v13237"
+label = "Sobrevivência de empresas após três anos (%)"
+publish = true
+notes = ["Demografia das Empresas: o período identifica a coorte de nascimento, não o ano corrente da sobrevivência. Um, dois e três anos mantêm horizontes e calendários próprios. Não se recompõem taxas pela soma de coortes."]
+
+[[measures]]
+parent = "empresas_construcao"
+table = "10442"
+variable = "631"
+id = "empresas_construcao_v631"
+label = "Pessoal ocupado na construção"
+publish = true
+notes = ["Pesquisa Anual da Indústria da Construção, 2024: universo de empresas com cinco ou mais pessoas ocupadas atuantes nas UFs. Atuação não equivale à sede; empresas podem atuar em mais de uma UF. Contagens e valores não recebem somas territoriais pela plataforma."]
+
+[[measures]]
+parent = "empresas_construcao"
+table = "10442"
+variable = "673"
+id = "empresas_construcao_v673"
+label = "Remunerações na construção"
+publish = true
+notes = ["Pesquisa Anual da Indústria da Construção, 2024: universo de empresas com cinco ou mais pessoas ocupadas atuantes nas UFs. Atuação não equivale à sede; empresas podem atuar em mais de uma UF. Contagens e valores não recebem somas territoriais pela plataforma."]
+
+[[measures]]
+parent = "empresas_construcao"
+table = "10442"
+variable = "1241"
+id = "empresas_construcao_v1241"
+label = "Valor das incorporações, obras e serviços da construção"
+publish = true
+notes = ["Pesquisa Anual da Indústria da Construção, 2024: universo de empresas com cinco ou mais pessoas ocupadas atuantes nas UFs. Atuação não equivale à sede; empresas podem atuar em mais de uma UF. Contagens e valores não recebem somas territoriais pela plataforma."]
+
+[[measures]]
+parent = "empresas_construcao"
+table = "10442"
+variable = "13808"
+id = "empresas_construcao_v13808"
+label = "Empresas de construção atuantes nas UFs"
+publish = true
+notes = ["Pesquisa Anual da Indústria da Construção, 2024: universo de empresas com cinco ou mais pessoas ocupadas atuantes nas UFs. Atuação não equivale à sede; empresas podem atuar em mais de uma UF. Contagens e valores não recebem somas territoriais pela plataforma."]
+
+[[measures]]
+parent = "industria_uf"
+table = "10457"
+variable = "631"
+id = "industria_uf_v631"
+label = "Pessoal ocupado nas unidades locais industriais"
+publish = true
+notes = ["Pesquisa Industrial Anual - Empresa, 2024: unidades locais industriais no recorte nativo de UF. Não se deriva Brasil ou Grandes Regiões pela soma das UFs."]
+
+[[measures]]
+parent = "industria_uf"
+table = "10457"
+variable = "673"
+id = "industria_uf_v673"
+label = "Remunerações nas unidades locais industriais"
+publish = true
+notes = ["Pesquisa Industrial Anual - Empresa, 2024: unidades locais industriais no recorte nativo de UF. Não se deriva Brasil ou Grandes Regiões pela soma das UFs."]
+
+[[measures]]
+parent = "industria_uf"
+table = "10457"
+variable = "811"
+id = "industria_uf_v811"
+label = "Valor da transformação industrial (UF)"
+publish = true
+notes = ["Pesquisa Industrial Anual - Empresa, 2024: unidades locais industriais no recorte nativo de UF. Não se deriva Brasil ou Grandes Regiões pela soma das UFs."]
+
+[[measures]]
+parent = "empresas_comerciais"
+table = "10646"
+variable = "310"
+id = "empresas_comerciais_v310"
+label = "Número de empresas comerciais"
+publish = true
+notes = ["Pesquisa Anual de Comércio, 2024: Total nacional nativo, sem estimar UFs ou Grandes Regiões. Valores monetários mantêm mil reais correntes, sem correção herdada."]
+
+[[measures]]
+parent = "empresas_comerciais"
+table = "10646"
+variable = "631"
+id = "empresas_comerciais_v631"
+label = "Pessoal ocupado nas empresas comerciais"
+publish = true
+notes = ["Pesquisa Anual de Comércio, 2024: Total nacional nativo, sem estimar UFs ou Grandes Regiões. Valores monetários mantêm mil reais correntes, sem correção herdada."]
+
+[[measures]]
+parent = "empresas_comerciais"
+table = "10646"
+variable = "635"
+id = "empresas_comerciais_v635"
+label = "Valor adicionado bruto do comércio"
+publish = true
+notes = ["Pesquisa Anual de Comércio, 2024: Total nacional nativo, sem estimar UFs ou Grandes Regiões. Valores monetários mantêm mil reais correntes, sem correção herdada."]
+
+# N4 — agro conjuntural e ambiente, sem totais derivados.
+[[measures]]
+parent = "fertilizantes"
+table = "770"
+variable = "2398"
+id = "fertilizantes_v2398"
+label = "Utilização de fertilizantes por unidade de área"
+publish = true
+notes = ["Medida nativa em kg/ha, de 2007 a 2014. Não se somam intensidades de fertilizantes entre nutrientes ou territórios. Universo e área de referência seguem a fonte."]
+
+[[measures]]
+parent = "leite_adquirido"
+table = "1086"
+variable = "151"
+id = "leite_adquirido_v151"
+label = "Informantes da pesquisa de leite"
+publish = true
+notes = ["Pesquisa trimestral do leite: Total do trimestre e da inspeção. Informantes são estabelecimentos respondentes, não um fluxo mensal somável. O preço médio nativo começa em 2019T1 e era experimental até março de 2024. Não se criam regiões por soma de preços ou informantes."]
+
+[[measures]]
+parent = "leite_adquirido"
+table = "1086"
+variable = "283"
+id = "leite_adquirido_v283"
+label = "Quantidade de leite industrializado"
+publish = true
+notes = ["Pesquisa trimestral do leite: Total do trimestre e da inspeção. Informantes são estabelecimentos respondentes, não um fluxo mensal somável. O preço médio nativo começa em 2019T1 e era experimental até março de 2024. Não se criam regiões por soma de preços ou informantes."]
+
+[[measures]]
+parent = "leite_adquirido"
+table = "1086"
+variable = "2522"
+id = "leite_adquirido_v2522"
+label = "Preço médio do leite cru pago ao produtor"
+publish = true
+notes = ["Pesquisa trimestral do leite: Total do trimestre e da inspeção. Informantes são estabelecimentos respondentes, não um fluxo mensal somável. O preço médio nativo começa em 2019T1 e era experimental até março de 2024. Não se criam regiões por soma de preços ou informantes."]
+
+[[measures]]
+parent = "abate_bovinos"
+table = "1092"
+variable = "151"
+id = "abate_bovinos_v151"
+label = "Informantes da pesquisa de abate bovino"
+publish = true
+notes = ["Pesquisa trimestral de abate: Total do trimestre, do rebanho bovino e da inspeção. Peso em quilogramas. Informantes se repetem nos meses do trimestre e não são somados pela plataforma; sigilo permanece sigilo."]
+
+[[measures]]
+parent = "abate_bovinos"
+table = "1092"
+variable = "285"
+id = "abate_bovinos_v285"
+label = "Peso das carcaças de bovinos abatidos"
+publish = true
+notes = ["Pesquisa trimestral de abate: Total do trimestre, do rebanho bovino e da inspeção. Peso em quilogramas. Informantes se repetem nos meses do trimestre e não são somados pela plataforma; sigilo permanece sigilo."]
+
+[[measures]]
+parent = "unidades_conservacao"
+table = "5619"
+variable = "6308"
+id = "unidades_conservacao_v6308"
+label = "Área das unidades de conservação terrestres"
+publish = true
+notes = ["Cadastro Nacional de Unidades de Conservação, atualização de 09/08/2016; série de 1992 a 2016, somente Brasil e unidades terrestres. Há sobreposição entre unidades; não se somam áreas para reconstruir a proporção ou a cobertura territorial."]
+
+[[measures]]
+parent = "unidades_conservacao"
+table = "5619"
+variable = "6309"
+id = "unidades_conservacao_v6309"
+label = "Proporção da área em unidades de conservação terrestres (%)"
+publish = true
+notes = ["Cadastro Nacional de Unidades de Conservação, atualização de 09/08/2016; série de 1992 a 2016, somente Brasil e unidades terrestres. Há sobreposição entre unidades; não se somam áreas para reconstruir a proporção ou a cobertura territorial."]
+
+[[measures]]
+parent = "ovos_produzidos"
+table = "7524"
+variable = "151"
+id = "ovos_produzidos_v151"
+label = "Informantes da pesquisa de ovos"
+publish = true
+notes = ["Pesquisa trimestral de ovos: Total do trimestre e da finalidade. O plantel representa a média dos últimos dias dos meses do trimestre, não produção acumulável. Informantes não são somados. A cobertura segue os limiares da nota oficial e não equivale a todos os estabelecimentos da UF."]
+
+[[measures]]
+parent = "ovos_produzidos"
+table = "7524"
+variable = "1988"
+id = "ovos_produzidos_v1988"
+label = "Galinhas poedeiras nos estabelecimentos pesquisados"
+publish = true
+notes = ["Pesquisa trimestral de ovos: Total do trimestre e da finalidade. O plantel representa a média dos últimos dias dos meses do trimestre, não produção acumulável. Informantes não são somados. A cobertura segue os limiares da nota oficial e não equivale a todos os estabelecimentos da UF."]
+
+# N5 — preços e custos mensais; valores e bases nativos, sem recomposição.
+[[measures]]
+parent = "inpc"
+table = "1736"
+variable = "68"
+id = "inpc_v68"
+label = "INPC: variação acumulada no ano (%)"
+publish = true
+notes = ["Número-índice e acumulados oficiais do INPC, com base e períodos indicados em cada variável. Não se somam nem se recompõem acumulados nativos; a série mensal principal permanece preservada."]
+
+[[measures]]
+parent = "inpc"
+table = "1736"
+variable = "2289"
+id = "inpc_v2289"
+label = "INPC: número-índice"
+publish = true
+notes = ["Número-índice e acumulados oficiais do INPC, com base e períodos indicados em cada variável. Não se somam nem se recompõem acumulados nativos; a série mensal principal permanece preservada."]
+
+[[measures]]
+parent = "inpc"
+table = "1736"
+variable = "2292"
+id = "inpc_v2292"
+label = "INPC: variação acumulada em doze meses (%)"
+publish = true
+notes = ["Número-índice e acumulados oficiais do INPC, com base e períodos indicados em cada variável. Não se somam nem se recompõem acumulados nativos; a série mensal principal permanece preservada."]
+
+[[measures]]
+parent = "ipca"
+table = "1737"
+variable = "69"
+id = "ipca_v69"
+label = "IPCA: variação acumulada no ano (%)"
+publish = true
+notes = ["Número-índice e acumulados oficiais do IPCA, com base e períodos indicados em cada variável. Não se somam nem se recompõem acumulados nativos. As novas variantes não alteram o IPCA mensal principal ou a correção da POF."]
+
+[[measures]]
+parent = "ipca"
+table = "1737"
+variable = "2265"
+id = "ipca_v2265"
+label = "IPCA: variação acumulada em doze meses (%)"
+publish = true
+notes = ["Número-índice e acumulados oficiais do IPCA, com base e períodos indicados em cada variável. Não se somam nem se recompõem acumulados nativos. As novas variantes não alteram o IPCA mensal principal ou a correção da POF."]
+
+[[measures]]
+parent = "ipca"
+table = "1737"
+variable = "2266"
+id = "ipca_v2266"
+label = "IPCA: número-índice"
+publish = true
+notes = ["Número-índice e acumulados oficiais do IPCA, com base e períodos indicados em cada variável. Não se somam nem se recompõem acumulados nativos. As novas variantes não alteram o IPCA mensal principal ou a correção da POF."]
+
+[[measures]]
+parent = "custo_m2"
+table = "2296"
+variable = "49"
+id = "custo_m2_v49"
+label = "Custo do m²: número-índice"
+publish = true
+notes = ["SINAPI: componentes material e mão de obra em reais somente desde setembro de 2012, conforme o calendário próprio das variáveis. Número-índice e percentuais mantêm suas bases e calendários, sem corte de moeda aplicado a índices. Não se somam custos por m² ou variações entre territórios ou meses."]
+
+[[measures]]
+parent = "custo_m2"
+table = "2296"
+variable = "1196"
+id = "custo_m2_v1196"
+label = "Custo do m²: variação mensal (%)"
+publish = true
+notes = ["SINAPI: componentes material e mão de obra em reais somente desde setembro de 2012, conforme o calendário próprio das variáveis. Número-índice e percentuais mantêm suas bases e calendários, sem corte de moeda aplicado a índices. Não se somam custos por m² ou variações entre territórios ou meses."]
+
+[[measures]]
+parent = "custo_m2"
+table = "2296"
+variable = "1197"
+id = "custo_m2_v1197"
+label = "Custo do m²: variação no ano (%)"
+publish = true
+notes = ["SINAPI: componentes material e mão de obra em reais somente desde setembro de 2012, conforme o calendário próprio das variáveis. Número-índice e percentuais mantêm suas bases e calendários, sem corte de moeda aplicado a índices. Não se somam custos por m² ou variações entre territórios ou meses."]
+
+[[measures]]
+parent = "custo_m2"
+table = "2296"
+variable = "1198"
+id = "custo_m2_v1198"
+label = "Custo do m²: variação em doze meses (%)"
+publish = true
+notes = ["SINAPI: componentes material e mão de obra em reais somente desde setembro de 2012, conforme o calendário próprio das variáveis. Número-índice e percentuais mantêm suas bases e calendários, sem corte de moeda aplicado a índices. Não se somam custos por m² ou variações entre territórios ou meses."]
+
+[[measures]]
+parent = "custo_m2"
+table = "2296"
+variable = "2119"
+id = "custo_m2_v2119"
+label = "Custo do m²: componente material"
+publish = true
+notes = ["SINAPI: componentes material e mão de obra em reais somente desde setembro de 2012, conforme o calendário próprio das variáveis. Número-índice e percentuais mantêm suas bases e calendários, sem corte de moeda aplicado a índices. Não se somam custos por m² ou variações entre territórios ou meses."]
+
+[[measures]]
+parent = "custo_m2"
+table = "2296"
+variable = "2120"
+id = "custo_m2_v2120"
+label = "Custo do m²: componente mão de obra"
+publish = true
+notes = ["SINAPI: componentes material e mão de obra em reais somente desde setembro de 2012, conforme o calendário próprio das variáveis. Número-índice e percentuais mantêm suas bases e calendários, sem corte de moeda aplicado a índices. Não se somam custos por m² ou variações entre territórios ou meses."]
+
+[[measures]]
+parent = "ipca15"
+table = "3065"
+variable = "356"
+id = "ipca15_v356"
+label = "IPCA-15: variação acumulada no ano (%)"
+publish = true
+notes = ["Número-índice e acumulados oficiais do IPCA-15, com base e períodos indicados em cada variável. Não se somam nem se recompõem acumulados nativos; a série mensal principal permanece preservada."]
+
+[[measures]]
+parent = "ipca15"
+table = "3065"
+variable = "1117"
+id = "ipca15_v1117"
+label = "IPCA-15: número-índice"
+publish = true
+notes = ["Número-índice e acumulados oficiais do IPCA-15, com base e períodos indicados em cada variável. Não se somam nem se recompõem acumulados nativos; a série mensal principal permanece preservada."]
+
+[[measures]]
+parent = "ipca15"
+table = "3065"
+variable = "1120"
+id = "ipca15_v1120"
+label = "IPCA-15: variação acumulada em doze meses (%)"
+publish = true
+notes = ["Número-índice e acumulados oficiais do IPCA-15, com base e períodos indicados em cada variável. Não se somam nem se recompõem acumulados nativos; a série mensal principal permanece preservada."]
+
+[[measures]]
+parent = "ipp"
+table = "6904"
+variable = "1394"
+id = "ipp_v1394"
+label = "IPP: variação mês contra o mesmo mês anterior (%)"
+publish = true
+notes = ["IPP da indústria geral, referência nativa c543=33586. Índice com base dezembro de 2018=100 e variações oficiais com calendários próprios. Não se somam setores nem acumulados mensais e não se aplica correção monetária às novas variantes."]
+referencia = { "c543" = "33586" }
+
+[[measures]]
+parent = "ipp"
+table = "6904"
+variable = "1395"
+id = "ipp_v1395"
+label = "IPP: variação acumulada no ano (%)"
+publish = true
+notes = ["IPP da indústria geral, referência nativa c543=33586. Índice com base dezembro de 2018=100 e variações oficiais com calendários próprios. Não se somam setores nem acumulados mensais e não se aplica correção monetária às novas variantes."]
+referencia = { "c543" = "33586" }
+
+[[measures]]
+parent = "ipp"
+table = "6904"
+variable = "10008"
+id = "ipp_v10008"
+label = "IPP: número-índice"
+publish = true
+notes = ["IPP da indústria geral, referência nativa c543=33586. Índice com base dezembro de 2018=100 e variações oficiais com calendários próprios. Não se somam setores nem acumulados mensais e não se aplica correção monetária às novas variantes."]
+referencia = { "c543" = "33586" }

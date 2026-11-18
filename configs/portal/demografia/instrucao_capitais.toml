@@ -1,0 +1,18 @@
+config_version = "1.0.0"
+scope = "demografia"
+dimension_order = ["c1568t7270"]
+
+[[themes]]
+id = "educacao"
+label = "Educação"
+
+[[themes.subthemes]]
+id = "instrucao"
+label = "Nível de instrução"
+
+[[themes.subthemes.kpis]]
+id = "nivel_instrucao_capitais"
+label = "Nível de instrução em quatro grupos (PNAD)"
+indicator = "nivel_instrucao_capitais"
+dimensions = [{ classification = "c1568t7270", partition = "grupos_instrucao", label = "Nível de instrução agrupado" }]
+map_share = "11627"

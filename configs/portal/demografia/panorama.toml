@@ -1,0 +1,1194 @@
+# Gerado por `odb panorama gerar` a partir de configs/catalog/panorama.toml e
+# configs/catalog/panorama_verificacao.json (ADR-0010). Não editar à mão:
+# ajuste o panorama e gere de novo.
+
+config_version = "1.0.0"
+scope = "demografia"
+dimension_order = ["c86", "c2", "sexosim", "sexosinesp", "c287", "c58", "c1", "c2661", "c1714", "c339", "c12190", "c11558h", "c67h", "c1568t7270", "c12404ma", "c892ma", "c782ag", "c80ag", "c48ag", "c201", "c210", "c210alim", "c214", "c215", "c2083", "c232", "c1836", "c664", "c345", "c460", "c63", "c338", "c845", "c1821", "c825", "c921", "c11558", "c921t7461", "c67", "c67t6736", "c1568", "c1568t10061", "c86t5845", "c12258", "c556", "c12404", "c688", "c422", "c427", "c937", "c782g", "c48", "c79", "c80", "c654", "c18", "c12716", "c1835", "c734", "c829", "c716", "c12899", "c12762", "c11065", "c85", "c892", "c956", "c12762t9949", "c696", "c543", "c1480", "c1346", "c1329", "c1328", "c2t2609", "c240", "c2t2654", "c257", "c260", "c665", "c666", "c667", "c269", "c274", "c275", "c293", "c287t9543", "c58t7113", "c86t7125", "c86t7270", "c58t7126", "c58t10061", "c58t10295", "c58t7973", "c1568t7974", "c653t7976", "c58t4419", "c1568t4420", "c652t4422", "c653t4423", "c58t4488", "c1568t4489", "c652t4491", "c653t4492", "c58t4179", "c1568t4181", "c653t4182", "c58t7727", "c1568t7728", "c653t7730", "c58t7741", "c1568t7742", "c653t7744", "c58t4949", "c1568t4950", "c652t4953", "c653t4952", "c58t5058", "c653t5065", "c652t8288", "c1568t8290", "c58t4277", "c58t6356", "c58t6358", "c58t6378", "c4908", "c86t8715", "c1568t8717", "c1393t8724", "c58t8504", "c1568t8507", "c58t8023", "c1568t8024", "c653t8026", "c782", "c12529", "c218", "c12517", "c12564", "c12771", "c370", "c12446", "c1347"]
+
+[[themes]]
+id = "populacao"
+label = "População e demografia"
+
+[[themes.subthemes]]
+id = "tamanho_crescimento"
+label = "Tamanho e crescimento"
+
+[[themes.subthemes.kpis]]
+id = "crescimento_populacional"
+label = "Taxa de crescimento da população"
+indicator = "crescimento_populacional"
+
+[[themes.subthemes.kpis]]
+id = "populacao_nos_censos"
+label = "População nos Censos (série histórica)"
+indicator = "populacao_nos_censos"
+
+[[themes.subthemes]]
+id = "estrutura_populacao"
+label = "Sexo, idade e cor ou raça"
+
+[[themes.subthemes.kpis]]
+id = "envelhecimento"
+label = "Índice de envelhecimento"
+indicator = "envelhecimento"
+
+[[themes.subthemes]]
+id = "natalidade_mortalidade"
+label = "Fecundidade, mortalidade e esperança de vida"
+
+[[themes.subthemes.kpis]]
+id = "esperanca_vida"
+label = "Esperança de vida ao nascer (projeção para 2026)"
+indicator = "esperanca_vida"
+
+[[themes.subthemes.kpis]]
+id = "fecundidade_total"
+label = "Taxa de fecundidade total"
+indicator = "fecundidade_total"
+
+[[themes.subthemes]]
+id = "migracao"
+label = "Migração"
+
+[[themes.subthemes.kpis]]
+id = "migrantes_uf"
+label = "Pessoas que não residiam na UF cinco anos antes"
+indicator = "migrantes_uf"
+dimensions = [{ "classification" = "c2083", "partition" = "p77808", "label" = "Lugar de residência 5 anos antes da data de referência" }]
+
+[[themes]]
+id = "registro_civil"
+label = "Registro civil"
+
+[[themes.subthemes]]
+id = "nascimentos_obitos"
+label = "Nascimentos e óbitos"
+
+[[themes.subthemes.kpis]]
+id = "nascidos_vivos"
+label = "Nascidos vivos"
+indicator = "nascidos_vivos"
+dimensions = [{ "classification" = "c232", "partition" = "p0", "label" = "Ano de nascimento" }, { "classification" = "c2t2609", "partition" = "p0", "label" = "Sexo" }, { "classification" = "c240", "partition" = "p0", "label" = "Idade da mãe na ocasião do parto" }]
+exclusive_dimensions = true
+crossed = [["c2t2609", "c240"]]
+crossed_levels = ["brasil", "regiao", "uf"]
+
+[[themes.subthemes.kpis]]
+id = "obitos"
+label = "Óbitos"
+indicator = "obitos"
+dimensions = [{ "classification" = "c1836", "partition" = "p0", "label" = "Natureza do óbito" }, { "classification" = "c2t2654", "partition" = "p0", "label" = "Sexo" }, { "classification" = "c257", "partition" = "p0", "label" = "Local de ocorrência" }, { "classification" = "c260", "partition" = "p0", "label" = "Idade do(a) falecido(a)" }]
+exclusive_dimensions = true
+crossed = [["c2t2654", "c260"]]
+crossed_levels = ["brasil", "regiao", "uf"]
+
+[[themes.subthemes.kpis]]
+id = "obitos_mensal"
+label = "Óbitos por mês"
+indicator = "obitos_mensal"
+
+[[themes.subthemes]]
+id = "casamentos_divorcios"
+label = "Casamentos e divórcios"
+
+[[themes.subthemes.kpis]]
+id = "casamentos"
+label = "Casamentos"
+indicator = "casamentos"
+dimensions = [{ "classification" = "c664", "partition" = "p0", "label" = "Estado civil do primeiro cônjuge" }, { "classification" = "c665", "partition" = "p0", "label" = "Estado civil do segundo cônjuge" }, { "classification" = "c666", "partition" = "p0", "label" = "Grupo de idade do primeiro cônjuge" }, { "classification" = "c667", "partition" = "p0", "label" = "Grupo de idade do segundo cônjuge" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "casamentos_mensal"
+label = "Casamentos por mês"
+indicator = "casamentos_mensal"
+
+[[themes.subthemes.kpis]]
+id = "divorcios"
+label = "Divórcios"
+indicator = "divorcios"
+dimensions = [{ "classification" = "c345", "partition" = "p0", "label" = "Tempo transcorrido entre a data do casamento e a data da sentença ou da escritura" }, { "classification" = "c269", "partition" = "p0", "label" = "Regime de bens do casamento" }, { "classification" = "c274", "partition" = "p0", "label" = "Grupos de idade do marido na data da sentença" }, { "classification" = "c275", "partition" = "p0", "label" = "Grupos de idade da mulher na data da sentença" }]
+exclusive_dimensions = true
+
+[[themes]]
+id = "domicilios"
+label = "Domicílios e famílias"
+
+[[themes.subthemes]]
+id = "domicilios_moradores"
+label = "Domicílios e moradores"
+
+[[themes.subthemes.kpis]]
+id = "domicilios_ocupados"
+label = "Domicílios particulares permanentes ocupados"
+indicator = "domicilios_ocupados"
+
+[[themes.subthemes.kpis]]
+id = "arranjos_domiciliares"
+label = "Domicílios por tipo de arranjo (unidade doméstica)"
+indicator = "arranjos_domiciliares"
+dimensions = [{ "classification" = "c460", "partition" = "p45902", "label" = "Espécie de unidade doméstica" }, { "classification" = "c293", "partition" = "p100311", "label" = "Sexo do responsável pelo domicílio" }]
+exclusive_dimensions = true
+map_share = "12076"
+
+[[themes.subthemes]]
+id = "condicoes_moradia"
+label = "Condições de moradia"
+
+[[themes.subthemes.kpis]]
+id = "condicao_ocupacao"
+label = "Domicílios próprios, alugados e cedidos"
+indicator = "condicao_ocupacao"
+dimensions = [{ "classification" = "c63", "partition" = "p95826", "label" = "Condição de ocupação do domicílio" }]
+map_share = "4342"
+
+[[themes.subthemes.kpis]]
+id = "material_paredes"
+label = "Domicílios por material das paredes"
+indicator = "material_paredes"
+dimensions = [{ "classification" = "c338", "partition" = "p7982", "label" = "Material predominante nas paredes" }]
+map_share = "7983"
+
+[[themes.subthemes.kpis]]
+id = "posse_bens"
+label = "Domicílios por posse de bens"
+indicator = "posse_bens"
+dimensions = [{ "classification" = "c845", "partition" = "p47557", "label" = "Posse de bens" }]
+map_share = "47552"
+
+[[themes.subthemes]]
+id = "favelas"
+label = "Favelas e comunidades urbanas"
+
+[[themes.subthemes.kpis]]
+id = "populacao_favelas"
+label = "População residente em favelas"
+indicator = "populacao_favelas"
+
+[[themes.subthemes.kpis]]
+id = "numero_favelas"
+label = "Número de favelas e comunidades urbanas"
+indicator = "numero_favelas"
+
+[[themes]]
+id = "saneamento"
+label = "Saneamento básico"
+
+[[themes.subthemes]]
+id = "agua"
+label = "Abastecimento de água"
+
+[[themes.subthemes.kpis]]
+id = "rede_geral_agua"
+label = "Domicílios ligados à rede geral de água (Censo)"
+indicator = "rede_geral_agua"
+dimensions = [{ "classification" = "c1821", "partition" = "p72129", "label" = "Existência de ligação à rede geral de distribuição de água e principal forma de abastecimento de água" }]
+map_share = "72144"
+
+[[themes.subthemes.kpis]]
+id = "fonte_abastecimento"
+label = "Principal fonte de abastecimento de água"
+indicator = "fonte_abastecimento"
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }, { "classification" = "c825", "partition" = "p47937", "label" = "Principal fonte de abastecimento de água" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "servico_agua_municipios"
+label = "Municípios com serviço de abastecimento por rede geral"
+indicator = "servico_agua_municipios"
+dimensions = [{ "classification" = "c921", "partition" = "p48278", "label" = "Condição de funcionamento do serviço" }]
+
+[[themes.subthemes]]
+id = "esgoto"
+label = "Esgotamento sanitário"
+
+[[themes.subthemes.kpis]]
+id = "esgotamento_censo"
+label = "Domicílios por tipo de esgotamento sanitário (Censo)"
+indicator = "esgotamento_censo"
+dimensions = [{ "classification" = "c11558", "partition" = "p46292", "label" = "Tipo de esgotamento sanitário" }]
+map_share = "46290"
+
+[[themes.subthemes.kpis]]
+id = "esgotamento_pnad"
+label = "Domicílios por tipo de esgotamento sanitário"
+indicator = "esgotamento_pnad"
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil", "regiao", "uf"] }, { "classification" = "c11558", "partition" = "p46292_t7192", "label" = "Tipo de esgotamento sanitário" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "servico_esgoto_municipios"
+label = "Municípios com rede coletora de esgoto"
+indicator = "servico_esgoto_municipios"
+dimensions = [{ "classification" = "c921t7461", "partition" = "p48278", "label" = "Condição de funcionamento do serviço" }]
+
+[[themes.subthemes]]
+id = "lixo"
+label = "Coleta de lixo"
+
+[[themes.subthemes.kpis]]
+id = "destino_lixo_censo"
+label = "Domicílios por destino do lixo (Censo)"
+indicator = "destino_lixo_censo"
+dimensions = [{ "classification" = "c67", "partition" = "p10972", "label" = "Destino do lixo" }]
+map_share = "2520"
+
+[[themes.subthemes.kpis]]
+id = "destino_lixo_pnad"
+label = "Domicílios por destino do lixo"
+indicator = "destino_lixo_pnad"
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil", "regiao", "uf"] }, { "classification" = "c67t6736", "partition" = "p10972", "label" = "Destino do lixo" }]
+exclusive_dimensions = true
+
+[[themes]]
+id = "educacao"
+label = "Educação"
+
+[[themes.subthemes]]
+id = "alfabetizacao"
+label = "Alfabetização"
+
+[[themes.subthemes.kpis]]
+id = "taxa_alfabetizacao_censo"
+label = "Taxa de alfabetização (15 anos ou mais, Censo)"
+indicator = "taxa_alfabetizacao_censo"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c287t9543", "partition" = "p100362", "label" = "Idade" }]
+exclusive_dimensions = true
+crossed = [["c2", "c86", "c287t9543"]]
+crossed_levels = ["brasil", "regiao", "uf"]
+
+[[themes.subthemes.kpis]]
+id = "taxa_analfabetismo"
+label = "Taxa de analfabetismo (15 anos ou mais)"
+indicator = "taxa_analfabetismo"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c58t7113", "partition" = "p2795", "label" = "Grupo de idade" }, { "classification" = "c86t7125", "partition" = "p95251", "label" = "Cor ou raça" }]
+exclusive_dimensions = true
+
+[[themes.subthemes]]
+id = "escolarizacao"
+label = "Frequência escolar"
+
+[[themes.subthemes.kpis]]
+id = "taxa_escolarizacao"
+label = "Taxa de escolarização"
+indicator = "taxa_escolarizacao"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c58", "partition" = "p95253_t7138", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "frequencia_liquida"
+label = "Frequência escolar líquida no ensino fundamental"
+indicator = "frequencia_liquida"
+
+[[themes.subthemes]]
+id = "instrucao"
+label = "Nível de instrução"
+
+[[themes.subthemes.kpis]]
+id = "nivel_instrucao"
+label = "Pessoas de 25 anos ou mais por nível de instrução"
+indicator = "nivel_instrucao"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c1568", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c86t7270", "partition" = "p95251", "label" = "Cor ou raça" }]
+exclusive_dimensions = true
+map_share = "18837"
+
+[[themes.subthemes.kpis]]
+id = "anos_estudo"
+label = "Média de anos de estudo (15 anos ou mais)"
+indicator = "anos_estudo"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c58t7126", "partition" = "p2795", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "nivel_instrucao_censo"
+label = "Nível de instrução (18 anos ou mais, Censo)"
+indicator = "nivel_instrucao_censo"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c1568t10061", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c58t10061", "partition" = "p95253", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
+map_share = "9493"
+
+[[themes]]
+id = "trabalho_rendimento"
+label = "Trabalho e rendimento"
+
+[[themes.subthemes]]
+id = "ocupacao"
+label = "Ocupação e desocupação"
+
+[[themes.subthemes.kpis]]
+id = "forca_trabalho"
+label = "Força de trabalho, ocupação e desocupação"
+indicator = "forca_trabalho"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+
+[[themes.subthemes.kpis]]
+id = "taxas_desocupacao"
+label = "Taxas de desocupação e de subutilização"
+indicator = "taxas_desocupacao"
+
+[[themes.subthemes]]
+id = "informalidade"
+label = "Informalidade"
+
+[[themes.subthemes.kpis]]
+id = "taxa_informalidade"
+label = "Taxa de informalidade"
+indicator = "taxa_informalidade"
+
+[[themes.subthemes.kpis]]
+id = "taxa_informalidade_trimestral"
+label = "Taxa de informalidade (trimestral)"
+indicator = "taxa_informalidade_trimestral"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+
+[[themes.subthemes]]
+id = "rendimento_trabalho"
+label = "Rendimento do trabalho"
+
+[[themes.subthemes.kpis]]
+id = "rendimento_medio_trabalho"
+label = "Rendimento médio real do trabalho"
+indicator = "rendimento_medio_trabalho"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+
+[[themes.subthemes.kpis]]
+id = "massa_rendimento"
+label = "Massa de rendimento real do trabalho"
+indicator = "massa_rendimento"
+
+[[themes.subthemes]]
+id = "rendimento_domiciliar"
+label = "Rendimento domiciliar, desigualdade e pobreza"
+
+[[themes.subthemes.kpis]]
+id = "gini_domiciliar"
+label = "Índice de Gini do rendimento domiciliar per capita"
+indicator = "gini_domiciliar"
+
+[[themes.subthemes.kpis]]
+id = "rendimento_domiciliar_censo"
+label = "Rendimento domiciliar per capita (Censo)"
+indicator = "rendimento_domiciliar_censo"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c58t10295", "partition" = "p95253", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "pobreza_linha_nacional"
+label = "Proporção da população abaixo da linha de pobreza nacional"
+indicator = "pobreza_linha_nacional"
+dimensions = [{ "classification" = "c86t5845", "partition" = "p95251", "label" = "Cor ou raça", "levels" = ["brasil"] }]
+
+[[themes.subthemes]]
+id = "trabalho_infantil_cuidados"
+label = "Trabalho infantil e cuidados"
+
+[[themes.subthemes.kpis]]
+id = "trabalho_infantil"
+label = "Pessoas de 5 a 17 anos em trabalho infantil"
+indicator = "trabalho_infantil"
+dimensions = [{ "classification" = "c58", "partition" = "p95253_t9836", "label" = "Grupo de idade" }]
+
+[[themes.subthemes.kpis]]
+id = "afazeres_domesticos"
+label = "Horas dedicadas a afazeres domésticos e cuidados"
+indicator = "afazeres_domesticos"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }]
+
+[[themes]]
+id = "saude"
+label = "Saúde"
+
+[[themes.subthemes]]
+id = "condicoes_saude"
+label = "Condições de saúde"
+
+[[themes.subthemes.kpis]]
+id = "autoavaliacao_saude"
+label = "Avaliação do próprio estado de saúde"
+indicator = "autoavaliacao_saude"
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c12258", "partition" = "p10011", "label" = "Avaliação do estado de saúde" }]
+exclusive_dimensions = true
+map_share = "104864"
+
+[[themes.subthemes.kpis]]
+id = "doenca_cronica"
+label = "Pessoas com pelo menos uma doença crônica"
+indicator = "doenca_cronica"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t7973", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t7974", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t7976", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "hipertensao"
+label = "Diagnóstico de hipertensão arterial"
+indicator = "hipertensao"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t4419", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4420", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c652t4422", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita" }, { "classification" = "c653t4423", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "diabetes"
+label = "Diagnóstico de diabetes"
+indicator = "diabetes"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t4488", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4489", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c652t4491", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita" }, { "classification" = "c653t4492", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
+
+[[themes.subthemes]]
+id = "fatores_risco"
+label = "Hábitos e fatores de risco"
+
+[[themes.subthemes.kpis]]
+id = "fumantes"
+label = "Fumantes atuais de tabaco"
+indicator = "fumantes"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t4179", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4181", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t4182", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "consumo_abusivo_alcool"
+label = "Consumo abusivo de álcool"
+indicator = "consumo_abusivo_alcool"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t7727", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t7728", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t7730", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "insuficientemente_ativos"
+label = "Pessoas insuficientemente ativas"
+indicator = "insuficientemente_ativos"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t7741", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t7742", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t7744", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "excesso_peso"
+label = "Excesso de peso ou obesidade"
+indicator = "excesso_peso"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil", "regiao"] }]
+exclusive_dimensions = true
+
+[[themes.subthemes]]
+id = "acesso_servicos"
+label = "Acesso a serviços de saúde"
+
+[[themes.subthemes.kpis]]
+id = "plano_saude"
+label = "Pessoas com plano de saúde"
+indicator = "plano_saude"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t4949", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t4950", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c652t4953", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita" }, { "classification" = "c653t4952", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "consulta_medica"
+label = "Consultaram médico nos últimos 12 meses"
+indicator = "consulta_medica"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t5058", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c653t5065", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência", "levels" = ["brasil", "regiao"] }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "estabelecimentos_saude"
+label = "Estabelecimentos de saúde"
+indicator = "estabelecimentos_saude"
+
+[[themes.subthemes]]
+id = "materno_infantil"
+label = "Saúde materno-infantil"
+
+[[themes.subthemes.kpis]]
+id = "pre_natal"
+label = "Mulheres que realizaram pré-natal"
+indicator = "pre_natal"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c652t8288", "partition" = "p32851", "label" = "Faixas de rendimento mensal domiciliar per capita", "levels" = ["brasil"] }, { "classification" = "c1568t8290", "partition" = "p120704", "label" = "Nível de instrução" }]
+exclusive_dimensions = true
+crossed = [["c86", "c1"]]
+crossed_levels = ["brasil"]
+
+[[themes.subthemes.kpis]]
+id = "aleitamento_exclusivo"
+label = "Aleitamento materno exclusivo (menos de 6 meses)"
+indicator = "aleitamento_exclusivo"
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }]
+
+[[themes.subthemes]]
+id = "mortalidade"
+label = "Mortalidade"
+
+[[themes.subthemes.kpis]]
+id = "mortalidade_materna"
+label = "Razão de mortalidade materna"
+indicator = "mortalidade_materna"
+
+[[themes.subthemes.kpis]]
+id = "mortalidade_menores_5"
+label = "Taxa de mortalidade em menores de 5 anos"
+indicator = "mortalidade_menores_5"
+
+[[themes.subthemes.kpis]]
+id = "mortalidade_doencas_cronicas"
+label = "Mortalidade por doenças crônicas não transmissíveis"
+indicator = "mortalidade_doencas_cronicas"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c58t4277", "partition" = "p56742", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
+
+[[themes.subthemes]]
+id = "saude_escolar"
+label = "Saúde do escolar"
+
+[[themes.subthemes.kpis]]
+id = "escolares_fumaram"
+label = "Escolares de 13 a 17 anos que fumaram nos últimos 30 dias"
+indicator = "escolares_fumaram"
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c556", "partition" = "p31050", "label" = "Dependência administrativa da escola" }, { "classification" = "c58t6356", "partition" = "p40087", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "escolares_alcool"
+label = "Escolares de 13 a 17 anos que consumiram bebida alcoólica"
+indicator = "escolares_alcool"
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c556", "partition" = "p31050", "label" = "Dependência administrativa da escola" }, { "classification" = "c58t6358", "partition" = "p40087", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "escolares_excesso_peso"
+label = "Escolares de 13 a 17 anos com excesso de peso"
+indicator = "escolares_excesso_peso"
+dimensions = [{ "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c556", "partition" = "p31050", "label" = "Dependência administrativa da escola" }, { "classification" = "c58t6378", "partition" = "p40087", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
+
+[[themes.subthemes]]
+id = "covid"
+label = "COVID-19"
+
+[[themes.subthemes.kpis]]
+id = "vacinacao_covid"
+label = "Vacinados contra a COVID-19"
+indicator = "vacinacao_covid"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c58", "partition" = "p95253_t9730", "label" = "Grupo de idade" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "tiveram_covid"
+label = "Pessoas que tiveram ou consideram que tiveram COVID-19"
+indicator = "tiveram_covid"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio" }]
+exclusive_dimensions = true
+
+[[themes]]
+id = "consumo_familias"
+label = "Consumo e orçamentos familiares"
+
+[[themes.subthemes]]
+id = "despesas_rendimentos"
+label = "Despesas e rendimentos das famílias"
+
+[[themes.subthemes.kpis]]
+id = "rendimento_familiar"
+label = "Rendimento médio mensal familiar"
+indicator = "rendimento_familiar"
+dimensions = [{ "classification" = "c339", "partition" = "classes_rendimento", "label" = "Classes de rendimento total e variação patrimonial mensal familiar" }, { "classification" = "c4908", "partition" = "p8049", "label" = "Origem dos rendimentos" }]
+exclusive_dimensions = true
+
+[[themes.subthemes]]
+id = "alimentacao"
+label = "Alimentação e segurança alimentar"
+
+[[themes.subthemes.kpis]]
+id = "seguranca_alimentar"
+label = "Domicílios por situação de segurança alimentar"
+indicator = "seguranca_alimentar"
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil", "regiao"] }, { "classification" = "c12404", "partition" = "p109106", "label" = "Situação de segurança alimentar existente no domicílio" }]
+exclusive_dimensions = true
+map_share = "109098"
+
+[[themes]]
+id = "tecnologia"
+label = "Tecnologia e comunicação"
+
+[[themes.subthemes]]
+id = "internet"
+label = "Internet"
+
+[[themes.subthemes.kpis]]
+id = "domicilios_internet"
+label = "Domicílios com utilização da internet"
+indicator = "domicilios_internet"
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil", "regiao"] }, { "classification" = "c688", "partition" = "p33298", "label" = "Existência de utilização da Internet no domicílio" }]
+exclusive_dimensions = true
+map_share = "48534"
+
+[[themes.subthemes.kpis]]
+id = "pessoas_internet"
+label = "Pessoas que utilizaram a internet"
+indicator = "pessoas_internet"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c422", "partition" = "p10979", "label" = "Utilização da internet no período de referência dos últimos três meses" }]
+exclusive_dimensions = true
+map_share = "48578"
+
+[[themes.subthemes]]
+id = "telefonia_tv"
+label = "Telefonia e televisão"
+
+[[themes.subthemes.kpis]]
+id = "celular_uso_pessoal"
+label = "Pessoas com celular para uso pessoal"
+indicator = "celular_uso_pessoal"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c427", "partition" = "p11326", "label" = "Posse de telefone móvel celular para uso pessoal" }]
+exclusive_dimensions = true
+map_share = "11327"
+
+[[themes.subthemes.kpis]]
+id = "domicilios_televisao"
+label = "Domicílios com televisão"
+indicator = "domicilios_televisao"
+dimensions = [{ "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil", "regiao"] }, { "classification" = "c937", "partition" = "p48455", "label" = "Existência de televisão no domicílio" }]
+exclusive_dimensions = true
+map_share = "48456"
+
+[[themes]]
+id = "seguranca"
+label = "Segurança e vitimização"
+
+[[themes.subthemes]]
+id = "percepcao_seguranca"
+label = "Percepção de segurança"
+
+[[themes.subthemes.kpis]]
+id = "sensacao_seguranca"
+label = "Pessoas que se sentem seguras ao andar sozinhas perto de casa"
+indicator = "sensacao_seguranca"
+dimensions = [{ "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c86t8715", "partition" = "p95251", "label" = "Cor ou raça" }, { "classification" = "c1568t8717", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c1393t8724", "partition" = "p57657", "label" = "Meio de informação sobre crimes na cidade em que reside" }]
+exclusive_dimensions = true
+
+[[themes.subthemes]]
+id = "vitimizacao"
+label = "Vitimização e violência"
+
+[[themes.subthemes.kpis]]
+id = "vitimas_roubo"
+label = "Vítimas de roubo nos últimos 12 meses"
+indicator = "vitimas_roubo"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "sexo", "label" = "Sexo" }, { "classification" = "c58t8504", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t8507", "partition" = "p120704", "label" = "Nível de instrução" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "violencia"
+label = "Pessoas que sofreram violência nos últimos 12 meses"
+indicator = "violencia"
+dimensions = [{ "classification" = "c86", "partition" = "cor_ou_raca", "label" = "Cor ou raça" }, { "classification" = "c2", "partition" = "p6794_t7666", "label" = "Sexo" }, { "classification" = "c1", "partition" = "situacao", "label" = "Situação do domicílio", "levels" = ["brasil"] }, { "classification" = "c58t8023", "partition" = "p95253", "label" = "Grupo de idade" }, { "classification" = "c1568t8024", "partition" = "p120704", "label" = "Nível de instrução" }, { "classification" = "c653t8026", "partition" = "p32860", "label" = "Condição em relação à força de trabalho na semana de referência", "levels" = ["brasil", "regiao", "uf"] }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "homicidios"
+label = "Vítimas de homicídio por 100 mil habitantes"
+indicator = "homicidios"
+
+[[themes]]
+id = "agropecuaria"
+label = "Agropecuária"
+
+[[themes.subthemes]]
+id = "lavouras"
+label = "Lavouras"
+
+[[themes.subthemes.kpis]]
+id = "producao_lavouras"
+label = "Área plantada ou destinada à colheita"
+indicator = "producao_lavouras"
+dimensions = [{ "classification" = "c782g", "partition" = "p0", "label" = "Grupo de lavoura" }, { "classification" = "c782", "partition" = "p0", "label" = "Produto das lavouras temporárias e permanentes" }]
+exclusive_dimensions = true
+crossed = [["c782g", "c782"]]
+crossed_levels = ["brasil", "regiao", "uf", "municipio"]
+
+[[themes.subthemes.kpis]]
+id = "safra_estimada"
+label = "Estimativa da safra (área, produção e rendimento)"
+indicator = "safra_estimada"
+dimensions = [{ "classification" = "c48", "partition" = "p0", "label" = "Produto das lavouras" }]
+
+[[themes.subthemes]]
+id = "pecuaria"
+label = "Pecuária e produção animal"
+
+[[themes.subthemes.kpis]]
+id = "efetivo_rebanhos"
+label = "Efetivo de rebanhos"
+indicator = "efetivo_rebanhos"
+dimensions = [{ "classification" = "c79", "partition" = "psoma", "label" = "Tipo de rebanho" }]
+
+[[themes.subthemes.kpis]]
+id = "producao_origem_animal"
+label = "Produção de leite (PPM)"
+indicator = "producao_origem_animal"
+
+[[themes.subthemes.kpis]]
+id = "producao_ovos"
+label = "Produção de ovos (PPM)"
+indicator = "producao_ovos"
+dimensions = [{ "classification" = "c80", "partition" = "psoma", "label" = "Tipo de produto de origem animal" }]
+
+[[themes.subthemes.kpis]]
+id = "producao_mel_la_casulos"
+label = "Produção de mel, lã e casulos (PPM)"
+indicator = "producao_mel_la_casulos"
+dimensions = [{ "classification" = "c80", "partition" = "psoma_t74", "label" = "Tipo de produto de origem animal" }]
+
+[[themes.subthemes.kpis]]
+id = "vacas_ordenhadas"
+label = "Vacas ordenhadas"
+indicator = "vacas_ordenhadas"
+
+[[themes.subthemes.kpis]]
+id = "ovinos_tosquiados"
+label = "Ovinos tosquiados"
+indicator = "ovinos_tosquiados"
+
+[[themes.subthemes.kpis]]
+id = "aquicultura_valor"
+label = "Valor da produção da aquicultura"
+indicator = "aquicultura_valor"
+dimensions = [{ "classification" = "c654", "partition" = "p0", "label" = "Tipo de produto da aquicultura" }]
+
+[[themes.subthemes.kpis]]
+id = "aquicultura_peixes"
+label = "Produção de peixes (aquicultura)"
+indicator = "aquicultura_peixes"
+
+[[themes.subthemes.kpis]]
+id = "aquicultura_camarao"
+label = "Produção de camarão (aquicultura)"
+indicator = "aquicultura_camarao"
+
+[[themes.subthemes.kpis]]
+id = "aquicultura_moluscos"
+label = "Produção de ostras, vieiras e mexilhões (aquicultura)"
+indicator = "aquicultura_moluscos"
+
+[[themes.subthemes.kpis]]
+id = "abate_bovinos"
+label = "Abate de bovinos"
+indicator = "abate_bovinos"
+dimensions = [{ "classification" = "c18", "partition" = "p992", "label" = "Tipo de rebanho bovino" }, { "classification" = "c12716", "partition" = "p115236", "label" = "Referência temporal" }, { "classification" = "c12529", "partition" = "p118225", "label" = "Tipo de inspeção" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "leite_adquirido"
+label = "Leite adquirido e industrializado"
+indicator = "leite_adquirido"
+dimensions = [{ "classification" = "c12716", "partition" = "p115236", "label" = "Referência temporal" }, { "classification" = "c12529", "partition" = "p118225", "label" = "Tipo de inspeção" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "ovos_produzidos"
+label = "Produção de ovos de galinha"
+indicator = "ovos_produzidos"
+dimensions = [{ "classification" = "c12716", "partition" = "p115236", "label" = "Referência temporal" }, { "classification" = "c1835", "partition" = "p72208", "label" = "Finalidade da produção" }]
+exclusive_dimensions = true
+
+[[themes.subthemes]]
+id = "silvicultura_extracao"
+label = "Silvicultura e extração vegetal"
+
+[[themes.subthemes.kpis]]
+id = "area_silvicultura"
+label = "Área de silvicultura por espécie florestal"
+indicator = "area_silvicultura"
+dimensions = [{ "classification" = "c734", "partition" = "p0", "label" = "Espécie florestal" }]
+
+[[themes.subthemes]]
+id = "estrutura_agraria"
+label = "Estabelecimentos agropecuários"
+
+[[themes.subthemes.kpis]]
+id = "estabelecimentos_area"
+label = "Número e área dos estabelecimentos agropecuários"
+indicator = "estabelecimentos_area"
+dimensions = [{ "classification" = "c829", "partition" = "p46302", "label" = "Tipologia" }, { "classification" = "c218", "partition" = "p46502", "label" = "Condição do produtor em relação às terras" }, { "classification" = "c12517", "partition" = "p113601", "label" = "Grupos de atividade econômica" }, { "classification" = "c12564", "partition" = "p41145", "label" = "Sexo do produtor" }, { "classification" = "c12771", "partition" = "p45951", "label" = "Classe de idade do produtor" }]
+exclusive_dimensions = true
+
+[[themes.subthemes.kpis]]
+id = "estabelecimentos_serie"
+label = "Estabelecimentos agropecuários (série histórica 1920–2006)"
+indicator = "estabelecimentos_serie"
+
+[[themes.subthemes]]
+id = "insumos"
+label = "Insumos agrícolas"
+
+[[themes.subthemes.kpis]]
+id = "agrotoxicos"
+label = "Comercialização de agrotóxicos"
+indicator = "agrotoxicos"
+dimensions = [{ "classification" = "c716", "partition" = "p33616", "label" = "Classe de uso de agrotóxicos e afins" }]
+
+[[themes.subthemes.kpis]]
+id = "fertilizantes"
+label = "Fertilizantes entregues ao consumidor final"
+indicator = "fertilizantes"
+dimensions = [{ "classification" = "c12899", "partition" = "p119127", "label" = "Tipo de nutriente" }]
+
+[[themes]]
+id = "industria"
+label = "Indústria"
+
+[[themes.subthemes]]
+id = "producao_industrial"
+label = "Produção industrial"
+
+[[themes.subthemes.kpis]]
+id = "producao_fisica"
+label = "Produção física industrial"
+indicator = "producao_fisica"
+
+[[themes.subthemes]]
+id = "estrutura_industrial"
+label = "Estrutura e peso da indústria"
+
+[[themes.subthemes.kpis]]
+id = "industria_uf"
+label = "Unidades locais industriais, pessoal ocupado e salários"
+indicator = "industria_uf"
+dimensions = [{ "classification" = "c12762", "partition" = "p117897", "label" = "Classificação Nacional de Atividades Econômicas (CNAE 2.0)" }]
+
+[[themes.subthemes.kpis]]
+id = "va_industria_pib"
+label = "Valor adicionado da indústria em proporção do PIB"
+indicator = "va_industria_pib"
+
+[[themes.subthemes.kpis]]
+id = "emprego_industria"
+label = "Emprego na indústria em proporção do emprego total"
+indicator = "emprego_industria"
+
+[[themes]]
+id = "construcao"
+label = "Construção"
+
+[[themes.subthemes]]
+id = "atividade_construcao"
+label = "Atividade da construção"
+
+[[themes.subthemes.kpis]]
+id = "empresas_construcao"
+label = "Empresas de construção: pessoal, salários e valor das obras"
+indicator = "empresas_construcao"
+
+[[themes.subthemes.kpis]]
+id = "vendas_materiais"
+label = "Volume de vendas de materiais de construção"
+indicator = "vendas_materiais"
+
+[[themes.subthemes]]
+id = "custos_construcao"
+label = "Custos e insumos da construção"
+
+[[themes.subthemes.kpis]]
+id = "custo_m2"
+label = "Custo médio do metro quadrado da construção"
+indicator = "custo_m2"
+corrections = [{ "id" = "ipca", "label" = "IPCA geral", "indicator" = "ipca_grupos_variacao_mensal", "reference" = "period", "note" = "Método (ADR-0020): valor × I(base) ÷ I(período), com I o número-índice encadeado das variações mensais do IPCA geral (tabelas 655, 2938, 1419 e 7060). Num mês, I é o índice do mês; num trimestre, semestre ou ano, a média do índice nos meses do período, a prática usual para deflacionar fluxos e médias do período. A base é o período mais recente do KPI coberto pelo índice e avança sozinha com dados novos. O índice começa em agosto de 1999: antes disso, e em anos incompletos, o valor corrigido fica sem valor. O resultado mede o poder de compra em bens de consumo, não o volume produzido: para volume, a fonte publica as variações em volume (Contas Nacionais) ou os números-índice (pesquisas mensais)." }]
+
+[[themes.subthemes.kpis]]
+id = "insumos_construcao"
+label = "Produção de insumos típicos da construção civil"
+indicator = "insumos_construcao"
+
+[[themes]]
+id = "comercio"
+label = "Comércio"
+
+[[themes.subthemes]]
+id = "varejo"
+label = "Comércio varejista"
+
+[[themes.subthemes.kpis]]
+id = "vendas_varejo"
+label = "Volume de vendas no varejo"
+indicator = "vendas_varejo"
+
+[[themes.subthemes.kpis]]
+id = "vendas_varejo_ampliado"
+label = "Volume de vendas no varejo ampliado"
+indicator = "vendas_varejo_ampliado"
+
+[[themes.subthemes]]
+id = "estrutura_comercio"
+label = "Empresas comerciais"
+
+[[themes.subthemes.kpis]]
+id = "empresas_comerciais"
+label = "Resultados das empresas comerciais"
+indicator = "empresas_comerciais"
+dimensions = [{ "classification" = "c11065", "partition" = "p90067", "label" = "Divisão de comércio" }]
+
+[[themes.subthemes]]
+id = "comercio_exterior"
+label = "Comércio exterior"
+
+[[themes.subthemes.kpis]]
+id = "exportacoes_importacoes"
+label = "Valor das exportações (2013–2015)"
+indicator = "exportacoes_importacoes"
+
+[[themes]]
+id = "servicos"
+label = "Serviços"
+
+[[themes.subthemes]]
+id = "servicos_empresariais"
+label = "Serviços"
+
+[[themes.subthemes.kpis]]
+id = "volume_servicos"
+label = "Volume de serviços"
+indicator = "volume_servicos"
+
+[[themes.subthemes.kpis]]
+id = "servicos_nao_financeiros"
+label = "Resultados dos serviços empresariais não financeiros"
+indicator = "servicos_nao_financeiros"
+dimensions = [{ "classification" = "c85", "partition" = "p103847", "label" = "Atividades" }]
+corrections = [{ "id" = "ipca", "label" = "IPCA geral", "indicator" = "ipca_grupos_variacao_mensal", "reference" = "period", "note" = "Método (ADR-0020): valor × I(base) ÷ I(período), com I o número-índice encadeado das variações mensais do IPCA geral (tabelas 655, 2938, 1419 e 7060). Num mês, I é o índice do mês; num trimestre, semestre ou ano, a média do índice nos meses do período, a prática usual para deflacionar fluxos e médias do período. A base é o período mais recente do KPI coberto pelo índice e avança sozinha com dados novos. O índice começa em agosto de 1999: antes disso, e em anos incompletos, o valor corrigido fica sem valor. O resultado mede o poder de compra em bens de consumo, não o volume produzido: para volume, a fonte publica as variações em volume (Contas Nacionais) ou os números-índice (pesquisas mensais)." }]
+
+[[themes.subthemes]]
+id = "turismo_transportes"
+label = "Turismo e transportes"
+
+[[themes.subthemes.kpis]]
+id = "atividades_turisticas"
+label = "Volume das atividades turísticas"
+indicator = "atividades_turisticas"
+
+[[themes.subthemes.kpis]]
+id = "viagens"
+label = "Viagens realizadas pelos moradores"
+indicator = "viagens"
+dimensions = [{ "classification" = "c892", "partition" = "p47975", "label" = "Finalidade da viagem" }]
+
+[[themes]]
+id = "empresas"
+label = "Empresas e organizações"
+
+[[themes.subthemes]]
+id = "cadastro_empresas"
+label = "Empresas e emprego formal"
+
+[[themes.subthemes.kpis]]
+id = "empresas_emprego_formal"
+label = "Empresas, pessoal ocupado e salários"
+indicator = "empresas_emprego_formal"
+
+[[themes.subthemes]]
+id = "empreendedorismo"
+label = "Empreendedorismo"
+
+[[themes.subthemes.kpis]]
+id = "microempreendedores"
+label = "Microempreendedores individuais (MEI)"
+indicator = "microempreendedores"
+dimensions = [{ "classification" = "c956", "partition" = "p59983", "label" = "Grande grupamento e seções da classificação de atividade econômica (CNAE 2.0)" }]
+
+[[themes.subthemes.kpis]]
+id = "nascimentos_empresas"
+label = "Nascimentos de empresas e taxa de sobrevivência"
+indicator = "nascimentos_empresas"
+dimensions = [{ "classification" = "c12762t9949", "partition" = "p117897", "label" = "Classificação Nacional de Atividades Econômicas (CNAE 2.0)" }, { "classification" = "c370", "partition" = "p9504", "label" = "Faixas de pessoal ocupado assalariado" }]
+exclusive_dimensions = true
+
+[[themes.subthemes]]
+id = "inovacao"
+label = "Inovação e P&D"
+
+[[themes.subthemes.kpis]]
+id = "empresas_inovadoras"
+label = "Empresas que implementaram inovações"
+indicator = "empresas_inovadoras"
+dimensions = [{ "classification" = "c696", "partition" = "p33413", "label" = "Atividades da indústria, do setor de eletricidade e gás e dos serviços selecionados" }]
+
+[[themes.subthemes.kpis]]
+id = "pd_pib"
+label = "Dispêndio em P&D em proporção do PIB"
+indicator = "pd_pib"
+
+[[themes]]
+id = "precos"
+label = "Preços"
+
+[[themes.subthemes]]
+id = "precos_consumidor"
+label = "Inflação ao consumidor"
+
+[[themes.subthemes.kpis]]
+id = "inpc"
+label = "INPC"
+indicator = "inpc"
+
+[[themes.subthemes.kpis]]
+id = "ipca15"
+label = "IPCA-15"
+indicator = "ipca15"
+
+[[themes.subthemes]]
+id = "precos_produtor"
+label = "Preços ao produtor"
+
+[[themes.subthemes.kpis]]
+id = "ipp"
+label = "Índice de Preços ao Produtor"
+indicator = "ipp"
+dimensions = [{ "classification" = "c543", "partition" = "p33586", "label" = "Grandes categorias econômicas" }]
+
+[[themes]]
+id = "contas_nacionais"
+label = "Contas nacionais e regionais"
+
+[[themes.subthemes]]
+id = "pib_brasil"
+label = "PIB do Brasil"
+
+[[themes.subthemes.kpis]]
+id = "pib_per_capita"
+label = "PIB a preços correntes"
+indicator = "pib_per_capita"
+corrections = [{ "id" = "ipca", "label" = "IPCA geral", "indicator" = "ipca_grupos_variacao_mensal", "reference" = "period", "note" = "Método (ADR-0020): valor × I(base) ÷ I(período), com I o número-índice encadeado das variações mensais do IPCA geral (tabelas 655, 2938, 1419 e 7060). Num mês, I é o índice do mês; num trimestre, semestre ou ano, a média do índice nos meses do período, a prática usual para deflacionar fluxos e médias do período. A base é o período mais recente do KPI coberto pelo índice e avança sozinha com dados novos. O índice começa em agosto de 1999: antes disso, e em anos incompletos, o valor corrigido fica sem valor. O resultado mede o poder de compra em bens de consumo, não o volume produzido: para volume, a fonte publica as variações em volume (Contas Nacionais) ou os números-índice (pesquisas mensais)." }]
+
+[[themes.subthemes.kpis]]
+id = "pib_trimestral"
+label = "PIB trimestral a preços correntes"
+indicator = "pib_trimestral"
+corrections = [{ "id" = "ipca", "label" = "IPCA geral", "indicator" = "ipca_grupos_variacao_mensal", "reference" = "period", "note" = "Método (ADR-0020): valor × I(base) ÷ I(período), com I o número-índice encadeado das variações mensais do IPCA geral (tabelas 655, 2938, 1419 e 7060). Num mês, I é o índice do mês; num trimestre, semestre ou ano, a média do índice nos meses do período, a prática usual para deflacionar fluxos e médias do período. A base é o período mais recente do KPI coberto pelo índice e avança sozinha com dados novos. O índice começa em agosto de 1999: antes disso, e em anos incompletos, o valor corrigido fica sem valor. O resultado mede o poder de compra em bens de consumo, não o volume produzido: para volume, a fonte publica as variações em volume (Contas Nacionais) ou os números-índice (pesquisas mensais)." }]
+
+[[themes.subthemes.kpis]]
+id = "variacao_pib_trimestral"
+label = "PIB: variação contra o mesmo trimestre do ano anterior"
+indicator = "variacao_pib_trimestral"
+
+[[themes.subthemes]]
+id = "pib_municipios"
+label = "PIB dos municípios"
+
+[[themes.subthemes.kpis]]
+id = "pib_municipios"
+label = "PIB dos municípios e valor adicionado por atividade"
+indicator = "pib_municipios"
+corrections = [{ "id" = "ipca", "label" = "IPCA geral", "indicator" = "ipca_grupos_variacao_mensal", "reference" = "period", "note" = "Método (ADR-0020): valor × I(base) ÷ I(período), com I o número-índice encadeado das variações mensais do IPCA geral (tabelas 655, 2938, 1419 e 7060). Num mês, I é o índice do mês; num trimestre, semestre ou ano, a média do índice nos meses do período, a prática usual para deflacionar fluxos e médias do período. A base é o período mais recente do KPI coberto pelo índice e avança sozinha com dados novos. O índice começa em agosto de 1999: antes disso, e em anos incompletos, o valor corrigido fica sem valor. O resultado mede o poder de compra em bens de consumo, não o volume produzido: para volume, a fonte publica as variações em volume (Contas Nacionais) ou os números-índice (pesquisas mensais)." }]
+
+[[themes.subthemes]]
+id = "investimento_poupanca"
+label = "Investimento e poupança"
+
+[[themes.subthemes.kpis]]
+id = "taxa_investimento"
+label = "Taxa de investimento"
+indicator = "taxa_investimento"
+
+[[themes.subthemes.kpis]]
+id = "taxa_poupanca"
+label = "Taxa de poupança"
+indicator = "taxa_poupanca"
+
+[[themes]]
+id = "meio_ambiente"
+label = "Meio ambiente"
+
+[[themes.subthemes]]
+id = "biomas_areas_protegidas"
+label = "Biomas e áreas protegidas"
+
+[[themes.subthemes.kpis]]
+id = "unidades_conservacao"
+label = "Unidades de conservação terrestres"
+indicator = "unidades_conservacao"
+
+[[themes.subthemes.kpis]]
+id = "area_florestal"
+label = "Área florestal em proporção do território"
+indicator = "area_florestal"
+
+[[themes.subthemes]]
+id = "queimadas_desmatamento"
+label = "Queimadas e desmatamento"
+
+[[themes.subthemes.kpis]]
+id = "focos_calor"
+label = "Focos de calor por bioma"
+indicator = "focos_calor"
+
+[[themes.subthemes.kpis]]
+id = "desflorestamento_amazonia"
+label = "Desflorestamento na Amazônia Legal"
+indicator = "desflorestamento_amazonia"
+
+[[themes.subthemes]]
+id = "emissoes_energia"
+label = "Emissões e energia"
+
+[[themes.subthemes.kpis]]
+id = "energia_renovavel"
+label = "Energias renováveis na oferta interna de energia"
+indicator = "energia_renovavel"
+
+[[themes.subthemes]]
+id = "recursos_hidricos"
+label = "Recursos hídricos"
+
+[[themes.subthemes.kpis]]
+id = "estresse_hidrico"
+label = "Nível de estresse hídrico"
+indicator = "estresse_hidrico"
+
+[[themes.subthemes.kpis]]
+id = "esgoto_tratado"
+label = "Águas residuais domésticas tratadas de forma segura"
+indicator = "esgoto_tratado"
+
+[[themes]]
+id = "gestao_municipal"
+label = "Gestão pública municipal"
+
+[[themes.subthemes]]
+id = "planejamento_municipal"
+label = "Planejamento e meio ambiente"
+
+[[themes.subthemes.kpis]]
+id = "plano_diretor"
+label = "Municípios com Plano Diretor"
+indicator = "plano_diretor"
+dimensions = [{ "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município", "levels" = ["brasil", "regiao", "uf"] }, { "classification" = "c1480", "partition" = "p58278", "label" = "Existência de Plano Diretor" }]
+exclusive_dimensions = true
+map_share = "58279"
+crossed = [["c1480", "c12446"]]
+crossed_levels = ["brasil", "regiao", "uf"]
+
+[[themes.subthemes.kpis]]
+id = "legislacao_ambiental"
+label = "Municípios com legislação ambiental"
+indicator = "legislacao_ambiental"
+
+[[themes.subthemes]]
+id = "riscos_desastres"
+label = "Riscos e desastres"
+
+[[themes.subthemes.kpis]]
+id = "plano_seca"
+label = "Municípios atingidos pela seca e com plano de contingência"
+indicator = "plano_seca"
+dimensions = [{ "classification" = "c1346", "partition" = "p57247", "label" = "Ocorrência de seca nos últimos 4 anos" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município", "levels" = ["brasil", "regiao", "uf"] }, { "classification" = "c1347", "partition" = "p57252", "label" = "Plano de Contingência e/ou Prevenção para a seca" }]
+exclusive_dimensions = true
+map_share = "57248"
+
+[[themes.subthemes]]
+id = "politicas_sociais"
+label = "Políticas sociais"
+
+[[themes.subthemes.kpis]]
+id = "planos_municipais_sociais"
+label = "Municípios com planos municipais nas áreas sociais"
+indicator = "planos_municipais_sociais"
+dimensions = [{ "classification" = "c1329", "partition" = "p57146", "label" = "Existência de Plano Municipal" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município", "levels" = ["brasil", "regiao", "uf"] }]
+exclusive_dimensions = true
+map_share = "15608"
+
+[[themes.subthemes.kpis]]
+id = "conselhos_municipais_sociais"
+label = "Municípios com conselhos municipais nas áreas sociais"
+indicator = "conselhos_municipais_sociais"
+dimensions = [{ "classification" = "c1328", "partition" = "p57131", "label" = "Existência de Conselho Municipal" }, { "classification" = "c12446", "partition" = "p47692", "label" = "Classe de tamanho da população do município", "levels" = ["brasil", "regiao", "uf"] }]
+exclusive_dimensions = true
+map_share = "77667"

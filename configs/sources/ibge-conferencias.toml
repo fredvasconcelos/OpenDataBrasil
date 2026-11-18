@@ -1,0 +1,34 @@
+# Tabelas do SIDRA mantidas só como conferência de outras (fora do portal).
+#
+# A 9514 publica, por sexo em 2022, o mesmo número da 9606, que ainda traz cor ou raça,
+# idade e 2010 (comparação na Silver em 2026-11-12: 16.809 pares, todos iguais). Decisão
+# do mantenedor em 2026-11-12: o portal usa a 9606, e a Gold compara as duas
+# (`[[consistency]]` em configs/indicators/demografia/conferencias.toml).
+
+config_version = "1.0.0"
+
+[[datasets]]
+id = "ibge-sidra-9514"
+source = "ibge-sidra"
+official_id = "9514"
+title = "População residente, por sexo, idade e forma de declaração da idade"
+description = "Tabela SIDRA 9514, variável 93 (População residente), por sexo, com idade e forma de declaração da idade no Total. Conferência da tabela 9606, fora do portal."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "período único"
+reference_url = "https://sidra.ibge.gov.br/tabela/9514"
+
+[datasets.params]
+table = "9514"
+variables = ["93"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+period_discovery_level = "n1"
+estimated_values_per_period = 16899
+min_rows = 1
+max_rows = 16899
+refresh_recent_periods = 1
+classifications = { "c2" = "all" }
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"

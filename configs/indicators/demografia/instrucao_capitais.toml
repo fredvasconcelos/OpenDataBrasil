@@ -1,0 +1,45 @@
+# Grupos oficiais da 7270, sem harmonização com as categorias mais finas da 7189.
+# Descritor /DescritoresTabela/t/7270 e consulta a São Paulo em 2026-11-15.
+
+config_version = "1.0.0"
+scope = "demografia"
+
+[[classifications]]
+id = "c1568t7270"
+name = "Nível de instrução agrupado"
+silver_dimension = "Nível de instrução"
+total = "120704"
+datasets = ["ibge-sidra-7270-capitais"]
+
+[[classifications.partitions]]
+id = "grupos_instrucao"
+label = "Nível de instrução agrupado"
+categories = ["11627", "48134", "48135", "99713"]
+exhaustive = false
+
+[[facts]]
+id = "fact_education_capitals"
+dataset = "ibge-sidra-7270-capitais"
+grain = "território (Brasil, Grandes Regiões, UFs e 27 capitais) x ano x nível de instrução agrupado"
+description = "Pessoas de 25 anos ou mais, pelos quatro grupos oficiais de instrução da PNAD Contínua anual. Cor ou raça no Total; agregados nacionais e estaduais publicados pelo IBGE e cobertura municipal das 27 capitais."
+classifications = { "c1568t7270" = "education_category_key" }
+fixed_categories = { "Cor ou raça" = "95251" }
+
+[[indicators]]
+id = "nivel_instrucao_capitais"
+name = "Pessoas de 25 anos ou mais por nível de instrução em quatro grupos"
+description = "População de 25 anos ou mais no Brasil, Grandes Regiões, UFs e 27 capitais, nos quatro grupos de instrução publicados pela tabela SIDRA 7270."
+dataset = "ibge-sidra-7270-capitais"
+variable = "1643"
+fact = "fact_education_capitals"
+column = "persons"
+unit = "Mil pessoas"
+additivity = "non_additive"
+concept = "nivel_instrucao_capitais"
+path = ["Educação", "Nível de instrução"]
+caveats = [
+    "Cobertura municipal restrita às 27 capitais; a PNAD não publica esta tabela para os demais municípios.",
+    "Quatro grupos oficiais da tabela 7270: sem instrução e fundamental incompleto ou equivalente; fundamental completo e médio incompleto ou equivalente; médio completo ou equivalente e superior incompleto; superior completo. Não foram somadas nem harmonizadas categorias da tabela 7189, cujo detalhamento é diferente e não tem municípios.",
+    "Valores estimados em mil pessoas. O Total oficial é preservado; o arredondamento pode causar diferenças entre o Total e a soma dos grupos.",
+    "A série foi atualizada pela nova ponderação da pesquisa divulgada em 2025, conforme a Nota Técnica 02/2025 do IBGE.",
+]

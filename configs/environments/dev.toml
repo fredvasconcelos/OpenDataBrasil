@@ -1,0 +1,14 @@
+# Valores não secretos do ambiente de desenvolvimento.
+# Variáveis de ambiente ODB_* têm precedência sobre este arquivo.
+env = "dev"
+lakehouse_root_uri = "file:///lakehouse"
+log_level = "INFO"
+
+pg_host = "postgres"
+pg_port = 5432
+pg_database = "odb"
+
+duckdb_memory_limit = "4GB"
+duckdb_threads = 4
+duckdb_temp_directory = "/lakehouse/tmp/duckdb"
+duckdb_max_temp_directory_size = "20GB"

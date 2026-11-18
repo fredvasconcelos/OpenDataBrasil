@@ -1,0 +1,40 @@
+[
+  {
+    "NC": "Nível Territorial (Código)",
+    "NN": "Nível Territorial",
+    "MC": "Unidade de Medida (Código)",
+    "MN": "Unidade de Medida",
+    "V": "Valor",
+    "D1C": "Brasil (Código)",
+    "D1N": "Brasil",
+    "D2C": "Variável (Código)",
+    "D2N": "Variável",
+    "D3C": "Ano (Código)",
+    "D3N": "Ano",
+    "D4C": "Situação do domicílio (Código)",
+    "D4N": "Situação do domicílio",
+    "D5C": "Sexo (Código)",
+    "D5N": "Sexo",
+    "D6C": "Idade (Código)",
+    "D6N": "Idade"
+  },
+  {
+    "NC": "1",
+    "NN": "Brasil",
+    "MC": "45",
+    "MN": "Pessoas",
+    "V": "689532",
+    "D1C": "1",
+    "D1N": "Brasil",
+    "D2C": "576",
+    "D2N": "Pessoas residentes em terras indígenas",
+    "D3C": "2022",
+    "D3N": "2022",
+    "D4C": "6795",
+    "D4N": "Total",
+    "D5C": "6794",
+    "D5N": "Total",
+    "D6C": "100362",
+    "D6N": "Total"
+  }
+]

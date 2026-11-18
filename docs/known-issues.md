@@ -1,0 +1,181 @@
+# Problemas conhecidos e pendências
+
+Registro de falhas e limitações que precisam de ação futura. Atualize o estado
+ao resolver.
+
+## KI-001: notas das tabelas SIDRA não são obtidas automaticamente
+
+- **Estado:** resolvido para as tabelas do panorama (2026-11-11). O descritor
+  oficial `https://apisidra.ibge.gov.br/DescritoresTabela/t/<id>`, indicado pelo
+  mantenedor, traz as notas (`Nota`, em HTML) e a fonte (`Fonte`). `odb panorama
+  descrever` grava os descritores em `configs/catalog/descritores/`, e os KPIs
+  gerados levam as notas como ressalvas (ADR-0010, decisão 7). As notas das
+  tabelas curadas antes disso (6579 e outras) seguem transcritas à mão em
+  `docs/data_catalog/notas/`; levá-las do descritor para o catálogo é uma
+  pendência.
+- **Detectado em:** 2026-11-03
+- **Impacto:** as notas oficiais explicam valores (municípios com instalação
+  prevista, populações judiciais, correções) e são necessárias para
+  interpretar e reconciliar os dados (exemplo: divergências da 6579 em 2004,
+  2008 e 2012).
+
+**Diagnóstico:**
+
+1. A página `https://sidra.ibge.gov.br/tabela/<id>` contém
+   `<div id="notas-tabela">` (XPath `//div[@id="notas-tabela"]` ou
+   `/html/body/div[4]/div/div/div[2]`), mas o servidor entrega o elemento
+   **vazio**.
+2. O conteúdo é montado no navegador por `Scripts/editor-tabela.js`
+   (`ID_NOTAS_TABELA`, `_preencherNotas`), a partir de
+   `/Ajax/JSon/Tabela/1/<id>`.
+3. Esse endpoint (e `apisidra.ibge.gov.br/desctabapi.aspx`) responde **HTTP 403
+   a clientes automatizados**, atrás do Cloudflare.
+
+**Decisão:** não contornar o bloqueio (§7.3): sem imitação de cabeçalhos,
+navegador automatizado ou credenciais pessoais.
+
+**Caminho de correção:**
+
+1. Testar `https://servicodados.ibge.gov.br/api/v3/agregados/<id>/metadados`
+   quando o serviço voltar (ver KI-002) e verificar se traz as notas.
+2. Se não voltar ou não trouxer as notas, o mantenedor fornece as notas
+   manualmente e elas são registradas como configuração versionada, com
+   procedência (ver `docs/data_catalog/notas/`).
+
+## KI-002: API `servicodados.ibge.gov.br` indisponível
+
+- **Estado:** aberto
+- **Detectado em:** 2026-11-03
+- **Sintoma:** `ECONNREFUSED`/timeout a partir do WSL, do Windows e de serviço
+  externo (agregados v3 e localidades).
+- **Impacto:** sem metadados estruturados (KI-001) e sem a API de localidades.
+- **Ação:** retestar periodicamente e, quando voltar, avaliar um conector de
+  metadados.
+- **Retestes:** 2026-11-04, ainda sem resposta (HTTP 000).
+  2026-11-10: ainda sem resposta (timeout no IP 170.84.40.178:443, também a
+  partir de serviço externo). Nessa data, a página `sidra.ibge.gov.br/acervo` e
+  as páginas `ibge.gov.br/estatisticas/*` responderam 403 com desafio do
+  Cloudflare (não contornado, §7.3). Responderam `apisidra.ibge.gov.br/values` e
+  `ftp.ibge.gov.br`.
+  No mesmo dia, o check-host.net mostrou o serviço ativo a partir de outros
+  países, mas ele não responde a partir da Espanha, onde fica o mantenedor:
+  **provável restrição geográfica**. Decisão: não usar VPN nem proxy para
+  mascarar a origem (§7.3). Alternativas: a exportação oficial do acervo feita
+  pelo mantenedor no navegador e, na Fase 7, avaliar a ingestão hospedada no
+  Brasil.
+
+## KI-003: licença do IBGE em `requires_review`
+
+- **Estado:** aberto
+- **Detectado em:** 2026-11-03
+- **Sintoma:** o texto oficial de termos de uso respondeu 403. As condições
+  vieram de fontes secundárias (reuso com citação obrigatória).
+- **Impacto:** bloqueia publicação pública (§23) até a confirmação.
+- **Ação:** o mantenedor confirma o texto oficial e atualiza
+  `configs/sources/ibge.toml` (`review_status = "approved"`).
+
+## KI-004: área municipal do RS diverge da área da UF (tabela 4714)
+
+- **Estado:** explicado em 2026-11-05 (sem correção a fazer)
+- **Detectado em:** 2026-11-03
+- **Sintoma:** a soma das áreas municipais do RS (268.621,283 km²) é
+  13.085,868 km² menor que a área da UF (281.707,151 km²).
+- **Causa:** a Malha Municipal 2022 (`BR_Municipios_2022`) traz dois polígonos
+  que não são municípios: Lagoa Mirim (código 4300001, 2.884,340 km²) e Lagoa
+  dos Patos (4300002, 10.201,524 km²). Juntas somam 13.085,864 km², a
+  diferença observada, com 0,004 km² de arredondamento. As lagoas entram na
+  área da UF e não na de nenhum município.
+- **Tratamento:** a Gold usa a área oficial publicada por nível. Os dois
+  polígonos ficam na Silver da malha e não entram na `dim_geometry`, porque
+  não existem na `dim_geography`.
+
+## KI-006: código dos níveis territoriais de terras indígenas e territórios quilombolas
+
+- **Estado:** resolvido em 2026-11-04. O mantenedor forneceu as descrições e as listas de unidades das tabelas 9723 (N1145, N145, N131, N134) e 9954 (N1125, N125, N1124), e todos os códigos foram conferidos na API (ver `docs/data_catalog/ibge-niveis-territoriais.md`).
+- **Detectado em:** 2026-11-04
+- **Sintoma:** as tabelas 9954 (terras indígenas) e 9723 (territórios
+  quilombolas) publicam dados "segundo as Terras Indígenas" e "segundo os
+  Territórios Quilombolas", que são níveis territoriais especiais. O código
+  numérico desses níveis aparece na descrição da tabela
+  (`https://apisidra.ibge.gov.br/desctabapi.aspx?c=9954`) e na página da
+  pesquisa, que respondem 403 a clientes automatizados. A API de metadados
+  está fora do ar (KI-002).
+- **Decisão:** não contornar e não adivinhar códigos por varredura.
+- **Ação:** o mantenedor abre a descrição das tabelas 9954 e 9723 no navegador
+  e informa os códigos dos níveis (por exemplo, "N... Terra Indígena"). Com
+  eles, a etapa 4b é concluída: ingestão, sistema territorial próprio e
+  relação com municípios e UFs.
+
+## KI-005: portal Séries Estatísticas bloqueia clientes automatizados
+
+- **Estado:** aberto (sem ação de contorno)
+- **Detectado em:** 2026-11-04
+- **Sintoma:** `seriesestatisticas.ibge.gov.br` responde 403, com desafio do
+  Cloudflare.
+- **Decisão:** não contornar (§7.3). As séries equivalentes (Censo 2022: cor ou
+  raça, indígenas e quilombolas) foram localizadas no SIDRA (9605, 9718, 9578,
+  9970, 9971, 9954 e 9723) e conferidas na API oficial.
+- **Impacto:** a lista de séries do portal não é usada como fonte automática do
+  catálogo temático. A árvore temática é curada em
+  `configs/indicators/demografia.toml`.
+
+## KI-007: o build da Gold carrega a Silver inteira na memória
+
+- **Estado:** resolvido (etapa 1 em 2026-11-11, etapa 2 em 2026-11-12)
+- **Detectado em:** 2026-11-11, no release `57ecc864` (Parte B, 11 tabelas novas)
+- **Sintoma:** `odb gold build` com o limite padrão do worker (16 GB) foi
+  encerrado por falta de memória (código 137) duas vezes. Com
+  `ODB_WORKER_MEMORY=24g`, concluiu com pico medido de 22,5 GB.
+- **Causa:** `GoldBuilder._frames` faz `collect()` da Silver
+  `ibge/sidra_observation` filtrada só por `table_id`. São 6,36 milhões de linhas
+  com todas as 24 colunas, cerca de 440 bytes por linha (a 9971 sozinha tem 2,87
+  milhões). As etapas seguintes (seleção, categorias fixas, observações, fatos)
+  criam cópias desse quadro.
+- **Impacto:** cada onda nova do panorama aproxima o build do limite. Rodar o
+  build ao mesmo tempo que outra carga pesada pode esgotar a RAM (§20.6).
+- **Etapa 1 (feita):** o build lê só as 16 colunas usadas
+  (`model.SILVER_COLUMNS`) e só os pares tabela/variável do catálogo. Os nomes
+  municipais vêm num recorte à parte (`model.municipal_names`), e
+  `build_observations` é lazy. Com isso, o build volta a caber em 16 GB, mas o
+  pico medido foi de 15,97 GB (`docker stats`, que inclui cache de arquivos).
+- **Limite:** o padrão do worker passou para 24 GB, com aprovação do mantenedor
+  (máquina de 64 GB, dos quais o WSL usa 40 GB pelo `.wslconfig`).
+- **Com o Sinesp (2026-11-12):** o build lê também a Silver do MJSP (só o Total dos
+  6 KPIs, filtrado no scan) e o pico medido foi de 22,1 GB no limite de 24 GB. Isso está
+  perto do limite e bloqueia o detalhe por sexo dos KPIs do Sinesp.
+- **Etapa 2 (feita em 2026-11-12):** o build processa um dataset por vez
+  (`GoldBuilder._build_in_batches`). Cada lote lê da Silver só as tabelas e
+  variáveis do dataset, monta as observações e os fatos, grava e libera a memória.
+  Do lote ficam só resumos pequenos (períodos, territórios, categorias, chaves e
+  estatísticas por indicador), com que as dimensões e as verificações finais são
+  montadas.
+  - A `indicator_observation` é gravada em blocos de até 2 milhões de linhas: o
+    primeiro bloco substitui a tabela e os demais acrescentam.
+  - A unicidade da chave é conferida por lote; como cada indicador pertence a um só
+    dataset, ela vale para a tabela inteira.
+  - As Silvers no desenho "Total e cada dimensão" (Sinesp VDE e SIM) só entram com
+    as linhas que algum fato usa (`_marginal_filter`).
+  - **Mudança de garantia:** como as tabelas são gravadas durante o build, uma falha
+    nas verificações finais pode deixar versões Delta gravadas, mas sem release. A
+    consulta continua nas versões fixadas no release ativo (§10.9, §17.4); o teste
+    de integração confere isso.
+- **Medição (158 indicadores, 8,9 milhões de observações, com o Sinesp e o SIM):**
+  - release `a6155ebc`: pico do contêiner no `docker stats`, que inclui cache de
+    arquivos, de 16,0 GiB (antes da etapa 2, 22,1 GB com a mesma medida); cerca de
+    1 min 45 s;
+  - release `af0367e2`, já com os nomes municipais lidos em streaming: pico de
+    memória do processo (`ru_maxrss`) de 9,4 GiB.
+- **Sub-lotes (2026-11-12):** com a idade na 9606 e o sexo no Sinesp e no SIM, as
+  observações passaram de 8,9 para 20,6 milhões, e o lote do Sinesp sozinho levou o pico
+  a 24,05 GiB, no limite do worker. Agora cada dataset é dividido em sub-lotes de tabela
+  e ano, com até 1,5 milhão de linhas da Silver (`CHUNK_ROWS`); um dataset pequeno
+  continua num lote só.
+  - Os fatos são gravados como as observações: o primeiro bloco substitui a tabela e
+    os demais acrescentam.
+  - As verificações de tabela, as estatísticas por indicador e a reconciliação por
+    categoria são combinadas entre os sub-lotes (`merge_reconciliation`).
+  - Medição (release `0a683906`, 20,6 milhões de observações): pico do processo de
+    11,4 GiB, em cerca de 3 min 20 s.
+
+  O maior lote é a tabela 9971 (2,87 milhões de observações). O limite do worker
+  continua em 24 GB.

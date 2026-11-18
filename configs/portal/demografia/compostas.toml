@@ -1,0 +1,44 @@
+# KPIs das séries compostas de fontes distintas (ADR-0022).
+config_version = "1.0.0"
+scope = "demografia"
+dimension_order = ["c11558h", "c67h"]
+
+[[themes]]
+id = "saneamento"
+label = "Saneamento básico"
+
+[[themes.subthemes]]
+id = "esgoto"
+label = "Esgotamento sanitário"
+
+[[themes.subthemes.kpis]]
+id = "esgotamento_serie"
+label = "Esgotamento sanitário (PNAD e Censo)"
+indicator = "esgotamento_serie"
+dimensions = [{ classification = "c11558h", partition = "esgoto_grupos", label = "Tipo de esgotamento" }, { classification = "c1", partition = "situacao", label = "Situação do domicílio" }]
+exclusive_dimensions = true
+
+[[themes.subthemes]]
+id = "lixo"
+label = "Coleta de lixo"
+
+[[themes.subthemes.kpis]]
+id = "lixo_serie"
+label = "Destino do lixo (PNAD e Censo)"
+indicator = "lixo_serie"
+dimensions = [{ classification = "c67h", partition = "lixo_grupos", label = "Destino do lixo" }, { classification = "c1", partition = "situacao", label = "Situação do domicílio" }]
+exclusive_dimensions = true
+
+[[themes]]
+id = "educacao"
+label = "Educação"
+
+[[themes.subthemes]]
+id = "alfabetizacao"
+label = "Alfabetização"
+
+[[themes.subthemes.kpis]]
+id = "alfabetizacao_serie"
+label = "Taxa de alfabetização (Censos e PNAD)"
+indicator = "alfabetizacao_serie"
+dimensions = [{ classification = "c2", partition = "sexo", label = "Sexo" }]

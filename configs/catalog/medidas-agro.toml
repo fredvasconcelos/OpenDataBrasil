@@ -1,0 +1,179 @@
+# Seleção aprovada em 2026-11-17: somente reais; área colhida desde 1988.
+config_version = "1.0.0"
+
+[category_cuts]
+"40129" = "2001"
+"40136" = "2001"
+"40142" = "2001"
+"40148" = "2001"
+"40149" = "2001"
+"40151" = "2001"
+"40152" = "2001"
+"40260" = "2001"
+"40261" = "2001"
+"40262" = "2001"
+"40263" = "2001"
+"40264" = "2001"
+"40120" = "2001"
+"40121" = "2001"
+"40267" = "2001"
+"40268" = "2001"
+"40271" = "2001"
+"40139" = "2002"
+
+[[measures]]
+table = "5457"
+variable = "216"
+id = "area_colhida_lavouras"
+parent = "producao_lavouras"
+suffix = "ha"
+label = "Área colhida das lavouras"
+unit = "Hectares"
+first_period = "1988"
+publish = true
+note = "Área colhida desde 1988, mantendo a mesma janela inicial da área plantada existente, por decisão do mantenedor em 2026-11-17. Valores oficiais em hectares; áreas de culturas sucessivas ou simultâneas podem exceder a área geográfica."
+
+[[measures]]
+table = "5457"
+variable = "215"
+id = "valor_producao_lavouras"
+parent = "producao_lavouras"
+suffix = "reais"
+label = "Valor da produção das lavouras"
+unit = "Mil Reais"
+first_period = "1994"
+publish = true
+note = "Valores nominais em mil reais desde 1994. Períodos em moedas anteriores ficam fora da série por decisão do mantenedor em 2026-11-17. Não há conversão de moedas nem correção pela inflação."
+
+[[measures]]
+table = "74"
+variable = "215"
+id = "valor_producao_animal"
+parent = "producao_origem_animal"
+suffix = "reais"
+label = "Valor da produção de origem animal"
+unit = "Mil Reais"
+first_period = "1994"
+publish = true
+note = "Valor oficial da produção de leite, ovos, mel, casulos e lã, em mil reais desde 1994. O Total é o publicado na fonte. Períodos em moedas anteriores ficam fora da série; não há conversão ou correção inflacionária."
+
+[[measures]]
+table = "5457"
+variable = "214"
+id = "lavouras_v214_ton"
+parent = "producao_lavouras"
+suffix = "ton"
+label = "Quantidade produzida das lavouras (Toneladas)"
+unit = "Toneladas"
+first_period = "1974"
+publish = false
+exclude_categories = ["0", "40092", "40145"]
+note = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+
+[[measures]]
+table = "5457"
+variable = "214"
+id = "lavouras_v214_frutos"
+parent = "producao_lavouras"
+suffix = "frutos"
+label = "Quantidade produzida de abacaxi e coco (Mil frutos)"
+unit = "Mil frutos"
+first_period = "1974"
+publish = false
+categories = ["40092", "40145"]
+documented_unit = true
+note = "Abacaxi e coco-da-baía mantêm a unidade específica da nota 6 da 5457. O cabeçalho genérico da API informa toneladas ou kg/ha, mas a nota oficial especifica mil frutos ou frutos/ha. A Gold corrige somente o rótulo da unidade, sem converter ou alterar valores; a Silver preserva o cabeçalho original. Sem Total agregado entre produtos."
+
+[[measures]]
+table = "5457"
+variable = "112"
+id = "lavouras_v112_kg_ha"
+parent = "producao_lavouras"
+suffix = "kg_ha"
+label = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+unit = "Quilogramas por Hectare"
+first_period = "1974"
+publish = false
+exclude_categories = ["0", "40092", "40145"]
+note = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+
+[[measures]]
+table = "5457"
+variable = "112"
+id = "lavouras_v112_frutos_ha"
+parent = "producao_lavouras"
+suffix = "frutos_ha"
+label = "Rendimento médio de abacaxi e coco (Frutos por Hectare)"
+unit = "Frutos por Hectare"
+first_period = "1974"
+publish = false
+categories = ["40092", "40145"]
+documented_unit = true
+note = "Abacaxi e coco-da-baía mantêm a unidade específica da nota 6 da 5457. O cabeçalho genérico da API informa toneladas ou kg/ha, mas a nota oficial especifica mil frutos ou frutos/ha. A Gold corrige somente o rótulo da unidade, sem converter ou alterar valores; a Silver preserva o cabeçalho original. Sem Total agregado entre produtos."
+
+# N4 — LSPA mensal por coortes de produtos e unidades nativas.
+[[measures]]
+table = "6588"
+variable = "216"
+id = "safra_area_colhida"
+parent = "safra_estimada"
+suffix = "ha"
+label = "Estimativa da safra: área colhida"
+unit = "Hectares"
+first_period = "200609"
+publish = true
+note = "LSPA: área colhida da estimativa anual publicada mensalmente, em hectares nativos. Não se somam previsões de meses sucessivos nem produtos hierarquicamente sobrepostos. O Total é o publicado pela fonte; cada produto mantém seu calendário."
+
+[[measures]]
+table = "6588"
+variable = "35"
+id = "safra_producao_ton"
+parent = "safra_estimada"
+suffix = "ton"
+label = "Estimativa da safra: produção (toneladas)"
+unit = "Toneladas"
+first_period = "200609"
+publish = false
+note = "LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal."
+exclude_categories = ["0", "39447", "39459"]
+
+[[measures]]
+table = "6588"
+variable = "35"
+id = "safra_producao_frutos"
+parent = "safra_estimada"
+suffix = "frutos"
+label = "Estimativa da safra: produção de abacaxi e coco"
+unit = "Mil frutos"
+first_period = "200609"
+publish = false
+note = "LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal. A nota 2 da tabela 6588 especifica mil frutos ou frutos/ha para abacaxi e coco; o cabeçalho genérico da API usa toneladas/kg por hectare. A Gold corrige apenas o rótulo da unidade, mantendo valores e originais Silver."
+categories = ["39447", "39459"]
+documented_unit = true
+
+[[measures]]
+table = "6588"
+variable = "36"
+id = "safra_rendimento_kg_ha"
+parent = "safra_estimada"
+suffix = "kg_ha"
+label = "Estimativa da safra: rendimento (kg/ha)"
+unit = "Quilogramas por Hectare"
+first_period = "200609"
+publish = false
+note = "LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal."
+exclude_categories = ["0", "39447", "39459"]
+
+[[measures]]
+table = "6588"
+variable = "36"
+id = "safra_rendimento_frutos_ha"
+parent = "safra_estimada"
+suffix = "frutos_ha"
+label = "Estimativa da safra: rendimento de abacaxi e coco"
+unit = "Frutos por Hectare"
+first_period = "200609"
+publish = false
+note = "LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal. A nota 2 da tabela 6588 especifica mil frutos ou frutos/ha para abacaxi e coco; o cabeçalho genérico da API usa toneladas/kg por hectare. A Gold corrige apenas o rótulo da unidade, mantendo valores e originais Silver."
+categories = ["39447", "39459"]
+documented_unit = true

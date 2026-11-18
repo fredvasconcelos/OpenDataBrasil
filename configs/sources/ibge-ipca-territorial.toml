@@ -1,0 +1,37 @@
+# Série composta para o mesmo IPCA mensal em áreas oficiais disjuntas (ADR-0022).
+# A 1737 continua sendo a única origem do Brasil; as outras tabelas fornecem
+# apenas seus municípios e regiões metropolitanas no fato publicado.
+config_version = "1.0.0"
+
+[[series]]
+id = "composta-ipca-territorial"
+members = ["ibge-sidra-655", "ibge-sidra-2938", "ibge-sidra-1419", "ibge-sidra-7060", "ibge-sidra-1737"]
+title = "IPCA mensal no Brasil e nas áreas pesquisadas pelo IBGE"
+description = "Brasil pela 1737; municípios e regiões metropolitanas pelas estruturas 655, 2938, 1419 e 7060, com índice geral fixado na categoria 7169. Cada célula tem uma única origem."
+
+[[datasets]]
+id = "ibge-sidra-1737"
+source = "ibge-sidra"
+official_id = "1737"
+title = "IPCA - Série histórica com número-índice, variação mensal e variações acumuladas"
+description = "Variação mensal oficial do IPCA no Brasil (variável 63). Preserva a série nacional usada pelo KPI; a ampliação territorial é declarada na série composta."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/1737"
+
+[datasets.params]
+table = "1737"
+variables = ["63"]
+territorial_levels = ["n1"]
+period_discovery_level = "n1"
+estimated_values_per_period = 12
+min_rows = 1
+max_rows = 12
+refresh_recent_periods = 1
+period_type = "mes"
+group_periods_by_year = true
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"

@@ -1,0 +1,32 @@
+# Recorte municipal nativo da PNAD: descritor e consulta oficial em 2026-11-15.
+# A 7189 tem categorias mais finas e não publica municípios. A 7270 permanece
+# também na série da 7189, em outro dataset, só com as cores ou raças não totais.
+
+config_version = "1.0.0"
+
+[[datasets]]
+id = "ibge-sidra-7270-capitais"
+source = "ibge-sidra"
+official_id = "7270"
+title = "Pessoas de 25 anos ou mais de idade, por cor ou raça e nível de instrução"
+description = "PNAD Contínua anual: pessoas de 25 anos ou mais no Brasil, Grandes Regiões, UFs e 27 capitais, com os quatro grupos de instrução nativos da tabela 7270. Cor ou raça no Total (95251), recorte disjunto do dataset de detalhes da série 7189."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/7270"
+
+[datasets.params]
+table = "7270"
+variables = ["1643"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+classifications = { "c86" = "95251", "c1568" = "all" }
+# 33 agregados e 27 capitais x (Total + quatro grupos), por ano.
+# Os agregados são publicados pelo IBGE; não são somas das capitais.
+estimated_values_per_period = 300
+min_rows = 300
+max_rows = 300
+refresh_recent_periods = 2
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"

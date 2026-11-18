@@ -1,0 +1,859 @@
+# Gerado por `odb panorama gerar-medidas`. Edite catalog/medidas-adicionais.toml.
+
+config_version = "1.0.0"
+scope = "demografia"
+dimension_order = ["c12404ma", "c892ma"]
+
+[[themes]]
+id = "populacao"
+label = "População e demografia"
+
+[[themes.subthemes]]
+id = "estrutura_populacao"
+label = "Sexo, idade e cor ou raça"
+
+[[themes.subthemes.kpis]]
+id = "razao_sexo"
+label = "Razão de sexo (Censo)"
+indicator = "razao_sexo"
+
+[[themes.subthemes.kpis]]
+id = "idade_mediana"
+label = "Idade mediana (Censo)"
+indicator = "idade_mediana"
+
+[[themes]]
+id = "domicilios"
+label = "Domicílios e famílias"
+
+[[themes.subthemes]]
+id = "domicilios_moradores"
+label = "Domicílios e moradores"
+
+[[themes.subthemes.kpis]]
+id = "moradores_domicilios_ocupados"
+label = "Moradores em domicílios ocupados"
+indicator = "moradores_domicilios_ocupados"
+
+[[themes.subthemes.kpis]]
+id = "media_moradores_domicilio"
+label = "Média de moradores por domicílio"
+indicator = "media_moradores_domicilio"
+
+[[themes.subthemes]]
+id = "favelas"
+label = "Favelas e comunidades urbanas"
+
+[[themes.subthemes.kpis]]
+id = "area_favelas"
+label = "Área territorial de favelas"
+indicator = "area_favelas"
+
+[[themes.subthemes.kpis]]
+id = "densidade_favelas"
+label = "Densidade demográfica em favelas"
+indicator = "densidade_favelas"
+
+[[themes]]
+id = "trabalho_rendimento"
+label = "Trabalho e rendimento"
+
+[[themes.subthemes]]
+id = "ocupacao"
+label = "Ocupação e desocupação"
+
+[[themes.subthemes.kpis]]
+id = "forca_trabalho_v1641"
+label = "Pessoas de 14 anos ou mais de idade"
+indicator = "forca_trabalho_v1641"
+
+[[themes.subthemes.kpis]]
+id = "forca_trabalho_v4088"
+label = "Pessoas de 14 anos ou mais de idade, na força de trabalho, na semana de referência"
+indicator = "forca_trabalho_v4088"
+
+[[themes.subthemes.kpis]]
+id = "forca_trabalho_v4092"
+label = "Pessoas de 14 anos ou mais de idade, desocupadas na semana de referência"
+indicator = "forca_trabalho_v4092"
+
+[[themes.subthemes.kpis]]
+id = "forca_trabalho_v4094"
+label = "Pessoas de 14 anos ou mais de idade, fora da força de trabalho, na semana de referência"
+indicator = "forca_trabalho_v4094"
+
+[[themes.subthemes.kpis]]
+id = "forca_trabalho_v4096"
+label = "Taxa de participação na força de trabalho, na semana de referência, das pessoas de 14 anos ou mais de idade"
+indicator = "forca_trabalho_v4096"
+
+[[themes.subthemes.kpis]]
+id = "forca_trabalho_v4099"
+label = "Taxa de desocupação, na semana de referência, das pessoas de 14 anos ou mais de idade"
+indicator = "forca_trabalho_v4099"
+
+[[themes.subthemes.kpis]]
+id = "taxas_desocupacao_v4114"
+label = "Taxa combinada de desocupação e de subocupação por insuficiência de horas trabalhadas, na semana de referência, das pessoas de 14 anos ou mais de idade"
+indicator = "taxas_desocupacao_v4114"
+
+[[themes.subthemes.kpis]]
+id = "taxas_desocupacao_v4116"
+label = "Taxa combinada de desocupação e força de trabalho potencial, na semana de referência, das pessoas de 14 anos ou mais de idade"
+indicator = "taxas_desocupacao_v4116"
+
+[[themes.subthemes.kpis]]
+id = "taxas_desocupacao_v4118"
+label = "Taxa composta de subutilização da força de trabalho, na semana de referência, das pessoas de 14 anos ou mais de idade"
+indicator = "taxas_desocupacao_v4118"
+
+[[themes.subthemes]]
+id = "rendimento_trabalho"
+label = "Rendimento do trabalho"
+
+[[themes.subthemes.kpis]]
+id = "rendimento_medio_trabalho_v5933"
+label = "Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente recebido em todos os trabalhos"
+indicator = "rendimento_medio_trabalho_v5933"
+
+[[themes.subthemes.kpis]]
+id = "rendimento_medio_trabalho_v5934"
+label = "Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, efetivamente recebido no trabalho principal"
+indicator = "rendimento_medio_trabalho_v5934"
+
+[[themes.subthemes.kpis]]
+id = "rendimento_medio_trabalho_v5935"
+label = "Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, efetivamente recebido em todos os trabalhos"
+indicator = "rendimento_medio_trabalho_v5935"
+
+[[themes.subthemes.kpis]]
+id = "massa_rendimento_v6295"
+label = "Massa de rendimento mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, efetivamente recebido em todos os trabalhos"
+indicator = "massa_rendimento_v6295"
+
+[[themes.subthemes]]
+id = "rendimento_domiciliar"
+label = "Rendimento domiciliar, desigualdade e pobreza"
+
+[[themes.subthemes.kpis]]
+id = "rendimento_domiciliar_censo_v13534"
+label = "Valor do rendimento nominal mediano mensal domiciliar per capita dos moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a)"
+indicator = "rendimento_domiciliar_censo_v13534"
+
+[[themes.subthemes.kpis]]
+id = "rendimento_domiciliar_censo_v13604"
+label = "Moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a)"
+indicator = "rendimento_domiciliar_censo_v13604"
+
+[[themes]]
+id = "saude"
+label = "Saúde"
+
+[[themes.subthemes]]
+id = "condicoes_saude"
+label = "Condições de saúde"
+
+[[themes.subthemes.kpis]]
+id = "doenca_cronica_v11220"
+label = "Pessoas com pelo menos uma doença crônica (%)"
+indicator = "doenca_cronica_v11220"
+
+[[themes.subthemes.kpis]]
+id = "hipertensao_v4399"
+label = "Diagnóstico de hipertensão arterial (%)"
+indicator = "hipertensao_v4399"
+
+[[themes.subthemes.kpis]]
+id = "diabetes_v4465"
+label = "Diagnóstico de diabetes (%)"
+indicator = "diabetes_v4465"
+
+[[themes.subthemes]]
+id = "fatores_risco"
+label = "Hábitos e fatores de risco"
+
+[[themes.subthemes.kpis]]
+id = "fumantes_v4163"
+label = "Fumantes atuais de tabaco (%)"
+indicator = "fumantes_v4163"
+
+[[themes.subthemes.kpis]]
+id = "consumo_abusivo_alcool_v4301"
+label = "Consumo abusivo de álcool (%)"
+indicator = "consumo_abusivo_alcool_v4301"
+
+[[themes.subthemes.kpis]]
+id = "insuficientemente_ativos_v4265"
+label = "Pessoas insuficientemente ativas (%)"
+indicator = "insuficientemente_ativos_v4265"
+
+[[themes.subthemes]]
+id = "acesso_servicos"
+label = "Acesso a serviços de saúde"
+
+[[themes.subthemes.kpis]]
+id = "plano_saude_v5264"
+label = "Pessoas com plano de saúde (%)"
+indicator = "plano_saude_v5264"
+
+[[themes.subthemes.kpis]]
+id = "consulta_medica_v5362"
+label = "Consultaram médico nos últimos 12 meses (%)"
+indicator = "consulta_medica_v5362"
+
+[[themes]]
+id = "agropecuaria"
+label = "Agropecuária"
+
+[[themes.subthemes]]
+id = "estrutura_agraria"
+label = "Estabelecimentos agropecuários"
+
+[[themes.subthemes.kpis]]
+id = "estabelecimentos_area_v184"
+label = "Área dos estabelecimentos agropecuários"
+indicator = "estabelecimentos_area_v184"
+
+[[themes]]
+id = "empresas"
+label = "Empresas e organizações"
+
+[[themes.subthemes]]
+id = "cadastro_empresas"
+label = "Empresas e emprego formal"
+
+[[themes.subthemes.kpis]]
+id = "empresas_emprego_formal_v367"
+label = "Número de empresas e outras organizações atuantes"
+indicator = "empresas_emprego_formal_v367"
+
+[[themes.subthemes.kpis]]
+id = "empresas_emprego_formal_v662"
+label = "Salários e outras remunerações"
+indicator = "empresas_emprego_formal_v662"
+
+[[themes.subthemes.kpis]]
+id = "empresas_emprego_formal_v707"
+label = "Pessoal ocupado total"
+indicator = "empresas_emprego_formal_v707"
+
+[[themes.subthemes.kpis]]
+id = "empresas_emprego_formal_v708"
+label = "Pessoal ocupado assalariado"
+indicator = "empresas_emprego_formal_v708"
+
+[[themes.subthemes.kpis]]
+id = "empresas_emprego_formal_v10143"
+label = "Salário médio mensal em reais"
+indicator = "empresas_emprego_formal_v10143"
+
+[[themes.subthemes]]
+id = "empreendedorismo"
+label = "Empreendedorismo"
+
+[[themes.subthemes.kpis]]
+id = "microempreendedores_v8890"
+label = "Número de microempreendedores individuais (MEIs) (entrada)"
+indicator = "microempreendedores_v8890"
+
+[[themes.subthemes.kpis]]
+id = "microempreendedores_v8891"
+label = "Taxa de entrada de microempreendedores individuais (MEIs)"
+indicator = "microempreendedores_v8891"
+
+[[themes.subthemes.kpis]]
+id = "microempreendedores_v8892"
+label = "Número de microempreendedores individuais (MEIs) (saída)"
+indicator = "microempreendedores_v8892"
+
+[[themes.subthemes.kpis]]
+id = "microempreendedores_v8893"
+label = "Taxa de saída de microempreendedores individuais (MEIs)"
+indicator = "microempreendedores_v8893"
+
+[[themes.subthemes.kpis]]
+id = "microempreendedores_v8894"
+label = "Número de microempreendedores individuais (MEIs) (saldo)"
+indicator = "microempreendedores_v8894"
+
+[[themes]]
+id = "contas_nacionais"
+label = "Contas nacionais e regionais"
+
+[[themes.subthemes]]
+id = "pib_municipios"
+label = "PIB dos municípios"
+
+[[themes.subthemes.kpis]]
+id = "pib_municipios_v498"
+label = "Valor adicionado bruto a preços correntes total"
+indicator = "pib_municipios_v498"
+
+[[themes.subthemes.kpis]]
+id = "pib_municipios_v513"
+label = "Valor adicionado bruto a preços correntes da agropecuária"
+indicator = "pib_municipios_v513"
+
+[[themes.subthemes.kpis]]
+id = "pib_municipios_v516"
+label = "Participação do valor adicionado bruto a preços correntes da agropecuária no valor adicionado bruto a preços correntes total"
+indicator = "pib_municipios_v516"
+
+[[themes.subthemes.kpis]]
+id = "pib_municipios_v525"
+label = "Valor adicionado bruto a preços correntes da administração, defesa, educação e saúde públicas e seguridade social"
+indicator = "pib_municipios_v525"
+
+[[themes.subthemes.kpis]]
+id = "pib_municipios_v543"
+label = "Impostos, líquidos de subsídios, sobre produtos a preços correntes"
+indicator = "pib_municipios_v543"
+
+[[themes.subthemes.kpis]]
+id = "pib_municipios_v6575"
+label = "Valor adicionado bruto a preços correntes dos serviços, exclusive administração, defesa, educação e saúde públicas e seguridade social"
+indicator = "pib_municipios_v6575"
+
+[[themes.subthemes]]
+id = "pib_brasil"
+label = "PIB do Brasil"
+
+[[themes.subthemes.kpis]]
+id = "pib_per_capita_v9812"
+label = "PIB per capita a preços correntes"
+indicator = "pib_per_capita_v9812"
+
+[[themes.subthemes.kpis]]
+id = "pib_per_capita_v93"
+label = "População de referência das Contas Nacionais"
+indicator = "pib_per_capita_v93"
+
+[[themes.subthemes.kpis]]
+id = "pib_per_capita_v9810"
+label = "PIB: variação anual em volume"
+indicator = "pib_per_capita_v9810"
+
+[[themes.subthemes.kpis]]
+id = "pib_per_capita_v9811"
+label = "Deflator do PIB: variação anual"
+indicator = "pib_per_capita_v9811"
+
+[[themes.subthemes.kpis]]
+id = "variacao_pib_trimestral_v6562"
+label = "PIB: variação acumulada em quatro trimestres"
+indicator = "variacao_pib_trimestral_v6562"
+
+[[themes.subthemes.kpis]]
+id = "variacao_pib_trimestral_v6563"
+label = "PIB: variação acumulada no ano"
+indicator = "variacao_pib_trimestral_v6563"
+
+[[themes.subthemes.kpis]]
+id = "variacao_pib_trimestral_v6564"
+label = "PIB: variação contra o trimestre anterior"
+indicator = "variacao_pib_trimestral_v6564"
+
+[[themes]]
+id = "comercio"
+label = "Comércio"
+
+[[themes.subthemes]]
+id = "comercio_exterior"
+label = "Comércio exterior"
+
+[[themes.subthemes.kpis]]
+id = "exportacoes_importacoes_v2152"
+label = "Valor das importações (2013–2015)"
+indicator = "exportacoes_importacoes_v2152"
+
+[[themes.subthemes.kpis]]
+id = "exportacoes_importacoes_v2154"
+label = "Saldo comercial (2013–2015)"
+indicator = "exportacoes_importacoes_v2154"
+
+[[themes]]
+id = "saude"
+label = "Saúde"
+
+[[themes.subthemes]]
+id = "mortalidade"
+label = "Mortalidade"
+
+[[themes.subthemes.kpis]]
+id = "mortalidade_doencas_cronicas_v93"
+label = "População de 30 a 69 anos (ODS)"
+indicator = "mortalidade_doencas_cronicas_v93"
+
+[[themes.subthemes.kpis]]
+id = "mortalidade_doencas_cronicas_v12948"
+label = "Óbitos por doenças crônicas (30 a 69 anos)"
+indicator = "mortalidade_doencas_cronicas_v12948"
+
+[[themes.subthemes]]
+id = "materno_infantil"
+label = "Saúde materno-infantil"
+
+[[themes.subthemes.kpis]]
+id = "aleitamento_exclusivo_v7179"
+label = "Aleitamento materno exclusivo (%)"
+indicator = "aleitamento_exclusivo_v7179"
+
+[[themes]]
+id = "seguranca"
+label = "Segurança e vitimização"
+
+[[themes.subthemes]]
+id = "vitimizacao"
+label = "Vitimização e violência"
+
+[[themes.subthemes.kpis]]
+id = "homicidios_v606"
+label = "População de referência dos homicídios (ODS)"
+indicator = "homicidios_v606"
+
+[[themes.subthemes.kpis]]
+id = "homicidios_v13533"
+label = "Vítimas de homicídios intencionais (ODS)"
+indicator = "homicidios_v13533"
+
+[[themes]]
+id = "saude"
+label = "Saúde"
+
+[[themes.subthemes]]
+id = "mortalidade"
+label = "Mortalidade"
+
+[[themes.subthemes.kpis]]
+id = "mortalidade_materna_v9435"
+label = "Óbitos maternos (ODS)"
+indicator = "mortalidade_materna_v9435"
+
+[[themes.subthemes.kpis]]
+id = "mortalidade_materna_v9436"
+label = "Nascidos vivos de mães residentes (ODS)"
+indicator = "mortalidade_materna_v9436"
+
+[[themes.subthemes]]
+id = "materno_infantil"
+label = "Saúde materno-infantil"
+
+[[themes.subthemes.kpis]]
+id = "pre_natal_v6639"
+label = "Mulheres que realizaram pré-natal (%)"
+indicator = "pre_natal_v6639"
+
+[[themes.subthemes]]
+id = "fatores_risco"
+label = "Hábitos e fatores de risco"
+
+[[themes.subthemes.kpis]]
+id = "excesso_peso_v11675"
+label = "Excesso de peso em adultos (%)"
+indicator = "excesso_peso_v11675"
+
+[[themes.subthemes]]
+id = "covid"
+label = "COVID-19"
+
+[[themes.subthemes.kpis]]
+id = "tiveram_covid_v9448"
+label = "Pessoas que tiveram COVID-19 (%)"
+indicator = "tiveram_covid_v9448"
+
+[[themes]]
+id = "consumo_familias"
+label = "Consumo e orçamentos familiares"
+
+[[themes.subthemes]]
+id = "alimentacao"
+label = "Alimentação e segurança alimentar"
+
+[[themes.subthemes.kpis]]
+id = "seguranca_alimentar_v9784"
+label = "Distribuição dos domicílios por segurança alimentar (%)"
+indicator = "seguranca_alimentar_v9784"
+dimensions = [{ "classification" = "c12404ma", "partition" = "p109106", "label" = "Situação de segurança alimentar existente no domicílio" }]
+
+[[themes.subthemes.kpis]]
+id = "seguranca_alimentar_v10114"
+label = "Moradores por situação de segurança alimentar"
+indicator = "seguranca_alimentar_v10114"
+dimensions = [{ "classification" = "c12404ma", "partition" = "p109106", "label" = "Situação de segurança alimentar existente no domicílio" }]
+
+[[themes.subthemes.kpis]]
+id = "seguranca_alimentar_v10117"
+label = "Distribuição dos moradores por segurança alimentar (%)"
+indicator = "seguranca_alimentar_v10117"
+dimensions = [{ "classification" = "c12404ma", "partition" = "p109106", "label" = "Situação de segurança alimentar existente no domicílio" }]
+
+[[themes]]
+id = "saude"
+label = "Saúde"
+
+[[themes.subthemes]]
+id = "covid"
+label = "COVID-19"
+
+[[themes.subthemes.kpis]]
+id = "vacinacao_covid_v9004"
+label = "Vacinação contra a COVID-19 (%)"
+indicator = "vacinacao_covid_v9004"
+
+[[themes]]
+id = "servicos"
+label = "Serviços"
+
+[[themes.subthemes]]
+id = "servicos_empresariais"
+label = "Serviços"
+
+[[themes.subthemes.kpis]]
+id = "servicos_nao_financeiros_v630"
+label = "Número de empresas de serviços não financeiros"
+indicator = "servicos_nao_financeiros_v630"
+
+[[themes.subthemes.kpis]]
+id = "servicos_nao_financeiros_v631"
+label = "Pessoal ocupado nos serviços não financeiros"
+indicator = "servicos_nao_financeiros_v631"
+
+[[themes.subthemes.kpis]]
+id = "servicos_nao_financeiros_v635"
+label = "Valor adicionado bruto dos serviços não financeiros"
+indicator = "servicos_nao_financeiros_v635"
+
+[[themes]]
+id = "empresas"
+label = "Empresas e organizações"
+
+[[themes.subthemes]]
+id = "inovacao"
+label = "Inovação e P&D"
+
+[[themes.subthemes.kpis]]
+id = "empresas_inovadoras_v630"
+label = "Empresas no universo da pesquisa de inovação"
+indicator = "empresas_inovadoras_v630"
+
+[[themes.subthemes.kpis]]
+id = "empresas_inovadoras_v5982"
+label = "Empresas com inovação de produto"
+indicator = "empresas_inovadoras_v5982"
+
+[[themes.subthemes.kpis]]
+id = "empresas_inovadoras_v5985"
+label = "Empresas com inovação de processo"
+indicator = "empresas_inovadoras_v5985"
+
+[[themes.subthemes.kpis]]
+id = "empresas_inovadoras_v5988"
+label = "Empresas com inovação de produto e processo"
+indicator = "empresas_inovadoras_v5988"
+
+[[themes]]
+id = "servicos"
+label = "Serviços"
+
+[[themes.subthemes]]
+id = "turismo_transportes"
+label = "Turismo e transportes"
+
+[[themes.subthemes.kpis]]
+id = "viagens_v10392"
+label = "Distribuição das viagens por finalidade (%)"
+indicator = "viagens_v10392"
+dimensions = [{ "classification" = "c892ma", "partition" = "p47975", "label" = "Finalidade da viagem" }]
+
+[[themes]]
+id = "empresas"
+label = "Empresas e organizações"
+
+[[themes.subthemes]]
+id = "empreendedorismo"
+label = "Empreendedorismo"
+
+[[themes.subthemes.kpis]]
+id = "nascimentos_empresas_v13235"
+label = "Sobrevivência de empresas após um ano (%)"
+indicator = "nascimentos_empresas_v13235"
+
+[[themes.subthemes.kpis]]
+id = "nascimentos_empresas_v13236"
+label = "Sobrevivência de empresas após dois anos (%)"
+indicator = "nascimentos_empresas_v13236"
+
+[[themes.subthemes.kpis]]
+id = "nascimentos_empresas_v13237"
+label = "Sobrevivência de empresas após três anos (%)"
+indicator = "nascimentos_empresas_v13237"
+
+[[themes]]
+id = "construcao"
+label = "Construção"
+
+[[themes.subthemes]]
+id = "atividade_construcao"
+label = "Atividade da construção"
+
+[[themes.subthemes.kpis]]
+id = "empresas_construcao_v631"
+label = "Pessoal ocupado na construção"
+indicator = "empresas_construcao_v631"
+
+[[themes.subthemes.kpis]]
+id = "empresas_construcao_v673"
+label = "Remunerações na construção"
+indicator = "empresas_construcao_v673"
+
+[[themes.subthemes.kpis]]
+id = "empresas_construcao_v1241"
+label = "Valor das incorporações, obras e serviços da construção"
+indicator = "empresas_construcao_v1241"
+
+[[themes.subthemes.kpis]]
+id = "empresas_construcao_v13808"
+label = "Empresas de construção atuantes nas UFs"
+indicator = "empresas_construcao_v13808"
+
+[[themes]]
+id = "industria"
+label = "Indústria"
+
+[[themes.subthemes]]
+id = "estrutura_industrial"
+label = "Estrutura e peso da indústria"
+
+[[themes.subthemes.kpis]]
+id = "industria_uf_v631"
+label = "Pessoal ocupado nas unidades locais industriais"
+indicator = "industria_uf_v631"
+
+[[themes.subthemes.kpis]]
+id = "industria_uf_v673"
+label = "Remunerações nas unidades locais industriais"
+indicator = "industria_uf_v673"
+
+[[themes.subthemes.kpis]]
+id = "industria_uf_v811"
+label = "Valor da transformação industrial (UF)"
+indicator = "industria_uf_v811"
+
+[[themes]]
+id = "comercio"
+label = "Comércio"
+
+[[themes.subthemes]]
+id = "estrutura_comercio"
+label = "Empresas comerciais"
+
+[[themes.subthemes.kpis]]
+id = "empresas_comerciais_v310"
+label = "Número de empresas comerciais"
+indicator = "empresas_comerciais_v310"
+
+[[themes.subthemes.kpis]]
+id = "empresas_comerciais_v631"
+label = "Pessoal ocupado nas empresas comerciais"
+indicator = "empresas_comerciais_v631"
+
+[[themes.subthemes.kpis]]
+id = "empresas_comerciais_v635"
+label = "Valor adicionado bruto do comércio"
+indicator = "empresas_comerciais_v635"
+
+[[themes]]
+id = "agropecuaria"
+label = "Agropecuária"
+
+[[themes.subthemes]]
+id = "insumos"
+label = "Insumos agrícolas"
+
+[[themes.subthemes.kpis]]
+id = "fertilizantes_v2398"
+label = "Utilização de fertilizantes por unidade de área"
+indicator = "fertilizantes_v2398"
+
+[[themes.subthemes]]
+id = "pecuaria"
+label = "Pecuária e produção animal"
+
+[[themes.subthemes.kpis]]
+id = "leite_adquirido_v151"
+label = "Informantes da pesquisa de leite"
+indicator = "leite_adquirido_v151"
+
+[[themes.subthemes.kpis]]
+id = "leite_adquirido_v283"
+label = "Quantidade de leite industrializado"
+indicator = "leite_adquirido_v283"
+
+[[themes.subthemes.kpis]]
+id = "leite_adquirido_v2522"
+label = "Preço médio do leite cru pago ao produtor"
+indicator = "leite_adquirido_v2522"
+
+[[themes.subthemes.kpis]]
+id = "abate_bovinos_v151"
+label = "Informantes da pesquisa de abate bovino"
+indicator = "abate_bovinos_v151"
+
+[[themes.subthemes.kpis]]
+id = "abate_bovinos_v285"
+label = "Peso das carcaças de bovinos abatidos"
+indicator = "abate_bovinos_v285"
+
+[[themes]]
+id = "meio_ambiente"
+label = "Meio ambiente"
+
+[[themes.subthemes]]
+id = "biomas_areas_protegidas"
+label = "Biomas e áreas protegidas"
+
+[[themes.subthemes.kpis]]
+id = "unidades_conservacao_v6308"
+label = "Área das unidades de conservação terrestres"
+indicator = "unidades_conservacao_v6308"
+
+[[themes.subthemes.kpis]]
+id = "unidades_conservacao_v6309"
+label = "Proporção da área em unidades de conservação terrestres (%)"
+indicator = "unidades_conservacao_v6309"
+
+[[themes]]
+id = "agropecuaria"
+label = "Agropecuária"
+
+[[themes.subthemes]]
+id = "pecuaria"
+label = "Pecuária e produção animal"
+
+[[themes.subthemes.kpis]]
+id = "ovos_produzidos_v151"
+label = "Informantes da pesquisa de ovos"
+indicator = "ovos_produzidos_v151"
+
+[[themes.subthemes.kpis]]
+id = "ovos_produzidos_v1988"
+label = "Galinhas poedeiras nos estabelecimentos pesquisados"
+indicator = "ovos_produzidos_v1988"
+
+[[themes]]
+id = "precos"
+label = "Preços"
+
+[[themes.subthemes]]
+id = "precos_consumidor"
+label = "Inflação ao consumidor"
+
+[[themes.subthemes.kpis]]
+id = "inpc_v68"
+label = "INPC: variação acumulada no ano (%)"
+indicator = "inpc_v68"
+
+[[themes.subthemes.kpis]]
+id = "inpc_v2289"
+label = "INPC: número-índice"
+indicator = "inpc_v2289"
+
+[[themes.subthemes.kpis]]
+id = "inpc_v2292"
+label = "INPC: variação acumulada em doze meses (%)"
+indicator = "inpc_v2292"
+
+[[themes.subthemes.kpis]]
+id = "ipca_v69"
+label = "IPCA: variação acumulada no ano (%)"
+indicator = "ipca_v69"
+
+[[themes.subthemes.kpis]]
+id = "ipca_v2265"
+label = "IPCA: variação acumulada em doze meses (%)"
+indicator = "ipca_v2265"
+
+[[themes.subthemes.kpis]]
+id = "ipca_v2266"
+label = "IPCA: número-índice"
+indicator = "ipca_v2266"
+
+[[themes]]
+id = "construcao"
+label = "Construção"
+
+[[themes.subthemes]]
+id = "custos_construcao"
+label = "Custos e insumos da construção"
+
+[[themes.subthemes.kpis]]
+id = "custo_m2_v49"
+label = "Custo do m²: número-índice"
+indicator = "custo_m2_v49"
+
+[[themes.subthemes.kpis]]
+id = "custo_m2_v1196"
+label = "Custo do m²: variação mensal (%)"
+indicator = "custo_m2_v1196"
+
+[[themes.subthemes.kpis]]
+id = "custo_m2_v1197"
+label = "Custo do m²: variação no ano (%)"
+indicator = "custo_m2_v1197"
+
+[[themes.subthemes.kpis]]
+id = "custo_m2_v1198"
+label = "Custo do m²: variação em doze meses (%)"
+indicator = "custo_m2_v1198"
+
+[[themes.subthemes.kpis]]
+id = "custo_m2_v2119"
+label = "Custo do m²: componente material"
+indicator = "custo_m2_v2119"
+
+[[themes.subthemes.kpis]]
+id = "custo_m2_v2120"
+label = "Custo do m²: componente mão de obra"
+indicator = "custo_m2_v2120"
+
+[[themes]]
+id = "precos"
+label = "Preços"
+
+[[themes.subthemes]]
+id = "precos_consumidor"
+label = "Inflação ao consumidor"
+
+[[themes.subthemes.kpis]]
+id = "ipca15_v356"
+label = "IPCA-15: variação acumulada no ano (%)"
+indicator = "ipca15_v356"
+
+[[themes.subthemes.kpis]]
+id = "ipca15_v1117"
+label = "IPCA-15: número-índice"
+indicator = "ipca15_v1117"
+
+[[themes.subthemes.kpis]]
+id = "ipca15_v1120"
+label = "IPCA-15: variação acumulada em doze meses (%)"
+indicator = "ipca15_v1120"
+
+[[themes.subthemes]]
+id = "precos_produtor"
+label = "Preços ao produtor"
+
+[[themes.subthemes.kpis]]
+id = "ipp_v1394"
+label = "IPP: variação mês contra o mesmo mês anterior (%)"
+indicator = "ipp_v1394"
+
+[[themes.subthemes.kpis]]
+id = "ipp_v1395"
+label = "IPP: variação acumulada no ano (%)"
+indicator = "ipp_v1395"
+
+[[themes.subthemes.kpis]]
+id = "ipp_v10008"
+label = "IPP: número-índice"
+indicator = "ipp_v10008"

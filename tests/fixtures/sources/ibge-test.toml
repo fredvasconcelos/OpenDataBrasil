@@ -1,0 +1,416 @@
+# Configuração de TESTE: mesmas fontes do configs/sources/ibge.toml, no nível UF (n3),
+# compatível com as fixtures reais em tests/fixtures/ibge.
+config_version = "test"
+
+[institution]
+id = "ibge"
+name = "Instituto Brasileiro de Geografia e Estatística"
+acronym = "IBGE"
+url = "https://www.ibge.gov.br"
+
+[[licenses]]
+id = "ibge-reuso-com-citacao"
+name = "Reuso de dados do IBGE com citação da fonte"
+conditions = "Citação obrigatória."
+review_status = "requires_review"
+
+[[sources]]
+id = "ibge-sidra"
+name = "SIDRA"
+connector = "sidra"
+base_url = "https://apisidra.ibge.gov.br"
+
+[sources.http]
+min_interval_s = 0.0
+max_attempts = 2
+backoff_initial_s = 0.0
+
+[[sources]]
+id = "ibge-geoftp"
+name = "geoftp"
+connector = "http_file"
+base_url = "https://geoftp.ibge.gov.br/"
+
+[sources.http]
+min_interval_s = 0.0
+max_attempts = 2
+backoff_initial_s = 0.0
+
+[[datasets]]
+id = "ibge-sidra-6579"
+source = "ibge-sidra"
+official_id = "6579"
+title = "População residente estimada"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+
+[datasets.params]
+table = "6579"
+variables = ["9324"]
+territorial_levels = ["n1", "n2", "n3"]
+estimated_values_per_period = 33
+min_rows = 33
+max_rows = 33
+refresh_recent_periods = 2
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "9324" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-4714"
+source = "ibge-sidra"
+official_id = "4714"
+title = "Censo 2022"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "4714"
+variables = ["93", "6318", "614"]
+territorial_levels = ["n1", "n2", "n3"]
+estimated_values_per_period = 99
+min_rows = 99
+max_rows = 99
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "93" = "exact", "6318" = "rounding" }
+
+[[datasets]]
+id = "ibge-sidra-9605"
+source = "ibge-sidra"
+official_id = "9605"
+title = "Cor ou raça"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9605"
+variables = ["93"]
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c86" = "all" }
+estimated_values_per_period = 198
+min_rows = 198
+max_rows = 198
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "93" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9718"
+source = "ibge-sidra"
+official_id = "9718"
+title = "Indígenas"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9718"
+variables = ["93", "350", "4727"]
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c1714" = "all", "c2661" = "32776,12869,12870" }
+split_by_variable = true
+split_by_classification = "c2661"
+estimated_values_per_period = 132
+min_rows = 132
+max_rows = 132
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "93" = "exact", "350" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9578"
+source = "ibge-sidra"
+official_id = "9578"
+title = "Quilombolas"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9578"
+variables = ["4709", "93", "4728"]
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c2661" = "all" }
+split_by_variable = true
+estimated_values_per_period = 99
+min_rows = 99
+max_rows = 99
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "4709" = "exact", "93" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9971"
+source = "ibge-sidra"
+official_id = "9971"
+title = "Indígenas por sexo e idade"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9971"
+variables = ["350"]
+territorial_levels = ["n1"]
+classifications = { "c1" = "all", "c2" = "all", "c2661" = "all", "c58" = "all" }
+estimated_values_per_period = 513
+min_rows = 513
+max_rows = 513
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "350" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9970"
+source = "ibge-sidra"
+official_id = "9970"
+title = "Indígenas por idade"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9970"
+variables = ["350"]
+territorial_levels = ["n1"]
+classifications = { "c1" = "all", "c2661" = "all", "c287" = "all" }
+estimated_values_per_period = 1206
+min_rows = 1206
+max_rows = 1206
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "350" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9723"
+source = "ibge-sidra"
+official_id = "9723"
+title = "Territórios quilombolas"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9723"
+variables = ["6559", "7079", "7080"]
+territorial_levels = ["n1", "n2", "n3", "n131", "n134", "n145", "n1145"]
+estimated_values_per_period = 3123
+min_rows = 3123
+max_rows = 3123
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "6559" = "exact", "7079" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9954"
+source = "ibge-sidra"
+official_id = "9954"
+title = "Terras indígenas"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9954"
+variables = ["576", "1432"]
+territorial_levels = ["n1", "n3", "n125", "n1124", "n1125"]
+classifications = { "c1" = "6795", "c2" = "6794", "c287" = "100362" }
+split_by_variable = true
+estimated_values_per_period = 1242
+min_rows = 1242
+max_rows = 1242
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "576" = "exact", "1432" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9606"
+source = "ibge-sidra"
+official_id = "9606"
+title = "Cor ou raça e sexo"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9606"
+variables = ["93"]
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c86" = "all", "c2" = "all", "c287" = "100362" }
+estimated_values_per_period = 594
+min_rows = 594
+max_rows = 594
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "93" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-8176"
+source = "ibge-sidra"
+official_id = "8176"
+title = "Quilombolas por sexo"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "8176"
+variables = ["4709"]
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c2" = "all", "c287" = "100362", "c2661" = "all" }
+estimated_values_per_period = 297
+min_rows = 297
+max_rows = 297
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "4709" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9765"
+source = "ibge-sidra"
+official_id = "9765"
+title = "Territórios quilombolas por sexo"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+
+[datasets.params]
+table = "9765"
+variables = ["6559", "7079"]
+territorial_levels = ["n1", "n2", "n3", "n131", "n134", "n145", "n1145"]
+classifications = { "c2" = "all", "c287" = "100362" }
+estimated_values_per_period = 6246
+min_rows = 6246
+max_rows = 6246
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "6559" = "exact", "7079" = "exact" }
+
+[[datasets]]
+id = "ibge-dtb"
+source = "ibge-geoftp"
+official_id = "DTB_2025"
+title = "DTB 2025"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+
+[datasets.params]
+url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/estrutura_territorial/divisao_territorial/2025/DTB_2025.zip"
+artifact_name = "dtb-2025.zip"
+reference_period = "2025"
+format = "zip"
+expected_members = ["RELATORIO_DTB_BRASIL_*_MUNICIPIOS.ods", "RELATORIO_DTB_BRASIL_*_MUNICIPIOS.xls"]
+min_bytes = 100
+
+[datasets.silver]
+transformer = "dtb_municipality"
+member = "RELATORIO_DTB_BRASIL_*_MUNICIPIOS.ods"
+
+[[datasets]]
+id = "ibge-malha-uf-2022"
+source = "ibge-geoftp"
+official_id = "BR_UF_2022"
+title = "Malha UF (sintética nos testes)"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+
+[datasets.params]
+url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/Brasil/BR/BR_UF_2022.zip"
+artifact_name = "br-uf-2022.zip"
+reference_period = "2022"
+format = "zip"
+expected_members = ["BR_UF_2022.shp", "BR_UF_2022.shx", "BR_UF_2022.dbf", "BR_UF_2022.prj", "BR_UF_2022.cpg"]
+min_bytes = 100
+max_bytes = 1048576
+
+[datasets.silver]
+transformer = "territorial_mesh"
+member = "BR_UF_2022"
+level = "uf"
+code_field = "CD_UF"
+name_field = "NM_UF"
+uf_field = "SIGLA_UF"
+expected_count = 27
+
+[[datasets]]
+id = "ibge-malha-municipios-2022"
+source = "ibge-geoftp"
+official_id = "BR_Municipios_2022"
+title = "Malha municípios (sintética nos testes)"
+description = "teste"
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+
+[datasets.params]
+url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/Brasil/BR/BR_Municipios_2022.zip"
+artifact_name = "br-municipios-2022.zip"
+reference_period = "2022"
+format = "zip"
+expected_members = ["BR_Municipios_2022.shp", "BR_Municipios_2022.shx", "BR_Municipios_2022.dbf", "BR_Municipios_2022.prj", "BR_Municipios_2022.cpg"]
+min_bytes = 100
+max_bytes = 1048576
+
+[datasets.silver]
+transformer = "territorial_mesh"
+member = "BR_Municipios_2022"
+level = "municipio"
+code_field = "CD_MUN"
+name_field = "NM_MUN"
+uf_field = "SIGLA_UF"
+territorial_reference = "ibge-dtb"

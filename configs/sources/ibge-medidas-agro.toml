@@ -1,0 +1,1827 @@
+# Gerado por `odb panorama gerar-agro`. Edite configs/catalog/medidas-agro.toml.
+
+config_version = "1.0.0"
+
+[[datasets]]
+id = "ibge-medida-t5457-v216-ha-g1"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Área colhida das lavouras"
+description = "Área colhida desde 1988, mantendo a mesma janela inicial da área plantada existente, por decisão do mantenedor em 2026-11-17. Valores oficiais em hectares; áreas de culturas sucessivas ou simultâneas podem exceder a área geográfica."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["216"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40108,40144,40110,40115,40116,40264,40123,40272" }
+category_chunk = 8
+estimated_values_per_period = 45096
+max_rows = 45096
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-216-ha"
+series_order = 1
+
+[[datasets]]
+id = "ibge-medida-t5457-v216-ha-g2"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Área colhida das lavouras"
+description = "Área colhida desde 1988, mantendo a mesma janela inicial da área plantada existente, por decisão do mantenedor em 2026-11-17. Valores oficiais em hectares; áreas de culturas sucessivas ou simultâneas podem exceder a área geográfica."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["216"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "0,40129,40092,40130,40099,40100,40101,40102,40103,40131,40136,40104,40105,40137,40138,40139,40106,40142,40143,40107,40109,40145,40146,40147,40111,40112,40148,40113,40149,40150,40151,40152,40260,40117,40261,40118,40119,40262,40263,40120,40121,40122,40265,40266,40267,40268,40269,40270,40124,40125,40271,40126,40127,40273,40274" }
+category_chunk = 8
+estimated_values_per_period = 45096
+max_rows = 45096
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-216-ha"
+series_order = 2
+
+[[datasets]]
+id = "ibge-medida-t5457-v216-ha-g3"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Área colhida das lavouras"
+description = "Área colhida desde 1988, mantendo a mesma janela inicial da área plantada existente, por decisão do mantenedor em 2026-11-17. Valores oficiais em hectares; áreas de culturas sucessivas ou simultâneas podem exceder a área geográfica."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["216"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40114,40128" }
+category_chunk = 8
+estimated_values_per_period = 11274
+max_rows = 11274
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-216-ha"
+series_order = 3
+
+[[datasets]]
+id = "ibge-medida-t5457-v216-ha-g4"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Área colhida das lavouras"
+description = "Área colhida desde 1988, mantendo a mesma janela inicial da área plantada existente, por decisão do mantenedor em 2026-11-17. Valores oficiais em hectares; áreas de culturas sucessivas ou simultâneas podem exceder a área geográfica."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["216"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40140,40141" }
+category_chunk = 8
+estimated_values_per_period = 11274
+max_rows = 11274
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-216-ha"
+series_order = 4
+
+[[datasets]]
+id = "ibge-medida-t5457-v216-ha-g5"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Área colhida das lavouras"
+description = "Área colhida desde 1988, mantendo a mesma janela inicial da área plantada existente, por decisão do mantenedor em 2026-11-17. Valores oficiais em hectares; áreas de culturas sucessivas ou simultâneas podem exceder a área geográfica."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["216"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "45982" }
+category_chunk = 8
+estimated_values_per_period = 5637
+max_rows = 5637
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-216-ha"
+series_order = 5
+
+[[datasets]]
+id = "ibge-medida-t5457-v216-ha-g6"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Área colhida das lavouras"
+description = "Área colhida desde 1988, mantendo a mesma janela inicial da área plantada existente, por decisão do mantenedor em 2026-11-17. Valores oficiais em hectares; áreas de culturas sucessivas ou simultâneas podem exceder a área geográfica."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["216"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "83388,83399,83389,83390,83391,83392,83400,83395,83401,83393,83394,83396,83397,83398" }
+category_chunk = 8
+estimated_values_per_period = 45096
+max_rows = 45096
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-216-ha"
+series_order = 6
+
+[[datasets]]
+id = "ibge-medida-t5457-v215-reais-g1"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Valor da produção das lavouras"
+description = "Valores nominais em mil reais desde 1994. Períodos em moedas anteriores ficam fora da série por decisão do mantenedor em 2026-11-17. Não há conversão de moedas nem correção pela inflação."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["215"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40108,40144,40110,40115,40116,40264,40123,40272" }
+category_chunk = 8
+estimated_values_per_period = 45096
+max_rows = 45096
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-215-reais"
+series_order = 1
+
+[[datasets]]
+id = "ibge-medida-t5457-v215-reais-g2"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Valor da produção das lavouras"
+description = "Valores nominais em mil reais desde 1994. Períodos em moedas anteriores ficam fora da série por decisão do mantenedor em 2026-11-17. Não há conversão de moedas nem correção pela inflação."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["215"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "0,40129,40092,40130,40099,40100,40101,40102,40103,40131,40136,40104,40105,40137,40138,40139,40106,40142,40143,40107,40109,40145,40146,40147,40111,40112,40148,40113,40149,40150,40151,40152,40260,40117,40261,40118,40119,40262,40263,40120,40121,40122,40265,40266,40267,40268,40269,40270,40124,40125,40271,40126,40127,40273,40274" }
+category_chunk = 8
+estimated_values_per_period = 45096
+max_rows = 45096
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-215-reais"
+series_order = 2
+
+[[datasets]]
+id = "ibge-medida-t5457-v215-reais-g3"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Valor da produção das lavouras"
+description = "Valores nominais em mil reais desde 1994. Períodos em moedas anteriores ficam fora da série por decisão do mantenedor em 2026-11-17. Não há conversão de moedas nem correção pela inflação."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["215"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40114,40128" }
+category_chunk = 8
+estimated_values_per_period = 11274
+max_rows = 11274
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-215-reais"
+series_order = 3
+
+[[datasets]]
+id = "ibge-medida-t5457-v215-reais-g4"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Valor da produção das lavouras"
+description = "Valores nominais em mil reais desde 1994. Períodos em moedas anteriores ficam fora da série por decisão do mantenedor em 2026-11-17. Não há conversão de moedas nem correção pela inflação."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["215"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40140,40141" }
+category_chunk = 8
+estimated_values_per_period = 11274
+max_rows = 11274
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-215-reais"
+series_order = 4
+
+[[datasets]]
+id = "ibge-medida-t5457-v215-reais-g5"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Valor da produção das lavouras"
+description = "Valores nominais em mil reais desde 1994. Períodos em moedas anteriores ficam fora da série por decisão do mantenedor em 2026-11-17. Não há conversão de moedas nem correção pela inflação."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["215"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "45982" }
+category_chunk = 8
+estimated_values_per_period = 5637
+max_rows = 5637
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-215-reais"
+series_order = 5
+
+[[datasets]]
+id = "ibge-medida-t5457-v215-reais-g6"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Valor da produção das lavouras"
+description = "Valores nominais em mil reais desde 1994. Períodos em moedas anteriores ficam fora da série por decisão do mantenedor em 2026-11-17. Não há conversão de moedas nem correção pela inflação."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["215"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "83388,83399,83389,83390,83391,83392,83400,83395,83401,83393,83394,83396,83397,83398" }
+category_chunk = 8
+estimated_values_per_period = 45096
+max_rows = 45096
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-215-reais"
+series_order = 6
+
+[[datasets]]
+id = "ibge-medida-t74-v215-reais-g1"
+source = "ibge-sidra"
+official_id = "74"
+title = "Valor da produção de origem animal"
+description = "Valor oficial da produção de leite, ovos, mel, casulos e lã, em mil reais desde 1994. O Total é o publicado na fonte. Períodos em moedas anteriores ficam fora da série; não há conversão ou correção inflacionária."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/74"
+
+[datasets.params]
+table = "74"
+variables = ["215"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c80" = "0,2682,2685,2686,2687,2683,2684" }
+category_chunk = 8
+estimated_values_per_period = 39501
+max_rows = 39501
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-74-215-reais"
+series_order = 1
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-ton-g1"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida das lavouras (Toneladas)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1974", "1975", "1976", "1977", "1978", "1979", "1980", "1981", "1982", "1983", "1984", "1985", "1986", "1987"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40329,40330,40331" }
+category_chunk = 8
+estimated_values_per_period = 16911
+max_rows = 16911
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-ton"
+series_order = 1
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-ton-g2"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida das lavouras (Toneladas)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1974", "1975", "1976", "1977", "1978", "1979", "1980", "1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40108,40144,40115,40116,40123,40272" }
+category_chunk = 8
+estimated_values_per_period = 33822
+max_rows = 33822
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-ton"
+series_order = 2
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-ton-g3"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida das lavouras (Toneladas)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1974", "1975", "1976", "1977", "1978", "1979", "1980", "1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40130,40099,40100,40101,40102,40103,40131,40104,40105,40138,40106,40107,40109,40111,40112,40113,40117,40118,40119,40122,40265,40269,40270,40124,40125,40126,40127,40274" }
+category_chunk = 8
+estimated_values_per_period = 45096
+max_rows = 45096
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-ton"
+series_order = 3
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-ton-g4"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida das lavouras (Toneladas)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1981", "1982", "1983", "1984", "1985", "1986", "1987"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40468" }
+category_chunk = 8
+estimated_values_per_period = 5637
+max_rows = 5637
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-ton"
+series_order = 4
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-ton-g5"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida das lavouras (Toneladas)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40137,40147,40150,40266" }
+category_chunk = 8
+estimated_values_per_period = 22548
+max_rows = 22548
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-ton"
+series_order = 5
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-ton-g6"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida das lavouras (Toneladas)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40110" }
+category_chunk = 8
+estimated_values_per_period = 5637
+max_rows = 5637
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-ton"
+series_order = 6
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-ton-g7"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida das lavouras (Toneladas)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40143,40146,40273" }
+category_chunk = 8
+estimated_values_per_period = 16911
+max_rows = 16911
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-ton"
+series_order = 7
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-ton-g8"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida das lavouras (Toneladas)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40264" }
+category_chunk = 8
+estimated_values_per_period = 5637
+max_rows = 5637
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-ton"
+series_order = 8
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-ton-g9"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida das lavouras (Toneladas)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40129,40136,40142,40148,40149,40151,40152,40260,40261,40262,40263,40120,40121,40267,40268,40271" }
+category_chunk = 8
+estimated_values_per_period = 45096
+max_rows = 45096
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-ton"
+series_order = 9
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-ton-g10"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida das lavouras (Toneladas)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40139" }
+category_chunk = 8
+estimated_values_per_period = 5637
+max_rows = 5637
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-ton"
+series_order = 10
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-ton-g11"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida das lavouras (Toneladas)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40114,40128" }
+category_chunk = 8
+estimated_values_per_period = 11274
+max_rows = 11274
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-ton"
+series_order = 11
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-ton-g12"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida das lavouras (Toneladas)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40140,40141" }
+category_chunk = 8
+estimated_values_per_period = 11274
+max_rows = 11274
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-ton"
+series_order = 12
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-ton-g13"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida das lavouras (Toneladas)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "45982" }
+category_chunk = 8
+estimated_values_per_period = 5637
+max_rows = 5637
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-ton"
+series_order = 13
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-ton-g14"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida das lavouras (Toneladas)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "83388,83399,83389,83390,83391,83392,83400,83395,83401,83393,83394,83396,83397,83398" }
+category_chunk = 8
+estimated_values_per_period = 45096
+max_rows = 45096
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-ton"
+series_order = 14
+
+[[datasets]]
+id = "ibge-medida-t5457-v214-frutos-g1"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Quantidade produzida de abacaxi e coco (Mil frutos)"
+description = "Abacaxi e coco-da-baía mantêm a unidade específica da nota 6 da 5457. O cabeçalho genérico da API informa toneladas ou kg/ha, mas a nota oficial especifica mil frutos ou frutos/ha. A Gold corrige somente o rótulo da unidade, sem converter ou alterar valores; a Silver preserva o cabeçalho original. Sem Total agregado entre produtos."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["214"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1974", "1975", "1976", "1977", "1978", "1979", "1980", "1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40092,40145" }
+category_chunk = 8
+estimated_values_per_period = 11274
+max_rows = 11274
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-214-frutos"
+series_order = 1
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-kg-ha-g1"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1974", "1975", "1976", "1977", "1978", "1979", "1980", "1981", "1982", "1983", "1984", "1985", "1986", "1987"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40329,40330,40331" }
+category_chunk = 8
+estimated_values_per_period = 16911
+max_rows = 16911
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-kg-ha"
+series_order = 1
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-kg-ha-g2"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1974", "1975", "1976", "1977", "1978", "1979", "1980", "1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40108,40144,40115,40116,40123,40272" }
+category_chunk = 8
+estimated_values_per_period = 33822
+max_rows = 33822
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-kg-ha"
+series_order = 2
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-kg-ha-g3"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1974", "1975", "1976", "1977", "1978", "1979", "1980", "1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40130,40099,40100,40101,40102,40103,40131,40104,40105,40138,40106,40107,40109,40111,40112,40113,40117,40118,40119,40122,40265,40269,40270,40124,40125,40126,40127,40274" }
+category_chunk = 8
+estimated_values_per_period = 45096
+max_rows = 45096
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-kg-ha"
+series_order = 3
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-kg-ha-g4"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1981", "1982", "1983", "1984", "1985", "1986", "1987"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40468" }
+category_chunk = 8
+estimated_values_per_period = 5637
+max_rows = 5637
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-kg-ha"
+series_order = 4
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-kg-ha-g5"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40137,40147,40150,40266" }
+category_chunk = 8
+estimated_values_per_period = 22548
+max_rows = 22548
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-kg-ha"
+series_order = 5
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-kg-ha-g6"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40110" }
+category_chunk = 8
+estimated_values_per_period = 5637
+max_rows = 5637
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-kg-ha"
+series_order = 6
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-kg-ha-g7"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40143,40146,40273" }
+category_chunk = 8
+estimated_values_per_period = 16911
+max_rows = 16911
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-kg-ha"
+series_order = 7
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-kg-ha-g8"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40264" }
+category_chunk = 8
+estimated_values_per_period = 5637
+max_rows = 5637
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-kg-ha"
+series_order = 8
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-kg-ha-g9"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40129,40136,40142,40148,40149,40151,40152,40260,40261,40262,40263,40120,40121,40267,40268,40271" }
+category_chunk = 8
+estimated_values_per_period = 45096
+max_rows = 45096
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-kg-ha"
+series_order = 9
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-kg-ha-g10"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40139" }
+category_chunk = 8
+estimated_values_per_period = 5637
+max_rows = 5637
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-kg-ha"
+series_order = 10
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-kg-ha-g11"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40114,40128" }
+category_chunk = 8
+estimated_values_per_period = 11274
+max_rows = 11274
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-kg-ha"
+series_order = 11
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-kg-ha-g12"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40140,40141" }
+category_chunk = 8
+estimated_values_per_period = 11274
+max_rows = 11274
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-kg-ha"
+series_order = 12
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-kg-ha-g13"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "45982" }
+category_chunk = 8
+estimated_values_per_period = 5637
+max_rows = 5637
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-kg-ha"
+series_order = 13
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-kg-ha-g14"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio das lavouras (Quilogramas por Hectare)"
+description = "Série por produto, sem Total agregado: a nota 7 da 5457 declara o Total indisponível. As 17 frutíferas que mudaram de unidade começam em 2001, o café beneficiado começa em 2002, e cada produto respeita o calendário oficial. Dados na Gold para o seletor de produto do portal, sob responsabilidade do Claude."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "83388,83399,83389,83390,83391,83392,83400,83395,83401,83393,83394,83396,83397,83398" }
+category_chunk = 8
+estimated_values_per_period = 45096
+max_rows = 45096
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-kg-ha"
+series_order = 14
+
+[[datasets]]
+id = "ibge-medida-t5457-v112-frutos-ha-g1"
+source = "ibge-sidra"
+official_id = "5457"
+title = "Rendimento médio de abacaxi e coco (Frutos por Hectare)"
+description = "Abacaxi e coco-da-baía mantêm a unidade específica da nota 6 da 5457. O cabeçalho genérico da API informa toneladas ou kg/ha, mas a nota oficial especifica mil frutos ou frutos/ha. A Gold corrige somente o rótulo da unidade, sem converter ou alterar valores; a Silver preserva o cabeçalho original. Sem Total agregado entre produtos."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/5457"
+
+[datasets.params]
+table = "5457"
+variables = ["112"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+periods = ["1974", "1975", "1976", "1977", "1978", "1979", "1980", "1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
+period_type = "ano"
+group_periods_by_year = false
+classifications = { "c782" = "40092,40145" }
+category_chunk = 8
+estimated_values_per_period = 11274
+max_rows = 11274
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-5457-112-frutos-ha"
+series_order = 1
+
+[[datasets]]
+id = "ibge-medida-t6588-v216-ha-g1"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Estimativa da safra: área colhida"
+description = "LSPA: área colhida da estimativa anual publicada mensalmente, em hectares nativos. Não se somam previsões de meses sucessivos nem produtos hierarquicamente sobrepostos. O Total é o publicado pela fonte; cada produto mantém seu calendário."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["216"]
+territorial_levels = ["n1", "n2", "n3"]
+periods = ["200609", "200610", "200611", "200612", "200701", "200702", "200703", "200704", "200705", "200706", "200707", "200708", "200709", "200710", "200711", "200712", "200801", "200802", "200803", "200804", "200805", "200806", "200807", "200808", "200809", "200810", "200811", "200812", "200901", "200902", "200903", "200904", "200905", "200906", "200907", "200908", "200909", "200910", "200911", "200912", "201001", "201002", "201003", "201004", "201005", "201006", "201007", "201008", "201009", "201010", "201011", "201012", "201101", "201102", "201103", "201104", "201105", "201106", "201107", "201108", "201109", "201110", "201111", "201112", "201201", "201202", "201203", "201204", "201205", "201206", "201207", "201208", "201209", "201210", "201211", "201212", "201301", "201302", "201303", "201304", "201305", "201306", "201307", "201308", "201309", "201310", "201311", "201312", "201401", "201402", "201403", "201404", "201405", "201406", "201407", "201408", "201409", "201410", "201411", "201412", "201501", "201502", "201503", "201504", "201505", "201506", "201507", "201508", "201509", "201510", "201511", "201512", "201601", "201602", "201603", "201604", "201605", "201606", "201607", "201608", "201609", "201610", "201611", "201612", "201701", "201702", "201703", "201704", "201705", "201706", "201707", "201708", "201709", "201710", "201711", "201712"]
+period_type = "mes"
+group_periods_by_year = true
+classifications = { "c48" = "39447,39448,39458,39459,39461,39464,39465,39468,39469" }
+category_chunk = 8
+estimated_values_per_period = 7884
+max_rows = 7884
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-6588-216-ha"
+series_order = 1
+
+[[datasets]]
+id = "ibge-medida-t6588-v216-ha-g2"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Estimativa da safra: área colhida"
+description = "LSPA: área colhida da estimativa anual publicada mensalmente, em hectares nativos. Não se somam previsões de meses sucessivos nem produtos hierarquicamente sobrepostos. O Total é o publicado pela fonte; cada produto mantém seu calendário."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["216"]
+territorial_levels = ["n1", "n2", "n3"]
+periods = ["200609", "200610", "200611", "200612", "200701", "200702", "200703", "200704", "200705", "200706", "200707", "200708", "200709", "200710", "200711", "200712", "200801", "200802", "200803", "200804", "200805", "200806", "200807", "200808", "200809", "200810", "200811", "200812", "200901", "200902", "200903", "200904", "200905", "200906", "200907", "200908", "200909", "200910", "200911", "200912", "201001", "201002", "201003", "201004", "201005", "201006", "201007", "201008", "201009", "201010", "201011", "201012", "201101", "201102", "201103", "201104", "201105", "201106", "201107", "201108", "201109", "201110", "201111", "201112", "201201", "201202", "201203", "201204", "201205", "201206", "201207", "201208", "201209", "201210", "201211", "201212", "201301", "201302", "201303", "201304", "201305", "201306", "201307", "201308", "201309", "201310", "201311", "201312", "201401", "201402", "201403", "201404", "201405", "201406", "201407", "201408", "201409", "201410", "201411", "201412", "201501", "201502", "201503", "201504", "201505", "201506", "201507", "201508", "201509", "201510", "201511", "201512", "201601", "201602", "201603", "201604", "201605", "201606", "201607", "201608", "201609", "201610", "201611", "201612", "201701", "201702", "201703", "201704", "201705", "201706", "201707", "201708", "201709", "201710", "201711", "201712", "201801", "201802", "201803", "201804", "201805", "201806", "201807", "201808", "201809", "201810", "201811", "201812", "201901", "201902", "201903", "201904", "201905", "201906", "201907", "201908", "201909", "201910", "201911", "201912", "202001", "202002", "202003", "202004", "202005", "202006", "202007", "202008", "202009", "202010", "202011", "202012", "202101", "202102", "202103", "202104", "202105", "202106", "202107", "202108", "202109", "202110", "202111", "202112", "202201", "202202", "202203", "202204", "202205", "202206", "202207", "202208", "202209", "202210", "202211", "202212", "202301", "202302", "202303", "202304", "202305", "202306", "202307", "202308", "202309", "202310", "202311", "202312", "202401", "202402", "202403", "202404", "202405", "202406", "202407", "202408", "202409", "202410", "202411", "202412", "202501", "202502", "202503", "202504", "202505", "202506", "202507", "202508", "202509", "202510", "202511", "202512", "202601", "202602", "202603", "202604", "202605", "202606", "202607", "202608", "202609", "202610"]
+period_type = "mes"
+group_periods_by_year = true
+classifications = { "c48" = "0,39428,39429,39430,39431,39432,39433,39434,39435,39436,39437,39438,39439,39440,39441,39442,39443,39444,39445,39446,39449,39450,39451,39452,39453,40527,39456,39457,39460,39462,39463,39467,39470,39471" }
+category_chunk = 8
+estimated_values_per_period = 29784
+max_rows = 29784
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-6588-216-ha"
+series_order = 2
+
+[[datasets]]
+id = "ibge-medida-t6588-v216-ha-g3"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Estimativa da safra: área colhida"
+description = "LSPA: área colhida da estimativa anual publicada mensalmente, em hectares nativos. Não se somam previsões de meses sucessivos nem produtos hierarquicamente sobrepostos. O Total é o publicado pela fonte; cada produto mantém seu calendário."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["216"]
+territorial_levels = ["n1", "n2", "n3"]
+periods = ["201201", "201202", "201203", "201204", "201205", "201206", "201207", "201208", "201209", "201210", "201211", "201212", "201301", "201302", "201303", "201304", "201305", "201306", "201307", "201308", "201309", "201310", "201311", "201312", "201401", "201402", "201403", "201404", "201405", "201406", "201407", "201408", "201409", "201410", "201411", "201412", "201501", "201502", "201503", "201504", "201505", "201506", "201507", "201508", "201509", "201510", "201511", "201512", "201601", "201602", "201603", "201604", "201605", "201606", "201607", "201608", "201609", "201610", "201611", "201612", "201701", "201702", "201703", "201704", "201705", "201706", "201707", "201708", "201709", "201710", "201711", "201712", "201801", "201802", "201803", "201804", "201805", "201806", "201807", "201808", "201809", "201810", "201811", "201812", "201901", "201902", "201903", "201904", "201905", "201906", "201907", "201908", "201909", "201910", "201911", "201912", "202001", "202002", "202003", "202004", "202005", "202006", "202007", "202008", "202009", "202010", "202011", "202012", "202101", "202102", "202103", "202104", "202105", "202106", "202107", "202108", "202109", "202110", "202111", "202112", "202201", "202202", "202203", "202204", "202205", "202206", "202207", "202208", "202209", "202210", "202211", "202212", "202301", "202302", "202303", "202304", "202305", "202306", "202307", "202308", "202309", "202310", "202311", "202312", "202401", "202402", "202403", "202404", "202405", "202406", "202407", "202408", "202409", "202410", "202411", "202412", "202501", "202502", "202503", "202504", "202505", "202506", "202507", "202508", "202509", "202510", "202511", "202512", "202601", "202602", "202603", "202604", "202605", "202606", "202607", "202608", "202609", "202610"]
+period_type = "mes"
+group_periods_by_year = true
+classifications = { "c48" = "39454,39455" }
+category_chunk = 8
+estimated_values_per_period = 1752
+max_rows = 1752
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-6588-216-ha"
+series_order = 3
+
+[[datasets]]
+id = "ibge-medida-t6588-v216-ha-g4"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Estimativa da safra: área colhida"
+description = "LSPA: área colhida da estimativa anual publicada mensalmente, em hectares nativos. Não se somam previsões de meses sucessivos nem produtos hierarquicamente sobrepostos. O Total é o publicado pela fonte; cada produto mantém seu calendário."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["216"]
+territorial_levels = ["n1", "n2", "n3"]
+periods = ["202601", "202602", "202603", "202604", "202605", "202606", "202607", "202608", "202609", "202610"]
+period_type = "mes"
+group_periods_by_year = true
+classifications = { "c48" = "82223,82224" }
+category_chunk = 8
+estimated_values_per_period = 1752
+max_rows = 1752
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-6588-216-ha"
+series_order = 4
+
+[[datasets]]
+id = "ibge-medida-t6588-v35-ton-g1"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Estimativa da safra: produção (toneladas)"
+description = "LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["35"]
+territorial_levels = ["n1", "n2", "n3"]
+periods = ["200609", "200610", "200611", "200612", "200701", "200702", "200703", "200704", "200705", "200706", "200707", "200708", "200709", "200710", "200711", "200712", "200801", "200802", "200803", "200804", "200805", "200806", "200807", "200808", "200809", "200810", "200811", "200812", "200901", "200902", "200903", "200904", "200905", "200906", "200907", "200908", "200909", "200910", "200911", "200912", "201001", "201002", "201003", "201004", "201005", "201006", "201007", "201008", "201009", "201010", "201011", "201012", "201101", "201102", "201103", "201104", "201105", "201106", "201107", "201108", "201109", "201110", "201111", "201112", "201201", "201202", "201203", "201204", "201205", "201206", "201207", "201208", "201209", "201210", "201211", "201212", "201301", "201302", "201303", "201304", "201305", "201306", "201307", "201308", "201309", "201310", "201311", "201312", "201401", "201402", "201403", "201404", "201405", "201406", "201407", "201408", "201409", "201410", "201411", "201412", "201501", "201502", "201503", "201504", "201505", "201506", "201507", "201508", "201509", "201510", "201511", "201512", "201601", "201602", "201603", "201604", "201605", "201606", "201607", "201608", "201609", "201610", "201611", "201612", "201701", "201702", "201703", "201704", "201705", "201706", "201707", "201708", "201709", "201710", "201711", "201712"]
+period_type = "mes"
+group_periods_by_year = true
+classifications = { "c48" = "39448,39458,39461,39464,39465,39468,39469" }
+category_chunk = 8
+estimated_values_per_period = 6132
+max_rows = 6132
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-6588-35-ton"
+series_order = 1
+
+[[datasets]]
+id = "ibge-medida-t6588-v35-ton-g2"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Estimativa da safra: produção (toneladas)"
+description = "LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["35"]
+territorial_levels = ["n1", "n2", "n3"]
+periods = ["200609", "200610", "200611", "200612", "200701", "200702", "200703", "200704", "200705", "200706", "200707", "200708", "200709", "200710", "200711", "200712", "200801", "200802", "200803", "200804", "200805", "200806", "200807", "200808", "200809", "200810", "200811", "200812", "200901", "200902", "200903", "200904", "200905", "200906", "200907", "200908", "200909", "200910", "200911", "200912", "201001", "201002", "201003", "201004", "201005", "201006", "201007", "201008", "201009", "201010", "201011", "201012", "201101", "201102", "201103", "201104", "201105", "201106", "201107", "201108", "201109", "201110", "201111", "201112", "201201", "201202", "201203", "201204", "201205", "201206", "201207", "201208", "201209", "201210", "201211", "201212", "201301", "201302", "201303", "201304", "201305", "201306", "201307", "201308", "201309", "201310", "201311", "201312", "201401", "201402", "201403", "201404", "201405", "201406", "201407", "201408", "201409", "201410", "201411", "201412", "201501", "201502", "201503", "201504", "201505", "201506", "201507", "201508", "201509", "201510", "201511", "201512", "201601", "201602", "201603", "201604", "201605", "201606", "201607", "201608", "201609", "201610", "201611", "201612", "201701", "201702", "201703", "201704", "201705", "201706", "201707", "201708", "201709", "201710", "201711", "201712", "201801", "201802", "201803", "201804", "201805", "201806", "201807", "201808", "201809", "201810", "201811", "201812", "201901", "201902", "201903", "201904", "201905", "201906", "201907", "201908", "201909", "201910", "201911", "201912", "202001", "202002", "202003", "202004", "202005", "202006", "202007", "202008", "202009", "202010", "202011", "202012", "202101", "202102", "202103", "202104", "202105", "202106", "202107", "202108", "202109", "202110", "202111", "202112", "202201", "202202", "202203", "202204", "202205", "202206", "202207", "202208", "202209", "202210", "202211", "202212", "202301", "202302", "202303", "202304", "202305", "202306", "202307", "202308", "202309", "202310", "202311", "202312", "202401", "202402", "202403", "202404", "202405", "202406", "202407", "202408", "202409", "202410", "202411", "202412", "202501", "202502", "202503", "202504", "202505", "202506", "202507", "202508", "202509", "202510", "202511", "202512", "202601", "202602", "202603", "202604", "202605", "202606", "202607", "202608", "202609", "202610"]
+period_type = "mes"
+group_periods_by_year = true
+classifications = { "c48" = "39428,39429,39430,39431,39432,39433,39434,39435,39436,39437,39438,39439,39440,39441,39442,39443,39444,39445,39446,39449,39450,39451,39452,39453,40527,39456,39457,39460,39462,39463,39467,39470,39471" }
+category_chunk = 8
+estimated_values_per_period = 28908
+max_rows = 28908
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-6588-35-ton"
+series_order = 2
+
+[[datasets]]
+id = "ibge-medida-t6588-v35-ton-g3"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Estimativa da safra: produção (toneladas)"
+description = "LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["35"]
+territorial_levels = ["n1", "n2", "n3"]
+periods = ["201201", "201202", "201203", "201204", "201205", "201206", "201207", "201208", "201209", "201210", "201211", "201212", "201301", "201302", "201303", "201304", "201305", "201306", "201307", "201308", "201309", "201310", "201311", "201312", "201401", "201402", "201403", "201404", "201405", "201406", "201407", "201408", "201409", "201410", "201411", "201412", "201501", "201502", "201503", "201504", "201505", "201506", "201507", "201508", "201509", "201510", "201511", "201512", "201601", "201602", "201603", "201604", "201605", "201606", "201607", "201608", "201609", "201610", "201611", "201612", "201701", "201702", "201703", "201704", "201705", "201706", "201707", "201708", "201709", "201710", "201711", "201712", "201801", "201802", "201803", "201804", "201805", "201806", "201807", "201808", "201809", "201810", "201811", "201812", "201901", "201902", "201903", "201904", "201905", "201906", "201907", "201908", "201909", "201910", "201911", "201912", "202001", "202002", "202003", "202004", "202005", "202006", "202007", "202008", "202009", "202010", "202011", "202012", "202101", "202102", "202103", "202104", "202105", "202106", "202107", "202108", "202109", "202110", "202111", "202112", "202201", "202202", "202203", "202204", "202205", "202206", "202207", "202208", "202209", "202210", "202211", "202212", "202301", "202302", "202303", "202304", "202305", "202306", "202307", "202308", "202309", "202310", "202311", "202312", "202401", "202402", "202403", "202404", "202405", "202406", "202407", "202408", "202409", "202410", "202411", "202412", "202501", "202502", "202503", "202504", "202505", "202506", "202507", "202508", "202509", "202510", "202511", "202512", "202601", "202602", "202603", "202604", "202605", "202606", "202607", "202608", "202609", "202610"]
+period_type = "mes"
+group_periods_by_year = true
+classifications = { "c48" = "39454,39455" }
+category_chunk = 8
+estimated_values_per_period = 1752
+max_rows = 1752
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-6588-35-ton"
+series_order = 3
+
+[[datasets]]
+id = "ibge-medida-t6588-v35-ton-g4"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Estimativa da safra: produção (toneladas)"
+description = "LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["35"]
+territorial_levels = ["n1", "n2", "n3"]
+periods = ["202601", "202602", "202603", "202604", "202605", "202606", "202607", "202608", "202609", "202610"]
+period_type = "mes"
+group_periods_by_year = true
+classifications = { "c48" = "82223,82224" }
+category_chunk = 8
+estimated_values_per_period = 1752
+max_rows = 1752
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-6588-35-ton"
+series_order = 4
+
+[[datasets]]
+id = "ibge-medida-t6588-v35-frutos-g1"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Estimativa da safra: produção de abacaxi e coco"
+description = "LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal. A nota 2 da tabela 6588 especifica mil frutos ou frutos/ha para abacaxi e coco; o cabeçalho genérico da API usa toneladas/kg por hectare. A Gold corrige apenas o rótulo da unidade, mantendo valores e originais Silver."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["35"]
+territorial_levels = ["n1", "n2", "n3"]
+periods = ["200609", "200610", "200611", "200612", "200701", "200702", "200703", "200704", "200705", "200706", "200707", "200708", "200709", "200710", "200711", "200712", "200801", "200802", "200803", "200804", "200805", "200806", "200807", "200808", "200809", "200810", "200811", "200812", "200901", "200902", "200903", "200904", "200905", "200906", "200907", "200908", "200909", "200910", "200911", "200912", "201001", "201002", "201003", "201004", "201005", "201006", "201007", "201008", "201009", "201010", "201011", "201012", "201101", "201102", "201103", "201104", "201105", "201106", "201107", "201108", "201109", "201110", "201111", "201112", "201201", "201202", "201203", "201204", "201205", "201206", "201207", "201208", "201209", "201210", "201211", "201212", "201301", "201302", "201303", "201304", "201305", "201306", "201307", "201308", "201309", "201310", "201311", "201312", "201401", "201402", "201403", "201404", "201405", "201406", "201407", "201408", "201409", "201410", "201411", "201412", "201501", "201502", "201503", "201504", "201505", "201506", "201507", "201508", "201509", "201510", "201511", "201512", "201601", "201602", "201603", "201604", "201605", "201606", "201607", "201608", "201609", "201610", "201611", "201612", "201701", "201702", "201703", "201704", "201705", "201706", "201707", "201708", "201709", "201710", "201711", "201712"]
+period_type = "mes"
+group_periods_by_year = true
+classifications = { "c48" = "39447,39459" }
+category_chunk = 8
+estimated_values_per_period = 1752
+max_rows = 1752
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-6588-35-frutos"
+series_order = 1
+
+[[datasets]]
+id = "ibge-medida-t6588-v36-kg-ha-g1"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Estimativa da safra: rendimento (kg/ha)"
+description = "LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["36"]
+territorial_levels = ["n1", "n2", "n3"]
+periods = ["200609", "200610", "200611", "200612", "200701", "200702", "200703", "200704", "200705", "200706", "200707", "200708", "200709", "200710", "200711", "200712", "200801", "200802", "200803", "200804", "200805", "200806", "200807", "200808", "200809", "200810", "200811", "200812", "200901", "200902", "200903", "200904", "200905", "200906", "200907", "200908", "200909", "200910", "200911", "200912", "201001", "201002", "201003", "201004", "201005", "201006", "201007", "201008", "201009", "201010", "201011", "201012", "201101", "201102", "201103", "201104", "201105", "201106", "201107", "201108", "201109", "201110", "201111", "201112", "201201", "201202", "201203", "201204", "201205", "201206", "201207", "201208", "201209", "201210", "201211", "201212", "201301", "201302", "201303", "201304", "201305", "201306", "201307", "201308", "201309", "201310", "201311", "201312", "201401", "201402", "201403", "201404", "201405", "201406", "201407", "201408", "201409", "201410", "201411", "201412", "201501", "201502", "201503", "201504", "201505", "201506", "201507", "201508", "201509", "201510", "201511", "201512", "201601", "201602", "201603", "201604", "201605", "201606", "201607", "201608", "201609", "201610", "201611", "201612", "201701", "201702", "201703", "201704", "201705", "201706", "201707", "201708", "201709", "201710", "201711", "201712"]
+period_type = "mes"
+group_periods_by_year = true
+classifications = { "c48" = "39448,39458,39461,39464,39465,39468,39469" }
+category_chunk = 8
+estimated_values_per_period = 6132
+max_rows = 6132
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-6588-36-kg-ha"
+series_order = 1
+
+[[datasets]]
+id = "ibge-medida-t6588-v36-kg-ha-g2"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Estimativa da safra: rendimento (kg/ha)"
+description = "LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["36"]
+territorial_levels = ["n1", "n2", "n3"]
+periods = ["200609", "200610", "200611", "200612", "200701", "200702", "200703", "200704", "200705", "200706", "200707", "200708", "200709", "200710", "200711", "200712", "200801", "200802", "200803", "200804", "200805", "200806", "200807", "200808", "200809", "200810", "200811", "200812", "200901", "200902", "200903", "200904", "200905", "200906", "200907", "200908", "200909", "200910", "200911", "200912", "201001", "201002", "201003", "201004", "201005", "201006", "201007", "201008", "201009", "201010", "201011", "201012", "201101", "201102", "201103", "201104", "201105", "201106", "201107", "201108", "201109", "201110", "201111", "201112", "201201", "201202", "201203", "201204", "201205", "201206", "201207", "201208", "201209", "201210", "201211", "201212", "201301", "201302", "201303", "201304", "201305", "201306", "201307", "201308", "201309", "201310", "201311", "201312", "201401", "201402", "201403", "201404", "201405", "201406", "201407", "201408", "201409", "201410", "201411", "201412", "201501", "201502", "201503", "201504", "201505", "201506", "201507", "201508", "201509", "201510", "201511", "201512", "201601", "201602", "201603", "201604", "201605", "201606", "201607", "201608", "201609", "201610", "201611", "201612", "201701", "201702", "201703", "201704", "201705", "201706", "201707", "201708", "201709", "201710", "201711", "201712", "201801", "201802", "201803", "201804", "201805", "201806", "201807", "201808", "201809", "201810", "201811", "201812", "201901", "201902", "201903", "201904", "201905", "201906", "201907", "201908", "201909", "201910", "201911", "201912", "202001", "202002", "202003", "202004", "202005", "202006", "202007", "202008", "202009", "202010", "202011", "202012", "202101", "202102", "202103", "202104", "202105", "202106", "202107", "202108", "202109", "202110", "202111", "202112", "202201", "202202", "202203", "202204", "202205", "202206", "202207", "202208", "202209", "202210", "202211", "202212", "202301", "202302", "202303", "202304", "202305", "202306", "202307", "202308", "202309", "202310", "202311", "202312", "202401", "202402", "202403", "202404", "202405", "202406", "202407", "202408", "202409", "202410", "202411", "202412", "202501", "202502", "202503", "202504", "202505", "202506", "202507", "202508", "202509", "202510", "202511", "202512", "202601", "202602", "202603", "202604", "202605", "202606", "202607", "202608", "202609", "202610"]
+period_type = "mes"
+group_periods_by_year = true
+classifications = { "c48" = "39428,39429,39430,39431,39432,39433,39434,39435,39436,39437,39438,39439,39440,39441,39442,39443,39444,39445,39446,39449,39450,39451,39452,39453,40527,39456,39457,39460,39462,39463,39467,39470,39471" }
+category_chunk = 8
+estimated_values_per_period = 28908
+max_rows = 28908
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-6588-36-kg-ha"
+series_order = 2
+
+[[datasets]]
+id = "ibge-medida-t6588-v36-kg-ha-g3"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Estimativa da safra: rendimento (kg/ha)"
+description = "LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["36"]
+territorial_levels = ["n1", "n2", "n3"]
+periods = ["201201", "201202", "201203", "201204", "201205", "201206", "201207", "201208", "201209", "201210", "201211", "201212", "201301", "201302", "201303", "201304", "201305", "201306", "201307", "201308", "201309", "201310", "201311", "201312", "201401", "201402", "201403", "201404", "201405", "201406", "201407", "201408", "201409", "201410", "201411", "201412", "201501", "201502", "201503", "201504", "201505", "201506", "201507", "201508", "201509", "201510", "201511", "201512", "201601", "201602", "201603", "201604", "201605", "201606", "201607", "201608", "201609", "201610", "201611", "201612", "201701", "201702", "201703", "201704", "201705", "201706", "201707", "201708", "201709", "201710", "201711", "201712", "201801", "201802", "201803", "201804", "201805", "201806", "201807", "201808", "201809", "201810", "201811", "201812", "201901", "201902", "201903", "201904", "201905", "201906", "201907", "201908", "201909", "201910", "201911", "201912", "202001", "202002", "202003", "202004", "202005", "202006", "202007", "202008", "202009", "202010", "202011", "202012", "202101", "202102", "202103", "202104", "202105", "202106", "202107", "202108", "202109", "202110", "202111", "202112", "202201", "202202", "202203", "202204", "202205", "202206", "202207", "202208", "202209", "202210", "202211", "202212", "202301", "202302", "202303", "202304", "202305", "202306", "202307", "202308", "202309", "202310", "202311", "202312", "202401", "202402", "202403", "202404", "202405", "202406", "202407", "202408", "202409", "202410", "202411", "202412", "202501", "202502", "202503", "202504", "202505", "202506", "202507", "202508", "202509", "202510", "202511", "202512", "202601", "202602", "202603", "202604", "202605", "202606", "202607", "202608", "202609", "202610"]
+period_type = "mes"
+group_periods_by_year = true
+classifications = { "c48" = "39454,39455" }
+category_chunk = 8
+estimated_values_per_period = 1752
+max_rows = 1752
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-6588-36-kg-ha"
+series_order = 3
+
+[[datasets]]
+id = "ibge-medida-t6588-v36-kg-ha-g4"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Estimativa da safra: rendimento (kg/ha)"
+description = "LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["36"]
+territorial_levels = ["n1", "n2", "n3"]
+periods = ["202601", "202602", "202603", "202604", "202605", "202606", "202607", "202608", "202609", "202610"]
+period_type = "mes"
+group_periods_by_year = true
+classifications = { "c48" = "82223,82224" }
+category_chunk = 8
+estimated_values_per_period = 1752
+max_rows = 1752
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-6588-36-kg-ha"
+series_order = 4
+
+[[datasets]]
+id = "ibge-medida-t6588-v36-frutos-ha-g1"
+source = "ibge-sidra"
+official_id = "6588"
+title = "Estimativa da safra: rendimento de abacaxi e coco"
+description = "LSPA: estimativa anual publicada mensalmente, sem somar previsões de meses sucessivos. Cada produto mantém seu calendário nativo; café total e suas espécies não se somam. As culturas retiradas da divulgação em janeiro de 2018 terminam em dezembro de 2017. Quantidade e rendimento não têm Total disponível; permanecem por produto na Gold, aguardando o seletor de produto do portal. A nota 2 da tabela 6588 especifica mil frutos ou frutos/ha para abacaxi e coco; o cabeçalho genérico da API usa toneladas/kg por hectare. A Gold corrige apenas o rótulo da unidade, mantendo valores e originais Silver."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/6588"
+
+[datasets.params]
+table = "6588"
+variables = ["36"]
+territorial_levels = ["n1", "n2", "n3"]
+periods = ["200609", "200610", "200611", "200612", "200701", "200702", "200703", "200704", "200705", "200706", "200707", "200708", "200709", "200710", "200711", "200712", "200801", "200802", "200803", "200804", "200805", "200806", "200807", "200808", "200809", "200810", "200811", "200812", "200901", "200902", "200903", "200904", "200905", "200906", "200907", "200908", "200909", "200910", "200911", "200912", "201001", "201002", "201003", "201004", "201005", "201006", "201007", "201008", "201009", "201010", "201011", "201012", "201101", "201102", "201103", "201104", "201105", "201106", "201107", "201108", "201109", "201110", "201111", "201112", "201201", "201202", "201203", "201204", "201205", "201206", "201207", "201208", "201209", "201210", "201211", "201212", "201301", "201302", "201303", "201304", "201305", "201306", "201307", "201308", "201309", "201310", "201311", "201312", "201401", "201402", "201403", "201404", "201405", "201406", "201407", "201408", "201409", "201410", "201411", "201412", "201501", "201502", "201503", "201504", "201505", "201506", "201507", "201508", "201509", "201510", "201511", "201512", "201601", "201602", "201603", "201604", "201605", "201606", "201607", "201608", "201609", "201610", "201611", "201612", "201701", "201702", "201703", "201704", "201705", "201706", "201707", "201708", "201709", "201710", "201711", "201712"]
+period_type = "mes"
+group_periods_by_year = true
+classifications = { "c48" = "39447,39459" }
+category_chunk = 8
+estimated_values_per_period = 1752
+max_rows = 1752
+min_rows = 1
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+panorama_support = true
+series = "ibge-agro-6588-36-frutos-ha"
+series_order = 1

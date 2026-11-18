@@ -1,0 +1,822 @@
+# Fontes do IBGE.
+# Identificadores, períodos e contagens conferidos por requisição real em 2026-11-03
+# (ver docs/data_catalog/ibge.md). Não acrescente identificadores sem verificá-los na fonte.
+
+config_version = "1.0.0"
+
+[institution]
+id = "ibge"
+name = "Instituto Brasileiro de Geografia e Estatística"
+acronym = "IBGE"
+url = "https://www.ibge.gov.br"
+
+[[licenses]]
+id = "ibge-reuso-com-citacao"
+name = "Reuso de dados do IBGE com citação da fonte"
+url = "https://biblioteca.ibge.gov.br/biblioteca-servicos.html"
+conditions = "Uso permitido com citação obrigatória do IBGE como fonte. Transformações devem identificar o responsável."
+review_status = "requires_review"
+notes = "Texto oficial não verificado: a página respondeu 403 para clientes automatizados em 2026-11-03. Condições baseadas em fontes secundárias; confirmar antes de publicação pública (§23)."
+
+# ------------------------------------------------------------------ fontes
+
+[[sources]]
+id = "ibge-sidra"
+name = "SIDRA: Sistema IBGE de Recuperação Automática (API)"
+connector = "sidra"
+base_url = "https://apisidra.ibge.gov.br"
+documentation_url = "https://apisidra.ibge.gov.br/home/ajuda"
+
+[sources.http]
+min_interval_s = 2.0
+# A API leva mais de 120 s em algumas consultas municipais (4412, 2026-11-11).
+timeout_s = 300.0
+max_attempts = 5
+backoff_initial_s = 2.0
+
+[[sources]]
+id = "ibge-geoftp"
+name = "IBGE Geociências: downloads (geoftp)"
+connector = "http_file"
+base_url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/estrutura_territorial/divisao_territorial/"
+
+[sources.http]
+min_interval_s = 2.0
+timeout_s = 120.0
+
+# ------------------------------------------------------------------ datasets
+
+[[datasets]]
+id = "ibge-sidra-6579"
+source = "ibge-sidra"
+official_id = "6579"
+title = "População residente estimada"
+description = "Estimativas anuais da população residente (variável 9324, Pessoas), por município. Anos sem estimativa na tabela (por exemplo, anos censitários) não são interpolados."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://sidra.ibge.gov.br/tabela/6579"
+
+[datasets.params]
+table = "6579"
+variables = ["9324"]
+# Brasil, Grandes Regiões, UFs e municípios na mesma consulta: os totais oficiais
+# de cada nível permitem reconciliação sem recalcular agregados.
+territorial_levels = ["n1", "n2", "n3", "n6"]
+estimated_values_per_period = 5700
+min_rows = 5590
+max_rows = 5700
+refresh_recent_periods = 2
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+# Variáveis somáveis entre níveis territoriais (reconciliação). "exact" = contagens inteiras.
+additive_variables = { "9324" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-4714"
+source = "ibge-sidra"
+official_id = "4714"
+title = "Censo Demográfico 2022: população residente, área territorial e densidade demográfica"
+description = "População residente (93), área da unidade territorial (6318) e densidade demográfica (614), por município, no Censo 2022."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/4714"
+
+[datasets.params]
+table = "4714"
+variables = ["93", "6318", "614"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+estimated_values_per_period = 17000
+min_rows = 16700
+max_rows = 17100
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+# Densidade (614) é razão e não é somável. A área usa a tolerância de arredondamento
+# das casas decimais publicadas.
+additive_variables = { "93" = "exact", "6318" = "rounding" }
+
+[[datasets]]
+id = "ibge-sidra-9605"
+source = "ibge-sidra"
+official_id = "9605"
+title = "População residente, por cor ou raça (Censos 2010 e 2022)"
+description = "População residente (93) por cor ou raça (classificação c86: Branca, Preta, Amarela, Parda, Indígena e Total), nos Censos 2010 e 2022. As cinco categorias não somam o Total: a tabela não publica a categoria sem declaração."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9605"
+
+[datasets.params]
+table = "9605"
+# 1000093 (percentual do total geral) é derivado da própria tabela e não é ingerido.
+variables = ["93"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+# c86 conferido na API em 2026-11-04 (HTTP 200; códigos inválidos geram HTTP 400).
+classifications = { "c86" = "all" }
+estimated_values_per_period = 33618
+min_rows = 33400
+max_rows = 33700
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "93" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9718"
+source = "ibge-sidra"
+official_id = "9718"
+title = "Censo 2022: população residente, total e indígena, por localização do domicílio e quesito de declaração indígena"
+description = "População residente (93), pessoas indígenas (350) e percentual de pessoas indígenas (4727), por quesito de declaração indígena (c1714) e localização do domicílio em relação a terras indígenas (c2661)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9718"
+
+[datasets.params]
+table = "9718"
+# 1000093 e 1000350 (percentuais do total geral) são derivados e não são ingeridos.
+variables = ["93", "350", "4727"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+# c2661 com as categorias listadas (Total, em e fora de terras indígenas), para
+# dividir as requisições por categoria.
+classifications = { "c1714" = "all", "c2661" = "32776,12869,12870" }
+# A API limita cada consulta a 50.000 valores (HTTP 400 com 67.236 em 2026-11-04).
+# Uma requisição por variável e por localização: 4 quesitos x 5603 territórios = 22.412.
+split_by_variable = true
+split_by_classification = "c2661"
+estimated_values_per_period = 22412
+min_rows = 22300
+max_rows = 22500
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "93" = "exact", "350" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9578"
+source = "ibge-sidra"
+official_id = "9578"
+title = "Censo 2022: população residente, total e quilombola, por localização do domicílio"
+description = "Pessoas quilombolas (4709), população residente (93) e percentual de pessoas quilombolas (4728), por localização do domicílio em relação a territórios quilombolas (c2661). Valores da segunda apuração (1.330.186 pessoas quilombolas no Brasil)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9578"
+
+[datasets.params]
+table = "9578"
+# 1004709 (percentual do total geral) é derivado e não é ingerido.
+variables = ["4709", "93", "4728"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+classifications = { "c2661" = "all" }
+# 3 variáveis x 3 localizações x 5603 territórios = 50.427 passa do limite de 50.000:
+# uma requisição por variável (16.809 valores).
+split_by_variable = true
+estimated_values_per_period = 16809
+min_rows = 16700
+max_rows = 16850
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "4709" = "exact", "93" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9971"
+source = "ibge-sidra"
+official_id = "9971"
+title = "Censo 2022: pessoas indígenas, por sexo, grupos de idade, localização e situação do domicílio"
+description = "Pessoas indígenas (350) por sexo (c2), grupos quinquenais de idade (c58), localização do domicílio em relação a terras indígenas (c2661) e situação do domicílio (c1)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9971"
+
+[datasets.params]
+table = "9971"
+# 1000350 (percentual do total geral) é derivado e não é ingerido.
+variables = ["350"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+# Códigos conferidos na API em 2026-11-04 (HTTP 200).
+classifications = { "c1" = "6795,1,2", "c2" = "6794,4,5", "c58" = "95253,1140,1141,1142,1143,1144,1145,1146,1147,1148,1149,1150,1151,1152,1153,1154,1155,6802,74120", "c2661" = "all" }
+# 513 combinações x 5603 territórios = 2,87 milhões de valores. Limite: 50.000 por consulta.
+# Uma requisição por sexo, grupo de idade e situação (3 x 19 x 3 = 171): 3 localizações x 5603 = 16.809.
+split_by_classification = ["c2", "c58", "c1"]
+estimated_values_per_period = 16809
+min_rows = 16700
+max_rows = 16850
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "350" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9970"
+source = "ibge-sidra"
+official_id = "9970"
+title = "Censo 2022: pessoas indígenas, por idade, localização e situação do domicílio"
+description = "Pessoas indígenas (350) por idade (c287: grupos quinquenais, idades simples e meses de vida), localização do domicílio (c2661) e situação do domicílio (c1). Só Brasil, Grandes Regiões e UFs: o nível municipal teria 6,8 milhões de valores, e a idade por município é coberta pela tabela 9971."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9970"
+
+[datasets.params]
+table = "9970"
+variables = ["350"]
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c1" = "all", "c2661" = "all", "c287" = "all" }
+# 134 idades x 3 localizações x 3 situações = 1.206 combinações x 33 territórios.
+estimated_values_per_period = 39798
+min_rows = 39700
+max_rows = 39800
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "350" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9723"
+source = "ibge-sidra"
+official_id = "9723"
+title = "Censo 2022: população residente em territórios quilombolas, total e quilombola, segundo os Territórios Quilombolas"
+description = "Pessoas residentes (6559), pessoas quilombolas (7079) e percentual de quilombolas (7080) em territórios quilombolas oficialmente delimitados, por nível administrativo e pelos recortes especiais Território Quilombola (N1145), Território Quilombola por UF (N145), Amazônia Legal (N131) e Amazônia Legal de UF (N134)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9723"
+
+[datasets.params]
+table = "9723"
+variables = ["6559", "7079", "7080"]
+# Níveis especiais informados pelo mantenedor (descrição da tabela) e conferidos na
+# API em 2026-11-04: docs/data_catalog/ibge-niveis-territoriais.md.
+territorial_levels = ["n1", "n2", "n3", "n6", "n131", "n134", "n145", "n1145"]
+# 3 variáveis x (1 + 5 + 27 + 5570 + 1 + 9 + 503 + 495) = 19.833 valores.
+estimated_values_per_period = 19833
+min_rows = 19700
+max_rows = 19900
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "6559" = "exact", "7079" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9954"
+source = "ibge-sidra"
+official_id = "9954"
+title = "Censo 2022: população, total e indígena, residente em Terras Indígenas, por sexo, idade, segundo as Terras Indígenas e situação do domicílio"
+description = "Pessoas residentes (576) e pessoas indígenas (1432) em terras indígenas, por sexo (c2), grupos quinquenais de idade (c287) e situação do domicílio (c1), por Terra Indígena (N1125), Terra Indígena por UF (N125), Coordenação Regional da Funai (N1124), Amazônia Legal (N131, N134), Brasil, Grandes Regiões e UFs. Nos municípios, os mesmos grupos quinquenais, sexo e situação do domicílio."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9954"
+
+[datasets.params]
+table = "9954"
+variables = ["576", "1432"]
+# A 9718 não fornece o recorte por sexo dos KPIs da 9954. N6 consta no descritor
+# oficial; ampliação etária municipal aprovada em 2026-11-16, com amostra numérica.
+territorial_levels = ["n1", "n2", "n3", "n6", "n131", "n134", "n125", "n1124", "n1125"]
+# Idade: Total e os 21 grupos quinquenais (as 134 idades simples somariam 3 milhões de valores).
+classifications = { "c1" = "6795,1,2", "c2" = "6794,4,5", "c287" = "100362,93070,93084,93085,93086,93087,93088,93089,93090,93091,93092,93093,93094,93095,93096,93097,93098,49108,49109,60040,60041,6653" }
+# 18 combinações de variável, sexo e situação; faixas em três lotes de sete.
+# Cada lote tem no máximo 7 x 6.827 = 47.789 valores, abaixo do teto da API.
+split_by_variable = true
+split_by_classification = ["c2", "c1"]
+detail_classification = "c287"
+detail_total = "100362"
+detail_levels = ["n1", "n2", "n3", "n6", "n131", "n134", "n125", "n1124", "n1125"]
+category_chunk = 7
+estimated_values_per_period = 47789
+min_rows = 6700
+max_rows = 48000
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "576" = "exact", "1432" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9606"
+source = "ibge-sidra"
+official_id = "9606"
+title = "População residente, por cor ou raça, segundo o sexo e a idade"
+description = "População residente (93) por cor ou raça (c86), sexo (c2) e idade (c287), nos Censos 2010 e 2022. Idade no Total e nos 21 grupos quinquenais (0 a 4 anos até 100 anos ou mais), aprovada pelo mantenedor em 2026-11-12."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9606"
+
+[datasets.params]
+table = "9606"
+variables = ["93"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+# Códigos conferidos na API em 2026-11-05 (HTTP 200). Grupos quinquenais de idade
+# (c287) conferidos no descritor oficial da tabela em 2026-11-12: os mesmos 21 códigos
+# da partição `grupos_quinquenais` do catálogo.
+classifications = { "c86" = "all", "c2" = "6794,4,5", "c287" = "100362,93070,93084,93085,93086,93087,93088,93089,93090,93091,93092,93093,93094,93095,93096,93097,93098,49108,49109,60040,60041,6653" }
+# 6 cores ou raças x 3 sexos x 22 idades x 5603 territórios = 2,2 milhões por ano,
+# acima do limite de 50.000: uma requisição por sexo e idade (66 por ano, 33.618 valores).
+split_by_classification = ["c2", "c287"]
+estimated_values_per_period = 33618
+min_rows = 33500
+max_rows = 33650
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "93" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-8176"
+source = "ibge-sidra"
+official_id = "8176"
+title = "Censo 2022: pessoas quilombolas, por localização do domicílio, sexo e idade"
+description = "Pessoas quilombolas (4709) por sexo (c2), idade (c287) e localização do domicílio em relação a territórios quilombolas (c2661). Total e 21 grupos quinquenais de idade em todos os níveis selecionados (ampliação aprovada em 2026-11-16)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/8176"
+
+[datasets.params]
+table = "8176"
+# 1004709 (percentual do total geral) é derivado e não é ingerido.
+variables = ["4709"]
+territorial_levels = ["n1", "n2", "n3", "n6"]
+# Códigos conferidos na API em 2026-11-05 (HTTP 200).
+classifications = { "c2" = "6794,4,5", "c287" = "100362,93070,93084,93085,93086,93087,93088,93089,93090,93091,93092,93093,93094,93095,93096,93097,93098,49108,49109,60040,60041,6653", "c2661" = "all" }
+# Um sexo por requisição e dois grupos de idade por lote: até 33.618 valores.
+split_by_classification = "c2"
+category_chunk = 2
+estimated_values_per_period = 33618
+min_rows = 16700
+max_rows = 33700
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "4709" = "exact" }
+
+[[datasets]]
+id = "ibge-sidra-9765"
+source = "ibge-sidra"
+official_id = "9765"
+title = "Censo 2022: população residente em territórios quilombolas, total e quilombola, por sexo e idade"
+description = "Pessoas residentes (6559) e pessoas quilombolas (7079) em territórios quilombolas, por sexo (c2) e idade (c287), nos níveis administrativos e nos recortes Território Quilombola (N1145), Território Quilombola por UF (N145), Amazônia Legal (N131) e Amazônia Legal de UF (N134). Total e 21 grupos quinquenais de idade em todos os níveis selecionados (ampliação aprovada em 2026-11-16)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "decenal"
+reference_url = "https://sidra.ibge.gov.br/tabela/9765"
+
+[datasets.params]
+table = "9765"
+# Os percentuais do total geral (1006559, 1007079) são derivados e não são ingeridos.
+variables = ["6559", "7079"]
+# Mesmos níveis da 9723 (docs/data_catalog/ibge-niveis-territoriais.md), conferidos em 2026-11-05.
+territorial_levels = ["n1", "n2", "n3", "n6", "n131", "n134", "n145", "n1145"]
+classifications = { "c2" = "6794,4,5", "c287" = "100362,93070,93084,93085,93086,93087,93088,93089,93090,93091,93092,93093,93094,93095,93096,93097,93098,49108,49109,60040,60041,6653" }
+# Uma variável e um sexo por requisição, até sete grupos por lote: 46.277 valores.
+split_by_variable = true
+split_by_classification = "c2"
+category_chunk = 7
+estimated_values_per_period = 46277
+min_rows = 6500
+max_rows = 46500
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+additive_variables = { "6559" = "exact", "7079" = "exact" }
+
+[[datasets]]
+id = "ibge-dtb"
+source = "ibge-geoftp"
+official_id = "DTB_2025"
+title = "Divisão Territorial Brasileira 2025"
+description = "Relatórios oficiais da DTB (municípios, distritos e subdistritos, inclusive criados e extintos), em ODS e XLS."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/estrutura_territorial/divisao_territorial/2025/"
+
+[datasets.params]
+url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/estrutura_territorial/divisao_territorial/2025/DTB_2025.zip"
+artifact_name = "dtb-2025.zip"
+reference_period = "2025"
+format = "zip"
+expected_members = ["RELATORIO_DTB_BRASIL_*_MUNICIPIOS.ods", "RELATORIO_DTB_BRASIL_*_MUNICIPIOS.xls"]
+min_bytes = 500000
+max_bytes = 52428800
+
+[datasets.silver]
+transformer = "dtb_municipality"
+member = "RELATORIO_DTB_BRASIL_*_MUNICIPIOS.ods"
+
+[[datasets]]
+id = "ibge-malha-uf-2022"
+source = "ibge-geoftp"
+official_id = "BR_UF_2022"
+title = "Malha territorial 2022: Unidades da Federação"
+description = "Polígonos oficiais das 27 UFs (shapefile, SIRGAS 2000), da Malha Municipal 2022. Grandes Regiões e Brasil são derivados por união das UFs na Gold."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/Brasil/BR/"
+
+[datasets.params]
+url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/Brasil/BR/BR_UF_2022.zip"
+artifact_name = "br-uf-2022.zip"
+reference_period = "2022"
+format = "zip"
+# Membros conferidos no arquivo oficial em 2026-11-05 (13,7 MB).
+expected_members = ["BR_UF_2022.shp", "BR_UF_2022.shx", "BR_UF_2022.dbf", "BR_UF_2022.prj", "BR_UF_2022.cpg"]
+min_bytes = 5000000
+max_bytes = 52428800
+
+[datasets.silver]
+transformer = "territorial_mesh"
+member = "BR_UF_2022"
+level = "uf"
+code_field = "CD_UF"
+name_field = "NM_UF"
+uf_field = "SIGLA_UF"
+expected_count = 27
+
+[[datasets]]
+id = "ibge-malha-municipios-2022"
+source = "ibge-geoftp"
+official_id = "BR_Municipios_2022"
+title = "Malha territorial 2022: Municípios"
+description = "Polígonos oficiais dos municípios (shapefile, SIRGAS 2000), da Malha Municipal 2022."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anual"
+reference_url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/Brasil/BR/"
+
+[datasets.params]
+url = "https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/Brasil/BR/BR_Municipios_2022.zip"
+artifact_name = "br-municipios-2022.zip"
+reference_period = "2022"
+format = "zip"
+expected_members = ["BR_Municipios_2022.shp", "BR_Municipios_2022.shx", "BR_Municipios_2022.dbf", "BR_Municipios_2022.prj", "BR_Municipios_2022.cpg"]
+min_bytes = 100000000
+max_bytes = 314572800
+
+[datasets.silver]
+transformer = "territorial_mesh"
+member = "BR_Municipios_2022"
+level = "municipio"
+code_field = "CD_MUN"
+name_field = "NM_MUN"
+uf_field = "SIGLA_UF"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-6715"
+source = "ibge-sidra"
+official_id = "6715"
+title = "Despesa monetária e não monetária média mensal familiar - valor e distribuição - por classes de rendimento total e variação patrimonial mensal familiar, segundo os tipos de despesa"
+description = "POF 2017-2018 (período 2018): despesa média mensal familiar (1201, Reais) e sua distribuição (1204, %), por classes de rendimento (c339, 7 classes e Total) e tipos de despesa (c12190, 93 categorias em árvore). Códigos do descritor oficial (/DescritoresTabela/t/6715, 2026-11-11)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/6715"
+
+[datasets.params]
+table = "6715"
+variables = ["1201", "1204"]
+territorial_levels = ["n1", "n2", "n3"]
+classifications = { "c339" = "all", "c12190" = "all" }
+# 8 classes x 93 tipos x 33 territórios = 24.552 valores por variável; as duas
+# juntas (49.104) ficam perto do limite de 50.000: uma requisição por variável.
+split_by_variable = true
+estimated_values_per_period = 24552
+min_rows = 24552
+max_rows = 24552
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+# Médias e distribuições: o descritor marca as duas variáveis como não somáveis
+# entre territórios (PermiteSomaUnidadesTerritoriais = false).
+# Série da POF (ADR-0016): 2309 (2002), 1594 (2008) e 6715 (2018) num só fato.
+series = "ibge-pof-despesa-familiar"
+series_order = 3
+
+[[datasets]]
+id = "ibge-sidra-1594"
+source = "ibge-sidra"
+official_id = "1594"
+title = "Despesa monetária e não monetária média mensal familiar - valor e distribuição - por classes de rendimento total e variação patrimonial mensal familiar, segundo os tipos de despesa (2008)"
+description = "POF 2008-2009 (período 2008): mesma estrutura da 6715 (variáveis 1201 e 1204, c339 com 7 classes e Total, c12190 com os mesmos 93 tipos de despesa). As faixas de rendimento valem 2, 3, 6, 10, 15 e 25 salários mínimos de R$ 415. Códigos do descritor oficial (/DescritoresTabela/t/1594, 2026-11-12)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/1594"
+
+[datasets.params]
+table = "1594"
+variables = ["1201", "1204"]
+# A edição 2008 inclui 26 capitais; a 6715 (2018) não publica o nível municipal.
+# Não estender essa cobertura às outras edições da série.
+territorial_levels = ["n1", "n2", "n3", "n6"]
+classifications = { "c339" = "all", "c12190" = "all" }
+# 8 classes x 93 tipos x 59 territórios = 43.896 valores por variável.
+split_by_variable = true
+estimated_values_per_period = 43896
+min_rows = 43896
+max_rows = 43896
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-pof-despesa-familiar"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-2309"
+source = "ibge-sidra"
+official_id = "2309"
+title = "Despesa monetária e não monetária média mensal familiar - valor e distribuição - por classes de rendimento monetário e não monetário mensal familiar e tipos de despesa"
+description = "POF 2002-2003 (período 2002): despesa média mensal familiar (1201, Reais) e distribuição (1204, %) por tipos de despesa (c12190, 89 categorias). Situação do domicílio (c1) só no Total; classes de rendimento monetário e não monetário (c12191, 10 faixas e o Total), outro conceito que o da c339, que entram como 'Classes de rendimento' no fato (ADR-0016). Brasil e Grandes Regiões. Códigos do descritor oficial (/DescritoresTabela/t/2309, 2026-11-12)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/2309"
+
+[datasets.params]
+table = "2309"
+variables = ["1201", "1204"]
+territorial_levels = ["n1", "n2"]
+classifications = { "c1" = "6795", "c12191" = "all", "c12190" = "all" }
+# 11 classes (com o Total) x 89 tipos x 6 territórios x 2 variáveis.
+estimated_values_per_period = 11748
+min_rows = 11748
+max_rows = 11748
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-pof-despesa-familiar"
+series_order = 1
+
+# ------------------------------------------------------------------ POF 1987-1988 e 1995-1996 (ADR-0016)
+
+[[datasets]]
+id = "ibge-sidra-387"
+source = "ibge-sidra"
+official_id = "387"
+title = "Percentual da despesa média mensal familiar por tipo de despesa e classes de recebimento mensal familiar"
+description = "POF 1987-1988 e 1995-1996: percentual da despesa média mensal familiar (172) por tipo de despesa (c210, 68 tipos e o Desembolso global) e classe de recebimento em salários mínimos (c201). Níveis: Total das áreas da POF (n103), 9 regiões metropolitanas (n7) e os municípios de Brasília e Goiânia (n6). Códigos do descritor oficial (/DescritoresTabela/t/387, 2026-11-12)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/387"
+
+[datasets.params]
+table = "387"
+variables = ["172"]
+territorial_levels = ["n103", "n7", "n6"]
+# Sem nível Brasil: a descoberta dos períodos usa o Total das áreas.
+period_discovery_level = "n103"
+classifications = { "c210" = "all", "c201" = "all" }
+# 69 categorias x 12 classes x 12 territórios (Total das áreas, 9 RMs, 2 municípios).
+estimated_values_per_period = 9936
+min_rows = 1
+max_rows = 9936
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-400"
+source = "ibge-sidra"
+official_id = "400"
+title = "Percentual da despesa média mensal familiar em alimentação por tipo de despesa e classes de recebimento mensal familiar"
+description = "POF 1987-1988 e 1995-1996: percentual da despesa com alimentação (174) por tipo (c210, 75 tipos e a Despesa em alimentação) e classe de recebimento (c201). Níveis: Total das áreas da POF (n103), 9 regiões metropolitanas (n7) e os municípios de Brasília e Goiânia (n6). Códigos do descritor oficial (/DescritoresTabela/t/400, 2026-11-12)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/400"
+
+[datasets.params]
+table = "400"
+variables = ["174"]
+territorial_levels = ["n103", "n7", "n6"]
+# Sem nível Brasil: a descoberta dos períodos usa o Total das áreas.
+period_discovery_level = "n103"
+classifications = { "c210" = "all", "c201" = "all" }
+# 76 categorias x 12 classes x 12 territórios (Total das áreas, 9 RMs, 2 municípios).
+estimated_values_per_period = 10944
+min_rows = 1
+max_rows = 10944
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-414"
+source = "ibge-sidra"
+official_id = "414"
+title = "Percentual do recebimento médio mensal familiar por origem do recebimento e classes de recebimento mensal familiar"
+description = "POF 1987-1988 e 1995-1996: percentual do recebimento médio mensal familiar (177) por origem (c214, 20 origens e o Recebimento total) e classe de recebimento (c201). Níveis: Total das áreas da POF (n103), 9 regiões metropolitanas (n7) e os municípios de Brasília e Goiânia (n6). Códigos do descritor oficial (/DescritoresTabela/t/414, 2026-11-12)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/414"
+
+[datasets.params]
+table = "414"
+variables = ["177"]
+territorial_levels = ["n103", "n7", "n6"]
+# Sem nível Brasil: a descoberta dos períodos usa o Total das áreas.
+period_discovery_level = "n103"
+classifications = { "c214" = "all", "c201" = "all" }
+# 21 categorias x 12 classes x 12 territórios (Total das áreas, 9 RMs, 2 municípios).
+estimated_values_per_period = 3024
+min_rows = 1
+max_rows = 3024
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+[[datasets]]
+id = "ibge-sidra-417"
+source = "ibge-sidra"
+official_id = "417"
+title = "Aquisição (monetária) alimentar domiciliar per capita anual por grupos de produtos e classes de recebimento mensal familiar"
+description = "POF 1987-1988, 1995-1996, 2002-2003 e 2008-2009, nas áreas das POF antigas: aquisição alimentar per capita anual em kg (180) por grupo de produtos (c215) e classe de recebimento (c201). Níveis: Total das áreas da POF (n103), 9 regiões metropolitanas (n7) e os municípios de Brasília e Goiânia (n6). Códigos do descritor oficial (/DescritoresTabela/t/417, 2026-11-12)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "anos de referência da pesquisa"
+reference_url = "https://sidra.ibge.gov.br/tabela/417"
+
+[datasets.params]
+table = "417"
+variables = ["180"]
+territorial_levels = ["n103", "n7", "n6"]
+# Sem nível Brasil: a descoberta dos períodos usa o Total das áreas.
+period_discovery_level = "n103"
+classifications = { "c215" = "all", "c201" = "all" }
+# 20 categorias x 12 classes x 12 territórios (Total das áreas, 9 RMs, 2 municípios).
+estimated_values_per_period = 2880
+min_rows = 1
+max_rows = 2880
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+
+# ------------------------------------------------------------------ IPCA por grupo (ADR-0020)
+
+[[datasets]]
+id = "ibge-sidra-655"
+source = "ibge-sidra"
+official_id = "655"
+title = "IPCA - Variação mensal, para o índice geral e grupos de produtos e serviços (1999-08 a 2006-06)"
+description = "IPCA, variação mensal (63) do índice geral e dos 9 grupos (c315: 7169 e 7170 a 7786, mesmos códigos em 655, 2938, 1419 e 7060), no Brasil e nas áreas municipais e metropolitanas publicadas. Série ibge-ipca-grupos (ADR-0016): insumo da correção da POF pelo IPCA por grupo (ADR-0020). Códigos do descritor oficial (/DescritoresTabela/t/655, 2026-11-13)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/655"
+
+[datasets.params]
+table = "655"
+variables = ["63"]
+territorial_levels = ["n1", "n6", "n7"]
+classifications = { "c315" = "7169,7170,7445,7486,7558,7625,7660,7712,7766,7786" }
+period_type = "mes"
+group_periods_by_year = true
+# Brasil e áreas pesquisadas: até 12 territórios x 10 categorias x 12 meses.
+estimated_values_per_period = 1440
+min_rows = 1
+max_rows = 1440
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-ipca-grupos"
+series_order = 1
+
+[[datasets]]
+id = "ibge-sidra-2938"
+source = "ibge-sidra"
+official_id = "2938"
+title = "IPCA - Variação mensal, para o índice geral e grupos de produtos e serviços (2006-07 a 2011-12)"
+description = "IPCA, variação mensal (63) do índice geral e dos 9 grupos (c315: 7169 e 7170 a 7786, mesmos códigos em 655, 2938, 1419 e 7060), no Brasil e nas áreas municipais e metropolitanas publicadas. Série ibge-ipca-grupos (ADR-0016): insumo da correção da POF pelo IPCA por grupo (ADR-0020). Códigos do descritor oficial (/DescritoresTabela/t/2938, 2026-11-13)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/2938"
+
+[datasets.params]
+table = "2938"
+variables = ["63"]
+territorial_levels = ["n1", "n6", "n7"]
+classifications = { "c315" = "7169,7170,7445,7486,7558,7625,7660,7712,7766,7786" }
+period_type = "mes"
+group_periods_by_year = true
+# Brasil e áreas pesquisadas: até 12 territórios x 10 categorias x 12 meses.
+estimated_values_per_period = 1440
+min_rows = 1
+max_rows = 1440
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-ipca-grupos"
+series_order = 2
+
+[[datasets]]
+id = "ibge-sidra-1419"
+source = "ibge-sidra"
+official_id = "1419"
+title = "IPCA - Variação mensal, para o índice geral e grupos de produtos e serviços (2012-01 a 2019-12)"
+description = "IPCA, variação mensal (63) do índice geral e dos 9 grupos (c315: 7169 e 7170 a 7786, mesmos códigos em 655, 2938, 1419 e 7060), no Brasil e nas áreas municipais e metropolitanas publicadas. Série ibge-ipca-grupos (ADR-0016): insumo da correção da POF pelo IPCA por grupo (ADR-0020). Códigos do descritor oficial (/DescritoresTabela/t/1419, 2026-11-13)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/1419"
+
+[datasets.params]
+table = "1419"
+variables = ["63"]
+territorial_levels = ["n1", "n6", "n7"]
+classifications = { "c315" = "7169,7170,7445,7486,7558,7625,7660,7712,7766,7786" }
+period_type = "mes"
+group_periods_by_year = true
+# Brasil e áreas pesquisadas: até 17 territórios x 10 categorias x 12 meses.
+estimated_values_per_period = 2040
+min_rows = 1
+max_rows = 2040
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-ipca-grupos"
+series_order = 3
+
+[[datasets]]
+id = "ibge-sidra-7060"
+source = "ibge-sidra"
+official_id = "7060"
+title = "IPCA - Variação mensal, para o índice geral e grupos de produtos e serviços (2020-01 a atual)"
+description = "IPCA, variação mensal (63) do índice geral e dos 9 grupos (c315: 7169 e 7170 a 7786, mesmos códigos em 655, 2938, 1419 e 7060), no Brasil e nas áreas municipais e metropolitanas publicadas. Série ibge-ipca-grupos (ADR-0016): insumo da correção da POF pelo IPCA por grupo (ADR-0020). Códigos do descritor oficial (/DescritoresTabela/t/7060, 2026-11-13)."
+license = "ibge-reuso-com-citacao"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://sidra.ibge.gov.br/tabela/7060"
+
+[datasets.params]
+table = "7060"
+variables = ["63"]
+territorial_levels = ["n1", "n6", "n7"]
+classifications = { "c315" = "7169,7170,7445,7486,7558,7625,7660,7712,7766,7786" }
+period_type = "mes"
+group_periods_by_year = true
+# Brasil e áreas pesquisadas: até 17 territórios x 10 categorias x 12 meses.
+estimated_values_per_period = 2040
+min_rows = 1
+max_rows = 2040
+refresh_recent_periods = 1
+
+[datasets.silver]
+transformer = "sidra_observation"
+territorial_reference = "ibge-dtb"
+series = "ibge-ipca-grupos"
+series_order = 4

@@ -1,0 +1,13 @@
+# Valores não secretos do ambiente de testes (banco isolado odb_test).
+env = "test"
+lakehouse_root_uri = "file:///lakehouse"
+log_level = "DEBUG"
+
+pg_host = "postgres"
+pg_port = 5432
+pg_database = "odb_test"
+
+duckdb_memory_limit = "2GB"
+duckdb_threads = 2
+duckdb_temp_directory = "/lakehouse/tmp/duckdb"
+duckdb_max_temp_directory_size = "5GB"

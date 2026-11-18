@@ -1,0 +1,20 @@
+[project]
+name = "odb-query-engine"
+version = "0.1.0"
+description = "Contrato de motor SQL de leitura e adaptador DuckDB somente leitura sobre tabelas Delta."
+requires-python = ">=3.12,<3.13"
+license = "MIT"
+dependencies = [
+    "odb-common",
+    "duckdb==1.5.6",
+]
+
+[tool.uv.sources]
+odb-common = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.13.2,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "odb_query_engine"

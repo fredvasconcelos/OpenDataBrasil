@@ -1,0 +1,252 @@
+# OpenDataBrasil: ambiente local da Fase 1.
+#
+# Profiles:
+#   data  -> postgres + migrate + worker (pipelines, `docker compose run --rm worker odb ...`)
+#   test  -> postgres + tests (suíte completa contra o banco odb_test)
+#   dev   -> postgres + dev (shell com o código montado do host)
+#   web   -> reservado para API/portal (Fase 5); hoje inclui apenas postgres
+#
+# Orçamento total do projeto: 32 GB de RAM e 16 threads (ADR-0001).
+# Limites por serviço são sobrescritos por variáveis ODB_*_CPUS/ODB_*_MEMORY (ex.: no CI).
+
+name: opendatabrasil
+
+x-odb-image: &odb-image
+  image: opendatabrasil/odb:${ODB_IMAGE_TAG:-dev}
+  build:
+    context: .
+    dockerfile: infrastructure/docker/Dockerfile
+    target: runtime
+
+x-odb-env: &odb-env
+  ODB_ENV: ${ODB_ENV:-dev}
+  ODB_CONFIG_DIR: /app/configs/environments
+  ODB_LAKEHOUSE_ROOT_URI: file:///lakehouse
+  ODB_PG_HOST: postgres
+  ODB_LOG_LEVEL: ${ODB_LOG_LEVEL:-INFO}
+  ODB_DUCKDB_EXTENSION_DIRECTORY: /opt/duckdb/extensions
+  POLARS_MAX_THREADS: ${POLARS_MAX_THREADS:-8}
+
+services:
+  postgres:
+    # Imagem oficial fixada + scripts de inicialização embutidos (sem bind mount:
+    # ver infrastructure/docker/postgres/Dockerfile).
+    build:
+      context: .
+      dockerfile: infrastructure/docker/postgres/Dockerfile
+    image: opendatabrasil/postgres:dev
+    profiles: [data, web, test, dev]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?defina no .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina no .env}
+      POSTGRES_DB: ${POSTGRES_DB:-odb}
+      ODB_OWNER_PASSWORD: ${ODB_OWNER_PASSWORD:?defina no .env}
+      ODB_PIPELINE_PASSWORD: ${ODB_PIPELINE_PASSWORD:?defina no .env}
+      ODB_READER_PASSWORD: ${ODB_READER_PASSWORD:?defina no .env}
+      ODB_METRICS_WRITER_PASSWORD: ${ODB_METRICS_WRITER_PASSWORD:?defina no .env}
+      ODB_METRICS_READER_PASSWORD: ${ODB_METRICS_READER_PASSWORD:?defina no .env}
+      TZ: UTC
+    command:
+      - postgres
+      - -c
+      - shared_buffers=512MB
+      - -c
+      - max_connections=50
+      - -c
+      - timezone=UTC
+      - -c
+      - log_timezone=UTC
+    ports:
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - pg_backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: "${ODB_POSTGRES_MEMORY:-2g}", cpus: "${ODB_POSTGRES_CPUS:-2}" }
+
+  migrate:
+    <<: *odb-image
+    profiles: [data, test, dev]
+    command: ["odb", "db", "upgrade"]
+    environment:
+      <<: *odb-env
+      ODB_PG_USER: odb_owner
+      ODB_PG_PASSWORD: ${ODB_OWNER_PASSWORD:?defina no .env}
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: "no"
+    deploy:
+      resources:
+        limits: { memory: 512m, cpus: "1" }
+
+  worker:
+    <<: *odb-image
+    profiles: [data]
+    command: ["odb", "doctor"]
+    environment:
+      <<: *odb-env
+      ODB_PG_USER: odb_pipeline
+      ODB_PG_PASSWORD: ${ODB_PIPELINE_PASSWORD:?defina no .env}
+    volumes:
+      - lake_bronze:/lakehouse/bronze
+      - lake_silver:/lakehouse/silver
+      - lake_gold:/lakehouse/gold
+      - lake_tmp:/lakehouse/tmp
+      - odb_logs:/var/log/odb
+      # Exportações para análise local (`odb gold export`). Pasta do host, fora do Git (/data/).
+      - ${ODB_EXPORT_HOST_DIR:-./data/exports}:/export
+    depends_on:
+      postgres: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    restart: "no"
+    deploy:
+      resources:
+        limits: { memory: "${ODB_WORKER_MEMORY:-24g}", cpus: "${ODB_WORKER_CPUS:-8}" }
+
+  # API de consulta (Fase 5, ADR-0009). Só lê: papel odb_reader e Gold montada
+  # somente leitura. Bronze e Silver não são montadas (§23.4).
+  api:
+    <<: *odb-image
+    profiles: [web]
+    command:
+      - uvicorn
+      - --factory
+      - odb_api.app:create_default_app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --no-access-log
+    environment:
+      <<: *odb-env
+      ODB_PG_USER: odb_reader
+      ODB_PG_PASSWORD: ${ODB_READER_PASSWORD:?defina no .env}
+      # Métricas de acesso (ADR-0027): sem coleta na Fábrica, as rotas respondem 404.
+      ODB_METRICS_READER_PASSWORD: ${ODB_METRICS_READER_PASSWORD:?defina no .env}
+      ODB_DUCKDB_MEMORY_LIMIT: ${ODB_API_DUCKDB_MEMORY:-2GB}
+      ODB_DUCKDB_TEMP_DIRECTORY: /lakehouse/tmp/duckdb
+      ODB_API_CORS_ORIGINS: ${ODB_API_CORS_ORIGINS:-["http://localhost:3000"]}
+      ODB_API_PORTAL_CONFIG_DIR: /app/configs/portal
+      ODB_API_PANORAMA_PATH: /app/configs/catalog/panorama.toml
+    volumes:
+      - lake_gold:/lakehouse/gold:ro
+    tmpfs:
+      - /lakehouse/tmp:size=1g,uid=1000,gid=1000
+    ports:
+      - "127.0.0.1:${ODB_API_PORT:-8000}:8000"
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: "${ODB_API_MEMORY:-3g}", cpus: "${ODB_API_CPUS:-2}" }
+
+  # Portal (Fase 5). Só fala com a API pela rede interna; o navegador usa o
+  # proxy /odb-api do próprio portal.
+  portal:
+    image: opendatabrasil/portal:${ODB_IMAGE_TAG:-dev}
+    build:
+      context: .
+      dockerfile: infrastructure/docker/portal/Dockerfile
+      target: runtime
+      args:
+        NEXT_PUBLIC_CONTACT_URL: ${NEXT_PUBLIC_CONTACT_URL:-}
+        NEXT_PUBLIC_REPO_URL: ${NEXT_PUBLIC_REPO_URL:-}
+        NEXT_PUBLIC_INSTAGRAM_URL: ${NEXT_PUBLIC_INSTAGRAM_URL:-}
+        NEXT_PUBLIC_APOIASE_URL: ${NEXT_PUBLIC_APOIASE_URL:-}
+        NEXT_PUBLIC_BMAC_URL: ${NEXT_PUBLIC_BMAC_URL:-}
+        NEXT_PUBLIC_BMAC_QR: ${NEXT_PUBLIC_BMAC_QR:-}
+        NEXT_PUBLIC_PIX_KEY: ${NEXT_PUBLIC_PIX_KEY:-}
+        NEXT_PUBLIC_PIX_CODE: ${NEXT_PUBLIC_PIX_CODE:-}
+        NEXT_PUBLIC_PIX_QR: ${NEXT_PUBLIC_PIX_QR:-}
+    profiles: [web]
+    environment:
+      ODB_API_INTERNAL_URL: http://api:8000
+    ports:
+      - "127.0.0.1:${ODB_PORTAL_PORT:-3000}:3000"
+    depends_on:
+      api: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: "${ODB_PORTAL_MEMORY:-1g}", cpus: "${ODB_PORTAL_CPUS:-1}" }
+
+  tests:
+    image: opendatabrasil/odb-test:${ODB_IMAGE_TAG:-dev}
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile
+      target: test
+    profiles: [test]
+    command: ["pytest", "--cov", "-p", "no:cacheprovider"]
+    environment:
+      <<: *odb-env
+      ODB_ENV: test
+      ODB_PG_DATABASE: odb_test
+      ODB_PG_USER: odb_owner
+      ODB_PG_PASSWORD: ${ODB_OWNER_PASSWORD:?defina no .env}
+      ODB_TEST_PIPELINE_PASSWORD: ${ODB_PIPELINE_PASSWORD:?defina no .env}
+      ODB_TEST_READER_PASSWORD: ${ODB_READER_PASSWORD:?defina no .env}
+      ODB_REQUIRE_INTEGRATION: "1"
+    tmpfs:
+      - /lakehouse/tmp:size=2g,uid=1000,gid=1000
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: "no"
+    deploy:
+      resources:
+        limits: { memory: "${ODB_TESTS_MEMORY:-6g}", cpus: "${ODB_TESTS_CPUS:-4}" }
+
+  dev:
+    image: opendatabrasil/odb-test:${ODB_IMAGE_TAG:-dev}
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile
+      target: test
+    profiles: [dev]
+    command: ["sleep", "infinity"]
+    environment:
+      <<: *odb-env
+      ODB_PG_USER: odb_owner
+      ODB_PG_PASSWORD: ${ODB_OWNER_PASSWORD:?defina no .env}
+    volumes:
+      - ./packages:/app/packages
+      - ./tests:/app/tests
+      - ./configs:/app/configs
+      - lake_bronze:/lakehouse/bronze
+      - lake_silver:/lakehouse/silver
+      - lake_gold:/lakehouse/gold
+      - lake_tmp:/lakehouse/tmp
+    depends_on:
+      postgres: { condition: service_healthy }
+    deploy:
+      resources:
+        limits: { memory: "${ODB_DEV_MEMORY:-8g}", cpus: "${ODB_DEV_CPUS:-4}" }
+
+volumes:
+  lake_bronze:
+  lake_silver:
+  lake_gold:
+  lake_tmp:
+  odb_logs:
+  pg_data:
+  pg_backups:

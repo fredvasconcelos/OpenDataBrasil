@@ -1,0 +1,15 @@
+config_version = "1.0.0"
+scope = "demografia"
+
+[[themes]]
+id = "precos"
+label = "Preços"
+
+[[themes.subthemes]]
+id = "precos_consumidor"
+label = "Inflação ao consumidor"
+
+[[themes.subthemes.kpis]]
+id = "ipca"
+label = "IPCA"
+indicator = "ipca"

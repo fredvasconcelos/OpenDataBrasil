@@ -1,0 +1,116 @@
+# Proxy da Vitrine. Na homologação escuta HTTP na rede local; o HTTPS público vem da
+# Cloudflare (túnel rápido do perfil "tunel" ou, na V3, o túnel fixo). Na VPS, trocar ":80"
+# pelo domínio liga o HTTPS automático.
+{
+	admin off
+	# Métricas por requisição (servidas só na rede interna, em :9180).
+	metrics
+	servers {
+		# O cloudflared fica na rede "tunnel" (compose.yaml). Só dela vale o IP do visitante
+		# no CF-Connecting-IP; de qualquer outra origem, vale o IP da conexão.
+		trusted_proxies static 172.30.30.0/29
+		client_ip_headers CF-Connecting-IP
+	}
+}
+
+# Prometheus lê daqui; a porta não é publicada no host.
+:9180 {
+	metrics
+}
+
+:80 {
+	# V6: métodos fora do HTTP usual param aqui (TRACE derrubava o handler do Next.js com
+	# 500). PUT, PATCH e DELETE seguem ao portal, que responde 405 com o Allow de cada rota.
+	@metodos not method GET HEAD POST PUT PATCH DELETE OPTIONS
+	header @metodos Allow "GET, HEAD, POST, OPTIONS"
+	respond @metodos 405
+
+	# Log de acesso para as métricas (ADR-0027), lido e apagado pelo metrics-aggregator.
+	# O filtro APAGA antes de gravar: IP remoto, porta, client_ip e TODOS os cabeçalhos da
+	# requisição e da resposta (CF-Connecting-IP, X-Forwarded-For, Cookie, Authorization,
+	# cidade, CEP e coordenadas da Cloudflare, e o que mais vier). Só entram os campos
+	# escolhidos abaixo, com log_append. Prova: infrastructure/scripts/caddy_log_check.sh.
+	log {
+		output file /var/log/caddy/access.log {
+			# Roda de hora em hora, na primeira escrita depois do intervalo; o tique do
+			# healthcheck (/_odb/tick) garante essa escrita mesmo sem visitantes.
+			roll_interval 1h
+			roll_uncompressed
+			roll_keep 48
+			# Rede de segurança se o agregador parar: nada rodado passa de 1 dia.
+			roll_keep_for 24h
+			mode 0640
+		}
+		format filter {
+			wrap json
+			fields {
+				request>remote_ip delete
+				request>remote_port delete
+				request>client_ip delete
+				request>headers delete
+				request>tls delete
+				resp_headers delete
+				user_id delete
+			}
+		}
+	}
+	# País e UF (cf-region-code, sigla ISO 3166-2) da Cloudflare; nada mais fino.
+	log_append country {http.request.header.Cf-Ipcountry}
+	log_append region {http.request.header.Cf-Region-Code}
+	# Origem (o agregador guarda só o domínio) e user agent (só para descartar robôs).
+	log_append referer {http.request.header.Referer}
+	log_append ua {http.request.header.User-Agent}
+	# Navegação do Next.js: RSC e prefetch separam página nova de troca de filtro.
+	log_append rsc {http.request.header.Rsc}
+	log_append prefetch {http.request.header.Next-Router-Prefetch}
+	log_append purpose {http.request.header.Sec-Purpose}
+	# Downloads: a exportação é POST e o corpo não aparece no log; a API devolve estes.
+	log_append export_kpi {http.response.header.X-Odb-Kpi}
+	log_append export_format {http.response.header.X-Odb-Format}
+
+	# Tique do healthcheck: só gera uma linha (e com ela a rotação horária).
+	@tick path /_odb/tick
+	respond @tick 204
+
+	encode zstd gzip
+
+	header {
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "DENY"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+		Cross-Origin-Opener-Policy "same-origin"
+		Cross-Origin-Resource-Policy "same-origin"
+		X-Permitted-Cross-Domain-Policies "none"
+		# Homologação fora dos buscadores (ODB_ROBOTS_TAG=all na VPS).
+		X-Robots-Tag {$ODB_ROBOTS_TAG:noindex}
+		# CSP aplicada (V6: conferida no navegador sem violações). 'unsafe-inline' é exigido
+		# pelos scripts inline do Next.js (hidratação) e pelo tema salvo antes da pintura.
+		Content-Security-Policy "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+		-Server
+		-Via
+		-X-Powered-By
+	}
+
+	# Estáticos do Next.js têm hash no nome: cache longo e imutável.
+	@estaticos path /_next/static/*
+	header @estaticos Cache-Control "public, max-age=31536000, immutable"
+
+	reverse_proxy portal:3000 {
+		# A API limita por visitante pelo último IP do X-Forwarded-For. Com o túnel, a conexão
+		# vem do cloudflared; {client_ip} é o IP real (lido acima) e substitui o cabeçalho
+		# inteiro, para ninguém forjá-lo.
+		header_up X-Forwarded-For {client_ip}
+		# Localização fina da Cloudflare (Add visitor location headers) não segue adiante:
+		# nem o portal nem a API precisam dela (ADR-0027).
+		header_up -Cf-Ipcity
+		header_up -Cf-Postal-Code
+		header_up -Cf-Iplatitude
+		header_up -Cf-Iplongitude
+		header_up -Cf-Metro-Code
+		header_up -Cf-Region
+		header_up -Cf-Region-Code
+		header_up -Cf-Timezone
+		header_up -Cf-Connecting-Ip
+	}
+}

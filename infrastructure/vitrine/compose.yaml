@@ -1,0 +1,334 @@
+# Vitrine do Open Data Brasil (ADR-0025): só serve o release aprovado, nunca transforma dados.
+#
+# Roda no servidor em /srv/odb/app (copiado por deploy.sh), com o .env ao lado.
+#   caddy  -> única porta publicada (rede local); repassa ao portal
+#   portal -> Next.js; fala com a API só pela rede interna (proxy /odb-api)
+#   api    -> FastAPI + DuckDB somente leitura sobre /srv/odb/gold
+#   postgres -> catálogo e release ativo
+# A API e o PostgreSQL ficam numa rede interna, sem saída para a internet.
+
+name: odb-vitrine
+
+services:
+  postgres:
+    image: opendatabrasil/postgres:${ODB_IMAGE_TAG:?defina no .env}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?defina no .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina no .env}
+      POSTGRES_DB: ${POSTGRES_DB:-odb}
+      ODB_OWNER_PASSWORD: ${ODB_OWNER_PASSWORD:?defina no .env}
+      ODB_PIPELINE_PASSWORD: ${ODB_PIPELINE_PASSWORD:?defina no .env}
+      ODB_READER_PASSWORD: ${ODB_READER_PASSWORD:?defina no .env}
+      # Banco de métricas de acesso (ADR-0027), criado pelo 02-metrics-database.sh.
+      ODB_METRICS_WRITER_PASSWORD: ${ODB_METRICS_WRITER_PASSWORD:?defina no .env}
+      ODB_METRICS_READER_PASSWORD: ${ODB_METRICS_READER_PASSWORD:?defina no .env}
+      TZ: UTC
+    command: [postgres, -c, shared_buffers=256MB, -c, max_connections=40, -c, timezone=UTC, -c, log_timezone=UTC]
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - /srv/odb/backups:/backups
+    networks: [backend]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: 1g, cpus: "2" }
+
+  api:
+    image: opendatabrasil/odb:${ODB_IMAGE_TAG}
+    command: [uvicorn, --factory, "odb_api.app:create_default_app", --host, 0.0.0.0, --port, "8000", --no-access-log, --workers, "${ODB_API_WORKERS:-3}"]
+    environment:
+      ODB_ENV: prod
+      ODB_CONFIG_DIR: /app/configs/environments
+      ODB_LAKEHOUSE_ROOT_URI: file:///lakehouse
+      ODB_PG_HOST: postgres
+      ODB_PG_USER: odb_reader
+      ODB_PG_PASSWORD: ${ODB_READER_PASSWORD}
+      # Métricas de acesso (ADR-0027): só leitura do banco odb_metrics.
+      ODB_METRICS_READER_PASSWORD: ${ODB_METRICS_READER_PASSWORD}
+      ODB_LOG_LEVEL: ${ODB_LOG_LEVEL:-INFO}
+      ODB_DUCKDB_EXTENSION_DIRECTORY: /opt/duckdb/extensions
+      ODB_DUCKDB_MEMORY_LIMIT: ${ODB_API_DUCKDB_MEMORY:-1GB}
+      ODB_DUCKDB_TEMP_DIRECTORY: /lakehouse/tmp/duckdb
+      ODB_API_CORS_ORIGINS: ${ODB_API_CORS_ORIGINS:?defina no .env}
+      ODB_API_PORTAL_CONFIG_DIR: /app/configs/portal
+      ODB_API_PANORAMA_PATH: /app/configs/catalog/panorama.toml
+      # Limite por visitante: o IP real vem do Caddy pelo portal (X-Forwarded-For), aceito
+      # só de conexões da rede interna.
+      ODB_API_RATE_LIMIT_PER_MINUTE: ${ODB_API_RATE_LIMIT_PER_MINUTE:-600}
+      ODB_API_TRUSTED_PROXIES: '["172.30.10.0/24"]'
+      # Cache de respostas por release, por worker (V5).
+      ODB_API_RESPONSE_CACHE_MB: ${ODB_API_RESPONSE_CACHE_MB:-256}
+      # OpenTelemetry (V4): traces e métricas para o coletor da rede interna.
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: odb-api
+      OTEL_SEMCONV_STABILITY_OPT_IN: http
+    volumes:
+      - /srv/odb/gold:/lakehouse/gold:ro
+    tmpfs:
+      - /lakehouse/tmp:size=1g,uid=1000,gid=1000
+    networks: [backend]
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+    deploy:
+      resources:
+        # V5: com 4 CPUs a API saturava com ~10 usuários; o servidor tem 16 threads e o
+        # resto da pilha usa menos de 1.
+        limits: { memory: 5g, cpus: "12" }
+
+  portal:
+    image: opendatabrasil/portal:${ODB_IMAGE_TAG}
+    environment:
+      ODB_API_INTERNAL_URL: http://api:8000
+    networks: [backend, edge]
+    depends_on:
+      api: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: 1g, cpus: "2" }
+
+  caddy:
+    # Caddy 2.11.9 (imagem de 2026-11-05). Exceção de segurança à regra dos 14 dias
+    # (ADR-0002): a 2.11.7 tinha 1 vulnerabilidade crítica e 9 altas corrigidas nesta
+    # (varredura trivy da V6).
+    image: caddy@sha256:003a97808e781aa9f7e75cc2f43d34d461099031faf5e20faefb9f61126836f0
+    ports:
+      # Só no IP da rede local: nada é aberto no roteador; a internet chegará pelo túnel (V3).
+      - "${ODB_LAN_IP:?defina no .env}:80:80"
+    environment:
+      # Homologação fora dos buscadores; na VPS, pôr ODB_ROBOTS_TAG=all no .env.
+      ODB_ROBOTS_TAG: ${ODB_ROBOTS_TAG:-noindex}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      # Log de acesso sem IP (ADR-0027); o metrics-aggregator lê e apaga.
+      - caddy_logs:/var/log/caddy
+    networks: [edge, obs, tunnel]
+    depends_on:
+      portal: { condition: service_healthy }
+    healthcheck:
+      # O tique também força a rotação horária do log sem visitantes (o Caddy só roda o
+      # arquivo numa escrita): o log bruto nunca passa de 24 horas.
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/_odb/tick"]
+      interval: 5m
+      timeout: 5s
+      retries: 3
+      # Na partida, testa a cada 2 s: o `up --wait` do deploy.sh não espera os 5 min.
+      start_period: 30s
+      start_interval: 2s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: 256m, cpus: "1" }
+
+  metrics-aggregator:
+    # Soma o log de acesso do Caddy no banco odb_metrics a cada 5 min e apaga os arquivos
+    # somados (ADR-0027, item 3). Exceção delimitada à regra de a Vitrine não transformar
+    # dados: só métricas do próprio portal, nunca Bronze, Silver ou Gold (CLAUDE.md §26.2).
+    image: opendatabrasil/odb:${ODB_IMAGE_TAG}
+    command: [odb, metrics, aggregate, --log-dir, /var/log/caddy, --every, "300"]
+    # Root só para ler e apagar os arquivos do Caddy (dono root, modo 0640), sem nenhuma
+    # capacidade extra e com o sistema de arquivos somente leitura.
+    user: "0:0"
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    environment:
+      ODB_ENV: prod
+      ODB_CONFIG_DIR: /app/configs/environments
+      ODB_PG_HOST: postgres
+      ODB_METRICS_WRITER_PASSWORD: ${ODB_METRICS_WRITER_PASSWORD}
+      ODB_LOG_LEVEL: ${ODB_LOG_LEVEL:-INFO}
+    volumes:
+      - caddy_logs:/var/log/caddy
+    networks: [backend]
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: 256m, cpus: "0.5" }
+
+  cloudflared:
+    # Túnel rápido da Cloudflare (2026.10.7, de 2026-10-30) para testes controlados, antes da
+    # V3: sem conta nem domínio, endereço temporário que muda a cada
+    # reinício. Só sai para a internet; nada é aberto no roteador. Liga com
+    #   docker compose --env-file .env --profile tunel up -d cloudflared
+    # o endereço aparece nos logs do serviço cloudflared
+    image: cloudflare/cloudflared@sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba
+    profiles: [tunel]
+    command: [tunnel, --no-autoupdate, --url, "http://caddy:80"]
+    networks: [tunnel]
+    depends_on: [caddy]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: 256m, cpus: "1" }
+
+  cloudflared-fixo:
+    # Túnel fixo da Cloudflare (V3): beta.opendatabrasil.org -> caddy:80, cadastrado no
+    # painel Zero Trust (túnel criado pelo operador). O token fica só no .env do servidor
+    # (CLOUDFLARE_TUNNEL_TOKEN), nunca no Git. Mesma imagem do túnel rápido. Liga com
+    #   docker compose --env-file .env --profile tunel up -d cloudflared-fixo
+    image: cloudflare/cloudflared@sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba
+    profiles: [tunel]
+    command: [tunnel, --no-autoupdate, run]
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    networks: [tunnel]
+    depends_on: [caddy]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: 256m, cpus: "1" }
+
+  # --------------------------------------------------------------- observabilidade (V4)
+  # Interfaces web só em 127.0.0.1 do servidor: acesso por túnel SSH
+  # (ssh -L 3001:localhost:3001 -L 16686:localhost:16686 "$ODB_VITRINE_HOST").
+
+  otel-collector:
+    # OpenTelemetry Collector contrib 0.164.0 (2026-10-26).
+    image: otel/opentelemetry-collector-contrib@sha256:340c9ca6a36617084c6661bdc4f0fe92b7cda5a805d61673ec8db375fddc522b
+    command: ["--config=/etc/otelcol/collector.yaml"]
+    volumes:
+      - ./otel/collector.yaml:/etc/otelcol/collector.yaml:ro
+    networks: [backend, obs]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: 256m, cpus: "1" }
+
+  jaeger:
+    # Jaeger 2.22.0 (2026-10-06): traces em memória (homologação).
+    image: jaegertracing/jaeger@sha256:836b967b5abcf1f7758066aa6b348619267a2f1459f72d472840570f9bd88a17
+    ports:
+      - "127.0.0.1:16686:16686"
+    networks: [obs]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: 1g, cpus: "1" }
+
+  prometheus:
+    # Prometheus 3.15.0 (2026-09-25), retenção de 7 dias.
+    image: prom/prometheus@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=7d
+    ports:
+      # 9091 no host para separar a interface do servidor da porta interna do serviço.
+      - "127.0.0.1:9091:9090"
+    volumes:
+      - ./otel/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prom_data:/prometheus
+    networks: [obs]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: 1g, cpus: "1" }
+
+  node-exporter:
+    # node_exporter 1.12.1 (imagem de 2026-07-14): CPU, memória, disco e temperatura da
+    # máquina. A rede medida é a do contêiner (sem modo host, para não expor a porta).
+    image: prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/rootfs
+      - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|run|var/lib/docker|home/docker)($|/)
+    pid: host
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro,rslave
+    networks: [obs]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: 128m, cpus: "0.5" }
+
+  cadvisor:
+    # cAdvisor 0.55.1 (imagem de 2025-12-25): CPU e memória por contêiner.
+    image: gcr.io/cadvisor/cadvisor@sha256:3de2bd5203120b866d74a9b283b2ffb8ec382fbf9dc321814700c6ea6f44ec57
+    command:
+      - --docker_only=true
+      - --housekeeping_interval=10s
+      - --disable_metrics=disk,diskIO,tcp,udp,percpu,sched,process,hugetlb,referenced_memory,cpu_topology,resctrl
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /home/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    privileged: true
+    networks: [obs]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: 256m, cpus: "0.5" }
+
+  grafana:
+    # Grafana 13.3.0 (2026-10-26).
+    image: grafana/grafana@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?defina no .env}
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "127.0.0.1:3001:3000"
+    volumes:
+      - ./otel/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./otel/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    networks: [obs]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: 512m, cpus: "1" }
+
+networks:
+  edge: {}
+  backend:
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.30.10.0/24
+  obs: {}
+  # Só o Caddy e o cloudflared: o Caddy confia nesta faixa para ler o CF-Connecting-IP.
+  tunnel:
+    ipam:
+      config:
+        - subnet: 172.30.30.0/29
+
+volumes:
+  pg_data: {}
+  caddy_data: {}
+  caddy_logs: {}
+  prom_data: {}
+  grafana_data: {}

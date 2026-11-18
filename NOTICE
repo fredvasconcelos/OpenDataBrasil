@@ -1,0 +1,17 @@
+Open Data Brasil
+Copyright 2026 Fred Vasconcelos
+
+Código licenciado sob a Apache License, Version 2.0 (arquivo LICENSE).
+
+Documentação, ADRs, metodologia e catálogo de dados: Creative Commons Atribuição 4.0
+Internacional (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/deed.pt-br
+
+Dados: cada conjunto segue a licença e as condições de reutilização da fonte original,
+registradas no catálogo do projeto. O projeto não as substitui.
+
+O nome e a marca "Open Data Brasil" não são licenciados (Apache License 2.0, seção 6).
+
+Ativos de terceiros, com as licenças junto dos arquivos: Bootstrap Icons (MIT) e
+bandeiras das UFs (CC0), em design-system/assets e apps/portal/public.
+
+Decisão registrada no ADR-0028 (docs/adr/0028-licencas-do-codigo-dos-textos-e-dos-dados.md).
