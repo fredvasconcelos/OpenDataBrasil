@@ -71,3 +71,6 @@ pagina_web/
 /design-system/README.md
 /design-system/VERSION
 /.design-sync/
+
+# Estado operacional local: nunca distribuir uma manutenção ativa.
+infrastructure/vitrine/maintenance/enabled

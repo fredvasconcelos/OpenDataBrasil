@@ -118,6 +118,7 @@ services:
       ODB_ROBOTS_TAG: ${ODB_ROBOTS_TAG:-noindex}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./maintenance:/srv/maintenance:ro
       - caddy_data:/data
       # Log de acesso sem IP (ADR-0027); o metrics-aggregator lê e apaga.
       - caddy_logs:/var/log/caddy

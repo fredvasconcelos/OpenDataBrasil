@@ -81,3 +81,9 @@ Os limites de requisição e o cache são parâmetros da instalação. Para test
 informe `BASE` nos cenários k6 e restaure os limites ao terminar. O coletor
 `amostrar.sh` exige o destino SSH em `ODB_VITRINE_HOST`; `patamares.py` recebe a URL
 do Prometheus por `--prom`. Nunca execute carga em uma fonte oficial de dados.
+
+## Manutenção e indisponibilidade
+
+Consulte [o procedimento de manutenção](manutencao-do-portal.md) para ativar a
+página estática, retornar à operação normal e conferir as respostas HTML/JSON.
+A página é servida pelo proxy mesmo quando o portal está fora do ar.

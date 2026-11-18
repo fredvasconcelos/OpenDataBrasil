@@ -48,6 +48,10 @@ done
 
 passo "2/5 Arquivos da aplicação"
 scp -q infrastructure/vitrine/compose.yaml infrastructure/vitrine/Caddyfile "$HOST:$REMOTE/app/"
+remoto "mkdir -p $REMOTE/app/maintenance"
+# Não remover o marcador enabled de uma manutenção já em curso.
+scp -q infrastructure/vitrine/maintenance/*.html "$HOST:$REMOTE/app/maintenance/"
+scp -q infrastructure/vitrine/maintenance.sh "$HOST:$REMOTE/app/"
 rsync -a --delete infrastructure/vitrine/otel/ "$HOST:$REMOTE/app/otel/"
 remoto "bash -s" <<EOF
 set -euo pipefail
