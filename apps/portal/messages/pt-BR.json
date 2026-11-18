@@ -385,6 +385,18 @@
         "qrAlt": "QR Code PIX do Open Data Brasil: aponte a câmera do app do seu banco",
         "copyFail": "Não foi possível copiar. Selecione a chave e copie manualmente."
       },
+      "transfer": {
+        "name": "Transferência bancária",
+        "text": "Doe diretamente para a conta bancária do mantenedor do projeto.",
+        "bank": "Banco",
+        "recipient": "Destinatário",
+        "branch": "Agência",
+        "operation": "Operação",
+        "account": "Conta",
+        "copy": "Copiar dados bancários",
+        "copied": "Dados bancários copiados.",
+        "copyFail": "Não foi possível copiar. Selecione os dados e copie manualmente."
+      },
       "apoiase": {
         "name": "Apoia.se",
         "text": "Apoio mensal, no valor que você escolher. É o que mais ajuda a planejar.",

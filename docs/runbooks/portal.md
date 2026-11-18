@@ -165,3 +165,19 @@ botão para tentar na hora. Não é preciso recriar o contêiner do portal.
 - **Cores:** tokens do design system (`src/lib/theme.ts`, `--odbr-seq-1..7`). O
   cinza do contexto é neutro, para não se confundir com a primeira classe da
   escala, que é azulada.
+
+## Formas de apoio
+
+A página `/apoie` exibe as opções configuradas em `NEXT_PUBLIC_APOIASE_URL`,
+`NEXT_PUBLIC_BMAC_URL` e `NEXT_PUBLIC_PIX_KEY`, com QR Codes locais opcionais.
+Para transferência bancária, preencha `NEXT_PUBLIC_BANK_NAME`,
+`NEXT_PUBLIC_BANK_RECIPIENT`, `NEXT_PUBLIC_BANK_BRANCH` e
+`NEXT_PUBLIC_BANK_ACCOUNT`. `NEXT_PUBLIC_BANK_OPERATION` é opcional.
+O cartão só aparece com os quatro campos obrigatórios preenchidos e fica
+logo depois do PIX: à direita em telas largas e abaixo no celular.
+Agência, operação e conta são textos, preservando zeros iniciais e dígito.
+
+Esses valores são públicos e embutidos pelo Next.js durante o build. Depois
+de alterá-los no `.env`, reconstrua e recrie **o portal**. Só mudar o ambiente
+de um contêiner já construído não atualiza links, chaves ou dados bancários.
+O botão de cópia não realiza transferência; apenas copia os dados exibidos.

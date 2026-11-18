@@ -850,6 +850,34 @@ describe("SupportOptions", () => {
     expect(await screen.findByText("Chave copiada.")).toBeTruthy();
     expect(writeText).toHaveBeenCalledWith("pix@exemplo.org");
   });
+
+  it("posiciona a transferência após o PIX e copia agência, operação e conta sem perder zeros", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
+    wrap(<SupportOptions links={{ ...none, pix: "chave", transfer: {
+      bank: "Banco de teste", recipient: "Pessoa de teste", branch: "0123",
+      operation: "0037", account: "000123456789-0",
+    } }} />);
+    expect(screen.getAllByRole("heading").map(h => h.textContent)).toEqual(["PIX", "Transferência bancária"]);
+    expect(screen.getByText("000123456789-0")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Copiar dados bancários" }));
+    expect(await screen.findByText("Dados bancários copiados.")).toBeTruthy();
+    expect(writeText).toHaveBeenCalledWith("Banco: Banco de teste\nDestinatário: Pessoa de teste\nAgência: 0123\nOperação: 0037\nConta: 000123456789-0");
+    expect(screen.queryByText("Chave copiada.")).toBeNull();
+  });
+
+  it("mantém os dados bancários disponíveis para cópia manual quando a área de transferência falha", async () => {
+    Object.defineProperty(navigator, "clipboard", { value: { writeText: vi.fn().mockRejectedValue(new Error("Sem permissão")) }, configurable: true });
+    wrap(<SupportOptions links={{ ...none, transfer: {
+      bank: "Banco de teste", recipient: "Pessoa de teste", branch: "0123",
+      operation: null, account: "000123456789-0",
+    } }} />);
+    expect(screen.queryByText(/As contas de doação/)).toBeNull();
+    expect(screen.queryByText("Operação")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Copiar dados bancários" }));
+    expect(await screen.findByText(/Selecione os dados e copie manualmente/)).toBeTruthy();
+    expect(screen.getByText("000123456789-0")).toBeTruthy();
+  });
 });
 
 describe("PeriodFilter (ADR-0026)", () => {

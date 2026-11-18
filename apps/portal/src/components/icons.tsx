@@ -79,6 +79,11 @@ export const CupIcon = (p: IconProps) => (
     <path d="M8 2.5v2.5M12 2.5v2.5" />
   </Stroke>
 );
+export const BankIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M3 9l9-6 9 6H3ZM5 12v6M10 12v6M14 12v6M19 12v6M3 21h18" />
+  </Stroke>
+);
 export const CodeIcon = (p: IconProps) => (
   <Stroke {...p}>
     <path d="M8 7l-5 5 5 5M16 7l5 5-5 5" />

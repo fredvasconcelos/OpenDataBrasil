@@ -897,6 +897,13 @@ mark { background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px; 
 .support-why li { padding: 18px; border-left: 4px solid var(--odbr-primary); background: var(--odbr-bg-surface); border-radius: 0 var(--odbr-radius-md) var(--odbr-radius-md) 0; line-height: 1.5; color: var(--odbr-text-body); }
 .support-why strong { display: block; margin-bottom: 4px; font-weight: 900; color: var(--odbr-text); }
 .support-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
+.support-grid-donations { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.support-bank-details { margin: 12px 0 auto; display: grid; gap: 12px; }
+.support-bank-details dt { font-size: var(--odbr-fs-small); color: var(--odbr-text-body); }
+.support-bank-details dd { margin: 2px 0 0; font-weight: 700; overflow-wrap: anywhere; user-select: all; }
+.support-card.support-card-bank p { flex: 0 0 auto; }
+@media (max-width: 1199px) { .support-grid-donations { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 639px) { .support-grid-donations { grid-template-columns: minmax(0, 1fr); } }
 .support-card {
   display: flex; flex-direction: column; gap: 8px; padding: 20px;
   background: var(--odbr-bg-surface); border: 1px solid var(--odbr-border); border-radius: var(--odbr-radius-lg);

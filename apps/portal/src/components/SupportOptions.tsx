@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
-import { CupIcon, QrIcon } from "@/components/icons";
+import { BankIcon, CupIcon, QrIcon } from "@/components/icons";
 import { SUPPORT_LINKS, type SupportLinks } from "@/lib/links";
 
 interface Props {
@@ -21,8 +21,8 @@ interface Card {
   qr: string | null;
 }
 
-/** O que foi copiado por último (chave ou "copia e cola") e o resultado. */
-type Copy = { what: "key" | "code"; ok: boolean } | null;
+/** Mantém o resultado no cartão correspondente à última cópia. */
+type Copy = { what: "key" | "code" | "transfer"; ok: boolean } | null;
 
 // Formas de doação da página /apoie (Design System ODBr, "cartão de apoio"): ícone, nome,
 // frase curta e ação. Cada cartão só aparece quando o endereço ou a chave está configurado
@@ -42,11 +42,11 @@ export function SupportOptions({ links = SUPPORT_LINKS }: Props) {
   ];
   const cards = all.filter((c): c is Card => Boolean(c.href));
 
-  if (!cards.length && !links.pix) {
+  if (!cards.length && !links.pix && !links.transfer) {
     return <p className="empty">{t("donate.pending")}</p>;
   }
 
-  const copyText = async (what: "key" | "code", text: string) => {
+  const copyText = async (what: NonNullable<Copy>["what"], text: string) => {
     try {
       await navigator.clipboard.writeText(text);
       setCopy({ what, ok: true });
@@ -55,8 +55,17 @@ export function SupportOptions({ links = SUPPORT_LINKS }: Props) {
     }
   };
 
+  const transfer = links.transfer;
+  const transferFields = transfer
+    ? (["bank", "recipient", "branch", "operation", "account"] as const)
+      .flatMap(key => {
+        const value = transfer[key];
+        return value ? [{ key, value }] : [];
+      })
+    : [];
+
   return (
-    <ul className="support-grid">
+    <ul className="support-grid support-grid-donations">
       {links.pix ? (
         <li className="support-card">
           <span className="support-card-icon">
@@ -78,11 +87,34 @@ export function SupportOptions({ links = SUPPORT_LINKS }: Props) {
             </button>
           ) : null}
           <p className="support-copy-status" role="status" aria-live="polite">
-            {copy
+            {copy && copy.what !== "transfer"
               ? copy.ok
                 ? t(copy.what === "key" ? "donate.pix.copied" : "donate.pix.codeCopied")
                 : t("donate.pix.copyFail")
               : ""}
+          </p>
+        </li>
+      ) : null}
+      {links.transfer ? (
+        <li className="support-card support-card-bank">
+          <span className="support-card-icon"><BankIcon size={22} /></span>
+          <h3>{t("donate.transfer.name")}</h3>
+          <p>{t("donate.transfer.text")}</p>
+          <dl className="support-bank-details">
+            {transferFields.map(({ key, value }) => (
+              <div key={key}>
+                <dt>{t(`donate.transfer.${key}`)}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+          <button type="button" className="support-action" onClick={() => copyText("transfer",
+            transferFields.map(({ key, value }) => `${t(`donate.transfer.${key}`)}: ${value}`).join("\n"),
+          )}>
+            {t("donate.transfer.copy")}
+          </button>
+          <p className="support-copy-status" role="status" aria-live="polite">
+            {copy?.what === "transfer" ? t(copy.ok ? "donate.transfer.copied" : "donate.transfer.copyFail") : ""}
           </p>
         </li>
       ) : null}
