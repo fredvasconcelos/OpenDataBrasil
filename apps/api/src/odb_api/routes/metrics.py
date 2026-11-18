@@ -15,6 +15,7 @@ from odb_api.gold import NotFoundError
 from odb_api.metrics import (
     MAX_DATASETS,
     GeoLevel,
+    MetricsQueryError,
     MetricsService,
     Period,
     PeriodKey,
@@ -31,7 +32,8 @@ router = APIRouter(prefix="/api/v1/metrics", tags=["métricas"], responses=ERROR
 _CACHE_CONTROL = "public, max-age=300"
 
 PeriodQ = Annotated[
-    PeriodKey, Query(description="7d, 30d e 12m terminam hoje; custom exige from e to.")
+    PeriodKey,
+    Query(description="all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to."),
 ]
 FromQ = Annotated[
     date | None, Query(alias="from", description="Início do período custom (AAAA-MM-DD).")
@@ -49,6 +51,10 @@ def _service(d: Deps) -> MetricsService:
 def _period(
     service: MetricsService, period: PeriodKey, start: date | None, end: date | None
 ) -> Period:
+    if period == "all":
+        if start is not None or end is not None:
+            raise MetricsQueryError("from e to só valem com period=custom")
+        return service.accumulated_period()
     return resolve_period(period, start, end, service.today())
 
 

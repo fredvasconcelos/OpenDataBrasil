@@ -2665,14 +2665,15 @@
                 "7d",
                 "30d",
                 "12m",
-                "custom"
+                "custom",
+                "all"
               ],
               "type": "string",
-              "description": "7d, 30d e 12m terminam hoje; custom exige from e to.",
+              "description": "all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to.",
               "default": "30d",
               "title": "Period"
             },
-            "description": "7d, 30d e 12m terminam hoje; custom exige from e to."
+            "description": "all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to."
           },
           {
             "name": "from",
@@ -2830,14 +2831,15 @@
                 "7d",
                 "30d",
                 "12m",
-                "custom"
+                "custom",
+                "all"
               ],
               "type": "string",
-              "description": "7d, 30d e 12m terminam hoje; custom exige from e to.",
+              "description": "all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to.",
               "default": "30d",
               "title": "Period"
             },
-            "description": "7d, 30d e 12m terminam hoje; custom exige from e to."
+            "description": "all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to."
           },
           {
             "name": "from",
@@ -2988,14 +2990,15 @@
                 "7d",
                 "30d",
                 "12m",
-                "custom"
+                "custom",
+                "all"
               ],
               "type": "string",
-              "description": "7d, 30d e 12m terminam hoje; custom exige from e to.",
+              "description": "all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to.",
               "default": "30d",
               "title": "Period"
             },
-            "description": "7d, 30d e 12m terminam hoje; custom exige from e to."
+            "description": "all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to."
           },
           {
             "name": "from",

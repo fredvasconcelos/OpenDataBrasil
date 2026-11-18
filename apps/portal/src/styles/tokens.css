@@ -149,6 +149,11 @@
   --odbr-ease: cubic-bezier(0.2, 0, 0, 1);
 
   /* Layout */
+  --odbr-content-wide: 1600px;
+  --odbr-control-h: 40px;
+  --odbr-control-compact-h: 32px;
+  --odbr-control-touch-h: 44px;
+  --odbr-content-reading: 72ch;
   --odbr-header-h: 64px;
   --odbr-stripe-h: 4px;
   --odbr-sidebar-w: 260px;

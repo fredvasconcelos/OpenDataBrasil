@@ -13,7 +13,7 @@ import { MapView, type FitRequest } from "@/components/MapView";
 import { SeasonChart } from "@/components/SeasonChart";
 import { SeriesChart } from "@/components/SeriesChart";
 import { Sidebar } from "@/components/Sidebar";
-import { api } from "@/lib/api";
+import { api, ApiRequestError } from "@/lib/api";
 import { formatPeriod, formatValue, indexTitle, legendTitleKey, unitShort } from "@/lib/format";
 import {
   allKpis,
@@ -56,7 +56,7 @@ function Failure({ error, onRetry }: { error: Error; onRetry: () => void }) {
   return (
     <div role="alert" className="error">
       <span>
-        {t("error")} <span className="small">({error.message})</span>
+        {error instanceof ApiRequestError && error.status === 503 ? t("busy") : t("error")}
       </span>
       <button type="button" className="primary" onClick={onRetry}>
         {t("retry")}

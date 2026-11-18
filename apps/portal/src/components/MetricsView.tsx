@@ -5,9 +5,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 
 import { AccessRanking } from "@/components/AccessRanking";
-import { AccessTable } from "@/components/AccessTable";
 import { AccessTooltip } from "@/components/AccessTooltip";
-import { MetricsPeriod } from "@/components/MetricsPeriod";
 import { TopDatasets } from "@/components/TopDatasets";
 import { api } from "@/lib/api";
 import { rewindForD3 } from "@/lib/geo";
@@ -15,12 +13,8 @@ import {
   buildRankingTree,
   formatCount,
   formatRange,
-  REGIONS,
-  regionOfUf,
-  type DatasetSort,
   type DatasetsResponse,
   type GeoItem,
-  type GeoLevel,
   type MetricsSummary,
   type PeriodRequest,
 } from "@/lib/metrics";
@@ -37,28 +31,23 @@ type Loaded =
   | { key: string; status: "empty" }
   | { key: string; status: "error" };
 
-const LEVELS: readonly GeoLevel[] = ["pais", "regiao", "uf"];
-const dateFmt = new Intl.DateTimeFormat("pt-BR", { dateStyle: "long", timeZone: "America/Sao_Paulo" });
+const period: PeriodRequest = { period: "all" };
 
 // Página Métricas (DS 2.12, ADR-0027): número de acessos com fonte e período, mapa em três
-// níveis (País › Grande Região › Estado), ranking em árvore, o mapa como tabela e os
+// níveis (País › Estado por zoom), ranking geográfico em árvore e os
 // indicadores mais acessados. Sem cookies: só visualizações, nunca "visitantes".
 // Antes de a coleta existir, a API responde 404 e a página diz que a coleta não começou;
 // nenhum número é estimado nem inventado (fixtures só nos testes).
 export function MetricsView() {
   const t = useTranslations("metrics");
-  const [period, setPeriod] = useState<PeriodRequest>({ period: "30d" });
-  const [level, setLevel] = useState<GeoLevel>("pais");
-  const [within, setWithin] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
-  const [asTable, setAsTable] = useState(false);
-  const [sort, setSort] = useState<DatasetSort>("views");
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [datasets, setDatasets] = useState<{ key: string; data: DatasetsResponse | null } | null>(null);
+  const [downloads, setDownloads] = useState<DatasetsResponse | null>(null);
   const [geometry, setGeometry] = useState<{ regions: GeoCollection; ufs: GeoCollection } | null>(null);
 
   const periodKey = JSON.stringify(period);
-  const datasetsKey = `${periodKey}|${sort}`;
+  const datasetsKey = periodKey;
 
   useEffect(() => {
     let alive = true;
@@ -82,27 +71,25 @@ export function MetricsView() {
     return () => {
       alive = false;
     };
-  }, [period, periodKey]);
+  }, [periodKey]);
 
   useEffect(() => {
     let alive = true;
     api
-      .metricsDatasets(sort, period)
+      .metricsDatasets("views", period)
       .then((data) => {
         if (alive) setDatasets({ key: datasetsKey, data });
       })
       .catch(() => {
         if (alive) setDatasets({ key: datasetsKey, data: null });
       });
-    return () => {
-      alive = false;
-    };
-  }, [sort, period, datasetsKey]);
+    api.metricsDatasets("downloads", period).then(data => { if (alive) setDownloads(data); }).catch(() => undefined);
+    return () => { alive = false; };
+  }, [datasetsKey]);
 
-  // Geometria das Grandes Regiões e das UFs (do release), só quando o mapa sai do globo.
-  const needsBrazil = level !== "pais";
+  // Carrega as geometrias do release para revelar UFs sem trocar de mapa.
   useEffect(() => {
-    if (!needsBrazil || geometry) return;
+    if (geometry) return;
     let alive = true;
     Promise.all([api.geometry("regiao"), api.geometry("uf")])
       .then(([regions, ufs]) => {
@@ -113,47 +100,17 @@ export function MetricsView() {
     return () => {
       alive = false;
     };
-  }, [needsBrazil, geometry]);
+  }, [geometry]);
 
   const ok = loaded && loaded.key === periodKey && loaded.status === "ok" ? loaded : null;
   const tree = useMemo(() => (ok ? buildRankingTree(ok.countries, ok.regions, ok.ufs) : []), [ok]);
-  const items = useMemo<GeoItem[]>(() => {
-    if (!ok) return [];
-    if (level === "pais") return ok.countries;
-    if (level === "regiao") return ok.regions;
-    return within?.startsWith("regiao:") ? ok.ufs.filter((u) => regionOfUf(u.geography_key) === within) : ok.ufs;
-  }, [ok, level, within]);
   const allItems = useMemo(() => (ok ? [...ok.countries, ...ok.regions, ...ok.ufs] : []), [ok]);
-  const chosen = selected ? allItems.find((i) => i.geography_key === selected) : undefined;
+  const chosen = selected && !selected.startsWith("regiao:") ? allItems.find((i) => i.geography_key === selected) : undefined;
   const range = ok ? formatRange(ok.summary.period) : "";
 
   // Leva o mapa até o lugar (clique no mapa, no ranking ou na tabela).
-  const go = (key: string) => {
-    if (key === "pais:BR") {
-      setLevel("regiao");
-      setWithin("pais:BR");
-      setSelected(key);
-    } else if (key.startsWith("pais:")) {
-      setLevel("pais");
-      setWithin(null);
-      setSelected(key);
-    } else if (key.startsWith("regiao:")) {
-      setLevel("uf");
-      setWithin(key);
-      setSelected(key);
-    } else if (key.startsWith("uf:")) {
-      setLevel("uf");
-      setWithin(regionOfUf(key));
-      setSelected(key);
-    }
-  };
-  const chooseLevel = (l: GeoLevel) => {
-    setLevel(l);
-    setWithin(l === "pais" ? null : "pais:BR");
-  };
-
+  const go = (key: string) => setSelected(key);
   const status = !loaded || loaded.key !== periodKey ? "loading" : loaded.status;
-  const regionName = within?.startsWith("regiao:") ? REGIONS[within]?.name : null;
 
   return (
     <main className="page page-wide metrics-page">
@@ -161,7 +118,6 @@ export function MetricsView() {
         <h1>{t("title")}</h1>
         <p className="lead">{t("lead")}</p>
       </section>
-      <MetricsPeriod value={period} onChange={setPeriod} />
 
       {status === "loading" ? (
         <div className="card metrics-block" aria-busy="true">
@@ -184,20 +140,11 @@ export function MetricsView() {
       {ok ? (
         <>
           <section className="card metrics-block metrics-summary" aria-labelledby="metricas-total">
-            <h2 id="metricas-total">{t("total")}</h2>
-            <p className="metrics-total">
-              <span className="metrics-total-value">{formatCount(ok.summary.views)}</span> <span className="metrics-total-unit">{t("totalUnit")}</span>
-            </p>
-            <p className="muted metrics-period-line">
-              {t("source", { range })}
-              {ok.summary.collection_started_at
-                ? ` · ${t("since", { date: dateFmt.format(new Date(ok.summary.collection_started_at)) })}`
-                : ""}
-            </p>
+            <h2 id="metricas-total" className="sr-only">{t("total")}</h2>
             <dl className="metrics-cards">
               <div>
-                <dt>{t("cards.kpiOpens")}</dt>
-                <dd>{formatCount(ok.summary.kpi_opens)}</dd>
+                <dt>{t("cards.views")}</dt>
+                <dd>{formatCount(ok.summary.views)}</dd>
               </div>
               <div>
                 <dt>{t("cards.downloads")}</dt>
@@ -216,61 +163,17 @@ export function MetricsView() {
             </dl>
           </section>
 
-          <section className="card metrics-block" aria-labelledby="metricas-mapa">
-            <div className="metrics-block-head">
-              <h2 id="metricas-mapa">{t("map.title")}</h2>
-              <div className="segmented" role="group" aria-label={t("map.level")}>
-                {LEVELS.map((l) => (
-                  <button key={l} type="button" aria-pressed={level === l} onClick={() => chooseLevel(l)}>
-                    {t(`map.levels.${l}`)}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <nav className="metrics-trail" aria-label={t("map.trail")}>
-              <button type="button" className="link-btn" onClick={() => chooseLevel("pais")} aria-current={level === "pais" ? "page" : undefined}>
-                {t("map.world")}
-              </button>
-              {level !== "pais" ? (
-                <>
-                  <span aria-hidden="true"> › </span>
-                  <button type="button" className="link-btn" onClick={() => chooseLevel("regiao")} aria-current={!regionName ? "page" : undefined}>
-                    {t("map.brazil")}
-                  </button>
-                </>
-              ) : null}
-              {regionName ? (
-                <>
-                  <span aria-hidden="true"> › </span>
-                  <span aria-current="page">{regionName}</span>
-                </>
-              ) : null}
-            </nav>
-            <p className="muted metrics-hint">{level === "pais" ? t("map.globeHint") : t("map.brazilHint")}</p>
-            {items.length ? (
-              asTable ? (
-                <AccessTable items={items} levelLabel={t(`map.levels.${level}`)} selected={selected} onSelect={go} />
-              ) : (
-                <AccessMap
-                  level={level}
-                  items={items}
-                  regions={geometry?.regions ?? null}
-                  ufs={geometry?.ufs ?? null}
-                  within={within}
-                  selected={selected}
-                  period={range}
-                  onActivate={go}
-                />
-              )
-            ) : (
-              <p className="empty">{t("map.empty")}</p>
-            )}
-            <button type="button" className="btn-outline metrics-toggle" aria-pressed={asTable} onClick={() => setAsTable((v) => !v)}>
-              {asTable ? t("map.asMap") : t("map.asTable")}
-            </button>
+          <div className="metrics-layout">
+          <section className="card metrics-block metrics-map-panel" aria-labelledby="metricas-mapa">
+            <h2 id="metricas-mapa">{t("map.title")}</h2>
+            <p className="muted metrics-hint">{t("map.globeHint")}</p>
+            <AccessMap level="pais" items={ok.countries} stateItems={ok.ufs}
+              regions={geometry?.regions ?? null} ufs={geometry?.ufs ?? null}
+              within={null} selected={selected} period={range} onActivate={go} />
             {chosen ? <AccessTooltip variant="card" item={chosen} period={range} onClose={() => setSelected(null)} /> : null}
           </section>
 
+          <aside className="metrics-rankings">
           <section className="card metrics-block" aria-labelledby="metricas-ranking">
             <h2 id="metricas-ranking">{t("ranking.title")}</h2>
             <p className="muted metrics-hint">{t("ranking.hint")}</p>
@@ -278,15 +181,14 @@ export function MetricsView() {
           </section>
 
           {datasets && datasets.key === datasetsKey && datasets.data ? (
-            <TopDatasets items={datasets.data.items} sort={sort} onSort={setSort} period={range} />
+            <TopDatasets items={datasets.data.items} sort="views" period={range} />
           ) : null}
+          {downloads ? <TopDatasets items={downloads.items} sort="downloads" period={range} /> : null}
+          </aside>
+          </div>
         </>
       ) : null}
 
-      <section className="metrics-how" aria-labelledby="metricas-como">
-        <h2 id="metricas-como">{t("how.title")}</h2>
-        <p>{t("how.text")}</p>
-      </section>
     </main>
   );
 }

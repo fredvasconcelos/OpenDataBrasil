@@ -3098,8 +3098,8 @@ export interface operations {
     summary_api_v1_metrics_summary_get: {
         parameters: {
             query?: {
-                /** @description 7d, 30d e 12m terminam hoje; custom exige from e to. */
-                period?: "7d" | "30d" | "12m" | "custom";
+                /** @description all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to. */
+                period?: "7d" | "30d" | "12m" | "custom" | "all";
                 /** @description Início do período custom (AAAA-MM-DD). */
                 from?: string | null;
                 /** @description Fim do período custom (AAAA-MM-DD), até hoje. */
@@ -3174,8 +3174,8 @@ export interface operations {
                 level: "pais" | "regiao" | "uf";
                 /** @description regiao exige pais:BR; uf aceita pais:BR ou regiao:N. */
                 within?: string | null;
-                /** @description 7d, 30d e 12m terminam hoje; custom exige from e to. */
-                period?: "7d" | "30d" | "12m" | "custom";
+                /** @description all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to. */
+                period?: "7d" | "30d" | "12m" | "custom" | "all";
                 /** @description Início do período custom (AAAA-MM-DD). */
                 from?: string | null;
                 /** @description Fim do período custom (AAAA-MM-DD), até hoje. */
@@ -3249,8 +3249,8 @@ export interface operations {
                 /** @description views (aberturas) ou downloads. */
                 sort?: "views" | "downloads";
                 limit?: number;
-                /** @description 7d, 30d e 12m terminam hoje; custom exige from e to. */
-                period?: "7d" | "30d" | "12m" | "custom";
+                /** @description all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to. */
+                period?: "7d" | "30d" | "12m" | "custom" | "all";
                 /** @description Início do período custom (AAAA-MM-DD). */
                 from?: string | null;
                 /** @description Fim do período custom (AAAA-MM-DD), até hoje. */

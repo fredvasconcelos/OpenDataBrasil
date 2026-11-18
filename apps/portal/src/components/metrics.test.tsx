@@ -129,9 +129,9 @@ describe("AccessMap", () => {
     coordinates: [
       [
         [x, y],
-        [x + 2, y],
-        [x + 2, y + 2],
         [x, y + 2],
+        [x + 2, y + 2],
+        [x + 2, y],
         [x, y],
       ],
     ],
@@ -167,12 +167,12 @@ describe("AccessMap", () => {
     fireEvent.focus(sp);
     const tip = screen.getByRole("tooltip");
     expect(within(tip).getByText("São Paulo")).toBeTruthy();
-    expect(within(tip).getByText("35,0% do total")).toBeTruthy();
+    expect(within(tip).getByText("35,0% do total do Brasil")).toBeTruthy();
     fireEvent.click(sp);
     expect(onActivate).toHaveBeenCalledWith("uf:35");
     // Controles com aria-label; o "−" começa desativado (sem zoom).
-    expect(screen.getByRole("button", { name: "Afastar" }).hasAttribute("disabled")).toBe(true);
-    expect(screen.getByRole("group", { name: "Legenda do mapa" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Afastar" })).toBeNull();
+    expect(screen.getByRole("link", { name: "D3" })).toBeTruthy();
   });
 
   it("no globo, mostra o ponto com a bandeira do país e o Brasil em destaque", () => {
@@ -182,6 +182,6 @@ describe("AccessMap", () => {
     const br = screen.getByRole("button", { name: "Brasil: 900 visualizações" });
     expect(br.querySelector(".fi-br")).toBeTruthy();
     expect(container.querySelector('path[fill="var(--odbr-primary)"]')).toBeTruthy();
-    expect(screen.getByText("Limites: Natural Earth · IBGE")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Natural Earth" })).toBeTruthy();
   });
 });

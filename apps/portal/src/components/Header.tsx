@@ -19,6 +19,16 @@ import { CONTACT_URL } from "@/lib/links";
 // com as páginas (Contato e Apoie inclusos), as redes, o idioma e o tema. A gaveta fecha
 // ao trocar de página, com Esc e ao tocar fora; o foco volta para o botão de menu.
 export function Header() {
+  const notice = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    const node = notice.current;
+    if (!node) return;
+    const measure = () => document.documentElement.style.setProperty("--notice-h", `${node.getBoundingClientRect().height}px`);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => { observer.disconnect(); document.documentElement.style.removeProperty("--notice-h"); };
+  }, []);
   const t = useTranslations();
   const path = usePathname();
   const [open, setOpen] = useState(false);
@@ -150,7 +160,7 @@ export function Header() {
           </div>
         </>
       ) : null}
-      <p className="notice" role="note">
+      <p ref={notice} className="notice" role="note">
         {t("site.internalNotice")}
       </p>
     </>

@@ -2,9 +2,9 @@
 
 import "flag-icons/css/flag-icons.min.css";
 
-import { geoCentroid, geoDistance, geoGraticule10, geoMercator, geoOrthographic, geoPath, type GeoPermissibleObjects } from "d3-geo";
+import { geoCentroid, geoDistance, geoGraticule10, geoOrthographic, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { feature } from "topojson-client";
 import type { GeometryCollection, Topology } from "topojson-specification";
 import world from "world-atlas/countries-110m.json";
@@ -19,6 +19,7 @@ import type { GeoCollection, GeoFeature } from "@/lib/types";
 interface Props {
   level: GeoLevel;
   items: readonly GeoItem[];
+  stateItems?: readonly GeoItem[];
   /** Geometria do release (Grandes Regiões e UFs); só nos níveis do Brasil. */
   regions: GeoCollection | null;
   ufs: GeoCollection | null;
@@ -35,7 +36,15 @@ const H = 500;
 // Globo centrado no Brasil (DS 2.12): rotate [52, 14].
 const START: [number, number] = [52, 14];
 const ZOOM_STEP = 1.4;
-const MAX_K = 4;
+const MAX_K = 8;
+
+/** Preserva a posição sob o cursor e recentra progressivamente ao afastar. */
+function anchoredOffset(previous: number, next: number, offset: [number, number], anchor: [number, number]): [number, number] {
+  if (next === 1) return [0, 0];
+  const limit = 230 * (next - 1);
+  return anchor.map((value, index) => Math.max(-limit, Math.min(limit,
+    value - (value - (offset[index] ?? 0)) * next / previous))) as [number, number];
+}
 
 type WorldFeature = GeoJSON.Feature<GeoJSON.Geometry, { name: string }> & { id?: string };
 
@@ -49,10 +58,6 @@ const COUNTRIES: { a2: string | null; feature: WorldFeature }[] = (() => {
   });
 })();
 
-function prefersReducedMotion(): boolean {
-  return typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
-}
-
 interface Point {
   item: GeoItem;
   x: number;
@@ -65,41 +70,57 @@ interface Point {
 // Mapa de acessos (DS 2.12, ADR-0027). d3-geo calcula projeção e caminhos; o React desenha
 // o SVG e põe os pontos como <button> por cima (foco, Enter e aria-label). Sem mapa de fundo
 // e sem requisição a terceiros. As cores são var(--odbr-…), então o tema escuro troca sozinho.
-// - País: globo ortográfico; arrastar gira; a rotação automática lenta para na primeira
-//   interação e não roda com prefers-reduced-motion. Brasil em destaque; pontos com bandeira.
+// - País: globo ortográfico parado; arraste esquerdo gira e a roda aproxima.
+//   Ao aproximar do Brasil, aparecem as UFs; nenhuma chamada a mapa externo.
 // - Grande Região e Estado: coroplético por quantis (lib/scale), zero em --odbr-map-zero,
 //   selecionado 2,5px em --odbr-map-selected e o recorte da região em --odbr-map-focus.
-export function AccessMap({ level, items, regions, ufs, within, selected, period, onActivate }: Props) {
+export function AccessMap({ level: requestedLevel, items: countries, stateItems = [], regions, ufs, within, selected, period, onActivate }: Props) {
+  const surface = useRef<HTMLDivElement>(null);
   const t = useTranslations("metrics.map");
   const labels = useValueLabels();
   const [rotate, setRotate] = useState<[number, number]>(START);
   const [k, setK] = useState(1);
-  const [pan, setPan] = useState<[number, number]>([0, 0]);
-  const [still, setStill] = useState(() => prefersReducedMotion());
+  const [offset, setOffset] = useState<[number, number]>([0, 0]);
+  const camera = useRef({ k, offset });
+  useLayoutEffect(() => { camera.current = { k, offset }; }, [k, offset]);
+  const previewProjection = geoOrthographic().scale(230 * k)
+    .translate([W / 2 + offset[0], H / 2 + offset[1]]).rotate(rotate);
+  const brazilPoint = previewProjection([-52, -14]);
+  const brazilVisible = !!brazilPoint && geoDistance([-rotate[0], -rotate[1]], [-52, -14]) < Math.PI / 2
+    && brazilPoint[0] >= 0 && brazilPoint[0] <= W && brazilPoint[1] >= 0 && brazilPoint[1] <= H;
+  const [detailed, setDetailed] = useState(false);
+  const nextDetailed = brazilVisible && (detailed ? k >= 2.2 : k >= 2.6);
+  if (nextDetailed !== detailed) setDetailed(nextDetailed);
+  const level: GeoLevel = requestedLevel !== "pais" ? requestedLevel : detailed ? "uf" : "pais";
+  const items = level === "pais" ? countries : stateItems.length ? stateItems : countries;
   const [hover, setHover] = useState<string | null>(null);
-  const drag = useRef<{ x: number; y: number; rotate: [number, number]; pan: [number, number] } | null>(null);
+  const moved = useRef(false);
+  const touches = useRef(new Map<number, [number, number]>());
+  const pinch = useRef<{ distance: number; scale: number; offset: [number, number]; anchor: [number, number] } | null>(null);
+  const drag = useRef<{ x: number; y: number; rotate: [number, number] } | null>(null);
 
-  // Nova visão a cada troca de nível ou recorte (ajuste durante a renderização).
-  const view = `${level}|${within ?? ""}`;
-  const [seenView, setSeenView] = useState(view);
-  if (seenView !== view) {
-    setSeenView(view);
-    setK(1);
-    setPan([0, 0]);
-  }
-
-  // Rotação automática lenta do globo, até a primeira interação.
   useEffect(() => {
-    if (level !== "pais" || still) return;
-    let frame = 0;
-    const tick = () => {
-      setRotate(([lon, lat]) => [(lon + 0.06) % 360, lat]);
-      frame = requestAnimationFrame(tick);
+    const node = surface.current?.querySelector<HTMLElement>(".access-map-surface");
+    if (!node) return;
+    const wheel = (e: WheelEvent) => {
+      if (e.ctrlKey) return;
+      const current = camera.current;
+      const delta = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? node.clientHeight : 1);
+      const next = Math.max(1, Math.min(MAX_K, current.k * Math.exp(-delta * 0.002)));
+      if (next === current.k) return;
+      e.preventDefault();
+      setHover(null);
+      const box = node.getBoundingClientRect();
+      const anchor: [number, number] = [(e.clientX - box.left) * W / box.width - W / 2,
+        (e.clientY - box.top) * H / box.height - H / 2];
+      const nextOffset = anchoredOffset(current.k, next, current.offset, anchor);
+      camera.current = { k: next, offset: nextOffset };
+      setOffset(nextOffset);
+      setK(next);
     };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [level, still]);
-
+    node.addEventListener("wheel", wheel, { passive: false });
+    return () => node.removeEventListener("wheel", wheel);
+  }, []);
   const byKey = useMemo(() => new Map(items.map((i) => [i.geography_key, i])), [items]);
   const colors = useMemo(() => geoColors(items), [items]);
 
@@ -112,31 +133,28 @@ export function AccessMap({ level, items, regions, ufs, within, selected, period
     return [];
   }, [level, regions, ufs, within]);
 
-  const projection = useMemo(() => {
-    if (level === "pais") {
-      return geoOrthographic()
-        .scale(230 * k)
-        .translate([W / 2, H / 2])
-        .rotate([rotate[0], rotate[1]])
-        .clipAngle(90);
+  const [seenSelection, setSeenSelection] = useState<string | null>(null);
+  if (selected !== seenSelection) {
+    setSeenSelection(selected);
+    const country = COUNTRIES.find(c => `pais:${c.a2}` === selected);
+    const territory = ufs?.features.find(f => f.id === selected) ?? regions?.features.find(f => f.id === selected);
+    const shape = territory ?? country?.feature;
+    if (shape) {
+      const [lon, lat] = geoCentroid(shape as GeoPermissibleObjects);
+      setRotate([-lon, -lat]);
+      setOffset([0, 0]);
+      setK(selected?.startsWith("pais:") ? 1 : 3);
+      setHover(selected);
     }
-    if (!brazilFeatures.length) return null;
-    const fc = { type: "FeatureCollection", features: brazilFeatures } as unknown as GeoPermissibleObjects;
-    return geoMercator().fitExtent(
-      [
-        [24, 24],
-        [W - 24, H - 24],
-      ],
-      fc,
-    );
-  }, [level, k, rotate, brazilFeatures]);
+  }
+
+  const projection = useMemo(() => {
+    return geoOrthographic().scale(230 * k).translate([W / 2 + offset[0], H / 2 + offset[1]])
+      .rotate([rotate[0], rotate[1]]).clipAngle(90).clipExtent([[0, 0], [W, H]]);
+  }, [k, rotate, offset]);
 
   const path = useMemo(() => (projection ? geoPath(projection) : null), [projection]);
-  // No Brasil, o zoom e o arraste são uma transformação do <g> (os caminhos não mudam).
-  const transform = level === "pais" ? "" : `translate(${pan[0] + (W / 2) * (1 - k)} ${pan[1] + (H / 2) * (1 - k)}) scale(${k})`;
-  const place = (x: number, y: number): [number, number] =>
-    level === "pais" ? [x, y] : [pan[0] + (W / 2) * (1 - k) + x * k, pan[1] + (H / 2) * (1 - k) + y * k];
-
+  const transform = "";
   const points = useMemo<Point[]>(() => {
     if (!projection || !path) return [];
     const out: Point[] = [];
@@ -154,51 +172,79 @@ export function AccessMap({ level, items, regions, ufs, within, selected, period
       for (const f of brazilFeatures) {
         const item = byKey.get(f.id);
         if (!item) continue;
-        const [x, y] = path.centroid(f as unknown as GeoPermissibleObjects);
-        if (!Number.isFinite(x)) continue;
-        const [px, py] = place(x, y);
+        const centroid = geoCentroid(f as unknown as GeoPermissibleObjects);
+        if (geoDistance(centroid, [-rotate[0], -rotate[1]]) > Math.PI / 2 - 0.08) continue;
+        const xy = projection(centroid);
+        if (!xy) continue;
+        const [px, py] = xy;
         const code = level === "uf" ? (f.properties.uf ?? "").toLowerCase() : (REGIONS[f.id]?.abbr ?? "");
         out.push({ item, x: px, y: py, kind: level === "uf" ? "uf" : "region", code });
       }
     }
     // Ordem do Tab: mais acessados primeiro.
-    return out.sort((a, b) => (b.item.views ?? 0) - (a.item.views ?? 0));
-    // `place` depende só de pan e k, já listados.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projection, path, level, brazilFeatures, byKey, rotate, pan, k]);
+    return out.filter(p => p.x >= 16 && p.x <= W - 16 && p.y >= 16 && p.y <= H - 16).sort((a, b) => (b.item.views ?? 0) - (a.item.views ?? 0));
+  }, [projection, path, level, brazilFeatures, byKey, rotate]);
 
-  const stop = () => setStill(true);
+  const stop = () => setHover(null);
   const zoom = (factor: number) => {
     stop();
-    setK((v) => Math.min(MAX_K, Math.max(1, v * factor)));
-    if (factor < 1) setPan(([x, y]) => [x / ZOOM_STEP, y / ZOOM_STEP]);
+    const next = Math.min(MAX_K, Math.max(1, k * factor));
+    setOffset(anchoredOffset(k, next, offset, [0, 0]));
+    setK(next);
   };
   const reset = () => {
     stop();
     setK(1);
-    setPan([0, 0]);
+    setOffset([0, 0]);
     setRotate(START);
   };
 
-  const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
+    if (e.pointerType === "touch") {
+      touches.current.set(e.pointerId, [e.clientX, e.clientY]);
+      if (touches.current.size === 2) {
+        const [a, b] = [...touches.current.values()];
+        if (a && b) {
+          const box = surface.current!.querySelector(".access-map-surface")!.getBoundingClientRect();
+          pinch.current = { distance: Math.hypot(a[0] - b[0], a[1] - b[1]), scale: k, offset,
+            anchor: [((a[0] + b[0]) / 2 - box.left) * W / box.width - W / 2,
+              ((a[1] + b[1]) / 2 - box.top) * H / box.height - H / 2] };
+        }
+      }
+    }
+    moved.current = false;
     stop();
-    drag.current = { x: e.clientX, y: e.clientY, rotate, pan };
-    e.currentTarget.setPointerCapture?.(e.pointerId);
+    drag.current = { x: e.clientX, y: e.clientY, rotate };
+    if (!(e.target instanceof Element) || !e.target.closest("button")) e.currentTarget.setPointerCapture?.(e.pointerId);
   };
-  const onPointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "mouse" && !(e.buttons & 1)) { drag.current = null; return; }
+    if (e.pointerType === "touch") {
+      touches.current.set(e.pointerId, [e.clientX, e.clientY]);
+      const [a, b] = [...touches.current.values()];
+      if (pinch.current && a && b && pinch.current.distance > 0) {
+        const start = pinch.current;
+        const next = Math.max(1, Math.min(MAX_K, start.scale * Math.hypot(a[0] - b[0], a[1] - b[1]) / start.distance));
+        setK(next);
+        setOffset(anchoredOffset(start.scale, next, start.offset, start.anchor));
+        setHover(null);
+        moved.current = true;
+        return;
+      }
+    }
     const d = drag.current;
     if (!d) return;
     const box = e.currentTarget.getBoundingClientRect();
     const scale = box.width ? W / box.width : 1;
+    if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 4) moved.current = true;
     const dx = (e.clientX - d.x) * scale;
     const dy = (e.clientY - d.y) * scale;
-    if (level === "pais") {
-      setRotate([d.rotate[0] + dx * 0.25, Math.max(-70, Math.min(70, d.rotate[1] - dy * 0.25))]);
-    } else if (k > 1) {
-      setPan([d.pan[0] + dx, d.pan[1] + dy]);
-    }
+    setRotate([d.rotate[0] + dx * 0.25, Math.max(-70, Math.min(70, d.rotate[1] - dy * 0.25))]);
   };
-  const onPointerUp = () => {
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    touches.current.delete(e.pointerId);
+    pinch.current = null;
     drag.current = null;
   };
 
@@ -210,18 +256,23 @@ export function AccessMap({ level, items, regions, ufs, within, selected, period
   const ordered = selected ? [...brazilFeatures].sort((a, b) => Number(a.id === selected) - Number(b.id === selected)) : brazilFeatures;
 
   return (
-    <div className="access-map">
+    <div className="access-map" ref={surface} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
+      <div className="access-map-surface">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         role="img"
         aria-label={t("title")}
         className={level === "pais" ? "is-globe" : undefined}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
+        tabIndex={0}
+        onKeyDown={e => {
+          if (["+", "=", "-", "Home", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) e.preventDefault();
+          if (e.key === "+" || e.key === "=") zoom(ZOOM_STEP);
+          if (e.key === "-") zoom(1 / ZOOM_STEP);
+          if (e.key === "Home") reset();
+          if (e.key.startsWith("Arrow")) setRotate(([x, y]) => [x + (e.key === "ArrowLeft" ? -5 : e.key === "ArrowRight" ? 5 : 0), Math.max(-80, Math.min(80, y + (e.key === "ArrowUp" ? 5 : e.key === "ArrowDown" ? -5 : 0)))]);
+        }}
       >
-        {path && level === "pais" ? (
+        {path ? (
           <g>
             <path d={path({ type: "Sphere" }) ?? ""} fill="var(--odbr-bg-selected)" stroke="var(--odbr-border)" />
             <path d={path(geoGraticule10()) ?? ""} fill="none" stroke="var(--odbr-border)" strokeWidth={0.5} />
@@ -274,12 +325,12 @@ export function AccessMap({ level, items, regions, ufs, within, selected, period
             setHover(p.item.geography_key);
           }}
           onBlur={() => setHover(null)}
-          onClick={() => onActivate(p.item.geography_key)}
+          onClick={event => { if (event.detail === 0 || !moved.current) { setHover(p.item.geography_key); onActivate(p.item.geography_key); } }}
         >
           {p.kind === "country" ? <span className={`fi fi-${p.code} fis`} aria-hidden="true" /> : null}
           {p.kind === "uf" && p.code ? (
             // eslint-disable-next-line @next/next/no-img-element -- bandeira estática em public/ (CC0)
-            <img src={`/bandeiras-uf/${p.code}.svg`} alt="" width={28} height={28} />
+            <img src={`/bandeiras-uf/${p.code}.svg`} alt="" draggable={false} />
           ) : null}
           {p.kind === "region" ? <span aria-hidden="true">{p.code}</span> : null}
         </button>
@@ -287,37 +338,8 @@ export function AccessMap({ level, items, regions, ufs, within, selected, period
       {tipItem && tipPoint ? (
         <AccessTooltip item={tipItem} period={period} x={`${(tipPoint.x / W) * 100}%`} y={`${(tipPoint.y / H) * 100}%`} />
       ) : null}
-      <div className="map-zoom access-zoom" role="group" aria-label={t("controls")}>
-        <button type="button" onClick={() => zoom(ZOOM_STEP)} aria-label={t("zoomIn")} title={t("zoomIn")} disabled={k >= MAX_K}>
-          +
-        </button>
-        <button type="button" onClick={() => zoom(1 / ZOOM_STEP)} aria-label={t("zoomOut")} title={t("zoomOut")} disabled={k <= 1}>
-          −
-        </button>
-        <button type="button" onClick={reset} aria-label={t("reset")} title={t("reset")}>
-          ⟲
-        </button>
       </div>
-      {level !== "pais" ? (
-        <div className="access-legend" aria-label={t("legend")} role="group">
-          <span className="access-legend-scale">
-            <span>{t("less")}</span>
-            {colors.scale.breaks.map((b, i) => (
-              <span key={i} className="access-swatch" style={{ background: b.color }} aria-hidden="true" />
-            ))}
-            <span>{t("more")}</span>
-          </span>
-          <span className="access-legend-item">
-            <span className="access-swatch" style={{ background: "var(--odbr-seq-1)" }} aria-hidden="true" />
-            {labels.lessThan}
-          </span>
-          <span className="access-legend-item">
-            <span className="access-swatch" style={{ background: "var(--odbr-map-zero)" }} aria-hidden="true" />
-            {labels.noAccess}
-          </span>
-        </div>
-      ) : null}
-      <p className="access-attribution">{t("attribution")}</p>
+      <p className="access-attribution"><a href="https://d3js.org/">D3</a> · <a href="https://www.naturalearthdata.com/">Natural Earth</a> · <a href="https://www.ibge.gov.br/">IBGE</a></p>
     </div>
   );
 }

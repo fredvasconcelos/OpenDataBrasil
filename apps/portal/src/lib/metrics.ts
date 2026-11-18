@@ -58,7 +58,7 @@ export interface DatasetsResponse {
 }
 
 /** Período pedido à API: um atalho, ou "custom" com as duas datas (AAAA-MM-DD). */
-export type PeriodRequest = { period: Exclude<PeriodKey, "custom"> } | { period: "custom"; from: string; to: string };
+export type PeriodRequest = { period: Exclude<PeriodKey, "custom"> | "all" } | { period: "custom"; from: string; to: string };
 
 export const PERIOD_KEYS: readonly PeriodKey[] = ["7d", "30d", "12m", "custom"];
 /** Maior intervalo personalizado aceito pela API (ADR-0027, item 7). */

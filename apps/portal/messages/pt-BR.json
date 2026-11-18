@@ -2,7 +2,7 @@
   "site": {
     "name": "Open Data Brasil",
     "tagline": "Indicadores oficiais em um só lugar",
-    "internalNotice": "Versão de desenvolvimento, só para uso interno: as licenças de reutilização dos dados ainda estão em revisão.",
+    "internalNotice": "Versão de teste: alguns indicadores e funcionalidades ainda não estão disponíveis. O portal pode apresentar instabilidades durante o uso.",
     "description": "Portal independente e gratuito que reúne dados oficiais de instituições públicas brasileiras, com a fonte de cada número, mapas, séries históricas e exportação."
   },
   "nav": {
@@ -56,6 +56,7 @@
     "period": "Período",
     "loading": "Carregando…",
     "error": "Não foi possível carregar os dados.",
+    "busy": "O serviço está ocupado. Aguarde alguns instantes e tente novamente.",
     "retry": "Tentar de novo",
     "selectKpi": "Escolha um indicador no menu.",
     "mapTitle": "Distribuição por território",
@@ -303,7 +304,7 @@
   },
   "unavailable": {
     "title": "Dados temporariamente indisponíveis",
-    "lead": "O serviço de dados não respondeu. Isso costuma durar alguns segundos, por exemplo logo depois de um reinício. A página tenta de novo sozinha a cada 15 segundos.",
+    "lead": "O serviço de dados está temporariamente indisponível. Aguarde alguns minutos e use o botão abaixo para tentar novamente.",
     "retry": "Tentar de novo",
     "code": "Código do erro: {digest}"
   },
@@ -488,11 +489,13 @@
         "length": "O período personalizado vai até {days} dias."
       }
     },
+    "accumulated": "Desde o início da coleta · {range}",
     "total": "Número de acessos ao portal",
     "totalUnit": "visualizações de página",
     "source": "{range} · fonte: registros de acesso do portal",
     "since": "Coleta desde {date}",
     "cards": {
+      "views": "Visualizações de página",
       "kpiOpens": "Indicadores abertos",
       "downloads": "Downloads de dados",
       "countries": "Países de origem",
@@ -516,20 +519,22 @@
       "reset": "Voltar à visão inicial",
       "asTable": "Ver o mapa como tabela",
       "asMap": "Ver o mapa",
-      "attribution": "Limites: Natural Earth · IBGE",
+      "attribution": "Mapa: D3 · Limites: Natural Earth e IBGE",
       "legend": "Legenda do mapa",
       "less": "menos",
       "more": "mais",
       "point": "{name}: {value}",
       "views": "visualizações",
-      "globeHint": "Arraste para girar o globo. Os pontos e o ranking também funcionam pelo teclado.",
+      "globeHint": "Arraste com o botão esquerdo para girar; use a roda para aproximar. Pelo teclado: setas, +, − e Home.",
       "brazilHint": "Escolha uma Grande Região ou um estado no mapa, no ranking ou pela tabela.",
       "loading": "Carregando o mapa…",
       "empty": "Nenhum acesso registrado neste nível e período.",
       "controls": "Controles do mapa"
     },
     "tip": {
-      "share": "{pct} do total"
+      "share": "{pct} do total",
+      "shareGlobal": "{pct} do total global",
+      "shareBrazil": "{pct} do total do Brasil"
     },
     "card": {
       "close": "Fechar"
