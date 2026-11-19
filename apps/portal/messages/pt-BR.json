@@ -86,7 +86,11 @@
     "focus": {
       "trail": "Recorte do mapa",
       "outside": "Fora do recorte",
-      "all": "Brasil"
+      "all": "Brasil",
+      "state": "Municípios de",
+      "chooseState": "Selecione um estado",
+      "municipalities": "Ver municípios de {state}",
+      "nationalMunicipalities": "Ver municípios do Brasil inteiro"
     },
     "legend": {
       "label": "Legenda",
@@ -249,6 +253,21 @@
     "selectCurrent": "Voltar ao painel",
     "estimate": "Cerca de {rows} linhas (limite: {max}).",
     "estimateTooMany": "Cerca de {rows} linhas: acima do limite de {max}. Desmarque níveis, períodos ou detalhes.",
+    "state": "Estado (UF)",
+    "wholeCountry": "Brasil inteiro",
+    "panelScope": "Recorte do painel",
+    "periodSelection": "Selecionar períodos",
+    "selectedPeriods": "{count, plural, one {# período} other {# períodos}}",
+    "allPeriods": "Todos os períodos de cada nível",
+    "periodCoverage": "Na seleção manual, aparecem os períodos comuns aos níveis escolhidos. Todos os períodos usa a cobertura própria de cada nível.",
+    "estimating": "Consultando os territórios do recorte…",
+    "optionsError": "Não foi possível consultar o recorte da exportação.",
+    "retry": "Tentar de novo",
+    "choosePeriods": "Selecione ao menos um período disponível nos níveis escolhidos.",
+    "periodLimit": "Escolha até 120 períodos por grão, ou marque todos os períodos disponíveis.",
+    "noTerritories": "O recorte não contém territórios dos níveis escolhidos.",
+    "fullExtract": "Para um extrato completo, use o contato do portal. A estimativa é um limite superior; a API confere o tamanho real do arquivo.",
+    "contact": "Solicitar extrato completo",
     "neverAccumulated": "Sai só o que a fonte publicou e o que o portal deriva pela regra do indicador (marcado na coluna tipo); valores acumulados nunca são exportados.",
     "cancel": "Cancelar"
   },

@@ -102,8 +102,12 @@ services:
       start_period: 15s
     restart: unless-stopped
     deploy:
+      # Plano D, D2: só ampliar após medir D1. Sem override, preserva uma réplica.
+      replicas: ${ODB_PORTAL_REPLICAS:-1}
       resources:
-        limits: { memory: 1g, cpus: "2" }
+        limits:
+          memory: ${ODB_PORTAL_MEMORY:-1g}
+          cpus: "${ODB_PORTAL_CPUS:-2}"
 
   caddy:
     # Caddy 2.11.9 (imagem de 2026-11-05). Exceção de segurança à regra dos 14 dias

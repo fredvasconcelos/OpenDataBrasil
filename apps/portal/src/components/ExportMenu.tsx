@@ -3,6 +3,9 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
+import { PeriodFilter } from "@/components/PeriodFilter";
+import { grainPeriods } from "@/lib/state";
+import { useAsync } from "@/lib/useAsync";
 import { api } from "@/lib/api";
 import { pngBlob, saveBlob, svgBlob } from "@/lib/download";
 import type { ExportFormat, Kpi } from "@/lib/types";
@@ -61,6 +64,7 @@ interface DataProps {
   /** Recorte do mapa: exporta só os territórios dentro dele. */
   within?: string | null;
   dimensions: string[];
+  periods?: string[];
   /** Filtro do Detalhar por (DS 2.4): a exportação segue o painel. */
   categories?: string[];
   /** Grão de tempo do painel (ADR-0013); null: o publicado. */
@@ -68,35 +72,26 @@ interface DataProps {
   correction?: string | null;
 }
 
-// Territórios por nível, para a estimativa de linhas da janela (teto, sem o recorte).
-const LEVEL_SIZE: Record<string, number> = {
-  brasil: 1,
-  regiao: 5,
-  uf: 27,
-  regiao_metropolitana: 80,
-  municipio: 5570,
-  areas_pof: 12,
-};
 /** Teto por KPI: só os dois LSPA receberam 200 mil em 18/11/2026. */
 export function exportRowLimit(kpiId: string): number {
-  return kpiId === "safra_estimada" || kpiId === "safra_area_colhida" ? 200_000 : 100_000;
+  return kpiId === "safra_estimada" || kpiId === "safra_area_colhida" ? 200_000 : 10_000;
 }
 
 type GrainId = "mes" | "trimestre" | "semestre" | "ano";
 
 /** Estimativa de linhas: territórios × períodos × combinações de categorias. */
-export function estimateRows(kpi: Kpi, levels: readonly string[], grains: readonly string[], dims: readonly string[], crossable: boolean): number {
-  const periods = (g: string) => kpi.time_grains?.find((x) => x.grain === g)?.periods.length ?? kpi.periods.length;
+export function estimateRows(kpi: Kpi, levels: readonly string[], grains: readonly string[], dims: readonly string[], crossable: boolean, scope: { counts: Record<string, number>; periods: Record<string, string[]> }): number {
+  const periods = (g: string, level: string) => scope.periods[g]?.length ?? grainPeriods(kpi, g || null, level).periods.length;
   const cats = (d: string) => (kpi.dimensions.find((x) => x.classification_id === d)?.categories.length ?? 0) + 1;
   const combos = crossable ? dims.reduce((n, d) => n * cats(d), 1) : 1 + dims.reduce((n, d) => n + cats(d) - 1, 0);
   const grainList = grains.length ? grains : [""];
-  return levels.reduce((sum, l) => sum + (LEVEL_SIZE[l] ?? 100) * grainList.reduce((n, g) => n + periods(g), 0) * combos, 0);
+  return levels.reduce((sum, l) => sum + (scope.counts[l] ?? 0) * grainList.reduce((n, g) => n + periods(g, l), 0) * combos, 0);
 }
 
 // "Exportar dados" (B5, DS 2.7): abre a janela com níveis, grãos, dimensões e formato.
 // "Selecionar tudo" marca todos. O arquivo sai em formato longo, com as colunas nivel,
 // grao e tipo (publicado ou derivado); nunca com valores acumulados (ADR-0026).
-export function DataExport({ kpi, level, within = null, dimensions, categories = [], grain = null, correction = null }: DataProps) {
+export function DataExport({ kpi, level, within = null, dimensions, periods: panelPeriods = [], categories = [], grain = null, correction = null }: DataProps) {
   const { busy, error, run, t } = useExportRun();
   const tl = useTranslations("levels");
   const [open, setOpen] = useState(false);
@@ -105,6 +100,11 @@ export function DataExport({ kpi, level, within = null, dimensions, categories =
   const [chosenLevels, setLevels] = useState<string[]>([level]);
   const [chosenGrains, setGrains] = useState<string[]>(grains.length ? [grain ?? grains[0]!.grain] : []);
   const [chosenDims, setDims] = useState<string[]>(dimensions);
+  const [chosenWithin, setWithin] = useState<string | null>(within);
+  const [periodSelection, setPeriodSelection] = useState<Record<string, string[]>>({});
+  const states = useAsync(open ? () => api.geographies("uf") : null, [open]);
+  const [optionsRetry, setOptionsRetry] = useState(0);
+  const options = useAsync(open ? () => api.exportOptions(kpi.kpi_id, chosenWithin) : null, [open, kpi.kpi_id, chosenWithin], optionsRetry);
   const [format, setFormat] = useState<ExportFormat>("csv");
   const dialog = useRef<HTMLDivElement>(null);
   const opener = useRef<HTMLButtonElement>(null);
@@ -113,6 +113,11 @@ export function DataExport({ kpi, level, within = null, dimensions, categories =
     setLevels([level]);
     setGrains(grains.length ? [grain ?? grains[0]!.grain] : []);
     setDims(dimensions);
+    setWithin(within);
+    const currentGrain = grain ?? grains[0]?.grain ?? "";
+    const available = grainPeriods(kpi, grain, level).periods;
+    const selected = available.filter((p) => panelPeriods.includes(p));
+    setPeriodSelection(selected.length ? { [currentGrain]: selected } : {});
   };
   const close = () => {
     setOpen(false);
@@ -131,11 +136,23 @@ export function DataExport({ kpi, level, within = null, dimensions, categories =
     setLevels(levels);
     setGrains(grains.map((g) => g.grain));
     setDims(kpi.dimensions.map((d) => d.classification_id));
+    setPeriodSelection({});
   };
   const crossable = !kpi.exclusive_dimensions || chosenDims.length < 2;
-  const rows = estimateRows(kpi, chosenLevels, chosenGrains, chosenDims, crossable);
-  const maxRows = exportRowLimit(kpi.kpi_id);
-  const tooMany = rows > maxRows;
+  const grainList = chosenGrains.length ? chosenGrains : [""];
+  const availablePeriods = (g: string) => {
+    const lists = chosenLevels.map((l) => grainPeriods(kpi, g || null, l).periods);
+    return (lists[0] ?? []).filter((p) => lists.every((list) => list.includes(p)));
+  };
+  const effectivePeriods = Object.fromEntries(grainList.map((g) => [g,
+    periodSelection[g] ? availablePeriods(g).filter((p) => periodSelection[g]!.includes(p)) : availablePeriods(g),
+  ]));
+  const rows = options.data ? estimateRows(kpi, chosenLevels, chosenGrains, chosenDims, crossable, { counts: options.data.territory_counts, periods: Object.fromEntries(grainList.filter((g) => periodSelection[g]).map((g) => [g, effectivePeriods[g]!])) }) : null;
+  const maxRows = options.data?.max_rows ?? exportRowLimit(kpi.kpi_id);
+  const tooMany = rows !== null && rows > maxRows;
+  const emptyPeriods = grainList.some((g) => !effectivePeriods[g]?.length);
+  const excessiveSelection = grainList.some((g) => periodSelection[g] && (effectivePeriods[g]?.length ?? 0) > 120);
+  const noTerritories = options.data && chosenLevels.every((l) => !options.data!.territory_counts[l]);
   const toggle = (list: string[], set: (v: string[]) => void, order: string[], id: string, on: boolean) =>
     set(order.filter((x) => (x === id ? on : list.includes(x))));
 
@@ -173,6 +190,14 @@ export function DataExport({ kpi, level, within = null, dimensions, categories =
             </div>
             <p className="muted small">{t("dialogLead")}</p>
             <div className="export-dialog-body">
+              <label className="field">
+                {t("state")}
+                <select value={chosenWithin ?? ""} onChange={(e) => setWithin(e.target.value || null)}>
+                  <option value="">{t("wholeCountry")}</option>
+                  {within && !within.startsWith("uf:") ? <option value={within}>{t("panelScope")}</option> : null}
+                  {(states.data ?? []).map((geo) => <option key={geo.geography_key} value={geo.geography_key}>{geo.name}</option>)}
+                </select>
+              </label>
               <fieldset>
                 <legend>{t("levels")}</legend>
                 {levels.map((l) => (
@@ -204,6 +229,28 @@ export function DataExport({ kpi, level, within = null, dimensions, categories =
                   ))}
                 </fieldset>
               ) : null}
+              <fieldset>
+                <legend>{t("periodSelection")}</legend>
+                <p className="muted small">{t("periodCoverage")}</p>
+                {grainList.map((g) => {
+                  const available = availablePeriods(g);
+                  const selected = effectivePeriods[g] ?? [];
+                  const name = grains.find((item) => item.grain === g)?.label ?? t("published");
+                  return <details key={g} className="export-periods">
+                    <summary>{name} · {periodSelection[g] ? t("selectedPeriods", { count: selected.length }) : t("allPeriods")}</summary>
+                    <label className="check small">
+                      <input type="checkbox" checked={!periodSelection[g]} onChange={(e) => setPeriodSelection((current) => {
+                        const next = { ...current };
+                        if (e.target.checked) delete next[g];
+                        else next[g] = available.slice(-1);
+                        return next;
+                      })} />
+                      {t("allPeriods")}
+                    </label>
+                    <PeriodFilter leaves={available} complete={grainPeriods(kpi, g || null).complete} selected={selected} onChange={(next) => setPeriodSelection((current) => ({ ...current, [g]: next }))} />
+                  </details>;
+                })}
+              </fieldset>
               {kpi.dimensions.length ? (
                 <fieldset>
                   <legend>{t("dimensions")}</legend>
@@ -233,8 +280,13 @@ export function DataExport({ kpi, level, within = null, dimensions, categories =
               </fieldset>
             </div>
             <p className={tooMany ? "error" : "muted small"} role="status">
-              {t(tooMany ? "estimateTooMany" : "estimate", { rows: rows.toLocaleString("pt-BR"), max: maxRows.toLocaleString("pt-BR") })}
+              {rows === null ? t("estimating") : t(tooMany ? "estimateTooMany" : "estimate", { rows: rows.toLocaleString("pt-BR"), max: maxRows.toLocaleString("pt-BR") })}
             </p>
+            {options.error ? <p className="error" role="alert">{t("optionsError")} <button type="button" onClick={() => setOptionsRetry((n) => n + 1)}>{t("retry")}</button></p> : null}
+            {emptyPeriods ? <p className="error" role="alert">{t("choosePeriods")}</p> : null}
+            {excessiveSelection ? <p className="error" role="alert">{t("periodLimit")}</p> : null}
+            {noTerritories ? <p className="error" role="alert">{t("noTerritories")}</p> : null}
+            {tooMany ? <p className="muted small">{t("fullExtract")} {process.env.NEXT_PUBLIC_CONTACT_URL ? <a href={process.env.NEXT_PUBLIC_CONTACT_URL}>{t("contact")}</a> : null}</p> : null}
             <p className="muted small">{t("neverAccumulated")}</p>
             <div className="export-dialog-actions">
               <button type="button" onClick={close}>
@@ -243,7 +295,7 @@ export function DataExport({ kpi, level, within = null, dimensions, categories =
               <button
                 type="button"
                 className="primary"
-                disabled={busy || tooMany}
+                disabled={busy || !options.data || emptyPeriods || excessiveSelection || Boolean(noTerritories)}
                 onClick={() =>
                   run(async () => {
                     const { blob, filename } = await api.exportFile({
@@ -251,8 +303,9 @@ export function DataExport({ kpi, level, within = null, dimensions, categories =
                       level: chosenLevels[0] ?? level,
                       levels: chosenLevels,
                       grains: chosenGrains as GrainId[],
-                      within,
+                      within: chosenWithin,
                       periods: [],
+                      periods_by_grain: Object.fromEntries(grainList.filter((g) => periodSelection[g]).map((g) => [g || grains[0]?.grain || "ano", effectivePeriods[g]!])),
                       dimensions: chosenDims,
                       categories: categories.filter((c) => chosenDims.includes(c.split(":")[0] ?? "")),
                       correction,

@@ -1,5 +1,5 @@
 // Dados de teste (forma do contrato /navigation). Só para testes automatizados.
-import type { Kpi, Navigation } from "./types";
+import type { Kpi, Navigation, PortalIndex } from "./types";
 
 const kpi = (over: Partial<Kpi> & Pick<Kpi, "kpi_id" | "label">): Kpi =>
   ({
@@ -79,3 +79,16 @@ export const navFixture: Navigation = {
     },
   ],
 } as Navigation;
+
+export const indexFixture: PortalIndex = {
+  ...navFixture,
+  themes: navFixture.themes.map((theme) => ({
+    ...theme,
+    subthemes: theme.subthemes.map((sub) => ({
+      ...sub,
+      kpis: sub.kpis.map(({ kpi_id, label, name, description, source }) => ({
+        kpi_id, label, name, description, source_table_id: source.source_table_id,
+      })),
+    })),
+  })),
+};

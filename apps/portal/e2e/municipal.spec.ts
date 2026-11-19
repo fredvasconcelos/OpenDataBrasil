@@ -63,8 +63,8 @@ for (const sample of cases) {
 test("plano de seca: detalhe municipal disponível sem o recorte por porte", async ({ page }) => {
   const response = page.waitForResponse((r) => {
     const url = new URL(r.url());
-    return url.pathname === "/odb-api/kpis/plano_seca/detail"
-      && url.searchParams.get("geography") === "municipio:3550308"
+    return url.pathname === "/odb-api/kpis/plano_seca/details"
+      && url.searchParams.get("within") === "uf:35"
       && url.searchParams.get("dimensions") === "c1347"
       && r.status() === 200;
   });
@@ -79,7 +79,8 @@ test("plano de seca: detalhe municipal disponível sem o recorte por porte", asy
   })).toBeDisabled();
   await page.getByRole("img", { name: /Municípios atingidos pela seca/ })
     .getByRole("button", { name: /^São Paulo:/ }).focus();
-  const data = await (await response).json();
+  const batch = await (await response).json();
+  const data = batch.find((item: { geography: { geography_key: string } }) => item.geography.geography_key === "municipio:3550308");
   const parts = new Map(data.root.children.map((c: { category_key: string; value: number }) =>
     [c.category_key, c.value]));
   expect(parts.get("c1347:57253")).toBe(0);
@@ -118,7 +119,7 @@ test("trocar UF por município na POF remove da URL o ano sem cobertura", async 
   await page.goto("/dashboard?kpi=despesa_familiar&nivel=uf&periodo=2018");
   const tree = await openPeriods(page);
   await expect(tree.getByRole("checkbox", { name: "2018", exact: true })).toBeChecked();
-  await page.getByRole("combobox", { name: "Nível territorial", exact: true }).selectOption("municipio");
+  await page.getByRole("combobox", { name: "Municípios de", exact: true }).selectOption("uf:29");
   await expect(tree.getByRole("checkbox", { name: "2008", exact: true })).toBeChecked();
   await expect(page).not.toHaveURL(/periodo=2018/);
   await expect(page.locator('.error[role="alert"]')).toHaveCount(0);

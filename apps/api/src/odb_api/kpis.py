@@ -35,6 +35,7 @@ from odb_api.schemas import (
     GeographyRefOut,
     HistoryOut,
     HistoryRowOut,
+    KpiIndexOut,
     KpiOut,
     KpiSourceOut,
     MapOut,
@@ -45,20 +46,24 @@ from odb_api.schemas import (
     PivotOut,
     PlannedKpiOut,
     PointOut,
+    PortalIndexOut,
     Provenance,
     SeriesItemOut,
     SeriesOut,
     SourceTableOut,
+    SubthemeIndexOut,
     SubthemeOut,
     TableOut,
     TableRowOut,
     TableVersionOut,
+    ThemeIndexOut,
     ThemeOut,
     TimeGrainOut,
 )
 from odb_semantics import (
     IndicatorQuery,
     Panorama,
+    QueryPlan,
     SemanticError,
     check_against_portal,
     plan_query,
@@ -202,6 +207,22 @@ PIVOT_MAX_CELLS = 60_000
 MAX_PERIODS = 120
 
 
+class PivotTooLargeError(SemanticError):
+    """Recusa determinística do pivot, vinculada ao release realmente consultado."""
+
+    def __init__(self, release_id: str, message: str) -> None:
+        super().__init__(message)
+        self.release_id = release_id
+
+
+def _pivot_limit_message() -> str:
+    """Preserva a mensagem da recusa anterior à contagem real."""
+    return (
+        f"tabela dinâmica grande demais (mais de {PIVOT_MAX_CELLS} células): "
+        "escolha um nível maior, um recorte ou menos campos"
+    )
+
+
 class KpiService:
     """Operações do portal sobre os KPIs configurados."""
 
@@ -240,7 +261,7 @@ class KpiService:
         # release → KPIs com problema contra ele (ADR-0015).
         self._unavailable: dict[str, dict[str, list[str]]] = {}
         # release → navegação e cada KPI já serializados (só mudam com o release).
-        self._serialized: dict[str, tuple[bytes, dict[str, bytes]]] = {}
+        self._serialized: dict[str, tuple[bytes, dict[str, bytes], bytes]] = {}
         self._serialized_lock = threading.Lock()
 
     # ------------------------------------------------------------- configuração
@@ -483,6 +504,15 @@ class KpiService:
         )
 
     def serialized(self, ctx: ReleaseContext) -> tuple[bytes, dict[str, bytes]]:
+        """Navegação completa e metadados de cada KPI, preservando o contrato existente."""
+        navigation, kpis, _ = self._serialize(ctx)
+        return navigation, kpis
+
+    def serialized_index(self, ctx: ReleaseContext) -> bytes:
+        """Índice leve montado junto da navegação, uma vez por release (Plano D, D1)."""
+        return self._serialize(ctx)[2]
+
+    def _serialize(self, ctx: ReleaseContext) -> tuple[bytes, dict[str, bytes], bytes]:
         """Navegação e KPIs do release em JSON, montados uma vez por release.
 
         Achado da homologação (V5): montar a navegação custava ~8 s de CPU sob carga e
@@ -503,7 +533,38 @@ class KpiService:
                     for sub in theme.subthemes
                     for item in sub.kpis
                 }
-                found = (_json(nav), kpis)
+                index = PortalIndexOut(
+                    release_id=nav.release_id,
+                    scope=nav.scope,
+                    dimension_order=nav.dimension_order,
+                    themes=[
+                        ThemeIndexOut(
+                            theme_id=theme.theme_id,
+                            label=theme.label,
+                            filters=theme.filters,
+                            subthemes=[
+                                SubthemeIndexOut(
+                                    subtheme_id=sub.subtheme_id,
+                                    label=sub.label,
+                                    planned=sub.planned,
+                                    kpis=[
+                                        KpiIndexOut(
+                                            kpi_id=item.kpi_id,
+                                            label=item.label,
+                                            name=item.name,
+                                            description=item.description,
+                                            source_table_id=item.source.source_table_id,
+                                        )
+                                        for item in sub.kpis
+                                    ],
+                                )
+                                for sub in theme.subthemes
+                            ],
+                        )
+                        for theme in nav.themes
+                    ],
+                )
+                found = (_json(nav), kpis, _json(index))
                 # Guarda só o release atual e o anterior (rollback e troca de release).
                 for old in list(self._serialized)[:-1]:
                     del self._serialized[old]
@@ -711,7 +772,7 @@ class KpiService:
                 out[dim.classification] = (total, *(c["category_id"] for c in cats))
         return out
 
-    def _observations(
+    def _observation_plan(
         self,
         ctx: ReleaseContext,
         kpi: KpiConfig,
@@ -720,15 +781,10 @@ class KpiService:
         within: str | None,
         periods: Sequence[str],
         dims: Sequence[str],
-        max_rows: int,
-        grain: str | None = None,
-        correction: str | None = None,
-        selected: Selection | None = None,
-        for_export: bool = False,
-    ) -> tuple[list[Observation], Provenance]:
-        """Observações do KPI. Com filtro de categorias, as dimensões filtradas entram na
-        consulta (mesmo fora de ``dims``), o Total delas vira a soma das escolhidas
-        (indicadores somáveis) e o resultado volta às combinações de ``dims``."""
+        grain: str | None,
+        selected: Selection | None,
+    ) -> tuple[QueryPlan, list[str], list[str]]:
+        """Plano comum à leitura e à contagem real de observações (Plano D, D4)."""
         sel = dict(selected or {})
         extra = [
             d.classification
@@ -755,6 +811,37 @@ class KpiService:
             partial_period=partial,
         )
         plan = plan_query(query, self._gold.indicator_meta(ctx))
+        return plan, query_dims, extra
+
+    def _observations(
+        self,
+        ctx: ReleaseContext,
+        kpi: KpiConfig,
+        *,
+        level: str,
+        within: str | None,
+        periods: Sequence[str],
+        dims: Sequence[str],
+        max_rows: int,
+        grain: str | None = None,
+        correction: str | None = None,
+        selected: Selection | None = None,
+        for_export: bool = False,
+    ) -> tuple[list[Observation], Provenance]:
+        """Observações do KPI. Com filtro de categorias, as dimensões filtradas entram na
+        consulta (mesmo fora de ``dims``), o Total delas vira a soma das escolhidas
+        (indicadores somáveis) e o resultado volta às combinações de ``dims``."""
+        sel = dict(selected or {})
+        plan, query_dims, extra = self._observation_plan(
+            ctx,
+            kpi,
+            level=level,
+            within=within,
+            periods=periods,
+            dims=dims,
+            grain=grain,
+            selected=sel,
+        )
         result = self._gold.run_plan(ctx, plan, max_rows=max_rows, for_export=for_export)
         out = []
         for r in result.rows:
@@ -1215,10 +1302,110 @@ class KpiService:
         )
         if window:
             obs = self._accumulated(obs, window, "total", rule)
+        return self._detail_out(
+            ctx,
+            kpi,
+            ref=ref,
+            chosen=chosen,
+            window=window,
+            dims=dims,
+            sel=sel,
+            obs=obs,
+            prov=prov,
+        )
+
+    def details(
+        self,
+        ctx: ReleaseContext,
+        kpi_id: str,
+        *,
+        level: str,
+        within: str | None,
+        period: str | None,
+        dimensions: Sequence[str],
+        grain: str | None = None,
+        correction: str | None = None,
+        categories: Sequence[str] = (),
+        periods: Sequence[str] = (),
+        accumulate: bool = False,
+    ) -> list[DetailOut]:
+        """Detalhes do nível em uma leitura; municípios somente dentro de uma UF (D6)."""
+        if level not in {"brasil", "regiao", "uf", "municipio"} or (
+            level == "municipio" and (within is None or not within.startswith("uf:"))
+        ):
+            msg = "detalhes em lote: selecione região, UF ou municípios dentro de uma UF"
+            raise SemanticError(msg)
+        kpi = self.kpi(ctx, kpi_id)
+        dims = self._dims(kpi, dimensions, level)
+        sel = self._selection(ctx, kpi, categories)
+        grain = self._grain(ctx, kpi, grain)
+        if within:
+            self._ref(ctx, within)
+        window: list[str] = []
+        if accumulate:
+            rule = self._rule(ctx, kpi)
+            window = self._window(ctx, kpi, periods or ([period] if period else []), grain, level)
+            chosen = window[-1]
+        else:
+            chosen = self._period(ctx, kpi, period, grain, level)
+        obs, prov = self._observations(
+            ctx,
+            kpi,
+            level=level,
+            within=within,
+            periods=tuple(window or (chosen,)),
+            dims=dims,
+            max_rows=100_000,
+            grain=grain,
+            correction=correction,
+            selected=sel,
+        )
+        if prov.truncated:
+            msg = "detalhes em lote excedem o limite de leitura: reduza períodos ou detalhes"
+            raise SemanticError(msg)
+        if window:
+            obs = self._accumulated(obs, window, "total", rule)
+        grouped: dict[str, list[Observation]] = {}
+        for item in obs:
+            grouped.setdefault(item.geography_key, []).append(item)
+        territories = self._gold.search_geographies(
+            ctx, text=None, levels=(level,), within=within, limit=50_000
+        )
+        return [
+            self._detail_out(
+                ctx,
+                kpi,
+                ref=GeographyRefOut(
+                    geography_key=geo["geography_key"], name=geo["name"], level_id=geo["level_id"]
+                ),
+                chosen=chosen,
+                window=window,
+                dims=dims,
+                sel=sel,
+                obs=grouped.get(geo["geography_key"], []),
+                prov=prov,
+            )
+            for geo in territories
+        ]
+
+    def _detail_out(
+        self,
+        ctx: ReleaseContext,
+        kpi: KpiConfig,
+        *,
+        ref: GeographyRefOut,
+        chosen: str,
+        window: list[str],
+        dims: list[str],
+        sel: Selection,
+        obs: Sequence[Observation],
+        prov: Provenance,
+    ) -> DetailOut:
+        """Monta o mesmo tooltip nas rotas individual e em lote, sem novas consultas."""
         meta = self._gold.indicators(ctx)[kpi.indicator]
         # % das categorias: indicadores somáveis ou de quantidade (DS 2.3.12).
         additive = allows_category_shares(str(meta["unit"]), str(meta["additivity"]))
-        values = {o.combo: o for o in obs if o.geography_key == geography}
+        values = {o.combo: o for o in obs if o.geography_key == ref.geography_key}
         names = self._gold.categories(ctx)
         totals = [self._gold.total_category(ctx, d)["category_key"] for d in dims]
 
@@ -1562,6 +1749,22 @@ class KpiService:
         sel = self._selection(ctx, kpi, categories)
         grain = self._grain(ctx, kpi, grain)
         window = tuple(self._window(ctx, kpi, periods, grain, level)) if periods else ()
+        # A correção de preços valida cobertura e índices durante a leitura. Mantém-se
+        # esse caminho para preservar a precedência de seus erros, sem estimar células.
+        if correction is None:
+            plan, _, extra = self._observation_plan(
+                ctx,
+                kpi,
+                level=level,
+                within=within,
+                periods=window,
+                dims=dims,
+                grain=grain,
+                selected=sel,
+            )
+            totals = [str(self._gold.total_category(ctx, d)["category_key"]) for d in extra]
+            if self._gold.count_plan(ctx, plan, total_categories=totals) > PIVOT_MAX_CELLS:
+                raise PivotTooLargeError(ctx.release_id, _pivot_limit_message())
         obs, prov = self._observations(
             ctx,
             kpi,
@@ -1575,11 +1778,7 @@ class KpiService:
             selected=sel,
         )
         if len(obs) > PIVOT_MAX_CELLS:
-            msg = (
-                f"tabela dinâmica grande demais (mais de {PIVOT_MAX_CELLS} células): "
-                "escolha um nível maior, um recorte ou menos campos"
-            )
-            raise SemanticError(msg)
+            raise PivotTooLargeError(ctx.release_id, _pivot_limit_message())
         index = {d: i for i, d in enumerate(dims)}
         order: dict[str, dict[str, int]] = {}
         for d in dims:
@@ -1624,7 +1823,7 @@ class KpiService:
         row_keys, col_keys = ordered(row_heads, rows), ordered(col_heads, cols)
         if len(row_keys) * len(col_keys) > PIVOT_MAX_CELLS:
             msg = f"tabela dinâmica grande demais (mais de {PIVOT_MAX_CELLS} células)"
-            raise SemanticError(msg)
+            raise PivotTooLargeError(ctx.release_id, msg)
 
         def field_out(f: str) -> PivotFieldOut:
             label = {"territorio": "Território", "periodo": "Período"}.get(f)
@@ -1894,7 +2093,7 @@ def correction_base(
     return max(covered, key=lambda p: (parse_period(p).end, p)) if covered else None
 
 
-def _json(model: NavigationOut | KpiOut) -> bytes:
+def _json(model: NavigationOut | KpiOut | PortalIndexOut) -> bytes:
     """Mesmo JSON que o FastAPI produz para o ``response_model`` (compacto, UTF-8)."""
     return json.dumps(
         model.model_dump(mode="json", by_alias=True),

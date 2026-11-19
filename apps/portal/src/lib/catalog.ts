@@ -5,16 +5,18 @@
 
 import { formatPeriod, parsePeriods } from "@/lib/period";
 import { normalize } from "@/lib/themes";
-import type { Kpi, Navigation, Subtheme, Theme } from "@/lib/types";
+import type { Kpi, KpiIndex, Navigation, PortalIndex, Subtheme, Theme } from "@/lib/types";
 
-export interface CatalogKpi {
-  kpi: Kpi;
-  theme: Theme;
+export interface CatalogKpi<T = Kpi> {
+  kpi: T;
+  theme: Pick<Theme, "theme_id" | "label">;
   themeLabel: string;
   subthemeLabel: string;
 }
 
-export function flatten(nav: Navigation): CatalogKpi[] {
+type CatalogTree<T> = { themes: (Pick<Theme, "theme_id" | "label"> & { subthemes: { label: string; kpis: T[] }[] })[] };
+
+export function flatten<T extends Kpi | KpiIndex>(nav: CatalogTree<T>): CatalogKpi<T>[] {
   return nav.themes.flatMap((theme) =>
     theme.subthemes.flatMap((sub) => sub.kpis.map((kpi) => ({ kpi, theme, themeLabel: theme.label, subthemeLabel: sub.label }))),
   );
@@ -24,12 +26,12 @@ export type PlannedKpi = Subtheme["planned"][number];
 
 export interface CatalogPlanned {
   planned: PlannedKpi;
-  theme: Theme;
+  theme: Pick<Theme, "theme_id" | "label">;
   themeLabel: string;
   subthemeLabel: string;
 }
 
-export function flattenPlanned(nav: Navigation): CatalogPlanned[] {
+export function flattenPlanned(nav: Navigation | PortalIndex): CatalogPlanned[] {
   return nav.themes.flatMap((theme) =>
     theme.subthemes.flatMap((sub) =>
       sub.planned.map((planned) => ({ planned, theme, themeLabel: theme.label, subthemeLabel: sub.label })),
@@ -45,14 +47,18 @@ export type MatchField = "label" | "theme" | "subtheme" | "table" | "description
  * descrição e pelo número da tabela da fonte (só dígitos, 2 ou mais). Devolve o primeiro
  * campo encontrado, na ordem de relevância, ou null.
  */
-export function matchKpi(item: CatalogKpi, query: string): MatchField | null {
+export function sourceTable(kpi: Kpi | KpiIndex): string {
+  return "source" in kpi ? kpi.source.source_table_id : kpi.source_table_id;
+}
+
+export function matchKpi(item: CatalogKpi<Kpi | KpiIndex>, query: string): MatchField | null {
   const q = normalize(query);
   if (!q) return "label";
   const digits = q.replace(/\D/g, "");
   if (normalize(item.kpi.label).includes(q)) return "label";
   if (normalize(item.themeLabel).includes(q)) return "theme";
   if (normalize(item.subthemeLabel).includes(q)) return "subtheme";
-  if (digits.length > 1 && digits === q.replace(/\s|tabela/g, "") && item.kpi.source.source_table_id === digits) return "table";
+  if (digits.length > 1 && digits === q.replace(/\s|tabela/g, "") && sourceTable(item.kpi) === digits) return "table";
   if (normalize(item.kpi.name).includes(q)) return "name";
   if (normalize(item.kpi.description).includes(q)) return "description";
   return null;

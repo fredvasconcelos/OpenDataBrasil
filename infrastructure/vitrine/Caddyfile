@@ -133,7 +133,19 @@
 		import resposta-indisponivel indisponivel
 	}
 
-	reverse_proxy portal:3000 {
+	reverse_proxy {
+		# Plano D, D2: resolve todas as réplicas e acompanha a recriação pelo Compose.
+		# Upstreams dinâmicos não executam health checks ativos no Caddy: a partida
+		# usa o healthcheck do Compose; falhas em serviço usam a checagem passiva.
+		dynamic a portal 3000 {
+			refresh 2s
+			versions ipv4
+		}
+		lb_policy least_conn
+		fail_duration 10s
+		unhealthy_latency 10s
+		lb_try_duration 3s
+		lb_try_interval 100ms
 		# A API limita por visitante pelo último IP do X-Forwarded-For. Com o túnel, a conexão
 		# vem do cloudflared; {client_ip} é o IP real (lido acima) e substitui o cabeçalho
 		# inteiro, para ninguém forjá-lo.

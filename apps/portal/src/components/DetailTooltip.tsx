@@ -13,6 +13,7 @@ interface Props {
   name: string;
   detail: Detail | null;
   loading: boolean;
+  error?: boolean;
   x: number;
   y: number;
 }
@@ -414,7 +415,7 @@ function SexOnly({ pair, note }: { pair: [DetailNode, DetailNode]; note: string 
   );
 }
 
-export function DetailTooltip({ name, detail, loading, x, y }: Props) {
+export function DetailTooltip({ name, detail, loading, error = false, x, y }: Props) {
   const t = useTranslations("dashboard");
   const vw = typeof window !== "undefined" ? window.innerWidth : 1280;
   const vh = typeof window !== "undefined" ? window.innerHeight : 800;
@@ -467,6 +468,7 @@ export function DetailTooltip({ name, detail, loading, x, y }: Props) {
           <span className="tt-name">{name}</span>
           {detail ? <span className="tt-period">{formatPeriod(detail.period)}</span> : null}
         </div>
+        {error && !detail ? <p role="alert">{t("error")}</p> : null}
         {loading && !detail ? (
           <div className="tt-loading" aria-busy="true">
             <span className="skeleton" />

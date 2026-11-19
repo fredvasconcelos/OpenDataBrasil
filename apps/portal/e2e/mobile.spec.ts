@@ -57,7 +57,7 @@ for (const [name, device] of Object.entries(phones)) {
       const picked = page.locator(".area-picked");
       await expect(picked).toBeVisible();
       await expect(picked.locator("strong")).not.toBeEmpty();
-      await picked.getByRole("button", { name: "Aproximar" }).tap();
+      await picked.getByRole("button", { name: /^Ver municípios de / }).tap();
       await expect(page).toHaveURL(/nivel=municipio/);
 
       // Abas: a tabela aparece sozinha; o mapa some.

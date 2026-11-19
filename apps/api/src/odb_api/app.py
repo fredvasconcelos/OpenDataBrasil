@@ -11,6 +11,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from starlette.types import Receive, Scope, Send
 
 from odb_api import errors, telemetry
 from odb_api.config import ApiSettings
@@ -28,6 +29,16 @@ DESCRIPTION = (
     "Nenhuma rota aceita SQL ou caminhos: as consultas são estruturadas e passam "
     "pelas regras semânticas do catálogo. Toda resposta informa o release usado."
 )
+
+
+class PortalGZipMiddleware(GZipMiddleware):
+    """Deixa a malha negociar e servir o gzip já pronto, inclusive quando q=0 (D3)."""
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] == "http" and scope["path"].startswith("/api/v1/geometries/"):
+            await self.app(scope, receive, send)
+        else:
+            await super().__call__(scope, receive, send)
 
 
 def create_app(deps: ApiDeps | None, settings: ApiSettings | None = None) -> FastAPI:
@@ -62,7 +73,7 @@ def create_app(deps: ApiDeps | None, settings: ApiSettings | None = None) -> Fas
     app.middleware("http")(
         make_middleware(RateLimiter(settings.rate_limit_per_minute), settings.trusted_proxies)
     )
-    app.add_middleware(GZipMiddleware, minimum_size=1024)
+    app.add_middleware(PortalGZipMiddleware, minimum_size=1024)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(settings.cors_origins),

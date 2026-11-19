@@ -918,14 +918,14 @@ describe("PeriodFilter (ADR-0026)", () => {
 });
 
 describe("Exportação (B5)", () => {
-  it("permite 200 mil somente nos dois KPIs LSPA e mantém 100 mil no PIB", async () => {
+  it("permite 200 mil somente nos dois KPIs LSPA e usa 10 mil após a janela D6", async () => {
     const { exportRowLimit } = await import("./ExportMenu");
     expect(exportRowLimit("safra_estimada")).toBe(200_000);
     expect(exportRowLimit("safra_area_colhida")).toBe(200_000);
     for (const variable of [498, 513, 516, 525, 543, 6575]) {
-      expect(exportRowLimit(`pib_municipios_v${variable}`)).toBe(100_000);
+      expect(exportRowLimit(`pib_municipios_v${variable}`)).toBe(10_000);
     }
-    expect(exportRowLimit("populacao_residente")).toBe(100_000);
+    expect(exportRowLimit("populacao_residente")).toBe(10_000);
   });
   it("estima as linhas por nível, período e combinação de categorias", async () => {
     const { estimateRows } = await import("./ExportMenu");
@@ -941,8 +941,21 @@ describe("Exportação (B5)", () => {
       ],
     } as unknown as Kpi;
     // UF (27) × (2 trimestres + 1 ano) × (Total + 2 sexos)
-    expect(estimateRows(kpi, ["uf"], ["trimestre", "ano"], ["c2"], true)).toBe(27 * 3 * 3);
-    expect(estimateRows(kpi, ["brasil", "uf"], ["trimestre"], [], true)).toBe(28 * 2);
+    expect(estimateRows(kpi, ["uf"], ["trimestre", "ano"], ["c2"], true, { counts: { uf: 27 }, periods: {} })).toBe(27 * 3 * 3);
+    expect(estimateRows(kpi, ["brasil", "uf"], ["trimestre"], [], true, { counts: { brasil: 1, uf: 27 }, periods: {} })).toBe(28 * 2);
+  });
+
+  it("usa a cobertura de cada nível em todos os períodos e a seleção comum no recorte", async () => {
+    const { estimateRows } = await import("./ExportMenu");
+    const kpi: Kpi = {
+      ...allKpis(navFixture)[0]!,
+      periods: ["2002", "2008", "2018"],
+      periods_by_level: { uf: ["2002", "2008", "2018"], municipio: ["2008"] },
+      time_grains: [],
+    };
+    const counts = { uf: 1, municipio: 645 };
+    expect(estimateRows(kpi, ["uf", "municipio"], ["ano"], [], true, { counts, periods: {} })).toBe(648);
+    expect(estimateRows(kpi, ["uf", "municipio"], ["ano"], [], true, { counts, periods: { ano: ["2008"] } })).toBe(646);
   });
 });
 

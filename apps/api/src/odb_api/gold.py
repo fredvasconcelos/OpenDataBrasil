@@ -12,6 +12,7 @@ substitui a Gold.
 
 from __future__ import annotations
 
+import gzip
 import json
 import re
 import threading
@@ -95,6 +96,7 @@ class GoldGateway:
         self._engine = engine
         self._meta = _Lru(16)
         self._geometry = _Lru(geometry_cache_size)
+        self._geometry_build_lock = threading.Lock()
 
     # ------------------------------------------------------------- execução
 
@@ -140,6 +142,30 @@ class GoldGateway:
         )
 
     # ------------------------------------------------------------- metadados
+
+    def count_plan(
+        self, ctx: ReleaseContext, plan: QueryPlan, *, total_categories: Sequence[str] = ()
+    ) -> int:
+        """Conta a saída real do plano sem transportar valores ao Python (Plano D, D4).
+
+        Dimensões filtradas fora do pivot voltam ao Total após a leitura; aplicamos
+        exatamente a mesma seleção aqui. Lacunas não são preenchidas nem estimadas.
+        """
+        params = dict(plan.params)
+        conditions = []
+        for i, category in enumerate(total_categories):
+            key = f"pivot_total_{i}"
+            conditions.append(f"strpos('|' || breakdown_key || '|', ${key}) > 0")
+            params[key] = f"|{category}|"
+        where = " WHERE " + " AND ".join(conditions) if conditions else ""
+        result = self.execute(
+            ctx,
+            f"SELECT count(*) FROM ({plan.sql_template}) AS pivot_count{where}",
+            plan.aliases,
+            params,
+            max_rows=1,
+        )
+        return int(result.rows[0][0])
 
     def indicators(self, ctx: ReleaseContext) -> dict[str, dict[str, Any]]:
         """``dim_indicator`` do release, por identificador."""
@@ -341,6 +367,32 @@ class GoldGateway:
         )
         return rows(self.execute(ctx, sql, tables, params, max_rows=limit))
 
+    def geography_counts(self, ctx: ReleaseContext, within: str | None) -> dict[str, int]:
+        """Conta os territórios reais por nível no recorte, uma vez por release (D6)."""
+        if within:
+            self.geography(ctx, within)
+
+        def build() -> dict[str, int]:
+            tables = {"geo": DIM_GEOGRAPHY}
+            params: dict[str, Any] = {}
+            where = ""
+            if within:
+                where = (
+                    " WHERE EXISTS (SELECT 1 FROM {{anc}} AS a "
+                    "WHERE a.geography_key = g.geography_key AND a.ancestor_key = $within)"
+                )
+                tables["anc"] = BRIDGE
+                params["within"] = within
+            result = self.execute(
+                ctx,
+                "SELECT g.level_id, count(*) FROM {{geo}} AS g" + where + " GROUP BY g.level_id",
+                tables,
+                params,
+            )
+            return {str(row[0]): int(row[1]) for row in result.rows}
+
+        return self._meta.get((ctx.release_id, "geography_counts", within or ""), build)
+
     def ancestors(self, ctx: ReleaseContext, key: str) -> list[dict[str, Any]]:
         """Ancestrais de um território (do mais próximo ao Brasil)."""
         result = self.execute(
@@ -371,11 +423,17 @@ class GoldGateway:
 
     def geometry_collection(self, ctx: ReleaseContext, level: str, within: str | None) -> bytes:
         """``FeatureCollection`` GeoJSON do nível (opcionalmente dentro de um recorte)."""
+        return self.geometry_payload(ctx, level, within, compressed=False)
+
+    def geometry_payload(
+        self, ctx: ReleaseContext, level: str, within: str | None, *, compressed: bool
+    ) -> bytes:
+        """GeoJSON e gzip reutilizáveis por release, nível e recorte (Plano D, D3)."""
         if level not in self.geometry_levels(ctx):
             msg = f"nível sem geometria no release: {level}"
             raise NotFoundError(msg)
 
-        def build() -> bytes:
+        def build() -> tuple[bytes, bytes]:
             tables = {"gm": DIM_GEOMETRY, "geo": DIM_GEOGRAPHY}
             where = "m.level_id = $level"
             params: dict[str, Any] = {"level": level}
@@ -408,8 +466,13 @@ class GoldGateway:
                 for r in rows(result)
             )
             meta = json.dumps({"release_id": ctx.release_id, "level": level, "within": within})
-            return (
+            body = (
                 '{"type":"FeatureCollection","metadata":' + meta + ',"features":[' + features + "]}"
             ).encode()
+            return body, gzip.compress(body, compresslevel=6, mtime=0)
 
-        return self._geometry.get((ctx.release_id, "geometry", level, within or ""), build)
+        # Uma malha municipal custa CPU: pedidos simultâneos também reutilizam a primeira
+        # montagem e compressão, sem guardar cópia oficial fora da Gold (§10.8).
+        with self._geometry_build_lock:
+            payload = self._geometry.get((ctx.release_id, "geometry", level, within or ""), build)
+        return payload[1 if compressed else 0]

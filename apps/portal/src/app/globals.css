@@ -1514,3 +1514,14 @@ mark { background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px; 
   .dash-grid { grid-template-rows: auto minmax(320px, auto) minmax(220px, auto) auto; }
   .area-map .map-panel { min-height: 420px; }
 }
+
+/* Plano D, D6: controles nativos de recorte e períodos com o mesmo ritmo dos filtros. */
+.municipal-filter { display: grid; gap: var(--odbr-space-2); min-width: 0; }
+.municipal-filter .text-btn { text-align: left; white-space: normal; }
+.export-dialog-body > .field { grid-column: 1 / -1; min-width: 0; }
+.export-periods { margin-block: var(--odbr-space-2); }
+.export-periods > summary { cursor: pointer; font-weight: 700; }
+.export-periods .period-tree { max-height: 240px; overflow-y: auto; }
+@media (max-width: 899px) {
+  .area-maphead .map-municipal-action { display: none; }
+}
