@@ -678,6 +678,13 @@ export interface components {
             status: string;
             /** Share Pct */
             share_pct: number | null;
+            /** Children Share Basis */
+            children_share_basis?: ("published_total" | "published_group" | "displayed_sum" | "none") | null;
+            /**
+             * Children Share Base Value
+             * @description Base dos percentuais dos filhos; a soma comparativa preserva o Total oficial.
+             */
+            children_share_base_value?: number | null;
             /** Children */
             children?: components["schemas"]["DetailNodeOut"][];
         };
@@ -735,6 +742,15 @@ export interface components {
             partition_id: string;
             /** Total Category Key */
             total_category_key: string;
+            /**
+             * Category Shares
+             * @description Permite percentual sobre a base publicada desta dimensão; não autoriza somas. Nulo mantém a permissão geral do KPI.
+             */
+            category_shares?: boolean | null;
+            /** Share Basis */
+            share_basis?: ("published_total" | "published_group" | "displayed_sum" | "none") | null;
+            /** Share Base Category Key */
+            share_base_category_key?: string | null;
             /** Categories */
             categories: components["schemas"]["CategoryOut"][];
             /**
@@ -780,7 +796,7 @@ export interface components {
             periods?: string[];
             /**
              * Periods By Grain
-             * @description Seleção por grão da janela; um grão ausente mantém todos os seus períodos.
+             * @description Seleção por grão; um grão ausente mantém todos os seus períodos.
              */
             periods_by_grain?: {
                 [key: string]: string[];
@@ -1335,6 +1351,8 @@ export interface components {
             columns: components["schemas"]["PivotHeaderOut"][];
             /** Cells */
             cells: (components["schemas"]["CellOut"] | null)[][];
+            /** Share Bases */
+            share_bases?: components["schemas"]["PivotShareBaseOut"][];
             footer?: components["schemas"]["PivotHeaderOut"] | null;
             /**
              * Footer Cells
@@ -1342,6 +1360,22 @@ export interface components {
              */
             footer_cells: (components["schemas"]["CellOut"] | null)[];
             provenance: components["schemas"]["Provenance"];
+        };
+        /**
+         * PivotShareBaseOut
+         * @description Subtotal publicado usado como base, sem criar linha visível ou novo Total.
+         */
+        PivotShareBaseOut: {
+            /** Classification Id */
+            classification_id: string;
+            /** Row Keys */
+            row_keys: string[];
+            /** Column Keys */
+            column_keys: string[];
+            /** Value */
+            value: number | null;
+            /** Status */
+            status: string;
         };
         /**
          * PlannedKpiOut
@@ -1383,6 +1417,10 @@ export interface components {
             status: string;
             /** Source Table Id */
             source_table_id?: string | null;
+            /** Share Pct */
+            share_pct?: number | null;
+            /** Share Base Value */
+            share_base_value?: number | null;
         };
         /**
          * PortalIndexOut
@@ -1562,6 +1600,8 @@ export interface components {
             accumulated?: string | null;
             /** Series */
             series: components["schemas"]["SeriesItemOut"][];
+            /** Share Methods */
+            share_methods?: ("published_total" | "published_group" | "displayed_sum" | "none")[];
             provenance: components["schemas"]["Provenance"];
         };
         /**

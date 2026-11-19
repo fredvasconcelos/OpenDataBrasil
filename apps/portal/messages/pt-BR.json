@@ -171,7 +171,13 @@
     "periodRange": "{from} a {to}",
     "isolateParts": "Cada barra é uma parte do ano, uma cor por ano marcado ({years}).",
     "isolateAccumulated": "Cada barra é o acumulado no ano até aquela parte ({years}).",
-    "periodOnly": "Só {period}"
+    "periodOnly": "Só {period}",
+    "compositionBase": "Base dos valores exibidos: {value}",
+    "compositionNote": "Composição calculada pelo portal sobre os valores exibidos em cada grupo. Não representa participação oficial ponderada. Os valores e Totais oficiais são preservados.",
+    "seriesCompositionNote": "Cálculo do portal, sem ponderação.",
+    "seriesGroupNote": "Subtotal publicado do grupo.",
+    "groupBase": "Base do grupo: {value}",
+    "groupBaseNote": "Percentuais dos componentes calculados sobre o subtotal publicado do próprio grupo. O Total oficial permanece identificado separadamente."
   },
   "grainNotes": {
     "sum": "Soma dos períodos publicados (valor derivado). Período com parte sem dado fica sem valor.",
@@ -230,7 +236,11 @@
     "viewCurrent": "Recorte",
     "viewHistory": "Série completa",
     "views": "Tabela",
-    "viewPivot": "Tabela dinâmica"
+    "viewPivot": "Tabela dinâmica",
+    "compositionBase": "Base exibida: {value}",
+    "compositionNote": "Composição calculada pelo portal sobre os valores exibidos de cada grupo; não é participação oficial ponderada. Totais oficiais preservados. Sem percentual quando a base é zero ou há valores indisponíveis, sigilosos ou negativos no grupo.",
+    "groupBase": "Base do grupo: {value}",
+    "groupBaseNote": "Percentuais dos componentes calculados sobre o subtotal publicado do próprio grupo. O Total oficial permanece identificado separadamente."
   },
   "export": {
     "title": "Exportar",

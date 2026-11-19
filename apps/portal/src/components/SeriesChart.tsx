@@ -257,6 +257,8 @@ export function SeriesChart({ data, additive = false }: { data: Series; additive
             value: p?.value ?? null,
             status: p?.status ?? "absent",
             source: p?.source_table_id ?? null,
+            share: p?.share_pct,
+            shareBase: p?.share_base_value,
           };
         });
   const anchor: XY | null =
@@ -286,13 +288,21 @@ export function SeriesChart({ data, additive = false }: { data: Series; additive
   });
 
   const unit = unitSuffix(data.unit);
-  // KPI aditivo: cada categoria mostra também o % do Total do período (como na tabela).
+  // A API usa a mesma hierarquia e base dos tooltips do mapa. Respostas antigas
+  // conservam o cálculo anterior para indicadores aditivos.
   const totalValue = rows.find((r) => r.color === null)?.value ?? null;
   const shareOf = (r: (typeof rows)[number]) =>
+    r.share !== undefined ? r.share :
     additive && r.color !== null && totalValue && r.value !== null && unitShort(data.unit) !== "%"
       ? (r.value / totalValue) * 100
       : null;
-  const shown = rows.slice(0, TIP_MAX_ROWS);
+  const composition = data.share_methods?.includes("displayed_sum") ?? false;
+  const groupBase = data.share_methods?.includes("published_group") ?? false;
+  const comparisonBase = composition || groupBase ? rows.find((r) => r.color === null)?.shareBase : null;
+  // Reserva as linhas do método e da base, mantendo a caixa dentro do gráfico.
+  const reserved = 64 + (comparisonBase != null ? 32 : 0) + (sources.size > 1 ? 16 : 0);
+  const rowLimit = composition || groupBase ? Math.max(1, Math.min(TIP_MAX_ROWS, Math.floor((H - reserved) / 22))) : TIP_MAX_ROWS;
+  const shown = rows.slice(0, rowLimit);
   const hidden = rows.length - shown.length;
   const summary = period === null ? "" : `${label(period)}: ${rows.map((r) => `${r.label} ${formatValue(r.value, r.status)}`).join("; ")}`;
 
@@ -448,7 +458,7 @@ export function SeriesChart({ data, additive = false }: { data: Series; additive
           />
         </svg>
         {period !== null ? (
-          <div ref={tip} className="series-tip" role="tooltip" style={{ visibility: "hidden" }}>
+          <div ref={tip} className={composition || groupBase ? "series-tip has-share-method" : "series-tip"} role="tooltip" style={{ visibility: "hidden" }}>
             <div className="series-tip-head">{label(period)}</div>
             <ul>
               {shown.map((r) => (
@@ -463,7 +473,10 @@ export function SeriesChart({ data, additive = false }: { data: Series; additive
               ))}
             </ul>
             {hidden > 0 ? <div className="series-tip-more">{t("seriesMore", { count: hidden })}</div> : null}
-            <div className="series-tip-unit">{unit}</div>
+            <div className="series-tip-unit">{unit}{composition ? ` · ${t("seriesCompositionNote")}` : groupBase ? ` · ${t("seriesGroupNote")}` : ""}</div>
+            {comparisonBase != null ? (
+              <div className="series-tip-unit">{t(composition ? "compositionBase" : "groupBase", { value: formatValue(comparisonBase) })} ({formatShare(100)})</div>
+            ) : null}
             {sources.size > 1 && rows.find((r) => r.source)?.source ? (
               <div className="series-tip-unit">{t("seriesSource", { table: rows.find((r) => r.source)?.source ?? "" })}</div>
             ) : null}

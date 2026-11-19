@@ -49,6 +49,22 @@ const base = (root: DetailNode): Detail => ({
   root,
 });
 
+it("preserva os percentuais de cada grupo nas células da matriz do tooltip", () => {
+  const children = (value: number) => Array.from({ length: 8 }, (_, i) =>
+    node(`Categoria ${i + 1}`, value / 8, 12.5),
+  );
+  const grouped = base(node("Total", 200, 100, [
+    node("Grupo A", 50, 25, children(50)),
+    node("Grupo B", 150, 75, children(150)),
+  ]));
+  wrap(<DetailTooltip name="Bahia" detail={grouped} loading={false} x={100} y={100} />);
+  const table = screen.getByRole("table");
+  expect(within(table).getAllByText("(12,5%)")).toHaveLength(16);
+  expect(screen.getByText("(100,0%)")).toBeTruthy();
+  expect(within(screen.getByRole("tooltip")).getByText("25,0%")).toBeTruthy();
+  expect(within(screen.getByRole("tooltip")).getByText("75,0%")).toBeTruthy();
+});
+
 // Cor ou raça > sexo, com um valor sob sigilo.
 const detail = base(
   node("Total", 14141626, null, [
@@ -212,6 +228,30 @@ describe("SeriesChart", () => {
     expect(tip.textContent).toContain("900.000");
     // % do Total do período nas categorias (KPI aditivo): Branca 400 de 900.000.
     expect(tip.textContent).toContain("400 (0,0%)");
+    expect(tip.querySelector(".series-tip-total .share")).toBeNull();
+  });
+});
+
+describe("percentuais recebidos na série", () => {
+  it("usa a base do grupo enviada pela API e mantém o Total oficial separado", () => {
+    const data: Series = {
+      kpi_id: "despesa_familiar", indicator_id: "despesa_familiar", unit: "Reais",
+      geography: { geography_key: "uf:25", name: "Paraíba", level_id: "uf" },
+      share_methods: ["published_group"],
+      series: [
+        { key: "total", label: "Total", full_label: "Total", categories: {}, depth: 0,
+          points: [{ period: "2018", value: 999, status: "valid", share_pct: null, share_base_value: 600 }] },
+        { key: "c12190:103539", label: "Alimentação", full_label: "Alimentação", categories: { c12190: "c12190:103539" }, depth: 1,
+          points: [{ period: "2018", value: 120, status: "valid", share_pct: 20, share_base_value: 600 }] },
+      ],
+      provenance: { release_id: "teste", tables: [], derived: false, truncated: false },
+    };
+    const { container } = wrap(<SeriesChart data={data} />);
+    fireEvent.keyDown(container.querySelector("svg") as SVGSVGElement, { key: "End" });
+    const tip = screen.getByRole("tooltip");
+    expect(tip.textContent).toContain("120 (20,0%)");
+    expect(tip.textContent).toContain("Base do grupo: 600 (100,0%)");
+    expect(tip.querySelector(".series-tip-total")?.textContent).toContain("999");
     expect(tip.querySelector(".series-tip-total .share")).toBeNull();
   });
 });

@@ -526,7 +526,7 @@ def test_map_detail_series_and_table(stack: dict[str, Any]) -> None:
     )
     assert detail["dimensions"] == ["c86", "c2"]  # ordem fixa do portal
     root = detail["root"]
-    assert (root["label"], root["value"], root["share_pct"]) == ("Total", 14141626, None)
+    assert (root["label"], root["value"], root["share_pct"]) == ("Total", 14141626, 100.0)
     parda = next(c for c in root["children"] if c["label"] == "Parda")
     assert (parda["value"], parda["share_pct"]) == (8103964, 57.31)
     assert [(c["label"], c["value"], c["share_pct"]) for c in parda["children"]] == [
@@ -544,9 +544,24 @@ def test_map_detail_series_and_table(stack: dict[str, Any]) -> None:
     # O portal tira do gráfico a série de profundidade 0 (Total) quando há detalhe.
     assert [s["depth"] for s in series["series"]] == [0, 1, 1]
     assert series["series"][0]["points"] == [
-        {"period": "2010", "value": 190755799, "status": "valid", "source_table_id": "9606"},
-        {"period": "2022", "value": 203080756, "status": "valid", "source_table_id": "9606"},
+        {
+            "period": "2010",
+            "value": 190755799,
+            "status": "valid",
+            "source_table_id": "9606",
+            "share_pct": 100,
+            "share_base_value": 190755799,
+        },
+        {
+            "period": "2022",
+            "value": 203080756,
+            "status": "valid",
+            "source_table_id": "9606",
+            "share_pct": 100,
+            "share_base_value": 203080756,
+        },
     ]
+    assert series["share_methods"] == ["published_total"]
 
     table = _get(stack, "/api/v1/kpis/pessoas_quilombolas/table?level=uf&dimensions=c2&limit=27")
     assert [c["label"] for c in table["columns"]] == ["Total", "Homens", "Mulheres"]

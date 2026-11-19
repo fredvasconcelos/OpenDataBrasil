@@ -83,6 +83,14 @@ function hasShare(node: DetailNode): boolean {
   return node.share_pct !== null || childrenOf(node).some(hasShare);
 }
 
+function hasComposition(node: DetailNode): boolean {
+  return node.children_share_basis === "displayed_sum" || childrenOf(node).some(hasComposition);
+}
+
+function hasGroupBase(node: DetailNode): boolean {
+  return node.children_share_basis === "published_group" || childrenOf(node).some(hasGroupBase);
+}
+
 /** Parte dos homens na barra dividida, mesmo se um dos lados estiver sob sigilo. */
 function menShare(m: DetailNode, f: DetailNode): number {
   if (m.share_pct !== null) return clamp(m.share_pct);
@@ -264,6 +272,8 @@ export function matrixWidth(columns: number, vw: number): { width: number; side:
 }
 
 function Matrix({ nodes, side, sharesNote }: { nodes: DetailNode[]; side: boolean; sharesNote: string }) {
+  const t = useTranslations("dashboard");
+  const baseLabel = (value: number) => t("groupBase", { value: formatValue(value) });
   const sorted = [...nodes].sort(byValue);
   const labels = sharedChildren(sorted) ?? [];
   const withShare = sorted.some((n) => n.share_pct !== null);
@@ -271,7 +281,7 @@ function Matrix({ nodes, side, sharesNote }: { nodes: DetailNode[]; side: boolea
   const barOf = (n: DetailNode) => (withShare ? clamp(n.share_pct) : max > 0 ? ((n.value ?? 0) / max) * 100 : 0);
   return (
     <div className={side ? "tt-matrix side" : "tt-matrix"}>
-      <ol className="tt-summary">
+      <ol className={withShare ? "tt-summary has-shares" : "tt-summary"}>
         {sorted.map((n, i) => {
           const color = SERIES[i % SERIES.length] as string;
           return (
@@ -327,9 +337,14 @@ function Matrix({ nodes, side, sharesNote }: { nodes: DetailNode[]; side: boolea
                       key={keyOf(sorted[i] as DetailNode)}
                       className={c.value !== null && c.value === rowMax ? "max" : undefined}
                       style={{ ["--heat" as string]: `${heat}%` }}
+                      title={sorted[i]?.children_share_base_value != null ?
+                        baseLabel(sorted[i]!.children_share_base_value!) : undefined}
                     >
                       {c.value === null || c.status === "partial_sum"
                         ? formatValue(c.value, c.status) : formatCompact(c.value)}
+                      {c.share_pct !== null && c.share_pct !== undefined ? (
+                        <span className="tt-grid-share">({formatShare(c.share_pct)})</span>
+                      ) : null}
                     </td>
                   );
                 })}
@@ -481,7 +496,15 @@ export function DetailTooltip({ name, detail, loading, error = false, x, y }: Pr
             <div className="tt-total">
               <span className="tt-total-value">{formatValue(root.value, root.status)}</span>
               <span className="tt-unit">{unitSuffix(detail.unit)}</span>
+              {root.share_pct !== null && root.share_pct !== undefined ? (
+                <span className="tt-total-share">({formatShare(root.share_pct)})</span>
+              ) : null}
             </div>
+            {(root.children_share_basis === "displayed_sum" || root.children_share_basis === "published_group") && root.children_share_base_value != null && root.children_share_base_value > 0 ? (
+              <p className="tt-composition-base">
+                {t(root.children_share_basis === "published_group" ? "groupBase" : "compositionBase", { value: formatValue(root.children_share_base_value) })} ({formatShare(100)})
+              </p>
+            ) : null}
             {onlySex ? (
               <SexOnly pair={onlySex} note={t("figureNote")} />
             ) : mode === "matrix" ? (
@@ -494,6 +517,8 @@ export function DetailTooltip({ name, detail, loading, error = false, x, y }: Pr
             <p className="tt-note">
               {unitSuffix(detail.unit)}
               {hasShare(root) ? ` · ${t("derivedNote")}` : ""}
+              {hasComposition(root) ? ` · ${t("compositionNote")}` : ""}
+              {hasGroupBase(root) ? ` · ${t("groupBaseNote")}` : ""}
             </p>
           </>
         ) : null}

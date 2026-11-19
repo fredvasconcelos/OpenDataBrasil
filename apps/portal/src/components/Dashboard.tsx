@@ -734,6 +734,8 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
                   data={pivot.data}
                   totals={Object.fromEntries(kpi.dimensions.map((d) => [d.classification_id, d.total_category_key]))}
                   shares={kpi.category_shares && unitShort(kpi.unit) !== "%"}
+                  sharePolicies={Object.fromEntries(kpi.dimensions.map((d) => [d.classification_id, d.share_basis ?? (kpi.category_shares ? "published_total" : "none")]))}
+                  dimensionOrder={kpi.dimensions.map((d) => d.classification_id)}
                   selected={state.geography}
                   onSelect={(key) => update({ geography: key })}
                   alerts={levelAlerts}

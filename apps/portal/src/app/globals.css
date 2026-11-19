@@ -489,6 +489,8 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
 .tt-summary .tt-bar { grid-column: 2 / -1; height: 4px; margin-bottom: 4px; }
 .tt-matrix:not(.side) .tt-summary .tt-bar { display: none; }
 .tt-summary .tt-share { width: auto; }
+.tt-summary.has-shares { grid-template-columns: 18px minmax(0, 1fr) auto auto; }
+.tt-matrix:not(.side) .tt-summary.has-shares { grid-template-columns: repeat(2, 18px minmax(0, 1fr) auto auto); }
 .tt-summary .tt-label { white-space: normal; line-height: 1.25; }
 .tt-summary .tt-caption { display: block; grid-column: 1 / -1; }
 .tt-num { display: inline-grid; place-items: center; box-sizing: border-box; width: 18px; height: 18px; border-radius: 5px; border: 2px solid; font-size: 11px; font-weight: 900; line-height: 1; color: var(--odbr-text); }
@@ -500,6 +502,11 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
 .tt-grid td { text-align: right; font-weight: 700; color: var(--odbr-text-body);
   background: color-mix(in srgb, var(--odbr-series-1) calc(var(--heat, 0%) * 0.22), transparent); }
 .tt-grid td.max { font-weight: 900; color: var(--odbr-text); }
+.tt-grid-share { display: block; color: var(--odbr-text-muted); font-weight: 500; }
+.tt-total-share { color: var(--odbr-text-muted); font-weight: 500; }
+.tt-composition-base, .composition-note { color: var(--odbr-text-muted); font-size: var(--odbr-fs-micro); }
+.tt-composition-base { margin: 4px 0 8px; }
+.cell-share-base { display: block; color: var(--odbr-text-muted); font-size: var(--odbr-fs-micro); }
 .tt-code { margin-right: 6px; font-weight: 700; color: var(--odbr-text-muted); }
 .tt-loading { display: flex; flex-direction: column; gap: 8px; }
 .skeleton { display: block; height: 12px; border-radius: 6px; background: var(--odbr-skeleton); }
@@ -531,6 +538,7 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var
   font-size: var(--odbr-fs-small); font-variant-numeric: tabular-nums;
 }
 .series-tip-head { font-weight: 900; margin-bottom: 4px; }
+.series-tip.has-share-method { width: 320px; padding-block: 6px; }
 .series-tip ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
 .series-tip li { display: flex; align-items: center; gap: 6px; }
 .series-tip-total { padding-bottom: 4px; margin-bottom: 2px; border-bottom: 1px solid var(--odbr-border); }

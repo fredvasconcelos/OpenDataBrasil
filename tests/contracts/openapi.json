@@ -3819,6 +3819,35 @@
             ],
             "title": "Share Pct"
           },
+          "children_share_basis": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "published_total",
+                  "published_group",
+                  "displayed_sum",
+                  "none"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Children Share Basis"
+          },
+          "children_share_base_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Children Share Base Value",
+            "description": "Base dos percentuais dos filhos; a soma comparativa preserva o Total oficial."
+          },
           "children": {
             "items": {
               "$ref": "#/components/schemas/DetailNodeOut"
@@ -3955,6 +3984,46 @@
           "total_category_key": {
             "type": "string",
             "title": "Total Category Key"
+          },
+          "category_shares": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Shares",
+            "description": "Permite percentual sobre a base publicada desta dimensão; não autoriza somas. Nulo mantém a permissão geral do KPI."
+          },
+          "share_basis": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "published_total",
+                  "published_group",
+                  "displayed_sum",
+                  "none"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Share Basis"
+          },
+          "share_base_category_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Share Base Category Key"
           },
           "categories": {
             "items": {
@@ -5464,6 +5533,13 @@
             "type": "array",
             "title": "Cells"
           },
+          "share_bases": {
+            "items": {
+              "$ref": "#/components/schemas/PivotShareBaseOut"
+            },
+            "type": "array",
+            "title": "Share Bases"
+          },
           "footer": {
             "anyOf": [
               {
@@ -5508,6 +5584,53 @@
         ],
         "title": "PivotOut",
         "description": "Tabela dinâmica (B6): linhas e colunas escolhidas; os campos fora dela ficam no\nTotal publicado (sem somas novas); nunca acumulada (ADR-0026)."
+      },
+      "PivotShareBaseOut": {
+        "properties": {
+          "classification_id": {
+            "type": "string",
+            "title": "Classification Id"
+          },
+          "row_keys": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Row Keys"
+          },
+          "column_keys": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Column Keys"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "classification_id",
+          "row_keys",
+          "column_keys",
+          "value",
+          "status"
+        ],
+        "title": "PivotShareBaseOut",
+        "description": "Subtotal publicado usado como base, sem criar linha visível ou novo Total."
       },
       "PlannedKpiOut": {
         "properties": {
@@ -5592,6 +5715,28 @@
               }
             ],
             "title": "Source Table Id"
+          },
+          "share_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Share Pct"
+          },
+          "share_base_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Share Base Value"
           }
         },
         "type": "object",
@@ -6038,6 +6183,19 @@
             },
             "type": "array",
             "title": "Series"
+          },
+          "share_methods": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "published_total",
+                "published_group",
+                "displayed_sum",
+                "none"
+              ]
+            },
+            "type": "array",
+            "title": "Share Methods"
           },
           "provenance": {
             "$ref": "#/components/schemas/Provenance"

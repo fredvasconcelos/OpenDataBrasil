@@ -171,6 +171,17 @@ class DimensionOut(_Out):
     )
     partition_id: str
     total_category_key: str
+    category_shares: bool | None = Field(
+        default=None,
+        description=(
+            "Permite percentual sobre a base publicada desta dimensão; não autoriza somas. "
+            "Nulo mantém a permissão geral do KPI."
+        ),
+    )
+    share_basis: Literal["published_total", "published_group", "displayed_sum", "none"] | None = (
+        None
+    )
+    share_base_category_key: str | None = None
     categories: list[CategoryOut]
     # Níveis com o detalhe; vazio: todos os do KPI (ex.: situação na PNS, só Brasil).
     # Também restrito quando o release não traz as categorias num nível (DS 2.9).
@@ -401,6 +412,13 @@ class DetailNodeOut(_Out):
     value: float | None
     status: str
     share_pct: float | None
+    children_share_basis: (
+        Literal["published_total", "published_group", "displayed_sum", "none"] | None
+    ) = None
+    children_share_base_value: float | None = Field(
+        default=None,
+        description="Base dos percentuais dos filhos; a soma comparativa preserva o Total oficial.",
+    )
     children: list[DetailNodeOut] = Field(default_factory=list)
 
 
@@ -436,6 +454,8 @@ class PointOut(_Out):
     status: str
     # Tabela de origem do ponto (séries compostas de fontes distintas, ADR-0022).
     source_table_id: str | None = None
+    share_pct: float | None = None
+    share_base_value: float | None = None
 
 
 class SeriesItemOut(_Out):
@@ -469,6 +489,9 @@ class SeriesOut(_Out):
         default=None, description="Acumulado: running (corrente) ou year (no ano), ADR-0026."
     )
     series: list[SeriesItemOut]
+    share_methods: list[Literal["published_total", "published_group", "displayed_sum", "none"]] = (
+        Field(default_factory=list)
+    )
     provenance: Provenance
 
 
@@ -663,6 +686,16 @@ class PivotHeaderOut(_Out):
     labels: list[str]
 
 
+class PivotShareBaseOut(_Out):
+    """Subtotal publicado usado como base, sem criar linha visível ou novo Total."""
+
+    classification_id: str
+    row_keys: list[str]
+    column_keys: list[str]
+    value: float | None
+    status: str
+
+
 class PivotOut(_Out):
     """Tabela dinâmica (B6): linhas e colunas escolhidas; os campos fora dela ficam no
     Total publicado (sem somas novas); nunca acumulada (ADR-0026)."""
@@ -677,6 +710,7 @@ class PivotOut(_Out):
     rows: list[PivotHeaderOut]
     columns: list[PivotHeaderOut]
     cells: list[list[CellOut | None]]
+    share_bases: list[PivotShareBaseOut] = Field(default_factory=list)
     # Linha de totais (território do recorte, ou Brasil), só com Território nas linhas.
     footer: PivotHeaderOut | None = None
     footer_cells: list[CellOut | None] = []

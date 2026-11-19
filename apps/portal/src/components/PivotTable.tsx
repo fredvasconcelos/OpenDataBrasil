@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { InfoIcon } from "@/components/icons";
 import { formatShare, formatValue, unitShort } from "@/lib/format";
+import { compositionBases, percentageDimension, type SharePolicies } from "@/lib/categoryShares";
 import type { Pivot } from "@/lib/types";
 
 // Tabela dinâmica (B6, DS 2.8; única tabela do painel desde o DS 2.9): o usuário põe
@@ -162,9 +163,11 @@ interface Props {
   alerts?: string[];
   /** Notas extras para a janela de informação (ex.: acumulado fica no mapa e no gráfico). */
   notes?: string[];
+  sharePolicies?: SharePolicies;
+  dimensionOrder?: readonly string[];
 }
 
-export function PivotTable({ data, totals, shares, selected, onSelect, alerts = [], notes = [] }: Props) {
+export function PivotTable({ data, totals, shares, selected, onSelect, alerts = [], notes = [], sharePolicies = {}, dimensionOrder }: Props) {
   const t = useTranslations("pivot");
   const tt = useTranslations("table");
   const unit = data.provenance.price_base
@@ -180,10 +183,25 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
   const values = new Map<string, number | null>();
   data.rows.forEach((r, i) => data.columns.forEach((c, j) => values.set(key(r.keys, c.keys), data.cells[i]?.[j]?.value ?? null)));
 
-  // % por: só divisões entre valores publicados (nada é somado aqui).
-  const bases = shares ? shareBases(data, totals) : (["none"] as PivotShare[]);
+  // A composição é separada das bases publicadas e nunca substitui o Total oficial.
+  const hierarchy = dimensionOrder ?? [...rowIds, ...colIds].filter((id) => totals[id]);
+  const activeDimensions = hierarchy.filter((id) => totals[id] && [...rowIds, ...colIds].includes(id));
+  const normalized = activeDimensions.some((id) => sharePolicies[id] === "displayed_sum");
+  const grouped = activeDimensions.some((id) => sharePolicies[id] === "published_group");
+  const comparative = normalized || grouped;
+  const categoryShares = shares || activeDimensions.some((id) => sharePolicies[id] === "published_total");
+  const bases: PivotShare[] = comparative
+    ? ["none", ...(activeDimensions.length > 1 ? ["parent" as const] : activeDimensions.length ? ["total" as const] : [])]
+    : categoryShares ? shareBases(data, totals).filter((b) => shares || (b !== "column" && b !== "overall")) : ["none"];
+  const compositions = compositionBases(data, totals, sharePolicies);
+  const publishedBases = new Map<string, Map<string, number | null>>();
+  for (const item of data.share_bases ?? []) {
+    const values = publishedBases.get(item.classification_id) ?? new Map<string, number | null>();
+    values.set(key(item.row_keys, item.column_keys), item.value);
+    publishedBases.set(item.classification_id, values);
+  }
   const [chosen, setChosen] = useState<PivotShare | null>(null);
-  const base: PivotShare = chosen && bases.includes(chosen) ? chosen : bases.includes("total") ? "total" : "none";
+  const base: PivotShare = chosen && bases.includes(chosen) ? chosen : bases.includes("parent") ? "parent" : bases.includes("total") ? "total" : "none";
   const footerAt = (ck: readonly string[]) => {
     const j = data.columns.findIndex((c) => c.keys.join(SEP) === ck.join(SEP));
     return j < 0 ? null : (data.footer_cells?.[j]?.value ?? null);
@@ -195,8 +213,29 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
       const tk = shareKeys("total", [], colIds, [], ck, totals);
       return footerAt(tk ? tk[1] : ck);
     }
+    const dimension = percentageDimension(rowIds, colIds, rk, ck, totals, hierarchy);
+    if (dimension && sharePolicies[dimension] === "none") return null;
+    if (dimension && (sharePolicies[dimension] === "displayed_sum" || sharePolicies[dimension] === "published_group")) {
+      const r = [...rk];
+      const c = [...ck];
+      const ri = rowIds.indexOf(dimension);
+      const ci = colIds.indexOf(dimension);
+      if (ri >= 0) r[ri] = totals[dimension]!;
+      if (ci >= 0) c[ci] = totals[dimension]!;
+      return (sharePolicies[dimension] === "published_group" ? publishedBases : compositions)
+        .get(dimension)?.get(key(r, c)) ?? null;
+    }
+    if (base === "parent" && dimension) {
+      const r = [...rk];
+      const c = [...ck];
+      const ri = rowIds.indexOf(dimension);
+      const ci = colIds.indexOf(dimension);
+      if (ri >= 0) r[ri] = totals[dimension]!;
+      if (ci >= 0) c[ci] = totals[dimension]!;
+      return values.get(key(r, c)) ?? null;
+    }
     const sk = shareKeys(base, rowIds, colIds, rk, ck, totals);
-    return sk ? (values.get(key(sk[0], sk[1])) ?? null) : null;
+    return values.get(sk ? key(sk[0], sk[1]) : key(rk, ck)) ?? null;
   };
 
   // Ordenação: pela coluna clicada (maior primeiro) ou na ordem da API (rótulos).
@@ -255,17 +294,22 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
   const show = (cell: Cell | undefined, rk: readonly string[], ck: readonly string[], j: number) => {
     const d = cell?.value != null ? denominator(rk, ck, j) : null;
     const share = d && cell?.value != null ? (cell.value / d) * 100 : null;
+    const dimension = percentageDimension(rowIds, colIds, rk, ck, totals, hierarchy);
+    const totalComposition = dimension && (sharePolicies[dimension] === "displayed_sum" || sharePolicies[dimension] === "published_group") &&
+      [...rowIds.map((id, i) => [id, rk[i]]), ...colIds.map((id, i) => [id, ck[i]])]
+        .every(([id, value]) => !totals[id!] || value === totals[id!]);
     return (
       <>
         <span className="cell-value">{cell ? formatValue(cell.value, cell.status) : formatValue(null, "absent")}</span>
-        {share !== null ? <span className="share"> ({formatShare(share)})</span> : null}
+        {totalComposition && d ? <span className="cell-share-base">{tt(sharePolicies[dimension!] === "published_group" ? "groupBase" : "compositionBase", { value: formatValue(d) })} ({formatShare(100)})</span> :
+          share !== null ? <span className="share"> ({formatShare(share)})</span> : null}
       </>
     );
   };
   // Linha de totais: o % é sobre ela mesma (Total das categorias, grupo ou total geral).
   const showFooter = (cell: Cell | undefined, ck: readonly string[]) => {
     const sk = base === "total" || base === "parent" ? shareKeys(base, [], colIds, [], ck, totals) : null;
-    const d =
+    const d = comparative ? null :
       base === "column"
         ? (cell?.value ?? null) // a própria linha de totais é 100% da coluna
         : base === "overall"
@@ -289,6 +333,8 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
 
   return (
     <div className="table-box">
+      {normalized ? <p className="composition-note">{tt("compositionNote")}</p> : null}
+      {grouped ? <p className="composition-note">{tt("groupBaseNote")}</p> : null}
       <div className="share-base">
         {bases.length > 1 ? (
           <label>
