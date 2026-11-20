@@ -467,7 +467,7 @@
       "report": {
         "title": "Reporte um erro",
         "text": "Achou um número estranho ou algo que não funciona? Conte para nós.",
-        "action": "Abrir um relato no GitHub"
+        "action": "Enviar relato por e-mail"
       },
       "suggest": {
         "title": "Sugira uma fonte",
