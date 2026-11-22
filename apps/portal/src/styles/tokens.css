@@ -36,7 +36,7 @@
   --odbr-bg-selected: #E8F0FC;
   --odbr-indicator: #1351B4;
   --odbr-tab-hover: #C5D9F5;
-  --odbr-focus: #1351B4;
+  --odbr-focus: #936F38; /* gold-vivid-50 do gov.br: o 40 (#C2850C) fica abaixo de 3:1 no fundo cinza */
 
   /* Texto */
   --odbr-text: #071D41;
@@ -112,34 +112,52 @@
   /* Tipografia */
   --odbr-font: var(--font-nunito, "Nunito"), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --odbr-font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --odbr-fs-page-title: 30px;
-  --odbr-fs-kpi: 28px;
-  --odbr-fs-card-title: 17px;
-  --odbr-fs-subtitle: 14px;
-  --odbr-fs-body: 15px;
-  --odbr-fs-ui: 14px;
-  --odbr-fs-small: 13px;
-  --odbr-fs-caption: 12px;
-  --odbr-fs-micro: 11px;
+  /* Escala tipográfica modular (DS 2.18): razão √1,2 a partir de 14 px. Os passos
+     inteiros (down-01, base, up-01…up-06) são os do padrão gov.br; os meios passos
+     mantêm a densidade do painel. Valores em rem (px de referência / 16). */
+  --odbr-scale-down-01: 0.7292rem;
+  --odbr-scale-down-half: 0.7988rem;
+  --odbr-scale-base: 0.875rem;
+  --odbr-scale-up-half: 0.9585rem;
+  --odbr-scale-up-01: 1.05rem;
+  --odbr-scale-up-1h: 1.1502rem;
+  --odbr-scale-up-02: 1.26rem;
+  --odbr-scale-up-2h: 1.3803rem;
+  --odbr-scale-up-03: 1.512rem;
+  --odbr-scale-up-3h: 1.6563rem;
+  --odbr-scale-up-04: 1.8144rem;
+  --odbr-scale-up-4h: 1.9876rem;
+  --odbr-scale-up-05: 2.1773rem;
+  --odbr-scale-up-5h: 2.3851rem;
+  --odbr-scale-up-06: 2.6127rem;
+  --odbr-fs-page-title: var(--odbr-scale-up-04);
+  --odbr-fs-kpi: var(--odbr-scale-up-04);
+  --odbr-fs-card-title: var(--odbr-scale-up-01);
+  --odbr-fs-subtitle: var(--odbr-scale-base);
+  --odbr-fs-body: var(--odbr-scale-up-half);
+  --odbr-fs-ui: var(--odbr-scale-base);
+  --odbr-fs-small: max(11px, var(--odbr-scale-down-half));
+  --odbr-fs-caption: max(11px, var(--odbr-scale-down-01));
+  --odbr-fs-micro: max(11px, var(--odbr-scale-down-01));
 
   /* Espaço (base 4) */
-  --odbr-space-1: 4px;
-  --odbr-space-2: 8px;
-  --odbr-space-3: 12px;
-  --odbr-space-4: 16px;
-  --odbr-space-5: 20px;
-  --odbr-space-6: 24px;
-  --odbr-space-8: 32px;
-  --odbr-space-10: 40px;
+  --odbr-space-1: 0.25rem;
+  --odbr-space-2: 0.5rem;
+  --odbr-space-3: 0.75rem;
+  --odbr-space-4: 1rem;
+  --odbr-space-5: 1.25rem;
+  --odbr-space-6: 1.5rem;
+  --odbr-space-8: 2rem;
+  --odbr-space-10: 2.5rem;
 
   /* Forma */
-  --odbr-radius-xs: 4px;
-  --odbr-radius-sm: 8px;
-  --odbr-radius-md: 10px;
-  --odbr-radius-lg: 16px;
-  --odbr-radius-pill: 999px;
-  --odbr-shadow-1: 0 2px 8px rgba(7, 29, 65, 0.10);
-  --odbr-shadow-2: 0 12px 32px rgba(7, 29, 65, 0.16);
+  --odbr-radius-xs: 0.25rem;
+  --odbr-radius-sm: 0.5rem;
+  --odbr-radius-md: 0.625rem;
+  --odbr-radius-lg: 1rem;
+  --odbr-radius-pill: 62.4375rem;
+  --odbr-shadow-1: 0 2px 0.5rem rgba(7, 29, 65, 0.10);
+  --odbr-shadow-2: 0 0.75rem 2rem rgba(7, 29, 65, 0.16);
 
   /* Movimento */
   --odbr-dur-hover: 120ms;
@@ -149,9 +167,18 @@
   --odbr-ease: cubic-bezier(0.2, 0, 0, 1);
 
   /* Layout */
-  --odbr-header-h: 64px;
-  --odbr-stripe-h: 4px;
-  --odbr-sidebar-w: 260px;
+  /* Larguras de contêiner ficam em px (DS 2.17): a escala compacta das telas largas
+     reduz texto e controles, não a área útil da página. */
+  --odbr-content-wide: 1600px;
+  /* Foco (DS 2.18, padrão gov.br): tracejado de 4 px, sem escalar com a página. */
+  --odbr-focus-ring: 4px dashed var(--odbr-focus);
+  --odbr-control-h: 2.5rem;
+  --odbr-control-compact-h: 2rem;
+  --odbr-control-touch-h: 2.75rem;
+  --odbr-content-reading: 72ch;
+  --odbr-header-h: 4rem;
+  --odbr-stripe-h: 0.25rem;
+  --odbr-sidebar-w: 16.25rem;
 }
 
 /* Tema dark: escolha explícita */
@@ -226,8 +253,8 @@
   --odbr-chart-label: #C5D4EB;
   --odbr-chart-highlight: #2DB34A;
   --odbr-chart-area-opacity: 0.15;
-  --odbr-shadow-1: 0 2px 8px rgba(0, 0, 0, 0.35);
-  --odbr-shadow-2: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --odbr-shadow-1: 0 2px 0.5rem rgba(0, 0, 0, 0.35);
+  --odbr-shadow-2: 0 0.75rem 2rem rgba(0, 0, 0, 0.45);
 }
 
 /* Tema dark: preferência do sistema, quando o usuário não escolheu */
@@ -303,8 +330,8 @@
     --odbr-chart-label: #C5D4EB;
     --odbr-chart-highlight: #2DB34A;
     --odbr-chart-area-opacity: 0.15;
-    --odbr-shadow-1: 0 2px 8px rgba(0, 0, 0, 0.35);
-    --odbr-shadow-2: 0 12px 32px rgba(0, 0, 0, 0.45);
+    --odbr-shadow-1: 0 2px 0.5rem rgba(0, 0, 0, 0.35);
+    --odbr-shadow-2: 0 0.75rem 2rem rgba(0, 0, 0, 0.45);
   }
 }
 

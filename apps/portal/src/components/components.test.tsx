@@ -49,6 +49,22 @@ const base = (root: DetailNode): Detail => ({
   root,
 });
 
+it("preserva os percentuais de cada grupo nas células da matriz do tooltip", () => {
+  const children = (value: number) => Array.from({ length: 8 }, (_, i) =>
+    node(`Categoria ${i + 1}`, value / 8, 12.5),
+  );
+  const grouped = base(node("Total", 200, 100, [
+    node("Grupo A", 50, 25, children(50)),
+    node("Grupo B", 150, 75, children(150)),
+  ]));
+  wrap(<DetailTooltip name="Bahia" detail={grouped} loading={false} x={100} y={100} />);
+  const table = screen.getByRole("table");
+  expect(within(table).getAllByText("(12,5%)")).toHaveLength(16);
+  expect(screen.getByText("(100,0%)")).toBeTruthy();
+  expect(within(screen.getByRole("tooltip")).getByText("25,0%")).toBeTruthy();
+  expect(within(screen.getByRole("tooltip")).getByText("75,0%")).toBeTruthy();
+});
+
 // Cor ou raça > sexo, com um valor sob sigilo.
 const detail = base(
   node("Total", 14141626, null, [
@@ -212,6 +228,30 @@ describe("SeriesChart", () => {
     expect(tip.textContent).toContain("900.000");
     // % do Total do período nas categorias (KPI aditivo): Branca 400 de 900.000.
     expect(tip.textContent).toContain("400 (0,0%)");
+    expect(tip.querySelector(".series-tip-total .share")).toBeNull();
+  });
+});
+
+describe("percentuais recebidos na série", () => {
+  it("usa a base do grupo enviada pela API e mantém o Total oficial separado", () => {
+    const data: Series = {
+      kpi_id: "despesa_familiar", indicator_id: "despesa_familiar", unit: "Reais",
+      geography: { geography_key: "uf:25", name: "Paraíba", level_id: "uf" },
+      share_methods: ["published_group"],
+      series: [
+        { key: "total", label: "Total", full_label: "Total", categories: {}, depth: 0,
+          points: [{ period: "2018", value: 999, status: "valid", share_pct: null, share_base_value: 600 }] },
+        { key: "c12190:103539", label: "Alimentação", full_label: "Alimentação", categories: { c12190: "c12190:103539" }, depth: 1,
+          points: [{ period: "2018", value: 120, status: "valid", share_pct: 20, share_base_value: 600 }] },
+      ],
+      provenance: { release_id: "teste", tables: [], derived: false, truncated: false },
+    };
+    const { container } = wrap(<SeriesChart data={data} />);
+    fireEvent.keyDown(container.querySelector("svg") as SVGSVGElement, { key: "End" });
+    const tip = screen.getByRole("tooltip");
+    expect(tip.textContent).toContain("120 (20,0%)");
+    expect(tip.textContent).toContain("Base do grupo: 600 (100,0%)");
+    expect(tip.querySelector(".series-tip-total")?.textContent).toContain("999");
     expect(tip.querySelector(".series-tip-total .share")).toBeNull();
   });
 });
@@ -850,6 +890,34 @@ describe("SupportOptions", () => {
     expect(await screen.findByText("Chave copiada.")).toBeTruthy();
     expect(writeText).toHaveBeenCalledWith("pix@exemplo.org");
   });
+
+  it("posiciona a transferência após o PIX e copia agência, operação e conta sem perder zeros", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
+    wrap(<SupportOptions links={{ ...none, pix: "chave", transfer: {
+      bank: "Banco de teste", recipient: "Pessoa de teste", branch: "0123",
+      operation: "0037", account: "000123456789-0",
+    } }} />);
+    expect(screen.getAllByRole("heading").map(h => h.textContent)).toEqual(["PIX", "Transferência bancária"]);
+    expect(screen.getByText("000123456789-0")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Copiar dados bancários" }));
+    expect(await screen.findByText("Dados bancários copiados.")).toBeTruthy();
+    expect(writeText).toHaveBeenCalledWith("Banco: Banco de teste\nDestinatário: Pessoa de teste\nAgência: 0123\nOperação: 0037\nConta: 000123456789-0");
+    expect(screen.queryByText("Chave copiada.")).toBeNull();
+  });
+
+  it("mantém os dados bancários disponíveis para cópia manual quando a área de transferência falha", async () => {
+    Object.defineProperty(navigator, "clipboard", { value: { writeText: vi.fn().mockRejectedValue(new Error("Sem permissão")) }, configurable: true });
+    wrap(<SupportOptions links={{ ...none, transfer: {
+      bank: "Banco de teste", recipient: "Pessoa de teste", branch: "0123",
+      operation: null, account: "000123456789-0",
+    } }} />);
+    expect(screen.queryByText(/As contas de doação/)).toBeNull();
+    expect(screen.queryByText("Operação")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Copiar dados bancários" }));
+    expect(await screen.findByText(/Selecione os dados e copie manualmente/)).toBeTruthy();
+    expect(screen.getByText("000123456789-0")).toBeTruthy();
+  });
 });
 
 describe("PeriodFilter (ADR-0026)", () => {
@@ -890,14 +958,14 @@ describe("PeriodFilter (ADR-0026)", () => {
 });
 
 describe("Exportação (B5)", () => {
-  it("permite 200 mil somente nos dois KPIs LSPA e mantém 100 mil no PIB", async () => {
+  it("permite 200 mil somente nos dois KPIs LSPA e usa 10 mil após a janela D6", async () => {
     const { exportRowLimit } = await import("./ExportMenu");
     expect(exportRowLimit("safra_estimada")).toBe(200_000);
     expect(exportRowLimit("safra_area_colhida")).toBe(200_000);
     for (const variable of [498, 513, 516, 525, 543, 6575]) {
-      expect(exportRowLimit(`pib_municipios_v${variable}`)).toBe(100_000);
+      expect(exportRowLimit(`pib_municipios_v${variable}`)).toBe(10_000);
     }
-    expect(exportRowLimit("populacao_residente")).toBe(100_000);
+    expect(exportRowLimit("populacao_residente")).toBe(10_000);
   });
   it("estima as linhas por nível, período e combinação de categorias", async () => {
     const { estimateRows } = await import("./ExportMenu");
@@ -913,8 +981,21 @@ describe("Exportação (B5)", () => {
       ],
     } as unknown as Kpi;
     // UF (27) × (2 trimestres + 1 ano) × (Total + 2 sexos)
-    expect(estimateRows(kpi, ["uf"], ["trimestre", "ano"], ["c2"], true)).toBe(27 * 3 * 3);
-    expect(estimateRows(kpi, ["brasil", "uf"], ["trimestre"], [], true)).toBe(28 * 2);
+    expect(estimateRows(kpi, ["uf"], ["trimestre", "ano"], ["c2"], true, { counts: { uf: 27 }, periods: {} })).toBe(27 * 3 * 3);
+    expect(estimateRows(kpi, ["brasil", "uf"], ["trimestre"], [], true, { counts: { brasil: 1, uf: 27 }, periods: {} })).toBe(28 * 2);
+  });
+
+  it("usa a cobertura de cada nível em todos os períodos e a seleção comum no recorte", async () => {
+    const { estimateRows } = await import("./ExportMenu");
+    const kpi: Kpi = {
+      ...allKpis(navFixture)[0]!,
+      periods: ["2002", "2008", "2018"],
+      periods_by_level: { uf: ["2002", "2008", "2018"], municipio: ["2008"] },
+      time_grains: [],
+    };
+    const counts = { uf: 1, municipio: 645 };
+    expect(estimateRows(kpi, ["uf", "municipio"], ["ano"], [], true, { counts, periods: {} })).toBe(648);
+    expect(estimateRows(kpi, ["uf", "municipio"], ["ano"], [], true, { counts, periods: { ano: ["2008"] } })).toBe(646);
   });
 });
 

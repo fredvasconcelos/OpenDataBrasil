@@ -7,12 +7,14 @@ import type {
   Source,
   Detail,
   ExportFormat,
+  ExportOptions,
   GeoCollection,
   Geography,
   Indicator,
   Kpi,
   MapData,
   Navigation,
+  PortalIndex,
   Release,
   Series,
   Table,
@@ -86,12 +88,23 @@ async function get<T>(path: string, init?: RequestInit): Promise<T> {
 const noStore: RequestInit = { cache: "no-store" };
 
 export const api = {
+  index: () => get<PortalIndex>("/portal/index", noStore),
   navigation: () => get<Navigation>("/portal/navigation", noStore),
   release: () => get<Release>("/release", noStore),
   datasets: () => get<Dataset[]>("/datasets", noStore),
   sources: () => get<Source[]>("/sources", noStore),
   indicators: (q?: string) => get<Indicator[]>(`/indicators${query({ q })}`, noStore),
-  kpi: (id: string) => get<Kpi>(`/kpis/${encodeURIComponent(id)}`),
+  kpi: async (id: string, release?: string) => {
+    const snapshot = await api.kpiSnapshot(id);
+    if (release && snapshot.releaseId !== release) {
+      throw new ApiRequestError(409, "release_changed", "release_changed");
+    }
+    return snapshot.kpi;
+  },
+  kpiSnapshot: async (id: string): Promise<{ kpi: Kpi; releaseId: string | null }> => {
+    const response = await fetch(`${base()}/kpis/${encodeURIComponent(id)}`, { ...noStore, headers: { Accept: "application/json" } });
+    return { kpi: await parse<Kpi>(response), releaseId: response.headers.get("x-odb-release") };
+  },
   map: (
     kpi: string,
     p: {
@@ -181,6 +194,11 @@ export const api = {
       categories?: readonly string[];
     },
   ) => get<Pivot>(`/kpis/${encodeURIComponent(kpi)}/pivot${query(p)}`),
+  details: (id: string, p: { level: string; within?: string | null; period?: string | null; dimensions: readonly string[]; grain?: string | null; correction?: string | null; categories?: readonly string[]; periods?: readonly string[]; accumulate?: boolean | null }) =>
+    get<Detail[]>(`/kpis/${encodeURIComponent(id)}/details${query({ ...p, geography: undefined })}`),
+  geographies: (level: string) => get<Geography[]>(`/geographies${query({ level, limit: 500 })}`),
+  exportOptions: (id: string, within: string | null) =>
+    get<ExportOptions>(`/kpis/${encodeURIComponent(id)}/export-options${query({ within })}`),
   geography: (key: string) => get<Geography>(`/geographies/${encodeURIComponent(key)}`),
   geometry: (level: string, within?: string | null) =>
     get<GeoCollection>(`/geometries/${encodeURIComponent(level)}${query({ within })}`),
@@ -198,6 +216,7 @@ export const api = {
     level: string;
     within?: string | null;
     periods: string[];
+    periods_by_grain?: Partial<Record<"mes" | "trimestre" | "semestre" | "ano", string[]>>;
     dimensions: string[];
     grain?: "mes" | "trimestre" | "semestre" | "ano" | null;
     correction?: string | null;

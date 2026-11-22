@@ -62,6 +62,9 @@ export function previousLevel(ladder: readonly string[], level: string): string 
 export function validFocus(ladder: readonly string[], focus: string | null, level: string): boolean {
   if (!focus) return false;
   const fl = levelOf(focus);
+  // IPCA publica Brasil e municípios pesquisados, sem valor por UF. O recorte por
+  // estado usa a hierarquia geográfica do release e não cria uma observação de UF.
+  if (fl === "uf" && level === "municipio" && ladder.includes("municipio")) return true;
   return ladder.includes(fl) && ladder.includes(level) && isShallower(fl, level);
 }
 

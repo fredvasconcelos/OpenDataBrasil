@@ -13,6 +13,7 @@ def _app(cache: ResponseCache, state: dict[str, object]) -> FastAPI:
     app.middleware("http")(make_cache_middleware(cache, lambda: str(state["release"])))
 
     @app.get("/api/v1/kpis/{kpi_id}/map")
+    @app.get("/api/v1/kpis/{kpi_id}/pivot")
     def mapa(kpi_id: str, level: str = "uf") -> Response:
         state["calls"] = int(str(state["calls"])) + 1
         status = 422 if level == "ruim" else 200
@@ -84,3 +85,23 @@ def test_disabled_and_size_bound() -> None:
     assert cache.get(("r1", "/p19", "")) is not None
     cache.put(("r1", "/grande", ""), b"x" * 101, {})
     assert cache.get(("r1", "/grande", "")) is None
+
+
+def test_cache_de_recusa_do_pivot_preserva_status_e_release() -> None:
+    state: dict[str, object] = {"release": "r1", "calls": 0}
+    client = TestClient(_app(ResponseCache(1024 * 1024), state))
+    path = "/api/v1/kpis/pop/pivot?level=ruim"
+    first = client.get(path)
+    second = client.get(path)
+    assert first.status_code == second.status_code == 422
+    assert second.content == first.content
+    assert first.headers["x-odb-cache"] == "miss"
+    assert second.headers["x-odb-cache"] == "hit"
+    assert state["calls"] == 1
+    state["release"] = "r2"
+    third = client.get(path)
+    assert third.status_code == 422
+    assert third.headers["x-odb-cache"] == "miss"
+    assert third.headers["x-odb-release"] == "r2"
+    # .get: o mypy guarda o valor 1 do assert anterior para state["calls"].
+    assert state.get("calls") == 2

@@ -1,5 +1,5 @@
 // Estado do painel na URL (compartilhável): ?kpi=&nivel=&grao=&periodo=2025T1,2025T2&acumular=1&dim=c86,c2&cat=c86:2776&territorio=&foco=
-import type { Kpi, Navigation } from "./types";
+import type { Kpi, KpiIndex, Navigation, PortalIndex } from "./types";
 import { parsePeriod } from "./period";
 import { validFocus, zoomLadder } from "./zoom";
 
@@ -41,8 +41,15 @@ export function defaultGeography(kpi: Kpi | null | undefined): string {
   return "areas_pof:1";
 }
 
-export function allKpis(nav: Navigation): Kpi[] {
+export function allKpis<T>(nav: { themes: { subthemes: { kpis: T[] }[] }[] }): T[] {
   return nav.themes.flatMap((t) => t.subthemes.flatMap((s) => s.kpis));
+}
+
+/** A escolha inicial segue a ordem publicada, inclusive com um id inválido na URL. */
+export function resolveKpiId(params: URLSearchParams, index: PortalIndex | Navigation): string | null {
+  const ids = index.themes.flatMap((t) => t.subthemes.flatMap((s) => s.kpis.map((k) => k.kpi_id)));
+  const requested = params.get("kpi");
+  return requested && ids.includes(requested) ? requested : ids[0] ?? null;
 }
 
 /** Grãos de tempo do KPI: o primeiro é o publicado; os demais, somas dos meses (fluxos). */
@@ -111,16 +118,16 @@ export function normalizeCategories(kpi: Kpi | null, dims: readonly string[], ke
   return out;
 }
 
-export function readState(params: URLSearchParams, nav: Navigation): DashboardState {
-  const state = readBase(params, nav);
-  const kpi = allKpis(nav).find((k) => k.kpi_id === state.kpi) ?? null;
+export function readState(params: URLSearchParams, nav: Navigation | PortalIndex, current?: Kpi | null): DashboardState {
+  const id = resolveKpiId(params, nav);
+  const entry = allKpis<Kpi | KpiIndex>(nav).find((k) => k.kpi_id === id);
+  const kpi = current?.kpi_id === id ? current : entry && "levels" in entry ? entry : null;
+  const state = readBase(params, nav, kpi, id);
   const keys = (params.get("cat") ?? "").split(",").filter(Boolean);
   return { ...state, categories: normalizeCategories(kpi, state.dimensions, keys) };
 }
 
-function readBase(params: URLSearchParams, nav: Navigation): DashboardState {
-  const kpis = allKpis(nav);
-  const kpi = kpis.find((k) => k.kpi_id === params.get("kpi")) ?? kpis[0] ?? null;
+function readBase(params: URLSearchParams, nav: Navigation | PortalIndex, kpi: Kpi | null, id: string | null): DashboardState {
   const levels = kpi?.map_levels.length ? kpi.map_levels : (kpi?.levels ?? []);
   const level = params.get("nivel");
   const chosen = level && kpi?.levels.includes(level) ? level : defaultLevel(levels);
@@ -141,7 +148,7 @@ function readBase(params: URLSearchParams, nav: Navigation): DashboardState {
   const geography = params.get("territorio");
   const focus = params.get("foco");
   return {
-    kpi: kpi?.kpi_id ?? null,
+    kpi: id,
     level: chosen,
     grain,
     isolate,

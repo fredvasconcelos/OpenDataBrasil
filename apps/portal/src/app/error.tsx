@@ -2,13 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { startTransition, useCallback, useEffect } from "react";
+import { startTransition, useCallback } from "react";
 
-// Falha ao montar uma página (ex.: a API respondeu 503 porque o banco operacional
-// ainda não voltou depois de um reinício do Docker). Em vez do erro cru, explica e
-// tenta de novo sozinha: a indisponibilidade costuma durar segundos.
-const AUTO_RETRY_MS = 15_000;
-
+// Recuperação manual: não acrescenta requisições automáticas durante uma sobrecarga.
 export default function PageError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   const t = useTranslations("unavailable");
   const router = useRouter();
@@ -19,11 +15,6 @@ export default function PageError({ error, reset }: { error: Error & { digest?: 
       reset();
     });
   }, [router, reset]);
-
-  useEffect(() => {
-    const timer = setTimeout(retry, AUTO_RETRY_MS);
-    return () => clearTimeout(timer);
-  }, [retry]);
 
   return (
     <div className="page">

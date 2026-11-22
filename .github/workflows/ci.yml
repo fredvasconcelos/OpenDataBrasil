@@ -32,6 +32,8 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run mypy
+      - name: Manutenção e recuperação do proxy
+        run: uv run python -I tests/vitrine/check_maintenance.py
       - name: Log de acesso da Vitrine sem IP (ADR-0027)
         run: PYTHON="uv run python" bash infrastructure/scripts/caddy_log_check.sh
 

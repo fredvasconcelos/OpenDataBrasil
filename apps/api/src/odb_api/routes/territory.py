@@ -12,6 +12,23 @@ from odb_api.schemas import GeographyOut
 router = APIRouter(prefix="/api/v1", tags=["territórios"], responses=ERRORS)
 
 
+def accepts_gzip(value: str) -> bool:
+    """Respeita a preferência explícita de gzip, inclusive q=0 sobre o curinga."""
+    preferences: dict[str, float] = {}
+    for item in value.lower().split(","):
+        encoding, *parameters = item.strip().split(";")
+        quality = 1.0
+        for parameter in parameters:
+            name, _, raw = parameter.strip().partition("=")
+            if name == "q":
+                try:
+                    quality = float(raw)
+                except ValueError:
+                    quality = 0.0
+        preferences[encoding.strip()] = quality if 0 <= quality <= 1 else 0.0
+    return preferences.get("gzip", preferences.get("*", 0.0)) > 0
+
+
 def _geo(row: dict[str, object]) -> GeographyOut:
     return GeographyOut.model_validate({k: row.get(k) for k in GeographyOut.model_fields})
 
@@ -55,13 +72,18 @@ def geometries(
     within: Annotated[str | None, Query(pattern=GEOGRAPHY_KEY)] = None,
 ) -> Response:
     """``FeatureCollection`` simplificada para mapas (``dim_geometry`` do release)."""
-    etag = f'"{ctx.release_id}:{level}:{within or ""}"'
+    compressed = accepts_gzip(request.headers.get("accept-encoding", ""))
+    variant = ":gzip" if compressed else ""
+    etag = f'"{ctx.release_id}:{level}:{within or ""}{variant}"'
     headers = {
         "ETag": etag,
         "Cache-Control": "public, max-age=300",
         "X-ODB-Release": ctx.release_id,
+        "Vary": "Accept-Encoding",
     }
     if request.headers.get("if-none-match") == etag:
         return Response(status_code=304, headers=headers)
-    body = d.gold.geometry_collection(ctx, level, within)
+    body = d.gold.geometry_payload(ctx, level, within, compressed=compressed)
+    if compressed:
+        headers["Content-Encoding"] = "gzip"
     return Response(body, media_type="application/geo+json", headers=headers)

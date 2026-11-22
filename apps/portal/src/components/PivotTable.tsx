@@ -1,10 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import { InfoIcon } from "@/components/icons";
+import { ChevronLeftIcon, CloseIcon, InfoIcon, SwapIcon } from "@/components/icons";
 import { formatShare, formatValue, unitShort } from "@/lib/format";
+import { compositionBases, percentageDimension, type SharePolicies } from "@/lib/categoryShares";
 import type { Pivot } from "@/lib/types";
 
 // Tabela dinâmica (B6, DS 2.8; única tabela do painel desde o DS 2.9): o usuário põe
@@ -48,7 +49,7 @@ export function PivotControls({ fields, rows, cols, onChange }: ControlsProps) {
                 onChange(name === "rows" ? next : other, name === "rows" ? other : next);
               }}
             >
-              ‹
+              <ChevronLeftIcon />
             </button>
           ) : null}
           {list.length > 1 ? (
@@ -60,7 +61,7 @@ export function PivotControls({ fields, rows, cols, onChange }: ControlsProps) {
                 onChange(name === "rows" ? next : other, name === "rows" ? other : next);
               }}
             >
-              ×
+              <CloseIcon size={14} />
             </button>
           ) : null}
         </span>
@@ -89,8 +90,9 @@ export function PivotControls({ fields, rows, cols, onChange }: ControlsProps) {
     <div className="pivot-controls">
       {zone("rows", rows, cols)}
       {zone("cols", cols, rows)}
-      <button type="button" className="text-btn" onClick={() => onChange(cols, rows)}>
-        {t("swap")}
+      <button type="button" className="pivot-swap" title={t("swap")} aria-label={t("swap")} onClick={() => onChange(cols, rows)}>
+        <SwapIcon />
+        <span aria-hidden="true">{t("swapShort")}</span>
       </button>
     </div>
   );
@@ -162,9 +164,39 @@ interface Props {
   alerts?: string[];
   /** Notas extras para a janela de informação (ex.: acumulado fica no mapa e no gráfico). */
   notes?: string[];
+  sharePolicies?: SharePolicies;
+  dimensionOrder?: readonly string[];
+  /** Controles de Linhas/Colunas, na mesma faixa de "Calcular % por" (DS 2.17). */
+  controls?: ReactNode;
 }
 
-export function PivotTable({ data, totals, shares, selected, onSelect, alerts = [], notes = [] }: Props) {
+/**
+ * Níveis do cabeçalho de colunas que aparecem (DS 2.17). Período com um só valor sai do
+ * cabeçalho: já está no título da tabela ("Dados · Região · 2022") e, com três campos
+ * nas colunas, a linha repetida tirava o espaço das linhas de dados. O último nível
+ * (com a ordenação) fica sempre.
+ */
+export function visibleColumnLevels(data: Pick<Pivot, "col_fields" | "columns">): number[] {
+  const nc = data.col_fields.length;
+  return data.col_fields
+    .map((_, level) => level)
+    .filter((level) => level === nc - 1 || data.col_fields[level]?.id !== "periodo"
+      || new Set(data.columns.map((c) => c.labels[level])).size > 1);
+}
+
+/** Sequências de colunas com o mesmo grupo até o nível dado (para o colSpan do cabeçalho). */
+export function columnGroups(columns: Pivot["columns"], level: number): { start: number; span: number; label: string }[] {
+  const out: { start: number; span: number; label: string; key: string }[] = [];
+  columns.forEach((c, j) => {
+    const k = c.keys.slice(0, level + 1).join(SEP);
+    const last = out[out.length - 1];
+    if (last && last.key === k) last.span += 1;
+    else out.push({ start: j, span: 1, label: c.labels[level] ?? "", key: k });
+  });
+  return out.map(({ start, span, label }) => ({ start, span, label }));
+}
+
+export function PivotTable({ data, totals, shares, selected, onSelect, alerts = [], notes = [], sharePolicies = {}, dimensionOrder, controls }: Props) {
   const t = useTranslations("pivot");
   const tt = useTranslations("table");
   const unit = data.provenance.price_base
@@ -172,6 +204,9 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
     : unitShort(data.unit);
   const nr = data.row_fields.length;
   const nc = data.col_fields.length;
+  const levels = visibleColumnLevels(data);
+  // Primeira coluna de cada grupo visível de cima: recebe o fio de separação.
+  const groupStart = new Set(levels.length > 1 ? columnGroups(data.columns, levels[levels.length - 2]!).map((g) => g.start).filter((j) => j > 0) : []);
   const rowIds = data.row_fields.map((f) => f.id);
   const colIds = data.col_fields.map((f) => f.id);
   const byTerritory = rowIds[0] === "territorio";
@@ -180,10 +215,25 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
   const values = new Map<string, number | null>();
   data.rows.forEach((r, i) => data.columns.forEach((c, j) => values.set(key(r.keys, c.keys), data.cells[i]?.[j]?.value ?? null)));
 
-  // % por: só divisões entre valores publicados (nada é somado aqui).
-  const bases = shares ? shareBases(data, totals) : (["none"] as PivotShare[]);
+  // A composição é separada das bases publicadas e nunca substitui o Total oficial.
+  const hierarchy = dimensionOrder ?? [...rowIds, ...colIds].filter((id) => totals[id]);
+  const activeDimensions = hierarchy.filter((id) => totals[id] && [...rowIds, ...colIds].includes(id));
+  const normalized = activeDimensions.some((id) => sharePolicies[id] === "displayed_sum");
+  const grouped = activeDimensions.some((id) => sharePolicies[id] === "published_group");
+  const comparative = normalized || grouped;
+  const categoryShares = shares || activeDimensions.some((id) => sharePolicies[id] === "published_total");
+  const bases: PivotShare[] = comparative
+    ? ["none", ...(activeDimensions.length > 1 ? ["parent" as const] : activeDimensions.length ? ["total" as const] : [])]
+    : categoryShares ? shareBases(data, totals).filter((b) => shares || (b !== "column" && b !== "overall")) : ["none"];
+  const compositions = compositionBases(data, totals, sharePolicies);
+  const publishedBases = new Map<string, Map<string, number | null>>();
+  for (const item of data.share_bases ?? []) {
+    const values = publishedBases.get(item.classification_id) ?? new Map<string, number | null>();
+    values.set(key(item.row_keys, item.column_keys), item.value);
+    publishedBases.set(item.classification_id, values);
+  }
   const [chosen, setChosen] = useState<PivotShare | null>(null);
-  const base: PivotShare = chosen && bases.includes(chosen) ? chosen : bases.includes("total") ? "total" : "none";
+  const base: PivotShare = chosen && bases.includes(chosen) ? chosen : bases.includes("parent") ? "parent" : bases.includes("total") ? "total" : "none";
   const footerAt = (ck: readonly string[]) => {
     const j = data.columns.findIndex((c) => c.keys.join(SEP) === ck.join(SEP));
     return j < 0 ? null : (data.footer_cells?.[j]?.value ?? null);
@@ -195,8 +245,29 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
       const tk = shareKeys("total", [], colIds, [], ck, totals);
       return footerAt(tk ? tk[1] : ck);
     }
+    const dimension = percentageDimension(rowIds, colIds, rk, ck, totals, hierarchy);
+    if (dimension && sharePolicies[dimension] === "none") return null;
+    if (dimension && (sharePolicies[dimension] === "displayed_sum" || sharePolicies[dimension] === "published_group")) {
+      const r = [...rk];
+      const c = [...ck];
+      const ri = rowIds.indexOf(dimension);
+      const ci = colIds.indexOf(dimension);
+      if (ri >= 0) r[ri] = totals[dimension]!;
+      if (ci >= 0) c[ci] = totals[dimension]!;
+      return (sharePolicies[dimension] === "published_group" ? publishedBases : compositions)
+        .get(dimension)?.get(key(r, c)) ?? null;
+    }
+    if (base === "parent" && dimension) {
+      const r = [...rk];
+      const c = [...ck];
+      const ri = rowIds.indexOf(dimension);
+      const ci = colIds.indexOf(dimension);
+      if (ri >= 0) r[ri] = totals[dimension]!;
+      if (ci >= 0) c[ci] = totals[dimension]!;
+      return values.get(key(r, c)) ?? null;
+    }
     const sk = shareKeys(base, rowIds, colIds, rk, ck, totals);
-    return sk ? (values.get(key(sk[0], sk[1])) ?? null) : null;
+    return values.get(sk ? key(sk[0], sk[1]) : key(rk, ck)) ?? null;
   };
 
   // Ordenação: pela coluna clicada (maior primeiro) ou na ordem da API (rótulos).
@@ -255,17 +326,22 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
   const show = (cell: Cell | undefined, rk: readonly string[], ck: readonly string[], j: number) => {
     const d = cell?.value != null ? denominator(rk, ck, j) : null;
     const share = d && cell?.value != null ? (cell.value / d) * 100 : null;
+    const dimension = percentageDimension(rowIds, colIds, rk, ck, totals, hierarchy);
+    const totalComposition = dimension && (sharePolicies[dimension] === "displayed_sum" || sharePolicies[dimension] === "published_group") &&
+      [...rowIds.map((id, i) => [id, rk[i]]), ...colIds.map((id, i) => [id, ck[i]])]
+        .every(([id, value]) => !totals[id!] || value === totals[id!]);
     return (
       <>
         <span className="cell-value">{cell ? formatValue(cell.value, cell.status) : formatValue(null, "absent")}</span>
-        {share !== null ? <span className="share"> ({formatShare(share)})</span> : null}
+        {totalComposition && d ? <span className="cell-share-base">{tt(sharePolicies[dimension!] === "published_group" ? "groupBase" : "compositionBase", { value: formatValue(d) })} ({formatShare(100)})</span> :
+          share !== null ? <span className="share"> ({formatShare(share)})</span> : null}
       </>
     );
   };
   // Linha de totais: o % é sobre ela mesma (Total das categorias, grupo ou total geral).
   const showFooter = (cell: Cell | undefined, ck: readonly string[]) => {
     const sk = base === "total" || base === "parent" ? shareKeys(base, [], colIds, [], ck, totals) : null;
-    const d =
+    const d = comparative ? null :
       base === "column"
         ? (cell?.value ?? null) // a própria linha de totais é 100% da coluna
         : base === "overall"
@@ -289,6 +365,10 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
 
   return (
     <div className="table-box">
+      {normalized ? <p className="composition-note">{tt("compositionNote")}</p> : null}
+      {grouped ? <p className="composition-note">{tt("groupBaseNote")}</p> : null}
+      <div className="pivot-toolbar">
+      {controls}
       <div className="share-base">
         {bases.length > 1 ? (
           <label>
@@ -302,6 +382,7 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
             </select>
           </label>
         ) : null}
+        <span className="pivot-unit">{tt("unitShort", { unit: base !== "none" ? `${unit} (%)` : unit })}</span>
         <button
           type="button"
           className={`info-button${allAlerts.length ? " is-alert" : ""}`}
@@ -337,12 +418,13 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
           </div>
         ) : null}
       </div>
+      </div>
       <div className="table-wrap pivot-wrap" ref={wrap}>
         <table className="data-table pivot-table">
           <caption className="sr-only">{t("caption", { rows: data.rows.length, cols: data.columns.length })}</caption>
           <thead>
-            {data.col_fields.map((cf, level) => (
-              <tr key={cf.id}>
+            {levels.map((level) => (
+              <tr key={data.col_fields[level]!.id}>
                 {level === nc - 1 ? (
                   data.row_fields.map((rf, k) => (
                     <th scope="col" key={rf.id} className="pivot-corner" aria-sort={k === 0 && sort.by === null ? "ascending" : undefined}>
@@ -358,27 +440,22 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
                 ) : (
                   <th colSpan={nr} className="pivot-corner" aria-hidden="true" />
                 )}
-                {data.columns.map((c, j) => (
-                  <th
-                    scope="col"
-                    key={`${level}-${c.keys.join("|")}`}
-                    className={level === nc - 1 ? undefined : "pivot-group"}
-                    aria-sort={level === nc - 1 ? ariaSort(j) : undefined}
-                  >
-                    {level < nc - 1 ? (
-                      // Repetidos em sequência no mesmo nível ficam em branco (agrupamento visual).
-                      j > 0 && data.columns[j - 1]?.labels[level] === c.labels[level] ? "" : c.labels[level]
-                    ) : (
-                      <>
+                {level < nc - 1
+                  ? // Grupos (DS 2.17): uma célula por sequência de colunas com o mesmo grupo
+                    // em todos os níveis de cima, cobrindo as colunas que agrupa.
+                    columnGroups(data.columns, level).map((g) => (
+                      <th scope="colgroup" key={`${level}-${g.start}`} colSpan={g.span} className="pivot-group">
+                        {g.label}
+                      </th>
+                    ))
+                  : data.columns.map((c, j) => (
+                      <th scope="col" key={`${level}-${c.keys.join("|")}`} aria-sort={ariaSort(j)} className={groupStart.has(j) ? "pivot-start" : undefined}>
                         <button type="button" onClick={() => sortBy(j)} aria-label={t("sortByColumn", { column: c.labels.join(" · ") })}>
                           {c.labels[level]}
                           {arrow(j)}
                         </button>
-                        <span className="th-unit">{base !== "none" ? `${unit} (%)` : unit}</span>
-                      </>
-                    )}
-                  </th>
-                ))}
+                      </th>
+                    ))}
               </tr>
             ))}
           </thead>
@@ -401,7 +478,7 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
                     </th>
                   ))}
                   {data.columns.map((c, j) => (
-                    <td key={j} className="num">
+                    <td key={j} className={groupStart.has(j) ? "num pivot-start" : "num"}>
                       {show(data.cells[i]?.[j], r.keys, c.keys, j)}
                     </td>
                   ))}
@@ -414,7 +491,7 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
               <tr>
                 <th scope="row">{tt("footer", { name: data.footer.labels[0] ?? "" })}</th>
                 {data.columns.map((c, j) => (
-                  <td key={j} className="num">
+                  <td key={j} className={groupStart.has(j) ? "num pivot-start" : "num"}>
                     {showFooter(data.footer_cells?.[j] ?? undefined, c.keys)}
                   </td>
                 ))}

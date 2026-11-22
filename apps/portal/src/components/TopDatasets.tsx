@@ -8,7 +8,7 @@ import { formatCount, type DatasetItem, type DatasetSort } from "@/lib/metrics";
 interface Props {
   items: readonly DatasetItem[];
   sort: DatasetSort;
-  onSort: (sort: DatasetSort) => void;
+  onSort?: (sort: DatasetSort) => void;
   /** Período por extenso, junto dos números. */
   period: string;
 }
@@ -19,17 +19,17 @@ interface Props {
 export function TopDatasets({ items, sort, onSort, period }: Props) {
   const t = useTranslations("metrics.datasets");
   return (
-    <section className="card metrics-block" aria-labelledby="metricas-conjuntos">
+    <section className="card metrics-block" aria-labelledby={`metricas-conjuntos-${sort}`}>
       <div className="metrics-block-head">
-        <h2 id="metricas-conjuntos">{t("title")}</h2>
-        <div className="segmented" role="group" aria-label={t("sort")}>
-          <button type="button" aria-pressed={sort === "views"} onClick={() => onSort("views")}>
+        <h2 id={`metricas-conjuntos-${sort}`}>{t(sort === "views" ? "byViews" : "byDownloads")}</h2>
+        {onSort ? <div className="segmented" role="group" aria-label={t("sort")}>
+          <button type="button" aria-pressed={sort === "views"} onClick={() => onSort?.("views")}>
             {t("byViews")}
           </button>
-          <button type="button" aria-pressed={sort === "downloads"} onClick={() => onSort("downloads")}>
+          <button type="button" aria-pressed={sort === "downloads"} onClick={() => onSort?.("downloads")}>
             {t("byDownloads")}
           </button>
-        </div>
+        </div> : null}
       </div>
       <p className="muted metrics-period-line">{period}</p>
       {items.length ? (

@@ -20,6 +20,7 @@ const PASS_HEADERS = [
   "content-disposition",
   "etag",
   "cache-control",
+  "vary",
   "x-odb-release",
   "x-odb-kpi",
   "x-odb-format",

@@ -278,3 +278,17 @@ def test_service_cache_lasts_five_minutes() -> None:
     now[0] = 301.0
     service.summary(period)
     assert reader.calls == 2
+
+
+def test_acumulado_desde_a_coleta_supera_um_ano() -> None:
+    with _client(FakeReader(started=date(2020, 1, 1))) as client:
+        for path in ("summary", "geo?level=pais", "geo?level=uf&within=pais:BR", "datasets"):
+            separator = "&" if "?" in path else "?"
+            body = _ok(client, f"/api/v1/metrics/{path}{separator}period=all")
+            assert body["period"] == {"from": "2020-01-01", "to": TODAY.isoformat()}
+        assert client.get("/api/v1/metrics/summary?period=all&from=2020-01-01").status_code == 422
+
+
+def test_acumulado_sem_coleta_permanece_indisponivel() -> None:
+    with _client(FakeReader(started=None)) as client:
+        assert client.get("/api/v1/metrics/summary?period=all").status_code == 404

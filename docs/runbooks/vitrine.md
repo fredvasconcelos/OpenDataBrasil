@@ -67,6 +67,21 @@ um visitante nem de um serviço de geolocalização.
 
 ## Proxy, limites e observabilidade
 
+O portal permite `ODB_PORTAL_REPLICAS` (padrão: 1). Depois de medir o índice leve
+do Plano D, uma instalação que ainda sature pode usar 3 réplicas, com
+`ODB_PORTAL_CPUS=1.5` e `ODB_PORTAL_MEMORY=768m` por réplica. O Caddy resolve os
+endereços de `portal` a cada dois segundos, distribui pela menor quantidade de
+conexões e tenta outro destino quando a conexão falha. O `up --wait` do Compose
+aguarda os healthchecks das réplicas. Preserve a configuração de imagens e
+sobreposições da instalação ao recriar os serviços.
+
+O Caddy não executa verificações ativas em upstreams dinâmicos; isso é uma
+[limitação documentada do proxy](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy#dynamic-upstreams).
+O healthcheck do contêiner verifica a partida e a checagem passiva do Caddy trata
+falhas em serviço. Não declarar uma prova ativa do Caddy nesse modo. Conferir o
+balanceamento e a interrupção de uma réplica em uma instalação isolada antes de
+promover essa configuração.
+
 Grafana, Jaeger e Prometheus ficam acessíveis somente pela interface local do servidor;
 configure seus próprios túneis SSH. Credenciais dos painéis ficam na configuração local.
 Não exponha essas interfaces diretamente na internet.
@@ -81,3 +96,29 @@ Os limites de requisição e o cache são parâmetros da instalação. Para test
 informe `BASE` nos cenários k6 e restaure os limites ao terminar. O coletor
 `amostrar.sh` exige o destino SSH em `ODB_VITRINE_HOST`; `patamares.py` recebe a URL
 do Prometheus por `--prom`. Nunca execute carga em uma fonte oficial de dados.
+
+## Manutenção e indisponibilidade
+
+Consulte [o procedimento de manutenção](manutencao-do-portal.md) para ativar a
+página estática, retornar à operação normal e conferir as respostas HTML/JSON.
+A página é servida pelo proxy mesmo quando o portal está fora do ar.
+
+
+## Cache de geometrias e HSTS na borda (Plano D, D5)
+
+Configuração externa, feita na conta do operador; este repositório não contém
+credenciais e não aplica regras pelo painel. Após publicar o código D3:
+
+1. Criar regra de cache para o hostname da instalação e caminho iniciado em
+   `/odb-api/geometries/`; marcar elegível e respeitar o `Cache-Control` da origem
+   (300 segundos), sem estender a duração automaticamente.
+2. Conferir duas requisições iguais e a presença de `cf-cache-status: HIT`.
+   Conferir também `Vary: Accept-Encoding`, ETag e conteúdo descomprimido.
+3. Ao trocar o release, invalidar o cache dessas URLs antes da conferência final.
+   O cache da API usa o release na chave; a regra externa precisa da invalidação
+   porque a URL da malha não contém o release.
+4. No painel SSL/TLS, habilitar HSTS por seis meses somente após conferir o HTTPS
+   do hostname. Manter `includeSubDomains` e `preload` desativados enquanto outros
+   hosts do domínio dependerem de infraestrutura distinta.
+5. Registrar a aplicação e o teste no recibo operacional local. Sem acesso à conta,
+   registrar a pendência; documentação não comprova ativação no provedor.

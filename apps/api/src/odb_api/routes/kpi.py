@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Literal
+from typing import Annotated, Literal, cast
 
 from fastapi import APIRouter, Path, Query, Request
 from fastapi.responses import Response
@@ -13,15 +13,18 @@ from odb_api.schemas import (
     DetailOut,
     ErrorOut,
     ExportIn,
+    ExportOptionsOut,
     Grain,
     HistoryOut,
     KpiOut,
     MapOut,
     NavigationOut,
     PivotOut,
+    PortalIndexOut,
     SeriesOut,
     TableOut,
 )
+from odb_semantics import SemanticError
 
 router = APIRouter(prefix="/api/v1", tags=["portal"], responses=ERRORS)
 KpiId = Annotated[str, Path(pattern=ID)]
@@ -59,6 +62,12 @@ def navigation(request: Request, d: Deps, ctx: Ctx) -> Response:
     """Temas, subtemas e KPIs, com níveis, períodos e dimensões disponíveis."""
     body, _ = d.kpis.serialized(ctx)
     return _cached_json(request, ctx.release_id, "navigation", body)
+
+
+@router.get("/portal/index", response_model=PortalIndexOut, summary="Índice leve do portal")
+def portal_index(request: Request, d: Deps, ctx: Ctx) -> Response:
+    """Temas, subtemas e campos de busca; metadados completos em ``/kpis/{id}``."""
+    return _cached_json(request, ctx.release_id, "index", d.kpis.serialized_index(ctx))
 
 
 @router.get("/kpis/{kpi_id}", response_model=KpiOut, summary="KPI")
@@ -120,6 +129,39 @@ def kpi_detail(
         ctx,
         kpi_id,
         geography=geography,
+        period=period,
+        dimensions=dims,
+        grain=grain,
+        correction=correction,
+        categories=cats,
+        periods=periods,
+        accumulate=accumulate,
+    )
+
+
+@router.get(
+    "/kpis/{kpi_id}/details", response_model=list[DetailOut], summary="Detalhes de um nível"
+)
+def kpi_details(
+    d: Deps,
+    ctx: Ctx,
+    kpi_id: KpiId,
+    level: Level,
+    dims: Dims,
+    cats: Cats,
+    periods: Periods,
+    period: Period = None,
+    within: Within = None,
+    grain: GrainQ = None,
+    correction: CorrectionQ = None,
+    accumulate: AccumulateQ = False,
+) -> list[DetailOut]:
+    """Tooltips em uma leitura; municípios exigem ``within=uf:NN`` (Plano D, D6)."""
+    return d.kpis.details(
+        ctx,
+        kpi_id,
+        level=level,
+        within=within,
         period=period,
         dimensions=dims,
         grain=grain,
@@ -277,6 +319,26 @@ def kpi_pivot(
     )
 
 
+@router.get(
+    "/kpis/{kpi_id}/export-options",
+    response_model=ExportOptionsOut,
+    summary="Opções de exportação no recorte",
+)
+def export_options(d: Deps, ctx: Ctx, kpi_id: KpiId, within: Within = None) -> ExportOptionsOut:
+    """Estimativa territorial baseada na geografia publicada, sem contagens inventadas."""
+    kpi = d.kpis.kpi(ctx, kpi_id)
+    counts = d.gold.geography_counts(ctx, within)
+    return ExportOptionsOut(
+        release_id=ctx.release_id,
+        within=within,
+        territory_counts={
+            level: counts.get(level, 0)
+            for level in d.gold.indicators(ctx)[kpi.indicator]["available_levels"]
+        },
+        max_rows=exports.row_limit(kpi_id, d.settings.export_max_rows),
+    )
+
+
 @router.post(
     "/exports",
     summary="Exportação de um KPI",
@@ -296,6 +358,10 @@ def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
     total = 0
     published = d.kpis.published_grain(ctx, body.kpi_id)
     cfg = d.kpis.kpi(ctx, body.kpi_id)
+    selected_grains = {grain or published for grain in grains}
+    if set(body.periods_by_grain) - selected_grains:
+        msg = "a seleção de períodos contém um grão não escolhido na exportação"
+        raise SemanticError(msg)
     for level in levels:
         # Dimensões marginais (ADR-0016) que não se cruzam neste nível: uma passada por
         # dimensão, no mesmo arquivo (as outras colunas de dimensão ficam vazias).
@@ -310,7 +376,9 @@ def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
                 ctx,
                 body.kpi_id,
                 level=level,
-                periods=body.periods if not multi else [],
+                periods=body.periods_by_grain.get(
+                    cast(Grain, grain or published), body.periods if not multi else []
+                ),
                 within=body.within,
                 dimensions=dim_set,
                 max_rows=limit - total,
@@ -324,7 +392,8 @@ def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
             if total > limit or prov.truncated:
                 msg = (
                     f"a exportação passa do limite de {limit:,} linhas".replace(",", ".")
-                    + "; desmarque níveis, grãos ou detalhes, ou recorte por um estado"
+                    + "; desmarque níveis, grãos ou detalhes, ou recorte por um estado; "
+                    "para um extrato completo, use o contato do portal"
                 )
                 raise exports.ExportTooLargeError(msg)
             indicator = d.gold.indicators(ctx)[kpi_cfg.indicator]
@@ -370,6 +439,7 @@ def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
             "grains": [g or "publicado" for g in grains] if multi else body.grain,
             "within": body.within,
             "periods": body.periods or "todos",
+            "periods_by_grain": body.periods_by_grain,
             "dimensions": dims,
             "correction": body.correction,
         },

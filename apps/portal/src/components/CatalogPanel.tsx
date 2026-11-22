@@ -5,14 +5,15 @@ import { useEffect, useRef, useState } from "react";
 
 import { CloseIcon } from "@/components/icons";
 import { ThemeIcon } from "@/components/ThemeIcon";
-import { flatten, flattenPlanned, highlight, matchKpi, matchPlanned, snippet } from "@/lib/catalog";
+import { flatten, flattenPlanned, highlight, matchKpi, matchPlanned, snippet, sourceTable } from "@/lib/catalog";
 import { themeStyle, themeVisual } from "@/lib/themes";
-import type { Kpi, Navigation } from "@/lib/types";
+import type { Kpi, KpiIndex, Navigation, PortalIndex } from "@/lib/types";
 
 interface Props {
-  nav: Navigation;
+  nav: Navigation | PortalIndex;
   kpi: Kpi | null;
   onKpi: (id: string) => void;
+  onPreload?: (id: string) => void;
   onClose: () => void;
   /** Posição na tela (ao lado da barra lateral), medida ao abrir. */
   place: { top: number; left: number; height: number };
@@ -31,7 +32,7 @@ function Marked({ text, query }: { text: string; query: string }) {
 // direita, os subtemas e indicadores do tema escolhido (o do indicador atual, ao abrir).
 // Com busca (sem acentos, também pelo nº da tabela): os achados de todos os temas, com o
 // termo marcado. Esc ou clique fora fecham; o foco fica preso no painel e volta ao botão.
-export function CatalogPanel({ nav, kpi, onKpi, onClose, place }: Props) {
+export function CatalogPanel({ nav, kpi, onKpi, onPreload, onClose, place }: Props) {
   const t = useTranslations("dashboard");
   const [q, setQ] = useState("");
   const query = q.trim();
@@ -67,7 +68,7 @@ export function CatalogPanel({ nav, kpi, onKpi, onClose, place }: Props) {
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const items = flatten(nav);
+  const items = flatten<Kpi | KpiIndex>(nav);
   const planned = flattenPlanned(nav);
   const hits = query ? items.filter((it) => matchKpi(it, query)) : [];
   const plannedHits = query ? planned.filter((it) => matchPlanned(it, query)) : [];
@@ -80,9 +81,9 @@ export function CatalogPanel({ nav, kpi, onKpi, onClose, place }: Props) {
     onKpi(id);
     onClose();
   };
-  const kpiButton = (k: Kpi, extra: string | null) => (
+  const kpiButton = (k: Kpi | KpiIndex, extra: string | null) => (
     <li key={k.kpi_id}>
-      <button type="button" aria-pressed={k.kpi_id === kpi?.kpi_id} onClick={() => pick(k.kpi_id)}>
+      <button type="button" aria-pressed={k.kpi_id === kpi?.kpi_id} onClick={() => pick(k.kpi_id)} onMouseEnter={() => onPreload?.(k.kpi_id)} onFocus={() => onPreload?.(k.kpi_id)}>
         <span className="tree-kpi">
           <Marked text={k.label} query={query} />
           {k.kpi_id === kpi?.kpi_id ? <span className="catalog-current"> · {t("catalogCurrent")}</span> : null}
@@ -184,7 +185,7 @@ export function CatalogPanel({ nav, kpi, onKpi, onClose, place }: Props) {
                               : where === "name"
                                 ? snippet(h.kpi.name, query)
                                 : where === "table"
-                                  ? t("searchTable", { id: h.kpi.source.source_table_id })
+                                  ? t("searchTable", { id: sourceTable(h.kpi) })
                                   : h.subthemeLabel;
                           return kpiButton(h.kpi, extra);
                         })}

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
+import gzip
 import io
 import json
 import re
@@ -20,6 +21,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.exc import OperationalError
 
+from odb_api import kpis as kpi_module
 from odb_api.app import create_app
 from odb_api.config import ApiSettings
 from odb_api.deps import ApiDeps
@@ -260,6 +262,193 @@ def test_navigation_lists_mvp_kpis(stack: dict[str, Any]) -> None:
     assert _get(stack, "/api/v1/kpis/pessoas_quilombolas")["unit"] == "Pessoas"
 
 
+def test_indice_preserva_ordem_busca_e_release(stack: dict[str, Any]) -> None:
+    client = stack["client"]
+    nav = _get(stack, "/api/v1/portal/navigation")
+    response = client.get("/api/v1/portal/index")
+    index = response.json()
+    expected = {
+        **nav,
+        "themes": [
+            {
+                **theme,
+                "subthemes": [
+                    {
+                        **sub,
+                        "kpis": [
+                            {
+                                **{
+                                    key: item[key]
+                                    for key in ("kpi_id", "label", "name", "description")
+                                },
+                                "source_table_id": item["source"]["source_table_id"],
+                            }
+                            for item in sub["kpis"]
+                        ],
+                    }
+                    for sub in theme["subthemes"]
+                ],
+            }
+            for theme in nav["themes"]
+        ],
+    }
+    assert index == expected
+    assert len(response.content) < len(client.get("/api/v1/portal/navigation").content)
+    assert response.headers["x-odb-release"] == nav["release_id"]
+    assert response.headers["cache-control"] == "public, max-age=60"
+    cached = client.get("/api/v1/portal/index", headers={"If-None-Match": response.headers["etag"]})
+    assert cached.status_code == 304
+    assert not cached.content
+    original = stack["state"]["release"]
+    try:
+        stack["state"]["release"] = dataclasses.replace(original, release_id="indice-outro-release")
+        changed = client.get(
+            "/api/v1/portal/index", headers={"If-None-Match": response.headers["etag"]}
+        )
+        assert changed.status_code == 200
+        assert changed.json()["release_id"] == "indice-outro-release"
+        assert changed.headers["etag"] != response.headers["etag"]
+    finally:
+        stack["state"]["release"] = original
+
+
+def test_geometria_reutiliza_gzip_e_negocia_variantes(
+    stack: dict[str, Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = 0
+    compress = gzip.compress
+
+    def counted(*args: Any, **kwargs: Any) -> bytes:
+        nonlocal calls
+        calls += 1
+        return compress(*args, **kwargs)
+
+    # gold usa gzip.compress pelo módulo: trocar no próprio gzip (sem reexportar).
+    monkeypatch.setattr(gzip, "compress", counted)
+    client = stack["client"]
+    path = "/api/v1/geometries/uf?within=brasil:1"
+    plain = client.get(path, headers={"Accept-Encoding": "identity"})
+    zipped = client.get(path, headers={"Accept-Encoding": "gzip"})
+    assert plain.status_code == zipped.status_code == 200
+    assert plain.content == zipped.content  # httpx descomprime automaticamente.
+    assert "content-encoding" not in plain.headers
+    assert zipped.headers["content-encoding"] == "gzip"
+    assert "Accept-Encoding" in plain.headers["vary"]
+    assert "Accept-Encoding" in zipped.headers["vary"]
+    assert plain.headers["etag"] != zipped.headers["etag"]
+    assert calls == 1
+    for encoding in ("gzip;q=0, *;q=1", "gzip;q=ruim", "", "br"):
+        response = client.get(path, headers={"Accept-Encoding": encoding})
+        assert response.content == plain.content
+        assert "content-encoding" not in response.headers
+    wildcard = client.get(path, headers={"Accept-Encoding": "*;q=0.5"})
+    assert wildcard.headers["content-encoding"] == "gzip"
+    cached = client.get(
+        path, headers={"Accept-Encoding": "gzip", "If-None-Match": zipped.headers["etag"]}
+    )
+    assert cached.status_code == 304
+    assert not cached.content
+    assert calls == 1
+
+
+def test_pivot_recusa_por_contagem_antes_de_materializar(
+    stack: dict[str, Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(kpi_module, "PIVOT_MAX_CELLS", 1)
+
+    def forbidden(*args: Any, **kwargs: Any) -> Any:
+        pytest.fail("a recusa deve acontecer antes de transportar as observações")
+
+    monkeypatch.setattr(KpiService, "_observations", forbidden)
+    response = stack["client"].get(
+        "/api/v1/kpis/populacao_residente/pivot?level=uf&rows=territorio&cols=periodo"
+    )
+    assert response.status_code == 422
+    assert response.json()["error"] == {
+        "code": "semantic_rule",
+        "message": "tabela dinâmica grande demais (mais de 1 células): "
+        "escolha um nível maior, um recorte ou menos campos",
+    }
+    assert response.headers["x-odb-release"] == stack["state"]["release"].release_id
+
+
+def test_detalhes_em_lote_equivalem_a_rota_individual_com_uma_leitura(
+    stack: dict[str, Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = 0
+    original = KpiService._observations
+
+    def counted(self: KpiService, *args: Any, **kwargs: Any) -> Any:
+        nonlocal calls
+        calls += 1
+        return original(self, *args, **kwargs)
+
+    monkeypatch.setattr(KpiService, "_observations", counted)
+    client = stack["client"]
+    path = "/api/v1/kpis/populacao_residente"
+    batch = client.get(path + "/details?level=uf&period=2022&dimensions=c2")
+    assert batch.status_code == 200, batch.text
+    assert calls == 1
+    assert batch.json()
+    for item in batch.json():
+        individual = client.get(
+            path + "/detail",
+            params={
+                "geography": item["geography"]["geography_key"],
+                "period": "2022",
+                "dimensions": "c2",
+            },
+        )
+        assert individual.status_code == 200
+        single = individual.json()
+        assert {k: v for k, v in item.items() if k != "provenance"} == {
+            k: v for k, v in single.items() if k != "provenance"
+        }
+        # O pedido individual usa a ponte territorial para isolar o território;
+        # o lote nacional filtra diretamente pelo nível. A linhagem preserva isso.
+        assert item["provenance"]["release_id"] == single["provenance"]["release_id"]
+        assert item["provenance"]["truncated"] is False
+    refused = client.get(path + "/details?level=municipio&period=2022")
+    assert refused.status_code == 422
+
+
+def test_exportacao_com_varios_niveis_respeita_periodos_por_grao(stack: dict[str, Any]) -> None:
+    client = stack["client"]
+    body = {
+        "kpi_id": "populacao_residente",
+        "level": "uf",
+        "levels": ["regiao", "uf"],
+        "periods_by_grain": {"ano": ["2010"]},
+        "format": "json",
+    }
+    response = client.post("/api/v1/exports", json=body)
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert data["rows"]
+    assert {row["periodo"] for row in data["rows"]} == {"2010"}
+    assert {row["nivel"] for row in data["rows"]} == {"regiao", "uf"}
+    assert data["metadata"]["filtros"]["periods_by_grain"] == {"ano": ["2010"]}
+    invalid = client.post(
+        "/api/v1/exports", json={**body, "periods_by_grain": {"mes": ["2010M01"]}}
+    )
+    assert invalid.status_code == 422
+
+
+def test_opcoes_exportacao_contam_territorios_do_recorte(stack: dict[str, Any]) -> None:
+    client = stack["client"]
+    path = "/api/v1/kpis/populacao_residente/export-options"
+    country = client.get(path)
+    region = client.get(path + "?within=regiao:2")
+    assert country.status_code == region.status_code == 200
+    data = region.json()
+    territories = client.get("/api/v1/geographies?level=uf&within=regiao:2&limit=500").json()
+    assert data["territory_counts"]["uf"] == len(territories)
+    assert data["territory_counts"]["uf"] < country.json()["territory_counts"]["uf"]
+    assert data["within"] == "regiao:2"
+    assert data["release_id"] == stack["state"]["release"].release_id
+    assert data["max_rows"] > 0
+
+
 def test_navigation_follows_panorama(stack: dict[str, Any]) -> None:
     nav = _get(stack, "/api/v1/portal/navigation")
     themes = {t["theme_id"]: t for t in nav["themes"]}
@@ -337,7 +526,7 @@ def test_map_detail_series_and_table(stack: dict[str, Any]) -> None:
     )
     assert detail["dimensions"] == ["c86", "c2"]  # ordem fixa do portal
     root = detail["root"]
-    assert (root["label"], root["value"], root["share_pct"]) == ("Total", 14141626, None)
+    assert (root["label"], root["value"], root["share_pct"]) == ("Total", 14141626, 100.0)
     parda = next(c for c in root["children"] if c["label"] == "Parda")
     assert (parda["value"], parda["share_pct"]) == (8103964, 57.31)
     assert [(c["label"], c["value"], c["share_pct"]) for c in parda["children"]] == [
@@ -355,9 +544,24 @@ def test_map_detail_series_and_table(stack: dict[str, Any]) -> None:
     # O portal tira do gráfico a série de profundidade 0 (Total) quando há detalhe.
     assert [s["depth"] for s in series["series"]] == [0, 1, 1]
     assert series["series"][0]["points"] == [
-        {"period": "2010", "value": 190755799, "status": "valid", "source_table_id": "9606"},
-        {"period": "2022", "value": 203080756, "status": "valid", "source_table_id": "9606"},
+        {
+            "period": "2010",
+            "value": 190755799,
+            "status": "valid",
+            "source_table_id": "9606",
+            "share_pct": 100,
+            "share_base_value": 190755799,
+        },
+        {
+            "period": "2022",
+            "value": 203080756,
+            "status": "valid",
+            "source_table_id": "9606",
+            "share_pct": 100,
+            "share_base_value": 203080756,
+        },
     ]
+    assert series["share_methods"] == ["published_total"]
 
     table = _get(stack, "/api/v1/kpis/pessoas_quilombolas/table?level=uf&dimensions=c2&limit=27")
     assert [c["label"] for c in table["columns"]] == ["Total", "Homens", "Mulheres"]

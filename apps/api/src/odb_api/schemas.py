@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -171,6 +171,17 @@ class DimensionOut(_Out):
     )
     partition_id: str
     total_category_key: str
+    category_shares: bool | None = Field(
+        default=None,
+        description=(
+            "Permite percentual sobre a base publicada desta dimensão; não autoriza somas. "
+            "Nulo mantém a permissão geral do KPI."
+        ),
+    )
+    share_basis: Literal["published_total", "published_group", "displayed_sum", "none"] | None = (
+        None
+    )
+    share_base_category_key: str | None = None
     categories: list[CategoryOut]
     # Níveis com o detalhe; vazio: todos os do KPI (ex.: situação na PNS, só Brasil).
     # Também restrito quando o release não traz as categorias num nível (DS 2.9).
@@ -298,6 +309,43 @@ class NavigationOut(_Out):
     themes: list[ThemeOut]
 
 
+class KpiIndexOut(_Out):
+    """Campos usados na busca e na escolha do KPI, sem suas categorias e períodos."""
+
+    kpi_id: str
+    label: str
+    name: str
+    description: str
+    source_table_id: str
+
+
+class SubthemeIndexOut(_Out):
+    """Subtema do índice, na mesma ordem da navegação completa."""
+
+    subtheme_id: str
+    label: str
+    kpis: list[KpiIndexOut]
+    planned: list[PlannedKpiOut]
+
+
+class ThemeIndexOut(_Out):
+    """Tema com os filtros previstos e seus subtemas."""
+
+    theme_id: str
+    label: str
+    filters: list[FilterOut]
+    subthemes: list[SubthemeIndexOut]
+
+
+class PortalIndexOut(_Out):
+    """Índice leve do portal, fixado ao release ativo (Plano D, D1)."""
+
+    release_id: str
+    scope: str
+    dimension_order: list[str]
+    themes: list[ThemeIndexOut]
+
+
 class HealthOut(_Out):
     """Saúde do serviço (ADR-0015)."""
 
@@ -364,6 +412,13 @@ class DetailNodeOut(_Out):
     value: float | None
     status: str
     share_pct: float | None
+    children_share_basis: (
+        Literal["published_total", "published_group", "displayed_sum", "none"] | None
+    ) = None
+    children_share_base_value: float | None = Field(
+        default=None,
+        description="Base dos percentuais dos filhos; a soma comparativa preserva o Total oficial.",
+    )
     children: list[DetailNodeOut] = Field(default_factory=list)
 
 
@@ -399,6 +454,8 @@ class PointOut(_Out):
     status: str
     # Tabela de origem do ponto (séries compostas de fontes distintas, ADR-0022).
     source_table_id: str | None = None
+    share_pct: float | None = None
+    share_base_value: float | None = None
 
 
 class SeriesItemOut(_Out):
@@ -432,6 +489,9 @@ class SeriesOut(_Out):
         default=None, description="Acumulado: running (corrente) ou year (no ano), ADR-0026."
     )
     series: list[SeriesItemOut]
+    share_methods: list[Literal["published_total", "published_group", "displayed_sum", "none"]] = (
+        Field(default_factory=list)
+    )
     provenance: Provenance
 
 
@@ -551,6 +611,13 @@ class ExportIn(BaseModel):
     level: str = Field(pattern=ID)
     within: str | None = Field(default=None, pattern=GEOGRAPHY_KEY)
     periods: list[str] = Field(default_factory=list, max_length=50)
+    periods_by_grain: dict[Grain, Annotated[list[str], Field(min_length=1, max_length=120)]] = (
+        Field(
+            default_factory=dict,
+            max_length=4,
+            description="Seleção por grão; um grão ausente mantém todos os seus períodos.",
+        )
+    )
     dimensions: list[str] = Field(default_factory=list, max_length=6)
     grain: Grain | None = None
     # Correção por índice de preços (ADR-0020), ex.: "ipca", "ipca_grupo".
@@ -571,6 +638,15 @@ class ExportIn(BaseModel):
         description="Grãos de tempo (substitui ``grain``); o publicado sai como 'publicado'.",
     )
     format: ExportFormat = "csv"
+
+
+class ExportOptionsOut(_Out):
+    """Territórios reais do recorte e limite de linhas da janela de exportação (D6)."""
+
+    release_id: str
+    within: str | None
+    territory_counts: dict[str, int]
+    max_rows: int
 
 
 class HistoryRowOut(_Out):
@@ -610,6 +686,16 @@ class PivotHeaderOut(_Out):
     labels: list[str]
 
 
+class PivotShareBaseOut(_Out):
+    """Subtotal publicado usado como base, sem criar linha visível ou novo Total."""
+
+    classification_id: str
+    row_keys: list[str]
+    column_keys: list[str]
+    value: float | None
+    status: str
+
+
 class PivotOut(_Out):
     """Tabela dinâmica (B6): linhas e colunas escolhidas; os campos fora dela ficam no
     Total publicado (sem somas novas); nunca acumulada (ADR-0026)."""
@@ -624,6 +710,7 @@ class PivotOut(_Out):
     rows: list[PivotHeaderOut]
     columns: list[PivotHeaderOut]
     cells: list[list[CellOut | None]]
+    share_bases: list[PivotShareBaseOut] = Field(default_factory=list)
     # Linha de totais (território do recorte, ou Brasil), só com Território nas linhas.
     footer: PivotHeaderOut | None = None
     footer_cells: list[CellOut | None] = []

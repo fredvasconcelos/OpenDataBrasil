@@ -75,8 +75,41 @@ class DimensionConfig(_Strict):
     classification: str = Field(pattern=r"^[a-z][a-z0-9]{0,15}$")
     partition: str = Field(pattern=_ID)
     label: str
+    # Base de comparação do portal; nunca autoriza somar médias na Gold ou nos filtros.
+    share_basis: Literal["published_total", "published_group", "displayed_sum", "none"] | None = (
+        None
+    )
+    share_base_category: str | None = None
     # Níveis em que a fonte publica esta classificação (vazio: todos os do KPI).
     levels: tuple[str, ...] = ()
+
+    @model_validator(mode="after")
+    def _share_base(self) -> DimensionConfig:
+        if (self.share_basis == "published_group") != (self.share_base_category is not None):
+            raise ValueError("published_group exige share_base_category, e só essa base o aceita")
+        if self.share_base_category and not self.share_base_category.startswith(
+            f"{self.classification}:"
+        ):
+            raise ValueError("a base percentual deve pertencer à mesma classificação")
+        return self
+
+
+def allows_dimension_shares(unit: str, additivity: str, dimension: DimensionConfig) -> bool:
+    """Separa a participação numa dimensão da possibilidade de somar o indicador."""
+    return dimension_share_basis(unit, additivity, dimension) != "none"
+
+
+def dimension_share_basis(
+    unit: str, additivity: str, dimension: DimensionConfig
+) -> Literal["published_total", "published_group", "displayed_sum", "none"]:
+    """Define participação no Total ou composição comparativa dos valores exibidos."""
+    if dimension.share_basis is not None:
+        return dimension.share_basis
+    if allows_category_shares(unit, additivity):
+        return "published_total"
+    # Pedido do mantenedor em 20/11/2026: comparar médias por composição dos valores
+    # exibidos, com identificação explícita de cálculo do portal e sem inventar pesos.
+    return "displayed_sum"
 
 
 class CorrectionConfig(_Strict):

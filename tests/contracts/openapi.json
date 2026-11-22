@@ -969,6 +969,78 @@
         }
       }
     },
+    "/api/v1/portal/index": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Índice leve do portal",
+        "description": "Temas, subtemas e campos de busca; metadados completos em ``/kpis/{id}``.",
+        "operationId": "portal_index_api_v1_portal_index_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortalIndexOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/kpis/{kpi_id}": {
       "get": {
         "tags": [
@@ -1460,6 +1532,262 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DetailOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/kpis/{kpi_id}/details": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Detalhes de um nível",
+        "description": "Tooltips em uma leitura; municípios exigem ``within=uf:NN`` (Plano D, D6).",
+        "operationId": "kpi_details_api_v1_kpis__kpi_id__details_get",
+        "parameters": [
+          {
+            "name": "kpi_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "title": "Kpi Id"
+            }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "description": "Nível territorial, ex.: uf.",
+              "title": "Level"
+            },
+            "description": "Nível territorial, ex.: uf."
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[0-9A-Za-z]{1,16}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Padrão: o mais recente.",
+              "title": "Period"
+            },
+            "description": "Padrão: o mais recente."
+          },
+          {
+            "name": "within",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Recorte, ex.: uf:29.",
+              "title": "Within"
+            },
+            "description": "Recorte, ex.: uf:29."
+          },
+          {
+            "name": "grain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "mes",
+                    "trimestre",
+                    "semestre",
+                    "ano"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos).",
+              "title": "Grain"
+            },
+            "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos)."
+          },
+          {
+            "name": "correction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,31}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo.",
+              "title": "Correction"
+            },
+            "description": "Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo."
+          },
+          {
+            "name": "accumulate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Acumulado dos períodos em ``periods`` (só fluxos e variações %).",
+              "default": false,
+              "title": "Accumulate"
+            },
+            "description": "Acumulado dos períodos em ``periods`` (só fluxos e variações %)."
+          },
+          {
+            "name": "dimensions",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2.",
+              "title": "Dimensions"
+            },
+            "description": "Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2."
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtro de categorias das dimensões detalhadas (repetível ou separadas por vírgula), ex.: c79:2670,c79:2681. Sem filtro numa dimensão: todas. Em indicadores somáveis, o Total vira a soma das categorias escolhidas.",
+              "title": "Categories"
+            },
+            "description": "Filtro de categorias das dimensões detalhadas (repetível ou separadas por vírgula), ex.: c79:2670,c79:2681. Sem filtro numa dimensão: todas. Em indicadores somáveis, o Total vira a soma das categorias escolhidas."
+          },
+          {
+            "name": "periods",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026).",
+              "title": "Periods"
+            },
+            "description": "Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DetailOut"
+                  },
+                  "title": "Response Kpi Details Api V1 Kpis  Kpi Id  Details Get"
                 }
               }
             }
@@ -2474,6 +2802,109 @@
         }
       }
     },
+    "/api/v1/kpis/{kpi_id}/export-options": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Opções de exportação no recorte",
+        "description": "Estimativa territorial baseada na geografia publicada, sem contagens inventadas.",
+        "operationId": "export_options_api_v1_kpis__kpi_id__export_options_get",
+        "parameters": [
+          {
+            "name": "kpi_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "title": "Kpi Id"
+            }
+          },
+          {
+            "name": "within",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Recorte, ex.: uf:29.",
+              "title": "Within"
+            },
+            "description": "Recorte, ex.: uf:29."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportOptionsOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/exports": {
       "post": {
         "tags": [
@@ -2665,14 +3096,15 @@
                 "7d",
                 "30d",
                 "12m",
-                "custom"
+                "custom",
+                "all"
               ],
               "type": "string",
-              "description": "7d, 30d e 12m terminam hoje; custom exige from e to.",
+              "description": "all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to.",
               "default": "30d",
               "title": "Period"
             },
-            "description": "7d, 30d e 12m terminam hoje; custom exige from e to."
+            "description": "all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to."
           },
           {
             "name": "from",
@@ -2830,14 +3262,15 @@
                 "7d",
                 "30d",
                 "12m",
-                "custom"
+                "custom",
+                "all"
               ],
               "type": "string",
-              "description": "7d, 30d e 12m terminam hoje; custom exige from e to.",
+              "description": "all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to.",
               "default": "30d",
               "title": "Period"
             },
-            "description": "7d, 30d e 12m terminam hoje; custom exige from e to."
+            "description": "all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to."
           },
           {
             "name": "from",
@@ -2988,14 +3421,15 @@
                 "7d",
                 "30d",
                 "12m",
-                "custom"
+                "custom",
+                "all"
               ],
               "type": "string",
-              "description": "7d, 30d e 12m terminam hoje; custom exige from e to.",
+              "description": "all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to.",
               "default": "30d",
               "title": "Period"
             },
-            "description": "7d, 30d e 12m terminam hoje; custom exige from e to."
+            "description": "all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to."
           },
           {
             "name": "from",
@@ -3385,6 +3819,35 @@
             ],
             "title": "Share Pct"
           },
+          "children_share_basis": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "published_total",
+                  "published_group",
+                  "displayed_sum",
+                  "none"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Children Share Basis"
+          },
+          "children_share_base_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Children Share Base Value",
+            "description": "Base dos percentuais dos filhos; a soma comparativa preserva o Total oficial."
+          },
           "children": {
             "items": {
               "$ref": "#/components/schemas/DetailNodeOut"
@@ -3522,6 +3985,46 @@
             "type": "string",
             "title": "Total Category Key"
           },
+          "category_shares": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Shares",
+            "description": "Permite percentual sobre a base publicada desta dimensão; não autoriza somas. Nulo mantém a permissão geral do KPI."
+          },
+          "share_basis": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "published_total",
+                  "published_group",
+                  "displayed_sum",
+                  "none"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Share Basis"
+          },
+          "share_base_category_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Share Base Category Key"
+          },
           "categories": {
             "items": {
               "$ref": "#/components/schemas/CategoryOut"
@@ -3621,6 +4124,28 @@
             "maxItems": 50,
             "title": "Periods"
           },
+          "periods_by_grain": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "maxItems": 120,
+              "minItems": 1
+            },
+            "propertyNames": {
+              "enum": [
+                "mes",
+                "trimestre",
+                "semestre",
+                "ano"
+              ]
+            },
+            "type": "object",
+            "maxProperties": 4,
+            "title": "Periods By Grain",
+            "description": "Seleção por grão; um grão ausente mantém todos os seus períodos."
+          },
           "dimensions": {
             "items": {
               "type": "string"
@@ -3711,6 +4236,45 @@
         ],
         "title": "ExportIn",
         "description": "Exportação de um KPI."
+      },
+      "ExportOptionsOut": {
+        "properties": {
+          "release_id": {
+            "type": "string",
+            "title": "Release Id"
+          },
+          "within": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Within"
+          },
+          "territory_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Territory Counts"
+          },
+          "max_rows": {
+            "type": "integer",
+            "title": "Max Rows"
+          }
+        },
+        "type": "object",
+        "required": [
+          "release_id",
+          "within",
+          "territory_counts",
+          "max_rows"
+        ],
+        "title": "ExportOptionsOut",
+        "description": "Territórios reais do recorte e limite de linhas da janela de exportação (D6)."
       },
       "FilterOut": {
         "properties": {
@@ -4084,6 +4648,40 @@
         ],
         "title": "IndicatorOut",
         "description": "Indicador publicado no release."
+      },
+      "KpiIndexOut": {
+        "properties": {
+          "kpi_id": {
+            "type": "string",
+            "title": "Kpi Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "source_table_id": {
+            "type": "string",
+            "title": "Source Table Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kpi_id",
+          "label",
+          "name",
+          "description",
+          "source_table_id"
+        ],
+        "title": "KpiIndexOut",
+        "description": "Campos usados na busca e na escolha do KPI, sem suas categorias e períodos."
       },
       "KpiOut": {
         "properties": {
@@ -4935,6 +5533,13 @@
             "type": "array",
             "title": "Cells"
           },
+          "share_bases": {
+            "items": {
+              "$ref": "#/components/schemas/PivotShareBaseOut"
+            },
+            "type": "array",
+            "title": "Share Bases"
+          },
           "footer": {
             "anyOf": [
               {
@@ -4979,6 +5584,53 @@
         ],
         "title": "PivotOut",
         "description": "Tabela dinâmica (B6): linhas e colunas escolhidas; os campos fora dela ficam no\nTotal publicado (sem somas novas); nunca acumulada (ADR-0026)."
+      },
+      "PivotShareBaseOut": {
+        "properties": {
+          "classification_id": {
+            "type": "string",
+            "title": "Classification Id"
+          },
+          "row_keys": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Row Keys"
+          },
+          "column_keys": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Column Keys"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "classification_id",
+          "row_keys",
+          "column_keys",
+          "value",
+          "status"
+        ],
+        "title": "PivotShareBaseOut",
+        "description": "Subtotal publicado usado como base, sem criar linha visível ou novo Total."
       },
       "PlannedKpiOut": {
         "properties": {
@@ -5063,6 +5715,28 @@
               }
             ],
             "title": "Source Table Id"
+          },
+          "share_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Share Pct"
+          },
+          "share_base_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Share Base Value"
           }
         },
         "type": "object",
@@ -5073,6 +5747,41 @@
         ],
         "title": "PointOut",
         "description": "Ponto de uma série."
+      },
+      "PortalIndexOut": {
+        "properties": {
+          "release_id": {
+            "type": "string",
+            "title": "Release Id"
+          },
+          "scope": {
+            "type": "string",
+            "title": "Scope"
+          },
+          "dimension_order": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Dimension Order"
+          },
+          "themes": {
+            "items": {
+              "$ref": "#/components/schemas/ThemeIndexOut"
+            },
+            "type": "array",
+            "title": "Themes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "release_id",
+          "scope",
+          "dimension_order",
+          "themes"
+        ],
+        "title": "PortalIndexOut",
+        "description": "Índice leve do portal, fixado ao release ativo (Plano D, D1)."
       },
       "Provenance": {
         "properties": {
@@ -5475,6 +6184,19 @@
             "type": "array",
             "title": "Series"
           },
+          "share_methods": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "published_total",
+                "published_group",
+                "displayed_sum",
+                "none"
+              ]
+            },
+            "type": "array",
+            "title": "Share Methods"
+          },
           "provenance": {
             "$ref": "#/components/schemas/Provenance"
           }
@@ -5610,6 +6332,41 @@
         ],
         "title": "SourceTableOut",
         "description": "Tabela de origem de um KPI no release: o que ela traz e o link oficial."
+      },
+      "SubthemeIndexOut": {
+        "properties": {
+          "subtheme_id": {
+            "type": "string",
+            "title": "Subtheme Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "kpis": {
+            "items": {
+              "$ref": "#/components/schemas/KpiIndexOut"
+            },
+            "type": "array",
+            "title": "Kpis"
+          },
+          "planned": {
+            "items": {
+              "$ref": "#/components/schemas/PlannedKpiOut"
+            },
+            "type": "array",
+            "title": "Planned"
+          }
+        },
+        "type": "object",
+        "required": [
+          "subtheme_id",
+          "label",
+          "kpis",
+          "planned"
+        ],
+        "title": "SubthemeIndexOut",
+        "description": "Subtema do índice, na mesma ordem da navegação completa."
       },
       "SubthemeOut": {
         "properties": {
@@ -5814,6 +6571,41 @@
         ],
         "title": "TableVersionOut",
         "description": "Tabela Gold e versão Delta usadas na resposta."
+      },
+      "ThemeIndexOut": {
+        "properties": {
+          "theme_id": {
+            "type": "string",
+            "title": "Theme Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "filters": {
+            "items": {
+              "$ref": "#/components/schemas/FilterOut"
+            },
+            "type": "array",
+            "title": "Filters"
+          },
+          "subthemes": {
+            "items": {
+              "$ref": "#/components/schemas/SubthemeIndexOut"
+            },
+            "type": "array",
+            "title": "Subthemes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "theme_id",
+          "label",
+          "filters",
+          "subthemes"
+        ],
+        "title": "ThemeIndexOut",
+        "description": "Tema com os filtros previstos e seus subtemas."
       },
       "ThemeOut": {
         "properties": {

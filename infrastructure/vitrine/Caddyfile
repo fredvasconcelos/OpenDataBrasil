@@ -13,6 +13,29 @@
 	}
 }
 
+# Resposta independente do Next/API. Só navegações HTML recebem a página;
+# API, RSC, arquivos e downloads recebem JSON 503, nunca HTML no lugar dos dados.
+(resposta-indisponivel) {
+	header Cache-Control "no-store"
+	@navegacao {
+		method GET HEAD
+		header Accept *text/html*
+		not path /odb-api/* /_next/*
+		not header RSC 1
+	}
+	handle @navegacao {
+		root * /srv/maintenance
+		rewrite * /{args[0]}.html
+		file_server {
+			status 503
+		}
+	}
+	handle {
+		header Content-Type application/json
+		respond `{"error":{"code":"service_unavailable","message":"O portal está temporariamente indisponível. Tente novamente em alguns minutos."}}` 503
+	}
+}
+
 # Prometheus lê daqui; a porta não é publicada no host.
 :9180 {
 	metrics
@@ -70,7 +93,9 @@
 
 	# Tique do healthcheck: só gera uma linha (e com ela a rotação horária).
 	@tick path /_odb/tick
-	respond @tick 204
+	handle @tick {
+		respond 204
+	}
 
 	encode zstd gzip
 
@@ -96,10 +121,39 @@
 	@estaticos path /_next/static/*
 	header @estaticos Cache-Control "public, max-age=31536000, immutable"
 
-	reverse_proxy portal:3000 {
+	@manutencao file {
+		root /srv/maintenance
+		try_files enabled
+	}
+	handle @manutencao {
+		import resposta-indisponivel manutencao
+	}
+
+	handle_errors 502 503 504 {
+		import resposta-indisponivel indisponivel
+	}
+
+	reverse_proxy {
+		# Plano D, D2: resolve todas as réplicas e acompanha a recriação pelo Compose.
+		# Upstreams dinâmicos não executam health checks ativos no Caddy: a partida
+		# usa o healthcheck do Compose; falhas em serviço usam a checagem passiva.
+		dynamic a portal 3000 {
+			refresh 2s
+			versions ipv4
+		}
+		lb_policy least_conn
+		fail_duration 10s
+		unhealthy_latency 10s
+		lb_try_duration 3s
+		lb_try_interval 100ms
 		# A API limita por visitante pelo último IP do X-Forwarded-For. Com o túnel, a conexão
 		# vem do cloudflared; {client_ip} é o IP real (lido acima) e substitui o cabeçalho
 		# inteiro, para ninguém forjá-lo.
+		# Não transformar falhas pontuais da API em uma página HTML de sucesso.
+		@indisponivel status 502 503 504
+		handle_response @indisponivel {
+			import resposta-indisponivel indisponivel
+		}
 		header_up X-Forwarded-For {client_ip}
 		# Localização fina da Cloudflare (Add visitor location headers) não segue adiante:
 		# nem o portal nem a API precisam dela (ADR-0027).

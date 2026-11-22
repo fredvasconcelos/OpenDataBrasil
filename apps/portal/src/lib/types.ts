@@ -3,6 +3,8 @@ import type { components } from "./api-schema";
 
 type S = components["schemas"];
 export type Navigation = S["NavigationOut"];
+export type PortalIndex = S["PortalIndexOut"];
+export type KpiIndex = S["KpiIndexOut"];
 export type Theme = S["ThemeOut"];
 export type Subtheme = S["SubthemeOut"];
 export type Kpi = S["KpiOut"];
@@ -22,6 +24,7 @@ export type HistoryRow = S["HistoryRowOut"];
 export type Pivot = S["PivotOut"];
 export type Indicator = S["IndicatorOut"];
 export type ExportFormat = S["ExportIn"]["format"];
+export type ExportOptions = S["ExportOptionsOut"];
 export type ApiError = S["ErrorOut"];
 export type Geography = S["GeographyOut"];
 

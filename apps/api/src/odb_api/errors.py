@@ -11,6 +11,7 @@ from sqlalchemy.exc import InterfaceError, OperationalError
 
 from odb_api.exports import ExportTooLargeError
 from odb_api.gold import NotFoundError
+from odb_api.kpis import PivotTooLargeError
 from odb_api.metrics import MetricsQueryError
 from odb_api.release import ReleaseUnavailableError, TableNotInReleaseError
 from odb_query_engine import (
@@ -25,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 # exceção → (status HTTP, código estável)
 _MAP: list[tuple[type[Exception], int, str]] = [
+    (PivotTooLargeError, 422, "semantic_rule"),
     (SemanticError, 422, "semantic_rule"),
     (MetricsQueryError, 422, "invalid_request"),
     (NotFoundError, 404, "not_found"),
@@ -52,7 +54,10 @@ def install(app: FastAPI) -> None:
         async def handler(
             _request: Request, exc: Exception, status: int = status, code: str = code
         ) -> JSONResponse:
-            return error_response(status, code, str(exc))
+            response = error_response(status, code, str(exc))
+            if isinstance(exc, PivotTooLargeError):
+                response.headers["X-ODB-Release"] = exc.release_id
+            return response
 
         app.add_exception_handler(exc_type, handler)
 

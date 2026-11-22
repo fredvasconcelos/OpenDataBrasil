@@ -17,10 +17,9 @@ const SPENDING = ["server", "domain", "backup", "growth"] as const;
 export default async function Support() {
   const t = await getTranslations("support");
   const ext = (href: string) => (isExternal(href) ? { target: "_blank", rel: "noopener noreferrer" } : {});
-  const issues = REPO_URL && /github\.com/i.test(REPO_URL) ? `${REPO_URL.replace(/\/$/, "")}/issues` : null;
   const help = [
     { id: "share", icon: <ShareIcon />, href: null },
-    { id: "report", icon: <BugIcon />, href: issues },
+    { id: "report", icon: <BugIcon />, href: CONTACT_URL },
     { id: "suggest", icon: <DatabaseIcon />, href: CONTACT_URL },
     { id: "code", icon: <CodeIcon />, href: REPO_URL },
   ];

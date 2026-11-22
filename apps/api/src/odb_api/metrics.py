@@ -54,7 +54,7 @@ MAX_DATASETS = 50
 UNKNOWN_PLACE = "Não identificado"
 UNKNOWN_STATE = "Estado não identificado"
 
-PeriodKey = Literal["7d", "30d", "12m", "custom"]
+PeriodKey = Literal["7d", "30d", "12m", "custom", "all"]
 GeoLevel = Literal["pais", "regiao", "uf"]
 Sort = Literal["views", "downloads"]
 Status = Literal["ok", "suprimido", "sem_acessos"]
@@ -80,6 +80,8 @@ class Period:
 
 def resolve_period(period: PeriodKey, start: date | None, end: date | None, today: date) -> Period:
     """Datas reais do período pedido. ``today`` é o dia corrente em Brasília (incluído)."""
+    if period == "all":
+        raise MetricsQueryError("o período all deve ser resolvido pela data de início da coleta")
     if period == "custom":
         if start is None or end is None:
             raise MetricsQueryError("período custom exige from e to (AAAA-MM-DD)")
@@ -214,6 +216,10 @@ class MetricsService:
         found = self._cached(("titles", release_id), build)
         assert isinstance(found, dict)  # noqa: S101
         return found
+
+    def accumulated_period(self) -> Period:
+        """Intervalo desde o primeiro dia real de coleta até hoje em Brasília."""
+        return Period(self._started(), self.today())
 
     def today(self) -> date:
         """Dia corrente em Brasília."""

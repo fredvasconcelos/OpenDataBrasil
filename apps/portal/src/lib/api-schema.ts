@@ -224,6 +224,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/portal/index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Índice leve do portal
+         * @description Temas, subtemas e campos de busca; metadados completos em ``/kpis/{id}``.
+         */
+        get: operations["portal_index_api_v1_portal_index_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/kpis/{kpi_id}": {
         parameters: {
             query?: never;
@@ -276,6 +296,26 @@ export interface paths {
          * @description Sub-KPIs aninhados de um território, na ordem das dimensões do portal.
          */
         get: operations["kpi_detail_api_v1_kpis__kpi_id__detail_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kpis/{kpi_id}/details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Detalhes de um nível
+         * @description Tooltips em uma leitura; municípios exigem ``within=uf:NN`` (Plano D, D6).
+         */
+        get: operations["kpi_details_api_v1_kpis__kpi_id__details_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -358,6 +398,26 @@ export interface paths {
          *     Com ``periods``, só esses períodos (DS 2.9: a tabela segue o Período do portal).
          */
         get: operations["kpi_pivot_api_v1_kpis__kpi_id__pivot_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kpis/{kpi_id}/export-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Opções de exportação no recorte
+         * @description Estimativa territorial baseada na geografia publicada, sem contagens inventadas.
+         */
+        get: operations["export_options_api_v1_kpis__kpi_id__export_options_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -618,6 +678,13 @@ export interface components {
             status: string;
             /** Share Pct */
             share_pct: number | null;
+            /** Children Share Basis */
+            children_share_basis?: ("published_total" | "published_group" | "displayed_sum" | "none") | null;
+            /**
+             * Children Share Base Value
+             * @description Base dos percentuais dos filhos; a soma comparativa preserva o Total oficial.
+             */
+            children_share_base_value?: number | null;
             /** Children */
             children?: components["schemas"]["DetailNodeOut"][];
         };
@@ -675,6 +742,15 @@ export interface components {
             partition_id: string;
             /** Total Category Key */
             total_category_key: string;
+            /**
+             * Category Shares
+             * @description Permite percentual sobre a base publicada desta dimensão; não autoriza somas. Nulo mantém a permissão geral do KPI.
+             */
+            category_shares?: boolean | null;
+            /** Share Basis */
+            share_basis?: ("published_total" | "published_group" | "displayed_sum" | "none") | null;
+            /** Share Base Category Key */
+            share_base_category_key?: string | null;
             /** Categories */
             categories: components["schemas"]["CategoryOut"][];
             /**
@@ -718,6 +794,13 @@ export interface components {
             within?: string | null;
             /** Periods */
             periods?: string[];
+            /**
+             * Periods By Grain
+             * @description Seleção por grão; um grão ausente mantém todos os seus períodos.
+             */
+            periods_by_grain?: {
+                [key: string]: string[];
+            };
             /** Dimensions */
             dimensions?: string[];
             /** Grain */
@@ -745,6 +828,22 @@ export interface components {
              * @enum {string}
              */
             format: "csv" | "xlsx" | "parquet" | "json";
+        };
+        /**
+         * ExportOptionsOut
+         * @description Territórios reais do recorte e limite de linhas da janela de exportação (D6).
+         */
+        ExportOptionsOut: {
+            /** Release Id */
+            release_id: string;
+            /** Within */
+            within: string | null;
+            /** Territory Counts */
+            territory_counts: {
+                [key: string]: number;
+            };
+            /** Max Rows */
+            max_rows: number;
         };
         /**
          * FilterOut
@@ -893,6 +992,22 @@ export interface components {
             reference_url: string | null;
             /** License Id */
             license_id: string | null;
+        };
+        /**
+         * KpiIndexOut
+         * @description Campos usados na busca e na escolha do KPI, sem suas categorias e períodos.
+         */
+        KpiIndexOut: {
+            /** Kpi Id */
+            kpi_id: string;
+            /** Label */
+            label: string;
+            /** Name */
+            name: string;
+            /** Description */
+            description: string;
+            /** Source Table Id */
+            source_table_id: string;
         };
         /**
          * KpiOut
@@ -1236,6 +1351,8 @@ export interface components {
             columns: components["schemas"]["PivotHeaderOut"][];
             /** Cells */
             cells: (components["schemas"]["CellOut"] | null)[][];
+            /** Share Bases */
+            share_bases?: components["schemas"]["PivotShareBaseOut"][];
             footer?: components["schemas"]["PivotHeaderOut"] | null;
             /**
              * Footer Cells
@@ -1243,6 +1360,22 @@ export interface components {
              */
             footer_cells: (components["schemas"]["CellOut"] | null)[];
             provenance: components["schemas"]["Provenance"];
+        };
+        /**
+         * PivotShareBaseOut
+         * @description Subtotal publicado usado como base, sem criar linha visível ou novo Total.
+         */
+        PivotShareBaseOut: {
+            /** Classification Id */
+            classification_id: string;
+            /** Row Keys */
+            row_keys: string[];
+            /** Column Keys */
+            column_keys: string[];
+            /** Value */
+            value: number | null;
+            /** Status */
+            status: string;
         };
         /**
          * PlannedKpiOut
@@ -1284,6 +1417,24 @@ export interface components {
             status: string;
             /** Source Table Id */
             source_table_id?: string | null;
+            /** Share Pct */
+            share_pct?: number | null;
+            /** Share Base Value */
+            share_base_value?: number | null;
+        };
+        /**
+         * PortalIndexOut
+         * @description Índice leve do portal, fixado ao release ativo (Plano D, D1).
+         */
+        PortalIndexOut: {
+            /** Release Id */
+            release_id: string;
+            /** Scope */
+            scope: string;
+            /** Dimension Order */
+            dimension_order: string[];
+            /** Themes */
+            themes: components["schemas"]["ThemeIndexOut"][];
         };
         /**
          * Provenance
@@ -1449,6 +1600,8 @@ export interface components {
             accumulated?: string | null;
             /** Series */
             series: components["schemas"]["SeriesItemOut"][];
+            /** Share Methods */
+            share_methods?: ("published_total" | "published_group" | "displayed_sum" | "none")[];
             provenance: components["schemas"]["Provenance"];
         };
         /**
@@ -1494,6 +1647,20 @@ export interface components {
              * @default []
              */
             periods: string[];
+        };
+        /**
+         * SubthemeIndexOut
+         * @description Subtema do índice, na mesma ordem da navegação completa.
+         */
+        SubthemeIndexOut: {
+            /** Subtheme Id */
+            subtheme_id: string;
+            /** Label */
+            label: string;
+            /** Kpis */
+            kpis: components["schemas"]["KpiIndexOut"][];
+            /** Planned */
+            planned: components["schemas"]["PlannedKpiOut"][];
         };
         /**
          * SubthemeOut
@@ -1577,6 +1744,20 @@ export interface components {
             table_id: string;
             /** Delta Version */
             delta_version: number;
+        };
+        /**
+         * ThemeIndexOut
+         * @description Tema com os filtros previstos e seus subtemas.
+         */
+        ThemeIndexOut: {
+            /** Theme Id */
+            theme_id: string;
+            /** Label */
+            label: string;
+            /** Filters */
+            filters: components["schemas"]["FilterOut"][];
+            /** Subthemes */
+            subthemes: components["schemas"]["SubthemeIndexOut"][];
         };
         /**
          * ThemeOut
@@ -2374,6 +2555,71 @@ export interface operations {
             };
         };
     };
+    portal_index_api_v1_portal_index_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortalIndexOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
     kpi_api_v1_kpis__kpi_id__get: {
         parameters: {
             query?: never;
@@ -2560,6 +2806,92 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DetailOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    kpi_details_api_v1_kpis__kpi_id__details_get: {
+        parameters: {
+            query: {
+                /** @description Nível territorial, ex.: uf. */
+                level: string;
+                /** @description Padrão: o mais recente. */
+                period?: string | null;
+                /** @description Recorte, ex.: uf:29. */
+                within?: string | null;
+                /** @description Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos). */
+                grain?: ("mes" | "trimestre" | "semestre" | "ano") | null;
+                /** @description Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo. */
+                correction?: string | null;
+                /** @description Acumulado dos períodos em ``periods`` (só fluxos e variações %). */
+                accumulate?: boolean;
+                /** @description Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2. */
+                dimensions?: string[] | null;
+                /** @description Filtro de categorias das dimensões detalhadas (repetível ou separadas por vírgula), ex.: c79:2670,c79:2681. Sem filtro numa dimensão: todas. Em indicadores somáveis, o Total vira a soma das categorias escolhidas. */
+                categories?: string[] | null;
+                /** @description Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026). */
+                periods?: string[] | null;
+            };
+            header?: never;
+            path: {
+                kpi_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DetailOut"][];
                 };
             };
             /** @description Recurso inexistente no release */
@@ -2945,6 +3277,76 @@ export interface operations {
             };
         };
     };
+    export_options_api_v1_kpis__kpi_id__export_options_get: {
+        parameters: {
+            query?: {
+                /** @description Recorte, ex.: uf:29. */
+                within?: string | null;
+            };
+            header?: never;
+            path: {
+                kpi_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExportOptionsOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
     export_api_v1_exports_post: {
         parameters: {
             query?: never;
@@ -3098,8 +3500,8 @@ export interface operations {
     summary_api_v1_metrics_summary_get: {
         parameters: {
             query?: {
-                /** @description 7d, 30d e 12m terminam hoje; custom exige from e to. */
-                period?: "7d" | "30d" | "12m" | "custom";
+                /** @description all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to. */
+                period?: "7d" | "30d" | "12m" | "custom" | "all";
                 /** @description Início do período custom (AAAA-MM-DD). */
                 from?: string | null;
                 /** @description Fim do período custom (AAAA-MM-DD), até hoje. */
@@ -3174,8 +3576,8 @@ export interface operations {
                 level: "pais" | "regiao" | "uf";
                 /** @description regiao exige pais:BR; uf aceita pais:BR ou regiao:N. */
                 within?: string | null;
-                /** @description 7d, 30d e 12m terminam hoje; custom exige from e to. */
-                period?: "7d" | "30d" | "12m" | "custom";
+                /** @description all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to. */
+                period?: "7d" | "30d" | "12m" | "custom" | "all";
                 /** @description Início do período custom (AAAA-MM-DD). */
                 from?: string | null;
                 /** @description Fim do período custom (AAAA-MM-DD), até hoje. */
@@ -3249,8 +3651,8 @@ export interface operations {
                 /** @description views (aberturas) ou downloads. */
                 sort?: "views" | "downloads";
                 limit?: number;
-                /** @description 7d, 30d e 12m terminam hoje; custom exige from e to. */
-                period?: "7d" | "30d" | "12m" | "custom";
+                /** @description all começa na coleta; 7d, 30d e 12m terminam hoje; custom exige from e to. */
+                period?: "7d" | "30d" | "12m" | "custom" | "all";
                 /** @description Início do período custom (AAAA-MM-DD). */
                 from?: string | null;
                 /** @description Fim do período custom (AAAA-MM-DD), até hoje. */

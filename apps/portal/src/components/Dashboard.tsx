@@ -7,16 +7,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PivotControls, PivotTable } from "@/components/PivotTable";
 import { DetailTooltip } from "@/components/DetailTooltip";
 import { DataExport, MapImageExport } from "@/components/ExportMenu";
-import { FilterIcon, ListIcon } from "@/components/icons";
+import { CollapseIcon, ExpandIcon, FilterIcon, ListIcon } from "@/components/icons";
 import { KpiInfo } from "@/components/KpiInfo";
 import { MapView, type FitRequest } from "@/components/MapView";
 import { SeasonChart } from "@/components/SeasonChart";
 import { SeriesChart } from "@/components/SeriesChart";
 import { Sidebar } from "@/components/Sidebar";
-import { api } from "@/lib/api";
+import { api, ApiRequestError } from "@/lib/api";
 import { formatPeriod, formatValue, indexTitle, legendTitleKey, unitShort } from "@/lib/format";
 import {
-  allKpis,
+  resolveKpiId,
   defaultGeography,
   grainPeriods,
   normalizeCategories,
@@ -32,8 +32,10 @@ import type {
   GeoCollection,
   Geography,
   MapData,
-  Navigation,
+  Kpi,
+  PortalIndex,
 } from "@/lib/types";
+import { KpiCache } from "@/lib/kpiCache";
 import { useAsync } from "@/lib/useAsync";
 import { COARSE_QUERY, MOBILE_QUERY, useMediaQuery } from "@/lib/useMediaQuery";
 import {
@@ -56,7 +58,7 @@ function Failure({ error, onRetry }: { error: Error; onRetry: () => void }) {
   return (
     <div role="alert" className="error">
       <span>
-        {t("error")} <span className="small">({error.message})</span>
+        {error instanceof ApiRequestError && error.status === 503 ? t("busy") : t("error")}
       </span>
       <button type="button" className="primary" onClick={onRetry}>
         {t("retry")}
@@ -65,27 +67,72 @@ function Failure({ error, onRetry }: { error: Error; onRetry: () => void }) {
   );
 }
 
-export function Dashboard({ nav }: { nav: Navigation }) {
-  const t = useTranslations();
+/**
+ * Layout inicial da tabela (DS 2.18). Até dois detalhes ficam nas colunas, sob o Período.
+ * Com três ou mais, o de mais categorias desce para as linhas, ao lado do Território:
+ * Cor ou raça × Sexo × Idade nas colunas dava 6 × 3 × 22 = 396 colunas.
+ */
+export function defaultPivotLayout(
+  dims: readonly string[],
+  catalog: readonly { classification_id: string; categories?: readonly unknown[] }[],
+): { rows: string[]; cols: string[] } {
+  if (dims.length < 3) return { rows: ["territorio"], cols: ["periodo", ...dims] };
+  const size = (id: string) => catalog.find((d) => d.classification_id === id)?.categories?.length ?? 0;
+  const largest = dims.reduce((a, b) => (size(b) > size(a) ? b : a));
+  return { rows: ["territorio", largest], cols: ["periodo", ...dims.filter((d) => d !== largest)].slice(0, 3) };
+}
+
+export function Dashboard({ index, initialKpi }: { index: PortalIndex; initialKpi: Kpi | null }) {
+  const t = useTranslations("dashboard");
   const router = useRouter();
+  const params = useSearchParams();
+  const cache = useMemo(() => new KpiCache(index.release_id, initialKpi), [index.release_id, initialKpi]);
+  const id = resolveKpiId(new URLSearchParams(params.toString()), index);
+  const [retry, setRetry] = useState(0);
+  const metadata = useAsync(id && id !== initialKpi?.kpi_id ? () => cache.get(id) : null, [id, index.release_id], retry);
+  const kpi = id === initialKpi?.kpi_id ? initialKpi : metadata.data;
+  if (metadata.error) return <div className="page"><Failure error={metadata.error} onRetry={() => {
+    if (metadata.error instanceof ApiRequestError && metadata.error.status === 409) router.refresh();
+    setRetry((n) => n + 1);
+  }} /></div>;
+  if (metadata.loading) return <p className="page" role="status">{t("loading")}</p>;
+  if (!kpi) return <p className="page">{t("selectKpi")}</p>;
+  return <LoadedDashboard key={kpi.kpi_id} nav={index} kpi={kpi} onPreload={(id) => cache.preload(id)} />;
+}
+
+function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; onPreload: (id: string) => void }) {
+  const t = useTranslations();
   const pathname = usePathname();
   const params = useSearchParams();
   const state = useMemo(
-    () => readState(new URLSearchParams(params.toString()), nav),
-    [params, nav],
-  );
-  const kpi = useMemo(
-    () => allKpis(nav).find((k) => k.kpi_id === state.kpi) ?? null,
-    [nav, state.kpi],
+    () => readState(new URLSearchParams(params.toString()), nav, kpi),
+    [params, nav, kpi],
   );
   const [retry, setRetry] = useState(0);
   const [hover, setHover] = useState<Hover | null>(null);
-  // Versão mobile (DS v2.5, até 899 px): barra lateral vira painel inferior ("sheet") e
+  // Versão mobile (DS v2.5, até 991 px desde o DS 2.18): barra lateral vira painel inferior ("sheet") e
   // mapa, série e tabela viram abas. No desktop esses estados não têm efeito visual.
   const mobile = useMediaQuery(MOBILE_QUERY);
   const coarse = useMediaQuery(COARSE_QUERY);
   const [sheet, setSheet] = useState<"filters" | "themes" | null>(null);
   const [view, setView] = useState<"map" | "chart" | "table">("map");
+  // Tabela ampliada (DS 2.17): ocupa a janela por cima do painel; Esc ou o mesmo botão fecham.
+  const [tableWide, setTableWide] = useState(false);
+  const tableToggle = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!tableWide) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setTableWide(false);
+      tableToggle.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    document.documentElement.classList.add("has-table-wide");
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.documentElement.classList.remove("has-table-wide");
+    };
+  }, [tableWide]);
   // Tabela dinâmica (B6; única tabela desde o DS 2.9): campos nas linhas e colunas, por
   // KPI e detalhes ativos. Mudar "Detalhar por" volta ao arranjo padrão.
   const [pivotFor, setPivotFor] = useState<{ key: string; rows: string[]; cols: string[] } | null>(null);
@@ -123,9 +170,11 @@ export function Dashboard({ nav }: { nav: Navigation }) {
         next.periods = next.periods.filter((p) => valid.includes(p));
         next.period = next.periods.at(-1) ?? (next.period && valid.includes(next.period) ? next.period : null);
       }
-      router.replace(`${pathname}?${writeState(next)}`, { scroll: false });
+      // O Next sincroniza useSearchParams com a History API nativa. Alterar filtros
+      // não precisa renderizar novamente o HTML nem baixar outro índice (Plano D, D1).
+      window.history.replaceState(null, "", `${pathname}?${writeState(next)}`);
     },
-    [state, router, pathname, kpi],
+    [state, pathname, kpi],
   );
 
   const hasMap = Boolean(kpi?.map_levels.includes(state.level));
@@ -171,7 +220,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
       ? async () => {
           const chain: Geography[] = [];
           let key: string | null = focus;
-          while (key && ladder.includes(levelOf(key)) && chain.length < 4) {
+          while (key && (ladder.includes(levelOf(key)) || ["regiao", "uf"].includes(levelOf(key))) && chain.length < 4) {
             const g: Geography = await api.geography(key);
             chain.unshift(g);
             key = g.parent_key;
@@ -181,6 +230,23 @@ export function Dashboard({ nav }: { nav: Navigation }) {
       : null,
     [focus, ladder.join()],
   );
+  const states = useAsync(kpi.levels.includes("municipio") ? () => api.geographies("uf") : null, [nav.release_id, kpi.levels.includes("municipio")]);
+  const batchParams = {
+    period: pq.map.period, periods: pq.map.periods, accumulate: pq.map.accumulate,
+    dimensions: state.dimensions, grain: pq.map.grain, correction: state.correction,
+    categories: state.categories,
+  };
+  const batchAllowed = ["brasil", "regiao", "uf"].includes(state.level) || (state.level === "municipio" && focus?.startsWith("uf:"));
+  const batch = useAsync(
+    hasMap && batchAllowed ? () => api.details(kpi.kpi_id, { ...batchParams, level: state.level, within: focus }) : null,
+    [kpiId, state.level, focus, pqKey, state.dimensions.join(), state.categories.join(), state.correction], retry,
+  );
+  const contextBatch = useAsync(
+    hasMap && focusLevel && kpi.levels.includes(focusLevel) && ["regiao", "uf"].includes(focusLevel)
+      ? () => api.details(kpi.kpi_id, { ...batchParams, level: focusLevel }) : null,
+    [kpiId, focusLevel, pqKey, state.dimensions.join(), state.categories.join(), state.correction], retry,
+  );
+  const batchDetails = useMemo(() => new Map([...(batch.data ?? []), ...(contextBatch.data ?? [])].map((detail) => [detail.geography.geography_key, detail])), [batch.data, contextBatch.data]);
   const series = useAsync(
     kpiId
       ? () =>
@@ -212,7 +278,19 @@ export function Dashboard({ nav }: { nav: Navigation }) {
   })();
   const pivotKey = `${kpiId}|${tableDims.join()}`;
   const pivotLayout =
-    pivotFor?.key === pivotKey ? pivotFor : { key: pivotKey, rows: ["territorio"], cols: ["periodo", ...tableDims].slice(0, 4) };
+    pivotFor?.key === pivotKey ? pivotFor : { key: pivotKey, ...defaultPivotLayout(tableDims, kpi?.dimensions ?? []) };
+  const pivotControls = (
+    <PivotControls
+      fields={[
+        { id: "territorio", label: t("table.territory") },
+        { id: "periodo", label: t("table.period") },
+        ...levelDims.map((d) => ({ id: d.classification_id, label: d.label })),
+      ]}
+      rows={pivotLayout.rows}
+      cols={pivotLayout.cols}
+      onChange={(rows, cols) => setPivotFor({ key: pivotKey, rows, cols })}
+    />
+  );
   const pivot = useAsync(
     kpiId
       ? () =>
@@ -318,7 +396,13 @@ export function Dashboard({ nav }: { nav: Navigation }) {
       return;
     }
     if (!drawn.has(key)) return;
+    if (!kpi.levels.includes(levelOf(key))) {
+      setHover(null);
+      return;
+    }
     setHover({ key, name, x: e.clientX, y: e.clientY });
+    const level = levelOf(key);
+    if ((level === state.level && batchAllowed) || ["regiao", "uf"].includes(level)) return;
     const cacheKey = detailKey(key);
     if (details[cacheKey]) return;
     pending.current = setTimeout(() => {
@@ -386,7 +470,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
           ?.properties.name ??
         series.data?.geography.name ??
         state.geography);
-  const defaults = readState(new URLSearchParams({ kpi: kpi.kpi_id }), nav);
+  const defaults = readState(new URLSearchParams({ kpi: kpi.kpi_id }), nav, kpi);
   const filtered = writeState(state) !== writeState(defaults);
   const clear = () => {
     update(defaults);
@@ -453,6 +537,11 @@ export function Dashboard({ nav }: { nav: Navigation }) {
         </div>
       <Sidebar
         nav={nav}
+        onPreload={onPreload}
+        municipalStates={states.data ?? []}
+        municipalWithin={focus?.startsWith("uf:") ? focus : null}
+        onMunicipalState={(key) => { update({ level: "municipio", focus: key }); requestFit(key); }}
+        onMunicipalNation={() => { update({ level: "municipio", focus: null }); requestFit(null); }}
         kpi={kpi}
         dimensions={state.dimensions}
         onKpi={(id) => {
@@ -498,6 +587,13 @@ export function Dashboard({ nav }: { nav: Navigation }) {
                 {kpi.label}
               </h1>
             </div>
+          {kpi.map_levels.includes("municipio") && state.geography.startsWith("uf:") && !(state.level === "municipio" && focus === state.geography) ? (
+            <div className="map-municipal-action">
+              <button type="button" onClick={() => drill(state.geography, "click")}>
+                {t("dashboard.focus.municipalities", { state: selectedName })}
+              </button>
+            </div>
+          ) : null}
             {hasMap ? (
               <MapImageExport
                 svg={() => svg.current}
@@ -601,7 +697,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
               </div>
               {ladder.includes(levelOf(selectedValue.geography_key)) && nextLevel(ladder, levelOf(selectedValue.geography_key)) ? (
                 <button type="button" onClick={() => drill(selectedValue.geography_key, "click")}>
-                  {t("dashboard.mobile.zoomIn")}
+                  {selectedValue.geography_key.startsWith("uf:") ? t("dashboard.focus.municipalities", { state: selectedValue.name }) : t("dashboard.mobile.zoomIn")}
                 </button>
               ) : null}
               <button type="button" onClick={() => setView("chart")}>
@@ -613,6 +709,8 @@ export function Dashboard({ nav }: { nav: Navigation }) {
             </div>
           ) : null}
 
+
+
           <div className="area-datahead">
             <h2 className="data-title">{t("dashboard.chartAndTable")}</h2>
             <DataExport
@@ -620,6 +718,7 @@ export function Dashboard({ nav }: { nav: Navigation }) {
               kpi={kpi}
               level={state.level}
               within={focus}
+              periods={selection}
               dimensions={state.dimensions}
               categories={state.categories}
               grain={state.grain}
@@ -657,21 +756,28 @@ export function Dashboard({ nav }: { nav: Navigation }) {
             )}
           </section>
 
-          <section className="card area-table" aria-labelledby="table-title">
+          <section
+            className={`card area-table${tableWide && !mobile ? " is-wide" : ""}`}
+            aria-labelledby="table-title"
+            role={tableWide && !mobile ? "region" : undefined}
+          >
             <div className="table-head">
               <h2 id="table-title">{`${t("dashboard.tableTitle")} · ${scope} · ${tableLabel}`}</h2>
+              {!mobile ? (
+                <button
+                  ref={tableToggle}
+                  type="button"
+                  className="table-wide-toggle"
+                  aria-pressed={tableWide}
+                  onClick={() => setTableWide((v) => !v)}
+                >
+                  {tableWide ? <CollapseIcon /> : <ExpandIcon />}
+                  {tableWide ? t("dashboard.tableCollapse") : t("dashboard.tableExpand")}
+                </button>
+              ) : null}
             </div>
             <div className="pivot">
-              <PivotControls
-                fields={[
-                  { id: "territorio", label: t("table.territory") },
-                  { id: "periodo", label: t("table.period") },
-                  ...levelDims.map((d) => ({ id: d.classification_id, label: d.label })),
-                ]}
-                rows={pivotLayout.rows}
-                cols={pivotLayout.cols}
-                onChange={(rows, cols) => setPivotFor({ key: pivotKey, rows, cols })}
-              />
+              {pivot.data ? null : pivotControls}
               {pivot.error ? (
                 <Failure error={pivot.error} onRetry={() => setRetry((r) => r + 1)} />
               ) : pivot.data ? (
@@ -679,10 +785,13 @@ export function Dashboard({ nav }: { nav: Navigation }) {
                   data={pivot.data}
                   totals={Object.fromEntries(kpi.dimensions.map((d) => [d.classification_id, d.total_category_key]))}
                   shares={kpi.category_shares && unitShort(kpi.unit) !== "%"}
+                  sharePolicies={Object.fromEntries(kpi.dimensions.map((d) => [d.classification_id, d.share_basis ?? (kpi.category_shares ? "published_total" : "none")]))}
+                  dimensionOrder={kpi.dimensions.map((d) => d.classification_id)}
                   selected={state.geography}
                   onSelect={(key) => update({ geography: key })}
                   alerts={levelAlerts}
                   notes={state.accumulate ? [t("pivot.accumulateNote")] : []}
+                  controls={pivotControls}
                 />
               ) : (
                 <p className="muted">{t("dashboard.loading")}</p>
@@ -709,8 +818,9 @@ export function Dashboard({ nav }: { nav: Navigation }) {
       {!coarse && hover && drawn.has(hover.key) ? (
         <DetailTooltip
           name={hover.name}
-          detail={details[detailKey(hover.key)] ?? null}
-          loading={!details[detailKey(hover.key)]}
+          detail={batchDetails.get(hover.key) ?? details[detailKey(hover.key)] ?? null}
+          loading={!batchDetails.get(hover.key) && !details[detailKey(hover.key)] && !(batch.error || contextBatch.error)}
+          error={Boolean(batch.error || contextBatch.error)}
           x={hover.x}
           y={hover.y}
         />

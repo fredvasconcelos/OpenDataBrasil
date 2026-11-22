@@ -5,16 +5,21 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CatalogPanel } from "@/components/CatalogPanel";
 import { formatPeriod } from "@/lib/format";
-import { flatten, flattenPlanned, highlight, matchKpi, matchPlanned, snippet } from "@/lib/catalog";
-import type { Kpi, Navigation } from "@/lib/types";
+import { flatten, flattenPlanned, highlight, matchKpi, matchPlanned, snippet, sourceTable } from "@/lib/catalog";
+import type { Geography, Kpi, KpiIndex, Navigation, PortalIndex } from "@/lib/types";
 import { PeriodFilter } from "@/components/PeriodFilter";
 import { canAccumulate, canCross, grainPeriods, timeGrains, yearsOf } from "@/lib/state";
 
 interface Props {
-  nav: Navigation;
+  nav: Navigation | PortalIndex;
   kpi: Kpi | null;
   dimensions: string[];
   onKpi: (id: string) => void;
+  onPreload?: (id: string) => void;
+  municipalStates?: Geography[];
+  municipalWithin?: string | null;
+  onMunicipalState?: (key: string) => void;
+  onMunicipalNation?: () => void;
   onDimensions: (dims: string[]) => void;
   /** Filtro do Detalhar por (DS 2.4): categorias marcadas (vazio na dimensão: todas). */
   categories?: string[];
@@ -58,6 +63,11 @@ export function Sidebar({
   kpi,
   dimensions,
   onKpi,
+  onPreload,
+  municipalStates = [],
+  municipalWithin = null,
+  onMunicipalState,
+  onMunicipalNation,
   onDimensions,
   categories = [],
   onDetail,
@@ -140,7 +150,7 @@ export function Sidebar({
           <kbd aria-hidden="true">/</kbd>
         </button>
       </div>
-      {panel ? <CatalogPanel nav={nav} kpi={kpi} onKpi={onKpi} onClose={closePanel} place={panel} /> : null}
+      {panel ? <CatalogPanel nav={nav} kpi={kpi} onKpi={onKpi} onPreload={onPreload} onClose={closePanel} place={panel} /> : null}
       {kpi ? (
         <section className="filters" aria-label={t("dashboard.filters")}>
           <h2>{t("dashboard.filters")}</h2>
@@ -148,7 +158,7 @@ export function Sidebar({
           <label className="field">
             {t("dashboard.level")}
             <select value={level} onChange={(e) => onLevel(e.target.value)}>
-              {kpi.levels.map((l) => (
+              {kpi.levels.filter((l) => l !== "municipio" || !onMunicipalState || municipalWithin || level === "municipio").map((l) => (
                 <option key={l} value={l}>
                   {t(`levels.${l}`)}
                   {kpi.map_levels.includes(l) ? "" : " (sem mapa)"}
@@ -156,6 +166,18 @@ export function Sidebar({
               ))}
             </select>
           </label>
+          {kpi.levels.includes("municipio") && onMunicipalState ? (
+            <div className="municipal-filter">
+              <label className="field">
+                {t("dashboard.focus.state")}
+                <select value={municipalWithin ?? ""} onChange={(e) => { if (e.target.value) onMunicipalState(e.target.value); }}>
+                  <option value="">{t("dashboard.focus.chooseState")}</option>
+                  {municipalStates.map((geo) => <option key={geo.geography_key} value={geo.geography_key}>{geo.name}</option>)}
+                </select>
+              </label>
+              <button type="button" className="text-btn" onClick={onMunicipalNation}>{t("dashboard.focus.nationalMunicipalities")}</button>
+            </div>
+          ) : null}
           {timeGrains(kpi).length > 1 ? (
             <fieldset className="grains">
               <legend>{t("dashboard.grain")}</legend>
@@ -307,7 +329,7 @@ export function Sidebar({
         </section>
       ) : null}
       <nav className="themes" aria-label={t("dashboard.menu")}>
-        <TreeSearch nav={nav} kpi={kpi} onKpi={onKpi} />
+        <TreeSearch nav={nav} kpi={kpi} onKpi={onKpi} onPreload={onPreload} />
       </nav>
     </aside>
   );
@@ -321,7 +343,7 @@ function Marked({ text, query }: { text: string; query: string }) {
   );
 }
 
-function TreeSearch({ nav, kpi, onKpi }: { nav: Navigation; kpi: Kpi | null; onKpi: (id: string) => void }) {
+function TreeSearch({ nav, kpi, onKpi, onPreload }: { nav: Navigation | PortalIndex; kpi: Kpi | null; onKpi: (id: string) => void; onPreload?: (id: string) => void }) {
   const t = useTranslations("dashboard");
   const [q, setQ] = useState("");
   const input = useRef<HTMLInputElement>(null);
@@ -341,7 +363,7 @@ function TreeSearch({ nav, kpi, onKpi }: { nav: Navigation; kpi: Kpi | null; onK
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
-  const items = flatten(nav);
+  const items = flatten<Kpi | KpiIndex>(nav);
   const hits = new Map(items.map((it) => [it.kpi.kpi_id, query ? matchKpi(it, query) : "label"]));
   // Em preparação (panorama): entram na árvore e na busca, sem ação (ainda sem dados).
   const pending = flattenPlanned(nav);
@@ -426,10 +448,10 @@ function TreeSearch({ nav, kpi, onKpi }: { nav: Navigation; kpi: Kpi | null; onK
                   {kpis.map((k) => {
                     const where = hits.get(k.kpi_id);
                     const extra =
-                      where === "description" ? k.description : where === "name" ? k.name : where === "table" ? t("searchTable", { id: k.source.source_table_id }) : null;
+                      where === "description" ? k.description : where === "name" ? k.name : where === "table" ? t("searchTable", { id: sourceTable(k) }) : null;
                     return (
                       <li key={k.kpi_id}>
-                        <button type="button" aria-pressed={k.kpi_id === kpi?.kpi_id} onClick={() => onKpi(k.kpi_id)}>
+                        <button type="button" aria-pressed={k.kpi_id === kpi?.kpi_id} onClick={() => onKpi(k.kpi_id)} onMouseEnter={() => onPreload?.(k.kpi_id)} onFocus={() => onPreload?.(k.kpi_id)}>
                           <span className="tree-kpi">
                             <Marked text={k.label} query={query} />
                           </span>

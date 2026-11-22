@@ -9,10 +9,10 @@ import { THEME_STORAGE_KEY } from "@/lib/theme";
 
 import "./globals.css";
 
-// Fonte do Design System ODBr. Pesos 600–900; variável usada em --odbr-font.
+// Fonte do Design System ODBr. Pesos 500–900 (500 no texto corrido, DS 2.18); variável usada em --odbr-font.
 const nunito = Nunito({
   subsets: ["latin", "latin-ext"],
-  weight: ["600", "700", "800", "900"],
+  weight: ["500", "600", "700", "800", "900"],
   display: "swap",
   variable: "--font-nunito",
 });

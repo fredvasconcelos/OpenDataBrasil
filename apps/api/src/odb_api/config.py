@@ -25,9 +25,10 @@ class ApiSettings(BaseSettings):
     # Por quanto tempo o release ativo lido do PostgreSQL é reaproveitado.
     release_ttl_s: float = Field(default=5.0, ge=0)
     page_max: int = Field(default=1000, ge=1, le=10_000)
-    # Teto padrão da exportação síncrona. Só os dois KPIs LSPA têm 200 mil
-    # (decisão de 18/11/2026); o motor tem orçamento próprio para exportações.
-    export_max_rows: int = Field(default=100_000, ge=1)
+    # Plano D, D6 (19/11/2026): a janela já permite escolher UF e períodos.
+    # Teto padrão de 10 mil; os dois LSPA preservam os 200 mil de 18/11/2026.
+    # O motor continua com orçamento próprio para exportações.
+    export_max_rows: int = Field(default=10_000, ge=1)
     # Limite simples por IP; 0 desliga. Cache e limites finos ficam para a Fase 7.
     rate_limit_per_minute: int = Field(default=600, ge=0)
     # Redes (CIDR) dos proxies cujo X-Forwarded-For é aceito para identificar o cliente.

@@ -2,7 +2,7 @@
   "site": {
     "name": "Open Data Brasil",
     "tagline": "Indicadores oficiais em um só lugar",
-    "internalNotice": "Versão de desenvolvimento, só para uso interno: as licenças de reutilização dos dados ainda estão em revisão.",
+    "internalNotice": "Versão de teste: alguns indicadores e funcionalidades ainda não estão disponíveis. O portal pode apresentar instabilidades durante o uso.",
     "description": "Portal independente e gratuito que reúne dados oficiais de instituições públicas brasileiras, com a fonte de cada número, mapas, séries históricas e exportação."
   },
   "nav": {
@@ -56,6 +56,7 @@
     "period": "Período",
     "loading": "Carregando…",
     "error": "Não foi possível carregar os dados.",
+    "busy": "O serviço está ocupado. Aguarde alguns instantes e tente novamente.",
     "retry": "Tentar de novo",
     "selectKpi": "Escolha um indicador no menu.",
     "mapTitle": "Distribuição por território",
@@ -64,6 +65,8 @@
     "seriesTitle": "Evolução temporal",
     "singlePeriod": "Só há um período publicado para esta combinação.",
     "tableTitle": "Dados",
+    "tableExpand": "Ampliar tabela",
+    "tableCollapse": "Reduzir tabela",
     "selected": "Território selecionado",
     "resetSelection": "Voltar para o Brasil",
     "hoverHint": "Duplo clique ou roda do mouse aproxima o recorte (Região → UF → Município); clique seleciona.",
@@ -85,7 +88,11 @@
     "focus": {
       "trail": "Recorte do mapa",
       "outside": "Fora do recorte",
-      "all": "Brasil"
+      "all": "Brasil",
+      "state": "Municípios de",
+      "chooseState": "Selecione um estado",
+      "municipalities": "Ver municípios de {state}",
+      "nationalMunicipalities": "Ver municípios do Brasil inteiro"
     },
     "legend": {
       "label": "Legenda",
@@ -166,7 +173,13 @@
     "periodRange": "{from} a {to}",
     "isolateParts": "Cada barra é uma parte do ano, uma cor por ano marcado ({years}).",
     "isolateAccumulated": "Cada barra é o acumulado no ano até aquela parte ({years}).",
-    "periodOnly": "Só {period}"
+    "periodOnly": "Só {period}",
+    "compositionBase": "Base dos valores exibidos: {value}",
+    "compositionNote": "Composição calculada pelo portal sobre os valores exibidos em cada grupo. Não representa participação oficial ponderada. Os valores e Totais oficiais são preservados.",
+    "seriesCompositionNote": "Cálculo do portal, sem ponderação.",
+    "seriesGroupNote": "Subtotal publicado do grupo.",
+    "groupBase": "Base do grupo: {value}",
+    "groupBaseNote": "Percentuais dos componentes calculados sobre o subtotal publicado do próprio grupo. O Total oficial permanece identificado separadamente."
   },
   "grainNotes": {
     "sum": "Soma dos períodos publicados (valor derivado). Período com parte sem dado fica sem valor.",
@@ -215,6 +228,7 @@
     "expand": "+ {count} detalhes",
     "about": "Sobre esta tabela",
     "aboutUnit": "Unidade dos valores:",
+    "unitShort": "Valores em {unit}",
     "aboutColumns": "Nomes completos das colunas (a fonte usa nomes longos; a tabela mostra a forma curta):",
     "aboutFooter": "A última linha (Total: {name}) traz o valor publicado pela fonte para {name}, e não a soma das linhas da página.",
     "period": "Período",
@@ -225,7 +239,11 @@
     "viewCurrent": "Recorte",
     "viewHistory": "Série completa",
     "views": "Tabela",
-    "viewPivot": "Tabela dinâmica"
+    "viewPivot": "Tabela dinâmica",
+    "compositionBase": "Base exibida: {value}",
+    "compositionNote": "Composição calculada pelo portal sobre os valores exibidos de cada grupo; não é participação oficial ponderada. Totais oficiais preservados. Sem percentual quando a base é zero ou há valores indisponíveis, sigilosos ou negativos no grupo.",
+    "groupBase": "Base do grupo: {value}",
+    "groupBaseNote": "Percentuais dos componentes calculados sobre o subtotal publicado do próprio grupo. O Total oficial permanece identificado separadamente."
   },
   "export": {
     "title": "Exportar",
@@ -248,6 +266,21 @@
     "selectCurrent": "Voltar ao painel",
     "estimate": "Cerca de {rows} linhas (limite: {max}).",
     "estimateTooMany": "Cerca de {rows} linhas: acima do limite de {max}. Desmarque níveis, períodos ou detalhes.",
+    "state": "Estado (UF)",
+    "wholeCountry": "Brasil inteiro",
+    "panelScope": "Recorte do painel",
+    "periodSelection": "Selecionar períodos",
+    "selectedPeriods": "{count, plural, one {# período} other {# períodos}}",
+    "allPeriods": "Todos os períodos de cada nível",
+    "periodCoverage": "Na seleção manual, aparecem os períodos comuns aos níveis escolhidos. Todos os períodos usa a cobertura própria de cada nível.",
+    "estimating": "Consultando os territórios do recorte…",
+    "optionsError": "Não foi possível consultar o recorte da exportação.",
+    "retry": "Tentar de novo",
+    "choosePeriods": "Selecione ao menos um período disponível nos níveis escolhidos.",
+    "periodLimit": "Escolha até 120 períodos por grão, ou marque todos os períodos disponíveis.",
+    "noTerritories": "O recorte não contém territórios dos níveis escolhidos.",
+    "fullExtract": "Para um extrato completo, use o contato do portal. A estimativa é um limite superior; a API confere o tamanho real do arquivo.",
+    "contact": "Solicitar extrato completo",
     "neverAccumulated": "Sai só o que a fonte publicou e o que o portal deriva pela regra do indicador (marcado na coluna tipo); valores acumulados nunca são exportados.",
     "cancel": "Cancelar"
   },
@@ -303,7 +336,7 @@
   },
   "unavailable": {
     "title": "Dados temporariamente indisponíveis",
-    "lead": "O serviço de dados não respondeu. Isso costuma durar alguns segundos, por exemplo logo depois de um reinício. A página tenta de novo sozinha a cada 15 segundos.",
+    "lead": "O serviço de dados está temporariamente indisponível. Aguarde alguns minutos e use o botão abaixo para tentar novamente.",
     "retry": "Tentar de novo",
     "code": "Código do erro: {digest}"
   },
@@ -384,6 +417,18 @@
         "qrAlt": "QR Code PIX do Open Data Brasil: aponte a câmera do app do seu banco",
         "copyFail": "Não foi possível copiar. Selecione a chave e copie manualmente."
       },
+      "transfer": {
+        "name": "Transferência bancária",
+        "text": "Doe diretamente para a conta bancária do mantenedor do projeto.",
+        "bank": "Banco",
+        "recipient": "Destinatário",
+        "branch": "Agência",
+        "operation": "Operação",
+        "account": "Conta",
+        "copy": "Copiar dados bancários",
+        "copied": "Dados bancários copiados.",
+        "copyFail": "Não foi possível copiar. Selecione os dados e copie manualmente."
+      },
       "apoiase": {
         "name": "Apoia.se",
         "text": "Apoio mensal, no valor que você escolher. É o que mais ajuda a planejar.",
@@ -425,7 +470,7 @@
       "report": {
         "title": "Reporte um erro",
         "text": "Achou um número estranho ou algo que não funciona? Conte para nós.",
-        "action": "Abrir um relato no GitHub"
+        "action": "Enviar relato por e-mail"
       },
       "suggest": {
         "title": "Sugira uma fonte",
@@ -447,6 +492,7 @@
     "remove": "Tirar {field}",
     "moveUp": "Mover {field} para antes",
     "swap": "Trocar linhas e colunas",
+    "swapShort": "Trocar",
     "caption": "Tabela dinâmica com {rows} linhas e {cols} colunas",
     "note": "Campos fora da tabela ficam no Total publicado. Os valores são os da fonte (ou derivados pela regra do indicador); nada é somado aqui.",
     "share": {
@@ -488,11 +534,13 @@
         "length": "O período personalizado vai até {days} dias."
       }
     },
+    "accumulated": "Desde o início da coleta · {range}",
     "total": "Número de acessos ao portal",
     "totalUnit": "visualizações de página",
     "source": "{range} · fonte: registros de acesso do portal",
     "since": "Coleta desde {date}",
     "cards": {
+      "views": "Visualizações de página",
       "kpiOpens": "Indicadores abertos",
       "downloads": "Downloads de dados",
       "countries": "Países de origem",
@@ -516,20 +564,22 @@
       "reset": "Voltar à visão inicial",
       "asTable": "Ver o mapa como tabela",
       "asMap": "Ver o mapa",
-      "attribution": "Limites: Natural Earth · IBGE",
+      "attribution": "Mapa: D3 · Limites: Natural Earth e IBGE",
       "legend": "Legenda do mapa",
       "less": "menos",
       "more": "mais",
       "point": "{name}: {value}",
       "views": "visualizações",
-      "globeHint": "Arraste para girar o globo. Os pontos e o ranking também funcionam pelo teclado.",
+      "globeHint": "Arraste com o botão esquerdo para girar; use a roda para aproximar. Pelo teclado: setas, +, − e Home.",
       "brazilHint": "Escolha uma Grande Região ou um estado no mapa, no ranking ou pela tabela.",
       "loading": "Carregando o mapa…",
       "empty": "Nenhum acesso registrado neste nível e período.",
       "controls": "Controles do mapa"
     },
     "tip": {
-      "share": "{pct} do total"
+      "share": "{pct} do total",
+      "shareGlobal": "{pct} do total global",
+      "shareBrazil": "{pct} do total do Brasil"
     },
     "card": {
       "close": "Fechar"
