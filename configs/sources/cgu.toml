@@ -98,6 +98,16 @@ columns = [
   "VALOR TRANSFERIDO",
 ]
 
+[datasets.silver]
+# Lente A: município SIAFI→IBGE pela TABMUN; classe do favorecido pelo cadastro PJ (ADR-0031, 0032).
+transformer = "cgu_transfer"
+# Até 10 linhas por mês sem município IBGE ficam na UF, com aviso; acima, bloqueia (caso
+# real: SIAFI 4196 "CACHOEIRA DO PAJEU"/MG, fora da TABMUN). Nunca por semelhança de nome.
+max_unresolved_territory = 10
+territorial_reference = "ibge-dtb"
+siafi_reference = "tesouro-tabmun"
+legal_entity_reference = "cgu-favorecidos-pj"
+
 [[datasets]]
 id = "cgu-despesas-favorecidos"
 source = "cgu-arquivos"
@@ -129,6 +139,16 @@ columns = [
   "Nome Órgão Superior", "Código Órgão", "Nome Órgão", "Código Unidade Gestora",
   "Nome Unidade Gestora", "Ano e mês do lançamento", "Valor Recebido",
 ]
+
+[datasets.silver]
+# Lente B: município da sede por nome + UF (DTB e TABMUN, com os nomes antigos oficiais).
+transformer = "cgu_recipient_payment"
+# Até 10 linhas por mês sem município IBGE ficam na UF, com aviso; acima, bloqueia (caso
+# real: SIAFI 4196 "CACHOEIRA DO PAJEU"/MG, fora da TABMUN). Nunca por semelhança de nome.
+max_unresolved_territory = 10
+territorial_reference = "ibge-dtb"
+siafi_reference = "tesouro-tabmun"
+legal_entity_reference = "cgu-favorecidos-pj"
 
 [[datasets]]
 id = "cgu-despesas-execucao"
@@ -174,6 +194,10 @@ columns = [
   "Valor Restos a Pagar Cancelado (R$)", "Valor Restos a Pagar Pagos (R$)",
 ]
 
+[datasets.silver]
+# Lente C: localizador como na fonte (não entra no mapa, ADR-0032, decisão 6).
+transformer = "cgu_budget_execution"
+
 [[datasets]]
 id = "cgu-favorecidos-pj"
 source = "cgu-arquivos"
@@ -216,3 +240,7 @@ member = "{period}_NaturezaJuridica.csv"
 encoding = "latin-1"
 delimiter = ";"
 columns = ["COD_NATJURIDICA", "DESC_NATJURIDICA", "COD_TIPO_NATJURIDICA", "DESC_TIPO_NATJURIDICA"]
+
+[datasets.silver]
+transformer = "cgu_legal_entity"
+

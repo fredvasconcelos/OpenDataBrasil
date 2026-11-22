@@ -48,3 +48,7 @@ artifact_name = "tabmun.csv"
 format = "binary"
 min_bytes = 100000
 max_bytes = 5242880
+
+[datasets.silver]
+transformer = "siafi_municipality"
+

@@ -22,6 +22,14 @@
 1. **Município na lente A:** SIAFI → IBGE pela TABMUN. Os municípios ausentes entram num
    suplemento versionado, com a fonte de cada linha (código IBGE oficial e ato de
    instalação). Um código sem casamento bloqueia a Silver.
+   - **Ajuste da CP2 (2026-11-22, aguarda aprovação do mantenedor):** o bloqueio vale
+     acima de `max_unresolved_territory` linhas por mês (10, na configuração de cada
+     lente). Até esse teto, a linha fica com `territory_status = "nao_resolvido"`, entra
+     no total da UF e do Brasil, fica fora do mapa municipal e gera aviso com a lista dos
+     casos. Ela **nunca** é atribuída por semelhança de nome.
+   - **Caso real:** SIAFI `4196` "CACHOEIRA DO PAJEU"/MG, fora da TABMUN (que tem `4053`
+     "CACHOEIRA DE PAJEU", IBGE 3102704). São 3 linhas de FPM, em 2025-03 e 2025-04, com
+     favorecido do tipo "Entidades Empresariais Privadas", a investigar na CP3.
 2. **Município na lente B:** UF + nome normalizado (sem acento, caixa alta, espaços únicos)
    contra os nomes IBGE ∪ TABMUN. Uma tabela de aliases cobre as renomeações oficiais,
    cada uma com a fonte do IBGE. Exige 100% de casamento, exceto os estados especiais.

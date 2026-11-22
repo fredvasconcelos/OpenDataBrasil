@@ -50,7 +50,7 @@ significado. Medido em 2025-10, na lente B (766.078 linhas):
    | Lançamento agregado do Tesouro ou da rede bancária | prefixo `TN` ou `RB` |
    | Unidade gestora federal | código de 6 dígitos |
    | Sigiloso | `-11` (nome "Sigiloso") |
-   | Sem informação | `-1` |
+   | Sem informação | demais códigos negativos: `-1`, `-3` "INVALIDO", `-8` "SEM INFORMACAO", `-9` "NAO SE APLICA" (vistos em 2024–2026) |
    | Exterior | prefixo `EX` |
    | Pessoa física sem CPF | prefixo `PF` |
    | Pessoa física | `***.NNN.NNN-**` |
@@ -60,12 +60,20 @@ significado. Medido em 2025-10, na lente B (766.078 linhas):
    | Outros órgãos e entidades públicas | demais naturezas do grupo 1 |
    | Empresa | naturezas do grupo 2 |
    | Entidade sem fins lucrativos | naturezas do grupo 3 |
+   | Instituição financeira | CNAE 64.2 (bancos comerciais, múltiplos e caixas econômicas), antes da natureza jurídica |
+   | Pessoa física com CNPJ | naturezas do grupo 4 (empresário imobiliário, produtor rural, candidato) |
    | Organização internacional | naturezas do grupo 5 |
-   | Agente financeiro intermediário | lista explícita por CNPJ (Banco do Brasil, Caixa e outros bancos pagadores), versionada |
+   | Não classificado | CNPJ ausente do cadastro PJ vigente (ex.: caixas escolares criadas depois do instantâneo, OPAS) |
 
-   O significado oficial dos prefixos `RB`, `TN` e `PF` e dos códigos `-1`, `-2`, `-8`,
-   `-11` e `-14` ainda será confirmado com a CGU. Até lá, a regra usa o formato observado,
-   e a nota no portal diz "classificação do portal".
+   O significado oficial dos prefixos `RB`, `TN` e `PF` e dos códigos negativos ainda
+   será confirmado com a CGU. Até lá, a regra usa o formato observado, e a nota no portal
+   diz "classificação do portal".
+   - **Ajuste da CP2 (2026-11-22):** a "lista explícita de bancos pagadores" virou uma
+     regra pela CNAE oficial (64.2). Ela é reproduzível e não depende de uma escolha de
+     CNPJs pela equipe.
+   - A regra é versionada (`RECIPIENT_CLASS_VERSION`, hoje 1.1.0). A versão entra no
+     estado de cada mês da Silver: mudar a regra refaz os meses, e o valor fica na coluna
+     `recipient_class_version`.
 2. **Os valores nunca somem.** Lançamentos agregados, fluxos dentro da União, intermediários
    e sigilosos entram nos totais da lente B, num quadro próprio ("pagamentos agregados ou
    intermediados"). Ficam fora só dos rankings de destinatários.

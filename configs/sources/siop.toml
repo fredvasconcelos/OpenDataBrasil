@@ -57,7 +57,7 @@ max_bytes = 104857600
 healthcheck_url = "https://orcamento.dados.gov.br/siopdoc/lib/exe/fetch.php/dados_abertos:cadastroacao:2025:dados_acao2025.csv"
 
 [[datasets.params.csv]]
-encoding = "latin-1"
+encoding = "cp1252"
 delimiter = ";"
 columns = [
   "Exercício", "Esfera", "UO", "Função", "Subfunção", "Programa", "Ação", "Título", "Tipo",
@@ -69,6 +69,9 @@ columns = [
   "Tipos de Participação Social", "Detalhamento da Participação Social",
   "Tipo de Padronização", "Novo",
 ]
+
+[datasets.silver]
+transformer = "siop_budget_action"
 
 [[datasets]]
 id = "siop-planos-orcamentarios"
@@ -93,10 +96,14 @@ max_bytes = 104857600
 healthcheck_url = "https://orcamento.dados.gov.br/siopdoc/lib/exe/fetch.php/dados_abertos:cadastroacao:2025:dados_acao2025.csv"
 
 [[datasets.params.csv]]
-encoding = "latin-1"
+encoding = "cp1252"
 delimiter = ";"
 columns = [
   "Exercício", "Esfera", "UO", "Função", "Subfunção", "Programa", "Ação",
   "Plano Orçamentário", "Título", "Caracterização", "Produto Intermediário",
   "Unidade de Medida", "Unidade Responsável", "Novo",
 ]
+
+[datasets.silver]
+transformer = "siop_budget_plan"
+

@@ -73,8 +73,21 @@
      nota "revisado pela fonte em DD/MM/AAAA" no release seguinte;
    - **voluntárias:** quando a base de convênios entrar (onda futura), a ficha mostra o
      celebrado, o liberado e o saldo. Nesta fase, só o liberado (pago) aparece.
-5. **Restos a pagar:** o "pago" de um mês inclui só o pagamento do exercício. Os restos a
+5. **Calendários diferentes por tipo de transferência** (medido na CP2, 2026-11-22):
+   - na lente A, as "Legais, Voluntárias e Específicas" chegam diariamente, e as
+     "Constitucionais e Royalties" (FPM, FPE, FUNDEB…) só depois do fechamento do mês;
+   - em 2026-10, só a primeira existia (R$ 21,6 bi, contra R$ 66,4 bi pagos nas
+     modalidades de transferência da lente C);
+   - nos meses fechados, a lente A é igual ao pago da lente C nas modalidades de
+     transferência somado aos restos a pagar pagos (razão entre 0,98 e 1,01 na maioria dos
+     meses de 2024–2026; os janeiros concentram restos a pagar).
+
+   A Gold marca a **completude por mês e tipo de transferência**, e o portal mostra
+   "(parcial)" enquanto o tipo não chegou ou a razão A/(C+RP) não fechou. Os meses com
+   razão entre 0,83 e 0,94 (2025-07, 2025-09, 2025-12, 2026-03, 2026-07, 2026-09) serão
+   investigados na reconciliação da CP3.
+6. **Restos a pagar:** o "pago" de um mês inclui só o pagamento do exercício. Os restos a
    pagar pagos são uma medida separada na lente C. A lente A já é o fluxo de caixa
    pago, de qualquer exercício de origem; a nota da lente explica isso.
-6. **Valores nominais.** A correção pela inflação depende do IPCA, cuja precisão está em
+7. **Valores nominais.** A correção pela inflação depende do IPCA, cuja precisão está em
    revisão (lote N5). Ela entra depois, por ADR. Toda série mostra "valores nominais".
