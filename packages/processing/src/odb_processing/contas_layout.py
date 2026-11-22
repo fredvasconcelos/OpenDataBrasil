@@ -198,3 +198,13 @@ SIOP_PLAN_COLUMNS: tuple[tuple[str, str], ...] = (
 
 # TABMUN sem cabeçalho: SIAFI;CNPJ;nome;UF;IBGE.
 TABMUN_COLUMNS = ("siafi_code", "prefecture_cnpj", "name_source", "uf", "municipality_id")
+
+# Tesouro, "FPM por município" (Transferências Obrigatórias da União - por Município):
+# colunas fixas e depois um ano por coluna (1996, 1997, ...), crescendo a cada exercício.
+FPM_MUNICIPALITY_PREFIX = (
+    ("COD_MUN", "siafi_municipality_code"),
+    ("Município", "municipality_name_source"),
+    ("UF", "uf"),
+    ("Município - UF", "municipality_uf_source"),
+    ("Mês", "month_raw"),
+)

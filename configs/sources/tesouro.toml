@@ -52,3 +52,38 @@ max_bytes = 5242880
 [datasets.silver]
 transformer = "siafi_municipality"
 
+
+# FPM por município (ADR-0038): segunda fonte da lente A da CGU. Série mensal desde 1996,
+# com o código SIAFI (COD_MUN) e o valor líquido da retenção do FUNDEB, como a lente A.
+# Inclui as parcelas adicionais de 1% (jul/set/dez), que a lente A não traz desde 2025.
+# O Tesouro republica o arquivo inteiro todo mês (revisões até o início do exercício).
+[[licenses]]
+id = "tesouro-odbl"
+name = "Open Database License (ODbL) 1.0, declarada pelo Tesouro Transparente"
+url = "https://opendatacommons.org/licenses/odbl/1-0/"
+conditions = "Atribuição 'Fonte: Tesouro Nacional (Tesouro Transparente)'; base derivada publicada também sob ODbL (compartilhamento pela mesma licença); manter a base aberta."
+review_status = "approved"
+notes = "Aprovada pelo mantenedor em 2026-11-22 (ADR-0038). O CKAN registra 'odc-odbl' nos conjuntos de transferências. Os dados seguem a licença da fonte (ADR-0028): os agregados da lente A com o complemento do Tesouro citam a ODbL."
+
+[[datasets]]
+id = "tesouro-fpm-municipio"
+source = "tesouro-ckan"
+official_id = "transferencias-obrigatorias-da-uniao-por-municipio"
+title = "FPM por município (Tesouro Nacional)"
+description = "Fundo de Participação dos Municípios por município e mês, com o código SIAFI. Segunda fonte da lente A: conferência e complemento das parcelas ausentes (ADR-0038)."
+license = "tesouro-odbl"
+access_classification = "public_authorized"
+periodicity = "mensal"
+reference_url = "https://www.tesourotransparente.gov.br/ckan/dataset/transferencias-obrigatorias-da-uniao-por-municipio"
+
+[datasets.params]
+url = "https://www.tesourotransparente.gov.br/ckan/dataset/3b5a779d-78f5-4602-a6b7-23ece6d60f27/resource/d69ff32a-6681-4114-81f0-233bb6b17f58/download/fpm-por-municipio.csv"
+artifact_name = "fpm-por-municipio.csv"
+format = "binary"
+min_bytes = 10000000
+max_bytes = 104857600
+
+[datasets.silver]
+transformer = "tesouro_fpm_municipality"
+territorial_reference = "ibge-dtb"
+siafi_reference = "tesouro-tabmun"

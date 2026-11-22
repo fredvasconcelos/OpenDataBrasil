@@ -22,23 +22,33 @@
 1. **Município na lente A:** SIAFI → IBGE pela TABMUN. Os municípios ausentes entram num
    suplemento versionado, com a fonte de cada linha (código IBGE oficial e ato de
    instalação). Um código sem casamento bloqueia a Silver.
-   - **Correções aprovadas (2026-11-22):** um erro de grafia da fonte, confirmado pelo
-     mantenedor, entra numa lista explícita na configuração da lente
-     (`territory_corrections`). Cada entrada tem UF, SIAFI, nome exato da fonte, código
-     IBGE de destino, motivo e aprovação. O casamento é por **igualdade** das três chaves
-     (depois da normalização de acento e caixa), nunca por semelhança. O SIAFI oficial da
-     TABMUN sempre vence, e o destino precisa existir na DTB. A linha fica com
+   - **Correções aprovadas (2026-11-22):** um erro da fonte, confirmado pelo mantenedor,
+     entra numa lista explícita na configuração da lente (`territory_corrections`). Cada
+     entrada tem UF, SIAFI, nome exato da fonte, código IBGE de destino, motivo e
+     aprovação. O casamento é por **igualdade** das três chaves (depois da normalização de
+     acento e caixa), nunca por semelhança. O SIAFI oficial da TABMUN sempre vence, e o
+     destino precisa existir na DTB. A linha fica com
      `territory_method = "correcao_aprovada"`. A lista entra no rótulo das referências:
      mudar uma correção refaz os meses. A lista só vale para a lente A; nas outras lentes,
      a Silver a recusa.
-   - **Caso real:** SIAFI `4196` "CACHOEIRA DO PAJEU"/MG, fora da TABMUN (que tem `4053`
-     "CACHOEIRA DE PAJEU", IBGE 3102704). O mantenedor confirmou: "o nome correto é
-     Cachoeira de Pajeú, que é um município do estado de Minas Gerais". São 3 linhas, de
-     2025-03 e 2025-04: duas de FPM e uma da cota da CIDE, com R$ 1,65 mi. O favorecido é
-     uma empresa (TV Filme Serviços de Telecomunicações Ltda., sede em Brasília/DF), não a
-     prefeitura, que recebeu o próprio FPM nos mesmos meses. A causa (por exemplo,
-     retenção ou cessão a terceiro) não está na fonte e não é deduzida. Os valores contam
-     no território de Cachoeira de Pajeú, com a classe "empresa".
+   - **O destino vem de evidência oficial, nunca do nome** (revisão de 2026-11-22,
+     ADR-0038): o valor igual ao centavo numa segunda fonte com código. O destino pode
+     estar noutra UF: o município manda na UF da linha.
+   - **Caso real:** SIAFI `4196` "CACHOEIRA DO PAJEU"/MG, fora da TABMUN. São 3 linhas, de
+     2025-03 e 2025-04: duas de FPM e uma da cota da CIDE, com R$ 1,65 mi, pagas a uma
+     empresa (TV Filme Serviços de Telecomunicações Ltda., sede em Brasília/DF).
+     - **Primeira decisão (revogada):** pela semelhança com `4053` "CACHOEIRA DE PAJEU"
+       (IBGE 3102704), propus Cachoeira de Pajeú/MG, e a grafia foi confirmada pelo
+       mantenedor. Foi um erro: a atribuição se apoiou no nome.
+     - **Decisão vigente (aprovada em 2026-11-22):** **Boa Esperança do Norte/MT
+       (5101837)**. No Tesouro ("FPM por município" e "CIDE por município"), os três
+       valores são, ao centavo, o FPM e a CIDE do SIAFI `1182` Boa Esperança do Norte
+       nesses meses (813.837,58; 826.997,85; 5.612,79). 813.837,58 é a cota dos municípios
+       de coeficiente 0,6 de MT naquele mês; a de MG foi 1.076.784,47, exatamente o que
+       Cachoeira de Pajeú (`4053`) recebeu. Em 2025-01 e 2025-02, o mesmo FPM aparece na
+       lente A como favorecido "INVÁLIDO", sem UF, e fica só no Brasil. A partir de 2025-05,
+       vem com o código 1182. Os valores contam no território de Boa Esperança do Norte,
+       com a classe "empresa" do favorecido da fonte.
    - **Teto de não resolvidos (ajuste da CP2, aprovado em 2026-11-22: "Mantém o teto de
      10"):** o bloqueio vale acima de `max_unresolved_territory` linhas por mês (10, na
      configuração de cada lente). Até esse teto, a linha fica com `territory_status = "nao_resolvido"`,

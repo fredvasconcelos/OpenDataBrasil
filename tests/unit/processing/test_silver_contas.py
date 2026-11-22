@@ -41,11 +41,36 @@ ALL = (
     "tesouro-tabmun",
     "cgu-favorecidos-pj",
     *LENSES,
+    "tesouro-fpm-municipio",
 )
 TABMUN = (
     "2033;08785479000120;GUARABIRA                                    ;PB;2506301\r\n"
     "1805;08085516000163;SERRA CAIADA (EX-PRESIDENTE JUSCELINO)       ;RN;2410306\r\n"
 ).encode("latin-1")
+# "FPM por município" do Tesouro: o FPM da lente A simulada (Guarabira 2.001,00 por mês;
+# Boa Esperança do Norte, fora da TABMUN, com o estorno de -12,00 entre parênteses).
+FPM_YEARS = [str(y) for y in range(1996, 2025)]
+FPM_DEFAULT = {
+    ("2033", "Guarabira", "PB", 1): "500,00",  # mês fora da lente A: não entra na conferência
+    ("2033", "Guarabira", "PB", 10): "2.001,00",
+    ("2033", "Guarabira", "PB", 11): "2.001,00",
+    ("1182", "Boa Esperança do Norte", "MT", 10): "(12,00)",
+    ("1182", "Boa Esperança do Norte", "MT", 11): "(12,00)",
+}
+
+
+def fpm_csv(values: dict[tuple[str, str, str, int], str]) -> bytes:
+    """Arquivo largo do Tesouro (um ano por coluna), com "-" e uma linha em branco no fim."""
+    header = ["COD_MUN", "Município", "UF", "Município - UF", "Mês", *FPM_YEARS]
+    lines = [";".join(header)]
+    places = sorted({k[:3] for k in values})
+    for code, name, uf in places:
+        for month in range(1, 13):
+            cells = ["-   "] * len(FPM_YEARS)
+            cells[-1] = f" {values.get((code, name, uf, month), '-')} "
+            lines.append(";".join([code, name, uf, f"{name} - {uf}", str(month), *cells]))
+    lines.append(";" * (len(header) - 1))
+    return ("\r\n".join(lines) + "\r\n").encode("latin-1")
 
 
 def _line(values: list[str]) -> str:
@@ -59,10 +84,12 @@ def _csv(columns: tuple[tuple[str, str], ...], rows: list[dict[str, str]]) -> by
 
 
 def _zip(members: dict[str, bytes]) -> bytes:
+    """ZIP com data fixa: o mesmo conteúdo gera os mesmos bytes (o teste incremental
+    compara checksums, e a hora do relógio mudaria os bytes a cada 2 segundos)."""
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as archive:
         for name, content in members.items():
-            archive.writestr(name, content)
+            archive.writestr(zipfile.ZipInfo(name, date_time=(2026, 1, 1, 0, 0, 0)), content)
     return buf.getvalue()
 
 
@@ -187,9 +214,12 @@ class FakePortal:
     transfer_suffix: dict[str, str] = field(default_factory=dict)
     transfer_extra: dict[str, dict[str, str]] = field(default_factory=dict)  # linha a mais
     version: dict[str, int] = field(default_factory=dict)
+    fpm: dict[tuple[str, str, str, int], str] = field(default_factory=lambda: dict(FPM_DEFAULT))
 
     def handler(self, request: httpx.Request) -> httpx.Response:
         if request.url.host == "www.tesourotransparente.gov.br":
+            if request.url.path.endswith("fpm-por-municipio.csv"):
+                return httpx.Response(200, content=fpm_csv(self.fpm))
             return httpx.Response(200, content=TABMUN, headers={"etag": '"tabmun"'})
         if request.url.host != "dadosabertos-download.cgu.gov.br":
             return self.ibge.handler(request)
@@ -383,7 +413,10 @@ def test_unresolved_municipality_above_the_limit_blocks_the_write(tmp_path: Path
 
 
 def test_approved_correction_resolves_the_misspelled_municipality(env: Env) -> None:
-    """SIAFI 4196 "CACHOEIRA DO PAJEU"/MG → Cachoeira de Pajeú (3102704), aprovado em 22/11."""
+    """SIAFI 4196 "CACHOEIRA DO PAJEU"/MG → Boa Esperança do Norte/MT (5101837), ADR-0038.
+
+    O valor da linha é, ao centavo, o FPM de Boa Esperança do Norte no Tesouro em 2025-03.
+    """
     env.portal.transfer_extra["202410"] = {
         "uf": "MG",
         "siafi_municipality_code": "4196",
@@ -402,7 +435,7 @@ def test_approved_correction_resolves_the_misspelled_municipality(env: Env) -> N
     fixed = transfer.filter(pl.col("siafi_municipality_code") == "4196")
     assert fixed.select(
         "municipality_name_source", "municipality_id", "territory_status", "territory_method"
-    ).rows() == [("CACHOEIRA DO PAJEU", "3102704", "municipio", "correcao_aprovada")]
+    ).rows() == [("CACHOEIRA DO PAJEU", "5101837", "municipio", "correcao_aprovada")]
     assert "territory_corrections@" in transfer["derivation_refs"][0]
 
 
@@ -415,3 +448,26 @@ def test_corrections_outside_lens_a_are_refused(tmp_path: Path) -> None:
     failed = next(r for r in run if r.dataset_id == "cgu-despesas-favorecidos")
     assert failed.status == "failed"
     assert "só vale para cgu_transfer" in (failed.error or "")
+
+
+def test_treasury_fpm_becomes_one_row_per_municipality_and_month(env: Env) -> None:
+    """FPM do Tesouro (ADR-0038): formato longo, SIAFI pela TABMUN, "-" sem linha."""
+    env.ingest(*ALL)
+    runs = env.builder.build_many(list(ALL))
+    run = next(r for r in runs if r.dataset_id == "tesouro-fpm-municipio")
+    assert run.status == "succeeded", run.error
+    checks = _checks(env, run.run_id)
+    assert checks["rows.source_records"].observed == 5  # só as células com valor
+    assert checks["territory.resolved"].status.value == "pass"
+    fpm = env.table("tesouro-fpm-municipio").sort("siafi_municipality_code", "period")
+    assert fpm.select(
+        "period", "siafi_municipality_code", "municipality_id", "territory_method", "value"
+    ).rows() == [
+        ("202410", "1182", "5101837", "nome_uf_dtb", Decimal("-12.00")),  # entre parênteses
+        ("202411", "1182", "5101837", "nome_uf_dtb", Decimal("-12.00")),
+        ("202401", "2033", "2506301", "tabmun_siafi", Decimal("500.00")),
+        ("202410", "2033", "2506301", "tabmun_siafi", Decimal("2001.00")),
+        ("202411", "2033", "2506301", "tabmun_siafi", Decimal("2001.00")),
+    ]
+    assert fpm["value_raw"].to_list()[0] == "(12,00)"
+    assert fpm["derivation_refs"][0].startswith("ibge-dtb@v")

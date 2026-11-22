@@ -62,6 +62,7 @@ from odb_processing.contracts import (
     SIOP_BUDGET_ACTION,
     SIOP_BUDGET_PLAN,
     TERRITORIAL_MESH,
+    TESOURO_FPM_MUNICIPALITY,
     Contract,
     SchemaChange,
     compare_schema,
@@ -180,6 +181,8 @@ CONTRACT_BY_TRANSFORMER = {
     "cgu_legal_entity": CGU_LEGAL_ENTITY,
     "siop_budget_action": SIOP_BUDGET_ACTION,
     "siop_budget_plan": SIOP_BUDGET_PLAN,
+    # Segunda fonte da lente A: FPM por município do Tesouro (ADR-0038).
+    "tesouro_fpm_municipality": TESOURO_FPM_MUNICIPALITY,
 }
 
 # Lentes mensais: colunas da fonte, formato do período no arquivo e colunas de valor.
@@ -432,6 +435,8 @@ class SilverBuilder:
             # Território e classe dependem das referências: uma versão nova refaz a Silver.
             payload["references"] = self._reference_versions(dataset)
             payload["recipient_class"] = contas.RECIPIENT_CLASS_VERSION
+        elif self.transformer(dataset) == "tesouro_fpm_municipality":
+            payload["references"] = self._reference_versions(dataset)
         return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
     def _execute(
@@ -537,6 +542,16 @@ class SilverBuilder:
         elif transformer in _CONTAS_TABLES:
             frame, partition, records = self._contas_table(dataset, inputs, run, processed_at)
             run.checks = contas_checks(frame, contract, records=records)
+        elif transformer == "tesouro_fpm_municipality":
+            frame, records = self._fpm_frame(dataset, inputs, run, processed_at)
+            partition = {"dataset_id": dataset.id}
+            run.checks = contas_checks(
+                frame,
+                contract,
+                records=records,
+                value_columns=("value",),
+                max_unresolved_territory=0,
+            )
         elif transformer == "territorial_mesh":
             frame, partition = self._mesh_frame(dataset, inputs, run, processed_at)
             reference_ids, reference_label = self._reference(dataset)
@@ -955,8 +970,10 @@ class SilverBuilder:
         scan = self._reader.scan(self.target_uri(ref), previous.delta_version)
         return scan, f"{ref.id}@v{previous.delta_version}"
 
-    def _contas_refs(self, dataset: DatasetConfig) -> contas.ContasRefs:
-        """DTB, TABMUN e cadastro PJ vigentes, para território e classe do favorecido."""
+    def _territory_refs(
+        self, dataset: DatasetConfig
+    ) -> tuple[pl.DataFrame, pl.DataFrame, list[str]]:
+        """DTB (ano mais recente) e TABMUN vigentes, com os rótulos ``id@vN`` lidos."""
         dtb_scan, dtb_label = self._reference_scan(dataset, "territorial_reference")
         dtb = (
             dtb_scan.select("reference_year", "municipality_id", "municipality_name", "uf_id")
@@ -964,7 +981,45 @@ class SilverBuilder:
             .collect()
         )
         tab_scan, tab_label = self._reference_scan(dataset, "siafi_reference")
-        tabmun = tab_scan.collect()
+        return dtb, tab_scan.collect(), [dtb_label, tab_label]
+
+    def _fpm_frame(
+        self,
+        dataset: DatasetConfig,
+        inputs: Sequence[SilverInput],
+        run: SilverRun,
+        processed_at: datetime,
+    ) -> tuple[pl.DataFrame, int]:
+        """FPM do Tesouro (ADR-0038): o artefato vigente inteiro, com o município IBGE."""
+        if len(inputs) != 1:
+            msg = f"{dataset.id}: esperado um artefato vigente, há {len(inputs)}"
+            raise SilverBuildError(msg)
+        item = inputs[0]
+        dtb, tabmun, labels = self._territory_refs(dataset)
+        refs = contas.ContasRefs(
+            tabmun=tabmun,
+            names=contas.municipality_names(dtb, tabmun),
+            legal_entities=pl.DataFrame(),
+            label=";".join(labels),
+        )
+        content = Path(uri_to_local_path(item.storage_uri)).read_bytes()
+        try:
+            table = contas.parse_fpm_municipality(content, name=dataset.id)
+            frame = contas.fpm_frame(
+                table,
+                refs=refs,
+                dataset_id=dataset.id,
+                lineage=self._lineage(item, run, processed_at),
+                schema=self.contract_for(dataset).frame_schema(),
+            )
+        except ParseError as exc:
+            msg = f"{dataset.id}: {exc}"
+            raise SilverBuildError(msg) from exc
+        return frame, table.records
+
+    def _contas_refs(self, dataset: DatasetConfig) -> contas.ContasRefs:
+        """DTB, TABMUN e cadastro PJ vigentes, para território e classe do favorecido."""
+        dtb, tabmun, (dtb_label, tab_label) = self._territory_refs(dataset)
         pj_scan, pj_label = self._reference_scan(dataset, "legal_entity_reference")
         entities = (
             pj_scan.select("snapshot", "recipient_code", "legal_nature_code", "cnae_code")

@@ -99,6 +99,10 @@ investigação desta CP3 (por mês e ação) mostrou que:
    do Tesouro Nacional, como já previsto no plano (seção 8, "FPM/FPE x Tesouro"), com ADR
    próprio. As revisões retroativas da CGU (ADR-0030, decisão 4) também podem fechá-la, e
    a conferência mostra isso no ciclo seguinte.
+   - **Atualização (2026-11-22, ADR-0038):** a segunda fonte entrou. O FPM que falta na
+     lente A vem do arquivo "FPM por município" do Tesouro, com o código SIAFI, como
+     complemento marcado (`value_source = "tesouro_fpm"`). Continua sem preenchimento
+     tudo o que não tem fonte por município.
 5. **Ranking** (ADR-0034, decisão 4):
    - os 1.000 maiores destinatários por lente, território (os quatro níveis) e ano, com o
      total de destinatários do território;

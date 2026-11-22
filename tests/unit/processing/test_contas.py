@@ -155,22 +155,25 @@ def test_resolve_by_siafi_and_by_name() -> None:
     ]
 
 
+# Caso real: o SIAFI 4196 "CACHOEIRA DO PAJEU"/MG é o FPM de Boa Esperança do Norte/MT
+# (5101837), pelo valor igual ao centavo no Tesouro (ADR-0038). O destino pode ser de outra
+# UF: o município manda na UF da linha.
 PAJEU = {
     "uf": "MG",
     "siafi_code": "4196",
     "source_name": "CACHOEIRA DO PAJEU",
-    "municipality_id": "3102704",
-    "reason": "grafia errada na fonte",
+    "municipality_id": "5101837",
+    "reason": "valor igual ao centavo no FPM de Boa Esperança do Norte no Tesouro",
     "approved": "2026-11-22, mantenedor",
 }
 
 
 def test_approved_correction_matches_only_the_exact_key() -> None:
-    """Grafia errada confirmada: casa por UF + SIAFI + nome exatos, nunca por semelhança."""
+    """Correção confirmada: casa por UF + SIAFI + nome exatos, nunca por semelhança."""
     tabmun = _tabmun()
     names = municipality_names(DTB, tabmun)
     wrong_guarabira = {**PAJEU, "uf": "PB", "siafi_code": "2033", "source_name": "GUARABIRA"}
-    fixes = territory_corrections([PAJEU, wrong_guarabira], ["3102704", "2506301"])
+    fixes = territory_corrections([PAJEU, wrong_guarabira], ["5101837", "2506301"])
     lens_a = pl.DataFrame(
         {
             "uf": ["MG", "MG", "MG", "SP", "PB"],
@@ -186,7 +189,7 @@ def test_approved_correction_matches_only_the_exact_key() -> None:
     )
     out = resolve_by_siafi(lens_a, tabmun, names, fixes)
     assert out.select("municipality_id", "territory_status", "territory_method").rows() == [
-        ("3102704", "municipio", "correcao_aprovada"),
+        ("5101837", "municipio", "correcao_aprovada"),
         (None, "nao_resolvido", None),  # outro nome
         (None, "nao_resolvido", None),  # outro SIAFI
         (None, "nao_resolvido", None),  # outra UF
@@ -205,7 +208,7 @@ def test_approved_correction_matches_only_the_exact_key() -> None:
 )
 def test_corrections_are_validated(entries: list[dict[str, str]], message: str) -> None:
     with pytest.raises(ParseError, match=message):
-        territory_corrections(entries, ["3102704"])
+        territory_corrections(entries, ["5101837"])
 
 
 @pytest.mark.parametrize(

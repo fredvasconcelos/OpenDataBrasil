@@ -1,4 +1,4 @@
-"""Silver das contas públicas: CGU, TABMUN do Tesouro e cadastro do SIOP (ADR-0030 a 0035).
+"""Silver das contas públicas: CGU, Tesouro e cadastro do SIOP (ADR-0030 a 0035, ADR-0038).
 
 Regras que não são óbvias:
 
@@ -10,8 +10,11 @@ Regras que não são óbvias:
 * **Município:** SIAFI→IBGE pela TABMUN (lente A); nome + UF contra os nomes da DTB e da
   TABMUN, com as renomeações oficiais ``(EX-...)`` da própria TABMUN (lente B). O método
   fica registrado por linha (ADR-0032). Sem casamento, a Silver não é escrita.
-* **Correções aprovadas:** erros de grafia da fonte confirmados pelo mantenedor entram
-  numa lista explícita (UF + SIAFI + nome exato → IBGE), nunca por semelhança de nome.
+* **Correções aprovadas:** erros da fonte confirmados pelo mantenedor entram numa lista
+  explícita (UF + SIAFI + nome exato → IBGE), nunca por semelhança de nome. A evidência é
+  oficial: o valor igual ao centavo numa segunda fonte (ADR-0038).
+* **FPM do Tesouro** (ADR-0038): arquivo largo (um ano por coluna) com o código SIAFI;
+  vira uma linha por município e mês. "-" é mês sem repasse: não vira linha nem zero.
 * **Classe do favorecido** (ADR-0031): pelo formato do código e pela natureza jurídica do
   cadastro PJ; instituições financeiras pela CNAE (bancos e caixas econômicas, 64.2).
 """
@@ -29,6 +32,7 @@ import polars as pl
 from odb_processing.contas_layout import (
     EXECUTION_COLUMNS,
     EXECUTION_VALUES,
+    FPM_MUNICIPALITY_PREFIX,
     LEGAL_ENTITY_COLUMNS,
     PAYMENT_COLUMNS,
     TABMUN_COLUMNS,
@@ -156,6 +160,110 @@ def parse_tabmun(content: bytes, lineage: Lineage, dataset_id: str) -> SourceTab
         *lineage.columns(),
     )
     return SourceTable(frame=frame, records=table.records)
+
+
+# ------------------------------------------------------------------ FPM do Tesouro
+
+FPM_FIRST_YEAR = 1996
+# Valor do Tesouro: milhar com ponto e duas casas com vírgula ("1.218.505,53"); negativo
+# com sinal ou entre parênteses, como na contabilidade ("(180.529,62)": 2 casos, 2001 e 2004).
+BRL_PATTERN = r"^(-?\d{1,3}(\.\d{3})*,\d{2}|\(\d{1,3}(\.\d{3})*,\d{2}\))$"
+_ABSENT = ("", "-")
+
+
+def brl_value(column: str) -> pl.Expr:
+    """Texto do Tesouro (``1.218.505,53``, ``(180,00)``) como ``Decimal(38, 6)``; senão nulo."""
+    raw = pl.col(column).str.strip_chars()
+    signed = raw.str.replace(r"^\((.*)\)$", "-${1}")
+    fixed = signed.str.replace_all(".", "", literal=True).str.replace(",", ".", literal=True)
+    return (
+        pl.when(raw.str.contains(BRL_PATTERN))
+        .then(fixed.cast(VALUE_DTYPE, strict=False))
+        .otherwise(None)
+    )
+
+
+def parse_fpm_municipality(
+    content: bytes, *, encoding: str = "latin-1", name: str = ""
+) -> SourceTable:
+    """Arquivo "FPM por município" do Tesouro em formato longo: município x ano x mês.
+
+    O cabeçalho são as cinco colunas fixas e anos consecutivos desde 1996 (o arquivo ganha
+    uma coluna por exercício). Linhas em branco (o fim do arquivo) são ignoradas. ``-`` é
+    mês sem repasse: a célula não vira linha. ``records`` conta, com o módulo ``csv``, as
+    células com valor, para conferir o leitor do Polars. ``line_number`` é o registro de
+    origem (1 = primeira linha depois do cabeçalho).
+    """
+    text = content.decode(encoding).lstrip("\ufeff")
+    rows = list(csv.reader(io.StringIO(text), delimiter=";"))
+    prefix = [h for h, _ in FPM_MUNICIPALITY_PREFIX]
+    header = [h.strip() for h in rows[0]] if rows else []
+    years = header[len(prefix) :]
+    expected = [str(FPM_FIRST_YEAR + i) for i in range(len(years))]
+    if header[: len(prefix)] != prefix or not years or years != expected:
+        msg = f"{name}: cabeçalho difere do contrato: {header[:7]} ... {header[-2:]}"
+        raise ParseError(msg)
+    records = 0
+    for number, row in enumerate(rows[1:], start=1):
+        if not any(cell.strip() for cell in row):
+            continue
+        if len(row) != len(header):
+            msg = f"{name}: registro {number} com {len(row)} campos, esperados {len(header)}"
+            raise ParseError(msg)
+        records += sum(1 for cell in row[len(prefix) :] if cell.strip() not in _ABSENT)
+    targets = [t for _, t in FPM_MUNICIPALITY_PREFIX]
+    wide = pl.read_csv(
+        io.BytesIO(text.encode("utf-8")),
+        separator=";",
+        has_header=True,
+        new_columns=[*targets, *years],
+        infer_schema=False,
+        quote_char='"',
+    )
+    wide = wide.with_row_index("line_number", offset=1).with_columns(
+        pl.col("line_number").cast(pl.Int64)
+    )
+    filled = [pl.col(c).fill_null("").str.strip_chars() != "" for c in [*targets, *years]]
+    frame = (
+        wide.filter(pl.any_horizontal(filled))
+        .unpivot(
+            index=["line_number", *targets],
+            on=years,
+            variable_name="year",
+            value_name="value_raw",
+        )
+        .with_columns(pl.col("value_raw").str.strip_chars())
+        .filter(pl.col("value_raw").is_not_null() & ~pl.col("value_raw").is_in(list(_ABSENT)))
+    )
+    return SourceTable(frame=frame, records=records)
+
+
+def fpm_frame(
+    table: SourceTable,
+    *,
+    refs: ContasRefs,
+    dataset_id: str,
+    lineage: Lineage,
+    schema: pl.Schema,
+) -> pl.DataFrame:
+    """FPM do Tesouro por município e mês, com o município IBGE pela TABMUN (ADR-0032)."""
+    texts = [t for _, t in FPM_MUNICIPALITY_PREFIX]
+    frame = table.frame.with_columns(pl.col(c).str.strip_chars() for c in texts)
+    month = pl.col("month_raw").cast(pl.Int32, strict=False)
+    wrong = frame.filter(month.is_null() | ~month.is_between(1, 12))
+    if wrong.height:
+        msg = f"FPM: mês fora de 1 a 12: {wrong['month_raw'].unique().head(5).to_list()}"
+        raise ParseError(msg)
+    frame = frame.with_columns(
+        (pl.col("year") + month.cast(pl.String).str.zfill(2)).alias("period"),
+        brl_value("value_raw").alias("value"),
+    )
+    frame = resolve_by_siafi(frame, refs.tabmun, refs.names).with_columns(
+        pl.lit(dataset_id).alias("dataset_id"),
+        pl.lit(refs.label).alias("derivation_refs"),
+        *lineage.columns(),
+    )
+    return _ordered(frame, schema)
 
 
 # ------------------------------------------------------------------ território

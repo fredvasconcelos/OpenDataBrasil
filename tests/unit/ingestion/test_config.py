@@ -68,6 +68,7 @@ def test_repository_sources_are_valid() -> None:
         "cgu-despesas-execucao",
         "cgu-favorecidos-pj",
         "tesouro-tabmun",
+        "tesouro-fpm-municipio",
         "siop-cadastro-acoes",
         "siop-planos-orcamentarios",
     }

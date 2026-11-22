@@ -1,4 +1,4 @@
-"""Contratos da Gold das contas públicas (escopo ``contas``; ADR-0030 a 0034, ADR-0036).
+"""Contratos da Gold das contas públicas (escopo ``contas``; ADR-0030 a 0034, 0036, 0038).
 
 Os fatos guardam chaves inteiras para os textos repetidos (favorecido, unidade gestora,
 ação, natureza da despesa, autor de emenda): o texto fica nas dimensões. As enumerações
@@ -129,7 +129,8 @@ DIM_AMENDMENT_AUTHOR = Contract(
 # Grão: mês x território x tipo x tipo de favorecido x favorecido x UG x ação x natureza.
 FACT_FEDERAL_TRANSFER = Contract(
     name="fact_federal_transfer",
-    version="1.1.0",  # 1.1.0: partição por ano e UF (ADR-0037)
+    # 1.1.0: partição por ano e UF (ADR-0037). 1.2.0: origem do valor (ADR-0038).
+    version="1.2.0",
     schema={
         "year": I32,
         "period": S,
@@ -146,6 +147,8 @@ FACT_FEDERAL_TRANSFER = Contract(
         "nature_key": I32,
         "value": DEC,
         "source_lines": I32,
+        # "cgu" (lente A) ou "tesouro_fpm" (complemento do FPM pelo Tesouro, ADR-0038).
+        "value_source": S,
     },
     key=(
         "period",
@@ -157,6 +160,7 @@ FACT_FEDERAL_TRANSFER = Contract(
         "ug_key",
         "action_key",
         "nature_key",
+        "value_source",
     ),
     required=(
         "year",
@@ -169,6 +173,7 @@ FACT_FEDERAL_TRANSFER = Contract(
         "nature_key",
         "value",
         "source_lines",
+        "value_source",
     ),
     partition_by=("year", "uf_code"),
 )
@@ -333,10 +338,38 @@ AGG_TRANSFER_RECONCILIATION = Contract(
     partition_by=(),
 )
 
+# FPM por município e mês: lente A x Tesouro, e o complemento gravado (ADR-0038).
+AGG_FPM_RECONCILIATION = Contract(
+    name="agg_fpm_reconciliation",
+    version="1.0.0",
+    schema={
+        "year": I32,
+        "period": S,
+        "geography_key": S,
+        "municipality_id": S,
+        "value_transfers": DEC,
+        "value_treasury": DEC,
+        "complement": DEC,
+        "status": S,
+    },
+    key=("period", "municipality_id"),
+    required=(
+        "year",
+        "period",
+        "geography_key",
+        "municipality_id",
+        "value_transfers",
+        "value_treasury",
+        "complement",
+        "status",
+    ),
+    partition_by=(),
+)
+
 # Situação de cada mês por lente: aberto, incompleto ou fechado (ADR-0036, decisão 3).
 AGG_CONTAS_PERIOD_STATUS = Contract(
     name="agg_contas_period_status",
-    version="1.0.0",
+    version="1.1.0",  # 1.1.0: complemento do FPM pelo Tesouro (ADR-0038)
     schema={
         "lens": S,
         "year": I32,
@@ -347,6 +380,7 @@ AGG_CONTAS_PERIOD_STATUS = Contract(
         "shortfall": DEC,
         "shortfall_share": F64,
         "missing_actions": LS,
+        "complement_value": DEC,
         "note": S,
     },
     key=("lens", "period"),
@@ -366,5 +400,6 @@ CONTAS_CONTRACTS: tuple[Contract, ...] = (
     AGG_CONTAS_TERRITORY,
     AGG_RECIPIENT_RANK,
     AGG_TRANSFER_RECONCILIATION,
+    AGG_FPM_RECONCILIATION,
     AGG_CONTAS_PERIOD_STATUS,
 )

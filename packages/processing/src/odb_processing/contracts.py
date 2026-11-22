@@ -279,6 +279,41 @@ SIAFI_MUNICIPALITY = Contract(
     partition_by=("dataset_id",),
 )
 
+# FPM por município e mês, do Tesouro (segunda fonte da lente A, ADR-0038). O arquivo é a
+# série inteira, republicada todo mês: a Silver é substituída por inteiro a cada versão.
+TESOURO_FPM_MUNICIPALITY = Contract(
+    name="tesouro_fpm_municipality",
+    version="1.0.0",
+    schema={
+        "dataset_id": _S,
+        "period": _S,
+        "year": _S,
+        "month_raw": _S,
+        "line_number": pl.Int64(),
+        **_texts(_contas.FPM_MUNICIPALITY_PREFIX[:4]),
+        "value_raw": _S,
+        "value": VALUE_DTYPE,
+        "municipality_id": _S,
+        "territory_status": _S,
+        "territory_method": _S,
+        "derivation_refs": _S,
+        **LINEAGE,
+    },
+    key=("period", "siafi_municipality_code"),
+    required=(
+        "dataset_id",
+        "period",
+        "year",
+        "line_number",
+        "siafi_municipality_code",
+        "value_raw",
+        "value",
+        "territory_status",
+        *LINEAGE,
+    ),
+    partition_by=("dataset_id",),
+)
+
 CGU_LEGAL_ENTITY = Contract(
     name="cgu_legal_entity",
     version="1.0.0",

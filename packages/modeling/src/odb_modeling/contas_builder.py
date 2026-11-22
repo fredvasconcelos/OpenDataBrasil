@@ -12,6 +12,9 @@ Fluxo:
 3. para cada ano, monta os fatos de cada lente, os agregados por território e o ranking,
    confere e grava (o primeiro lote substitui a tabela, os seguintes acrescentam);
 4. confere as lentes A x C por mês e ação e calcula a situação de cada mês;
+
+Antes do passo 2, o FPM da lente A é conferido com o do Tesouro por município e mês, e o
+complemento dos meses abaixo do Tesouro entra na lente A como linhas marcadas (ADR-0038).
 5. grava as dimensões e roda as verificações de conjunto. Uma falha bloqueante deixa a
    construção ``failed``: as versões gravadas não entram em nenhum release.
 """
@@ -38,6 +41,7 @@ from odb_modeling.builder import GoldBuild, GoldBuildError, GoldRegistry, GoldTa
 from odb_modeling.contas_contracts import (
     AGG_CONTAS_PERIOD_STATUS,
     AGG_CONTAS_TERRITORY,
+    AGG_FPM_RECONCILIATION,
     AGG_RECIPIENT_RANK,
     AGG_TRANSFER_RECONCILIATION,
     CONTAS_CONTRACTS,
@@ -57,6 +61,7 @@ from odb_modeling.quality import BatchedTableChecks, foreign_key, geography_chec
 from odb_processing.contracts import Contract, SchemaChange, compare_schema
 from odb_processing.quality import CheckResult, CheckStatus, blocking
 from odb_processing.silver import PreviousRun
+from odb_processing.values import VALUE_DTYPE
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +77,8 @@ ROLES: Mapping[str, str] = {
     "payments": "cgu_recipient_payment",
     "execution": "cgu_budget_execution",
     "legal_entities": "cgu_legal_entity",
+    # Segunda fonte do FPM da lente A (ADR-0038).
+    "fpm_treasury": "tesouro_fpm_municipality",
 }
 
 _TRANSFER_COLUMNS = (
@@ -278,6 +285,8 @@ class ContasGoldBuilder:
                 ],
                 "transfer_modalities": list(contas.TRANSFER_MODALITIES),
                 "not_ranked": list(contas.NOT_RANKED),
+                "fpm_action": contas.FPM_ACTION,
+                "fpm_cent": contas.FPM_CENT,
             },
             "inputs": inputs,
         }
@@ -310,6 +319,18 @@ class ContasGoldBuilder:
         evolve = self._schema_plan(contracts)
         inputs = build.inputs
         transfers = self._scan(inputs, "transfers", _TRANSFER_COLUMNS)
+        treasury = self._scan(inputs, "fpm_treasury", ("period", "municipality_id", "value"))
+        fpm = contas.fpm_complement(transfers, treasury)
+        logger.info(
+            "contas fpm complement",
+            extra={"rows": fpm.rows.height, "months": fpm.rows["period"].n_unique()},
+        )
+        transfers = pl.concat(
+            [
+                transfers.with_columns(pl.lit(contas.SOURCE_CGU).alias("value_source")),
+                fpm.rows.lazy(),
+            ]
+        )
         payments = self._scan(inputs, "payments", _PAYMENT_COLUMNS)
         execution = self._scan(inputs, "execution", _EXECUTION_COLUMNS)
         legal = self._legal_entities(inputs)
@@ -337,13 +358,16 @@ class ContasGoldBuilder:
             pl.concat(by_action["A"]), pl.concat(by_action["C"])
         )
         status = contas.period_status(
-            {lens: pl.concat(parts) for lens, parts in totals.items()}, reconciliation
+            {lens: pl.concat(parts) for lens, parts in totals.items()},
+            reconciliation,
+            complements=_complements(fpm.rows),
         )
         periods = pl.concat([pl.concat(p).select("period") for p in totals.values()]).unique()
         geography, bridge = self._geography(inputs)
         small = {
             **dims.frames(),
             AGG_TRANSFER_RECONCILIATION.name: reconciliation,
+            AGG_FPM_RECONCILIATION.name: fpm.reconciliation,
             AGG_CONTAS_PERIOD_STATUS.name: status,
             DIM_GEOGRAPHY.name: geography,
             BRIDGE_GEOGRAPHY_ANCESTOR.name: bridge,
@@ -359,6 +383,7 @@ class ContasGoldBuilder:
         checks.append(_fidelity_result(pl.concat(run.fidelity)))
         checks.append(_partition_result(pl.concat(run.partition)))
         checks.extend(_reconciliation_results(status))
+        checks.extend(_fpm_results(fpm))
         build.checks = checks
         failures = blocking(checks)
         if failures:
@@ -664,4 +689,61 @@ def _reconciliation_results(status: pl.DataFrame) -> list[CheckResult]:
             ),
             observed=detail or None,
         )
+    ]
+
+
+def _complements(rows: pl.DataFrame) -> pl.DataFrame:
+    """Valor do complemento do FPM por mês (período Gold), para a situação do mês."""
+    return (
+        rows.group_by("period")
+        .agg(pl.col("value").sum().cast(VALUE_DTYPE).alias("complement_value"))
+        .with_columns(contas.gold_period())
+    )
+
+
+def _fpm_results(fpm: contas.FpmComplement) -> list[CheckResult]:
+    """Conferência do FPM com o Tesouro (ADR-0038).
+
+    Bloqueiam: complemento negativo (o Tesouro abaixo da lente A num mês complementado) e
+    município complementado sem linha de FPM da prefeitura para copiar. Avisam: diferenças
+    nos meses não complementados (ficam registradas em ``agg_fpm_reconciliation``).
+    """
+    rec = fpm.reconciliation
+    by_status = dict(rec["status"].value_counts().rows())
+    months = (
+        fpm.rows.group_by("period")
+        .agg(pl.col("value").sum().cast(pl.Float64), pl.len())
+        .sort("period")
+    )
+    divergent = rec.filter(pl.col("status") == "divergente")
+    return [
+        CheckResult(
+            "fpm.treasury_complement",
+            CheckStatus.FAIL if fpm.negative.height else CheckStatus.PASS,
+            (
+                f"{months.height} meses complementados pelo Tesouro, "
+                f"{fpm.rows.height} linhas; {fpm.negative.height} negativas"
+            ),
+            observed=fpm.negative.rows()[:20] or None,
+            details={
+                p: {"bi": round(v / 1e9, 4), "municipios": n} for p, v, n in months.iter_rows()
+            },
+        ),
+        CheckResult(
+            "fpm.complement_template",
+            CheckStatus.FAIL if fpm.without_template.height else CheckStatus.PASS,
+            f"{fpm.without_template.height} municípios sem linha de FPM para copiar",
+            observed=fpm.without_template.rows()[:20] or None,
+        ),
+        CheckResult(
+            "fpm.reconciliation",
+            CheckStatus.WARN if divergent.height else CheckStatus.PASS,
+            (
+                f"{by_status.get('conferido', 0)} conferidos ao centavo, "
+                f"{by_status.get('complementado', 0)} complementados, "
+                f"{divergent.height} divergentes"
+            ),
+            observed=divergent.select("period", "municipality_id").rows()[:20] or None,
+            details={"status": by_status},
+        ),
     ]

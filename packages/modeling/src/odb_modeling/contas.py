@@ -12,6 +12,10 @@ Regras que não são óbvias:
   rankings de destinatários, mas continuam nos totais.
 * **Completude** (ADR-0036): a lente A é conferida com o pago (mais restos a pagar pagos)
   da lente C nas modalidades de transferência, por mês e ação.
+* **FPM pelo Tesouro** (ADR-0038): o FPM da lente A é conferido, por município e mês, com
+  a distribuição do Tesouro. Nos meses em que o total da lente A fica abaixo do Tesouro
+  (acima da tolerância por ação), entra uma linha por município com a diferença, marcada
+  ``value_source = "tesouro_fpm"``. Nos demais meses, nada muda.
 """
 
 from __future__ import annotations
@@ -25,6 +29,7 @@ import polars as pl
 from odb_modeling.contas_contracts import (
     AGG_CONTAS_PERIOD_STATUS,
     AGG_CONTAS_TERRITORY,
+    AGG_FPM_RECONCILIATION,
     AGG_RECIPIENT_RANK,
     AGG_TRANSFER_RECONCILIATION,
     DIM_AMENDMENT_AUTHOR,
@@ -88,6 +93,13 @@ INCOMPLETE_SHARE = 0.05
 # Ação conferida: diferença até 1% ou R$ 1 milhão, o que for maior.
 ACTION_TOLERANCE_SHARE = 0.01
 ACTION_TOLERANCE_VALUE = 1_000_000.0
+
+# Origem do valor no fato da lente A (ADR-0038).
+SOURCE_CGU = "cgu"
+SOURCE_TREASURY_FPM = "tesouro_fpm"
+FPM_ACTION = "0045"
+# Diferença por município considerada igual (centavo; os dois arquivos vêm do SIAFI).
+FPM_CENT = 0.005
 
 LEVELS = ("municipio", "uf", "regiao", "brasil")
 _UF = pl.DataFrame(
@@ -634,6 +646,155 @@ def recipient_rank(fact: pl.DataFrame, lens: str, top_n: int) -> pl.DataFrame:
     return _conform(out, AGG_RECIPIENT_RANK).sort("geography_key", "year", "rank")
 
 
+# ------------------------------------------------------------------ FPM pelo Tesouro
+
+
+@dataclass(frozen=True, slots=True)
+class FpmComplement:
+    """Complemento do FPM (linhas no formato da Silver da lente A) e a conferência."""
+
+    rows: pl.DataFrame
+    reconciliation: pl.DataFrame
+    negative: pl.DataFrame  # município x mês complementado com o Tesouro abaixo da CGU
+    without_template: pl.DataFrame  # município sem linha de FPM na lente A para copiar
+
+
+def _fpm_months(transfers: pl.LazyFrame, treasury: pl.LazyFrame) -> pl.DataFrame:
+    """Meses da lente A com o FPM total abaixo do Tesouro além da tolerância por ação."""
+    lens_a = transfers.select("period").unique()
+    a = (
+        transfers.filter(pl.col("action_code") == FPM_ACTION)
+        .group_by("period")
+        .agg(pl.col("value").sum().cast(pl.Float64).alias("a"))
+    )
+    t = treasury.group_by("period").agg(pl.col("value").sum().cast(pl.Float64).alias("t"))
+    tolerance = pl.max_horizontal(pl.col("t") * ACTION_TOLERANCE_SHARE, ACTION_TOLERANCE_VALUE)
+    return (
+        lens_a.join(t, on="period")
+        .join(a, on="period", how="left")
+        .with_columns(pl.col("a").fill_null(0.0))
+        .filter((pl.col("t") - pl.col("a")) > tolerance)
+        .select("period")
+        .collect()
+    )
+
+
+def fpm_complement(transfers: pl.LazyFrame, treasury: pl.LazyFrame) -> FpmComplement:
+    """Conferência do FPM por município e mês e o complemento pelo Tesouro (ADR-0038).
+
+    ``transfers``: Silver da lente A (períodos ``AAAAMM``); ``treasury``: Silver do FPM do
+    Tesouro (``period``, ``municipality_id``, ``value``). Só entram os meses que existem na
+    lente A. O complemento é ``Tesouro - lente A`` em cada município dos meses abaixo da
+    tolerância; as demais colunas copiam a linha de FPM da prefeitura no mês mais recente
+    até aquele (ou o primeiro depois), para manter favorecido, UG, ação e natureza.
+    """
+    months = _fpm_months(transfers, treasury)
+    complemented = months["period"].to_list()
+    fpm = transfers.filter(pl.col("action_code") == FPM_ACTION)
+    lens_periods = transfers.select("period").unique()
+    a_mun = (
+        fpm.filter(pl.col("municipality_id").is_not_null())
+        .group_by("period", "municipality_id")
+        .agg(pl.col("value").sum().alias("value_transfers"))
+    )
+    t_mun = (
+        treasury.filter(pl.col("municipality_id").is_not_null())
+        .join(lens_periods, on="period")
+        .group_by("period", "municipality_id")
+        .agg(pl.col("value").sum().alias("value_treasury"))
+    )
+    zero = pl.lit(0).cast(VALUE_DTYPE)
+    cent = (pl.col("value_treasury") - pl.col("value_transfers")).cast(pl.Float64).abs()
+    joined = (
+        t_mun.join(a_mun, on=["period", "municipality_id"], how="full", coalesce=True)
+        .with_columns(
+            pl.col("value_transfers").fill_null(zero).cast(VALUE_DTYPE),
+            pl.col("value_treasury").fill_null(zero).cast(VALUE_DTYPE),
+            pl.col("period").is_in(complemented).alias("_complemented"),
+        )
+        .with_columns(
+            pl.when(pl.col("_complemented") & (cent > FPM_CENT))
+            .then(pl.col("value_treasury") - pl.col("value_transfers"))
+            .otherwise(zero)
+            .cast(VALUE_DTYPE)
+            .alias("complement"),
+        )
+        .with_columns(
+            pl.when(pl.col("complement") != 0)
+            .then(pl.lit("complementado"))
+            .when(cent <= FPM_CENT)
+            .then(pl.lit("conferido"))
+            .otherwise(pl.lit("divergente"))
+            .alias("status")
+        )
+        .collect()
+    )
+    reconciliation = _conform(
+        joined.with_columns(
+            pl.col("period").str.slice(0, 4).cast(pl.Int32).alias("year"),
+            (pl.lit("municipio:") + pl.col("municipality_id")).alias("geography_key"),
+        ).with_columns(gold_period()),
+        AGG_FPM_RECONCILIATION,
+    ).sort("period", "municipality_id")
+    wanted = joined.filter(pl.col("complement") != 0).select(
+        "period", "municipality_id", pl.col("complement").alias("value")
+    )
+    negative = wanted.filter(pl.col("value") < 0)
+    rows, without = _complement_rows(transfers, fpm, wanted)
+    return FpmComplement(rows, reconciliation, negative, without)
+
+
+def _complement_rows(
+    transfers: pl.LazyFrame, fpm: pl.LazyFrame, wanted: pl.DataFrame
+) -> tuple[pl.DataFrame, pl.DataFrame]:
+    """Linhas do complemento no schema da Silver da lente A, mais ``value_source``."""
+    schema = transfers.collect_schema()
+    columns = [c for c in schema.names() if c != "value_source"]
+    if wanted.is_empty():
+        empty = pl.DataFrame(schema={**schema, "value_source": pl.String})
+        return empty.select([*columns, "value_source"]), wanted.select("municipality_id")
+    templates = (
+        fpm.filter(
+            pl.col("municipality_id").is_in(wanted["municipality_id"].unique().to_list())
+            & (pl.col("recipient_class") == "municipio")
+        )
+        .select(columns)
+        .collect()
+        .with_columns(pl.col("period").cast(pl.Int32).alias("_p"))
+        .sort("value", descending=True)
+        .unique(["municipality_id", "_p"], keep="first")
+        .sort("_p")
+    )
+    target = wanted.with_columns(pl.col("period").cast(pl.Int32).alias("_p")).sort("_p")
+    keep = ["municipality_id", "_p", "value", "period"]
+    copied = templates.drop("value", "period")
+    found = target.select(keep).join_asof(
+        copied, on="_p", by="municipality_id", strategy="backward", check_sortedness=False
+    )
+    later = found.filter(pl.col("recipient_code").is_null()).select(keep)
+    if later.height:
+        later = later.join_asof(
+            copied, on="_p", by="municipality_id", strategy="forward", check_sortedness=False
+        )
+        found = pl.concat([found.filter(pl.col("recipient_code").is_not_null()), later])
+    without = found.filter(pl.col("recipient_code").is_null()).select("period", "municipality_id")
+    rows = (
+        found.filter(pl.col("recipient_code").is_not_null())
+        .with_columns(
+            pl.col("municipality_id")
+            .str.slice(0, 2)
+            .replace_strict(dict(UF_ABBREVIATIONS), default=None)
+            .alias("uf"),
+            pl.lit("municipio").alias("territory_status"),
+            pl.col("value").cast(schema["value"]),
+            pl.lit(SOURCE_TREASURY_FPM).alias("value_source"),
+        )
+        .select(*[pl.col(c).cast(schema[c]) for c in columns], "value_source")
+        .sort("period", "municipality_id")
+    )
+    return rows, without
+
+
 # ------------------------------------------------------------------ conferência e situação
 
 
@@ -727,17 +888,33 @@ def _status_note(status: str, lens: str) -> str:
     return "Mês fechado."
 
 
+def _complement_note(value: pl.Expr) -> pl.Expr:
+    billions = (
+        (value.cast(pl.Float64) / 1e9).round(2).cast(pl.String).str.replace(".", ",", literal=True)
+    )
+    return (
+        pl.lit(" Inclui R$ ")
+        + billions
+        + pl.lit(
+            " bi do FPM pela distribuição por município do Tesouro Nacional, ausentes na "
+            "fonte (Fonte: Tesouro Nacional, Tesouro Transparente; ODbL)."
+        )
+    )
+
+
 def period_status(
     totals: Mapping[str, pl.DataFrame],
     reconciliation: pl.DataFrame,
     *,
+    complements: pl.DataFrame | None = None,
     missing_top: int = 5,
 ) -> pl.DataFrame:
     """Situação de cada mês por lente (ADR-0036, decisão 3).
 
     ``totals``: lente → (``period`` Gold, ``value``). O último mês de cada lente é
     ``aberto``. Na lente A, um mês com falta acima de ``INCOMPLETE_SHARE`` do pago na lente C
-    é ``incompleto``; os demais são ``fechados``.
+    é ``incompleto``; os demais são ``fechados``. ``complements``: (``period`` Gold,
+    ``complement_value``) do FPM pelo Tesouro (ADR-0038), anotado na nota do mês.
     """
     by_period = reconciliation.group_by("period").agg(
         _sum("shortfall"),
@@ -760,6 +937,8 @@ def period_status(
             out = out.join(by_period, on="period", how="left").join(
                 missing, on="period", how="left"
             )
+            if complements is not None and complements.height:
+                out = out.join(complements, on="period", how="left")
             share = pl.col("shortfall").cast(pl.Float64) / pl.col("reference_value").cast(
                 pl.Float64
             )
@@ -779,8 +958,15 @@ def period_status(
             )
         out = out.with_columns(status.alias("status"))
         notes = {s: _status_note(s, lens) for s in ("aberto", "incompleto", "fechado")}
+        note = pl.col("status").replace_strict(notes, return_dtype=pl.String)
+        if "complement_value" in out.columns:
+            note = (
+                pl.when(pl.col("complement_value").is_not_null())
+                .then(note + _complement_note(pl.col("complement_value")))
+                .otherwise(note)
+            )
         out = out.with_columns(
-            pl.col("status").replace_strict(notes, return_dtype=pl.String).alias("note"),
+            note.alias("note"),
             pl.col("period").str.slice(0, 4).cast(pl.Int32).alias("year"),
         )
         parts.append(out)

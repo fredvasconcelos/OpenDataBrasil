@@ -109,14 +109,16 @@ siafi_reference = "tesouro-tabmun"
 legal_entity_reference = "cgu-favorecidos-pj"
 
 # Correções aprovadas pelo mantenedor (ADR-0032, decisão 1): casam por igualdade de UF,
-# SIAFI e nome. O SIAFI oficial da TABMUN sempre vence.
+# SIAFI e nome. O SIAFI oficial da TABMUN sempre vence. O destino é decidido por evidência
+# oficial (valor igual ao centavo numa segunda fonte), nunca pela semelhança do nome.
 [[datasets.silver.territory_corrections]]
 uf = "MG"
 siafi_code = "4196"
 source_name = "CACHOEIRA DO PAJEU"
-municipality_id = "3102704"  # Cachoeira de Pajeú/MG (TABMUN: SIAFI 4053)
-reason = "Grafia errada na fonte ('do' por 'de') com SIAFI fora da TABMUN; 3 linhas de FPM e CIDE em 2025-03 e 2025-04 pagas a terceiro (CNPJ 32928723000141)."
-approved = "2026-11-22, mantenedor: 'o nome correto é Cachoeira de Pajeú, que é um município do estado de Minas Gerais'"
+# Boa Esperança do Norte/MT (Tesouro: SIAFI 1182), não Cachoeira de Pajeú/MG (SIAFI 4053).
+municipality_id = "5101837"
+reason = "SIAFI fora da TABMUN, com UF e nome de outro município. As 3 linhas (FPM 813.837,58 em 2025-03; FPM 826.997,85 e CIDE 5.612,79 em 2025-04, pagas ao CNPJ 32928723000141) são, ao centavo, o FPM e a CIDE de Boa Esperança do Norte/MT nos arquivos 'FPM por município' e 'CIDE por município' do Tesouro; Cachoeira de Pajeú (4053) recebeu os próprios valores (FPM 1.076.784,47 e 1.094.196,73). 813.837,58 é a cota dos municípios de coeficiente 0,6 de MT naquele mês; a de MG foi 1.076.784,47 (ADR-0038)."
+approved = "2026-11-22, mantenedor: revogada a atribuição a Cachoeira de Pajeú/MG e aprovada a de Boa Esperança do Norte/MT, pela evidência do Tesouro"
 
 [[datasets]]
 id = "cgu-despesas-favorecidos"

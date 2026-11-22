@@ -17,8 +17,12 @@ from tests.unit.processing.test_silver_contas import ALL, Env
 
 
 class GoldContas:
-    def __init__(self, tmp_path: Path) -> None:
+    def __init__(
+        self, tmp_path: Path, fpm: dict[tuple[str, str, str, int], str] | None = None
+    ) -> None:
         self.env = Env(tmp_path)
+        if fpm is not None:
+            self.env.portal.fpm.update(fpm)
         self.env.ingest(*ALL)
         runs = self.env.builder.build_many(list(ALL))
         assert all(r.status == "succeeded" for r in runs), [(r.dataset_id, r.error) for r in runs]
@@ -153,6 +157,58 @@ def test_latest_month_is_open_and_closed_months_are_checked(
     assert {"2024M10", "2024M11", "2024T4", "2024"} <= set(periods)
 
 
+def test_fpm_equal_to_the_treasury_gets_no_complement(gold: tuple[GoldContas, GoldBuild]) -> None:
+    env, build = gold
+    fact = env.table(build, "fact_federal_transfer")
+    assert fact["value_source"].unique().to_list() == ["cgu"]
+    rec = env.table(build, "agg_fpm_reconciliation")
+    assert rec.select("period", "municipality_id", "status").rows() == [
+        ("2024M10", "2506301", "conferido"),
+        ("2024M10", "5101837", "conferido"),  # estorno igual nas duas fontes
+        ("2024M11", "2506301", "conferido"),
+        ("2024M11", "5101837", "conferido"),
+    ]  # janeiro do Tesouro fica fora: o mês não existe na lente A
+    checks = {c.check_id: c for c in env.registry.checks[build.build_id]}
+    assert checks["fpm.reconciliation"].status is CheckStatus.PASS
+    assert checks["fpm.treasury_complement"].status is CheckStatus.PASS
+
+
+def test_treasury_complements_the_missing_fpm(tmp_path: Path) -> None:
+    """Tesouro acima da lente A em novembro: uma linha de complemento para Guarabira."""
+    env = GoldContas(tmp_path, {("2033", "Guarabira", "PB", 11): "1.502.001,00"})
+    build = env.builder.build()
+    assert build.status == "succeeded", build.error
+    fact = env.table(build, "fact_federal_transfer")
+    extra = fact.filter(pl.col("value_source") == "tesouro_fpm")
+    original = fact.filter(
+        (pl.col("value_source") == "cgu")
+        & (pl.col("period") == "2024M11")
+        & (pl.col("geography_key") == "municipio:2506301")
+    )
+    assert extra.select("period", "geography_key", "value", "source_lines").rows() == [
+        ("2024M11", "municipio:2506301", _d("1.5"), 1)
+    ]
+    # Mesmo favorecido, UG, ação e natureza da linha de FPM da prefeitura.
+    keys = ["recipient_key", "ug_key", "action_key", "nature_key", "transfer_type"]
+    assert extra.select(keys).rows() == original.select(keys).rows()
+    total = env.table(build, "agg_contas_territory").filter(
+        (pl.col("lens") == "A")
+        & (pl.col("period") == "2024M11")
+        & (pl.col("dimension_id") == "total")
+        & (pl.col("geography_key") == "municipio:2506301")
+    )
+    assert total["value"].to_list() == [Decimal("2001.00") + _d("1.5")]
+    rec = env.table(build, "agg_fpm_reconciliation").filter(
+        (pl.col("period") == "2024M11") & (pl.col("municipality_id") == "2506301")
+    )
+    assert rec.select("status", "complement").rows() == [("complementado", _d("1.5"))]
+    status = env.table(build, "agg_contas_period_status").filter(
+        (pl.col("lens") == "A") & (pl.col("period") == "2024M11")
+    )
+    assert status["complement_value"].to_list() == [_d("1.5")]
+    assert "Tesouro Nacional" in status["note"][0]
+
+
 def test_unchanged_silver_skips_the_build(gold: tuple[GoldContas, GoldBuild]) -> None:
     env, build = gold
     again = env.builder.build()
@@ -211,6 +267,13 @@ def test_reconciliation_flags_missing_actions_and_incomplete_months() -> None:
         ("2025M03", "aberto"),
     ]
     assert status["missing_actions"][0].to_list() == ["FPM"]
+    complements = pl.DataFrame(
+        {"period": ["2025M01"], "complement_value": [Decimal("10092734000.00")]},
+        schema_overrides={"complement_value": VALUE_DTYPE},
+    )
+    noted = contas.period_status(totals, reconciliation, complements=complements)
+    assert "Inclui R$ 10,09 bi do FPM" in noted["note"][0]
+    assert "Tesouro" not in noted["note"][1]
 
 
 def test_territory_falls_back_to_state_then_brazil() -> None:
@@ -229,3 +292,93 @@ def test_territory_falls_back_to_state_then_brazil() -> None:
         (None, "brasil:1"),
     ]
     assert contas.gold_period("p").meta.output_name() == "p"
+
+
+def _lens_a(rows: list[tuple[str, str | None, str, str, str]]) -> pl.LazyFrame:
+    """Lente A mínima: (mês, município, ação, classe, valor em milhões)."""
+    return pl.LazyFrame(
+        {
+            "period": [r[0] for r in rows],
+            "uf": ["PB"] * len(rows),
+            "municipality_id": [r[1] for r in rows],
+            "territory_status": ["municipio"] * len(rows),
+            "recipient_code": [f"cnpj-{r[1]}" for r in rows],
+            "recipient_name": [f"MUNICIPIO {r[1]}" for r in rows],
+            "recipient_class": [r[3] for r in rows],
+            "action_code": [r[2] for r in rows],
+            "organ_code": ["-1"] * len(rows),
+            "value": [_d(r[4]) for r in rows],
+        },
+        schema_overrides={"value": VALUE_DTYPE},
+    )
+
+
+def _treasury(rows: list[tuple[str, str, str]]) -> pl.LazyFrame:
+    return pl.LazyFrame(
+        {
+            "period": [r[0] for r in rows],
+            "municipality_id": [r[1] for r in rows],
+            "value": [_d(r[2]) for r in rows],
+        },
+        schema_overrides={"value": VALUE_DTYPE},
+    )
+
+
+def test_fpm_complement_only_in_months_below_the_treasury() -> None:
+    lens_a = _lens_a(
+        [
+            ("202501", "2506301", "0045", "municipio", "10"),
+            ("202501", "2507507", "0045", "municipio", "5"),
+            ("202502", "2506301", "0045", "municipio", "10"),
+            ("202502", "2506301", "0045", "empresa", "3"),  # não serve de modelo
+            ("202502", "2506301", "0369", "municipio", "1"),  # outra ação
+            ("202503", "2506301", "0045", "municipio", "10"),
+        ]
+    )
+    treasury = _treasury(
+        [
+            ("202412", "2506301", "9"),  # mês fora da lente A
+            ("202501", "2506301", "10"),
+            ("202501", "2507507", "5"),
+            ("202502", "2506301", "16"),  # 13 na lente A: falta 3
+            ("202502", "2507507", "5"),  # ausente na lente A: falta 5
+            ("202503", "2506301", "10.5"),  # 0,5 abaixo da tolerância: não complementa
+        ]
+    )
+    out = contas.fpm_complement(lens_a, treasury)
+    assert out.negative.is_empty()
+    assert out.without_template.is_empty()
+    assert out.rows.select(
+        "period", "municipality_id", "recipient_code", "recipient_class", "value", "value_source"
+    ).rows() == [
+        ("202502", "2506301", "cnpj-2506301", "municipio", _d("3"), "tesouro_fpm"),
+        ("202502", "2507507", "cnpj-2507507", "municipio", _d("5"), "tesouro_fpm"),  # de jan.
+    ]
+    assert out.rows["uf"].to_list() == ["PB", "PB"]
+    assert out.reconciliation.select("period", "municipality_id", "status").rows() == [
+        ("2025M01", "2506301", "conferido"),
+        ("2025M01", "2507507", "conferido"),
+        ("2025M02", "2506301", "complementado"),
+        ("2025M02", "2507507", "complementado"),
+        ("2025M03", "2506301", "divergente"),
+    ]
+
+
+def test_fpm_complement_reports_negative_and_missing_template() -> None:
+    lens_a = _lens_a(
+        [
+            ("202502", "2506301", "0045", "municipio", "10"),
+            ("202502", "2507507", "0045", "municipio", "6"),
+        ]
+    )
+    treasury = _treasury(
+        [
+            ("202502", "2506301", "20"),
+            ("202502", "2507507", "5"),  # Tesouro abaixo da lente A num mês complementado
+            ("202502", "2504009", "2"),  # sem nenhuma linha de FPM na lente A
+        ]
+    )
+    out = contas.fpm_complement(lens_a, treasury)
+    assert out.negative.rows() == [("202502", "2507507", -_d("1"))]
+    assert out.without_template.rows() == [("202502", "2504009")]
+    assert out.rows["municipality_id"].to_list() == ["2506301", "2507507"]

@@ -82,8 +82,9 @@ LENS_NOTES = {
     "A": [
         "O valor é o que a União pagou ao ente: como ele gasta esse dinheiro não está nas "
         "bases federais.",
-        "Meses incompletos: as parcelas adicionais do FPM de julho, setembro e dezembro de "
-        "2025 e 2026 não estão distribuídas por município na fonte.",
+        "O FPM que falta na fonte (as parcelas adicionais de julho, setembro e dezembro "
+        "desde 2025 e os meses sem FPM) vem da distribuição por município do Tesouro "
+        "Nacional (Fonte: Tesouro Nacional, Tesouro Transparente; licença ODbL).",
     ],
     "B": [
         "O território é a sede do favorecido, não o local do serviço: uma empresa de SP que "
