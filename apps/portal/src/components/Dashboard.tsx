@@ -67,6 +67,21 @@ function Failure({ error, onRetry }: { error: Error; onRetry: () => void }) {
   );
 }
 
+/**
+ * Layout inicial da tabela (DS 2.18). Até dois detalhes ficam nas colunas, sob o Período.
+ * Com três ou mais, o de mais categorias desce para as linhas, ao lado do Território:
+ * Cor ou raça × Sexo × Idade nas colunas dava 6 × 3 × 22 = 396 colunas.
+ */
+export function defaultPivotLayout(
+  dims: readonly string[],
+  catalog: readonly { classification_id: string; categories?: readonly unknown[] }[],
+): { rows: string[]; cols: string[] } {
+  if (dims.length < 3) return { rows: ["territorio"], cols: ["periodo", ...dims] };
+  const size = (id: string) => catalog.find((d) => d.classification_id === id)?.categories?.length ?? 0;
+  const largest = dims.reduce((a, b) => (size(b) > size(a) ? b : a));
+  return { rows: ["territorio", largest], cols: ["periodo", ...dims.filter((d) => d !== largest)].slice(0, 3) };
+}
+
 export function Dashboard({ index, initialKpi }: { index: PortalIndex; initialKpi: Kpi | null }) {
   const t = useTranslations("dashboard");
   const router = useRouter();
@@ -95,7 +110,7 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
   );
   const [retry, setRetry] = useState(0);
   const [hover, setHover] = useState<Hover | null>(null);
-  // Versão mobile (DS v2.5, até 899 px): barra lateral vira painel inferior ("sheet") e
+  // Versão mobile (DS v2.5, até 991 px desde o DS 2.18): barra lateral vira painel inferior ("sheet") e
   // mapa, série e tabela viram abas. No desktop esses estados não têm efeito visual.
   const mobile = useMediaQuery(MOBILE_QUERY);
   const coarse = useMediaQuery(COARSE_QUERY);
@@ -263,7 +278,7 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
   })();
   const pivotKey = `${kpiId}|${tableDims.join()}`;
   const pivotLayout =
-    pivotFor?.key === pivotKey ? pivotFor : { key: pivotKey, rows: ["territorio"], cols: ["periodo", ...tableDims].slice(0, 4) };
+    pivotFor?.key === pivotKey ? pivotFor : { key: pivotKey, ...defaultPivotLayout(tableDims, kpi?.dimensions ?? []) };
   const pivotControls = (
     <PivotControls
       fields={[

@@ -48,6 +48,10 @@ test("revisão visual: escalas de 125%, 150% e 200% preservam páginas e exporta
       await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(Math.floor(1920 / factor));
     }
+    // DS 2.18: abaixo de 992 px (1920 com escala de 200%) o Painel usa o layout móvel,
+    // em que a exportação fica na aba Tabela.
+    const views = page.getByRole("group", { name: "Visualização" });
+    if (await views.isVisible()) await views.getByRole("button", { name: "Tabela" }).click();
     await page.getByRole("button", { name: "Exportar dados…", exact: true }).click();
     const dialog = page.getByRole("dialog", { name: "Exportar dados", exact: true });
     await expect(dialog).toBeVisible();

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { defaultPivotLayout } from "@/components/Dashboard";
 import { columnGroups, visibleColumnLevels } from "@/components/PivotTable";
 
 // DS 2.17: cabeçalho da tabela dinâmica sem a linha de período único e com grupos mesclados.
@@ -42,5 +43,19 @@ describe("columnGroups", () => {
       col(["2022", "c86:t"], ["2022", "Total"]),
     ];
     expect(columnGroups(anos, 1)).toHaveLength(2);
+  });
+});
+
+describe("defaultPivotLayout (DS 2.18)", () => {
+  const catalog = [
+    { classification_id: "c86", categories: Array(5) },
+    { classification_id: "c2", categories: Array(2) },
+    { classification_id: "c287", categories: Array(21) },
+  ];
+  it("até dois detalhes ficam nas colunas", () => {
+    expect(defaultPivotLayout(["c86", "c2"], catalog)).toEqual({ rows: ["territorio"], cols: ["periodo", "c86", "c2"] });
+  });
+  it("com três, o de mais categorias vai para as linhas", () => {
+    expect(defaultPivotLayout(["c86", "c2", "c287"], catalog)).toEqual({ rows: ["territorio", "c287"], cols: ["periodo", "c86", "c2"] });
   });
 });

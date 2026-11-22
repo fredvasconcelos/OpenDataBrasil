@@ -36,7 +36,7 @@
   --odbr-bg-selected: #E8F0FC;
   --odbr-indicator: #1351B4;
   --odbr-tab-hover: #C5D9F5;
-  --odbr-focus: #1351B4;
+  --odbr-focus: #936F38; /* gold-vivid-50 do gov.br: o 40 (#C2850C) fica abaixo de 3:1 no fundo cinza */
 
   /* Texto */
   --odbr-text: #071D41;
@@ -112,15 +112,33 @@
   /* Tipografia */
   --odbr-font: var(--font-nunito, "Nunito"), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --odbr-font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --odbr-fs-page-title: 1.875rem;
-  --odbr-fs-kpi: 1.75rem;
-  --odbr-fs-card-title: 1.0625rem;
-  --odbr-fs-subtitle: 0.875rem;
-  --odbr-fs-body: 0.9375rem;
-  --odbr-fs-ui: 0.875rem;
-  --odbr-fs-small: max(11px, 0.8125rem);
-  --odbr-fs-caption: max(11px, 0.75rem);
-  --odbr-fs-micro: max(11px, 0.6875rem);
+  /* Escala tipográfica modular (DS 2.18): razão √1,2 a partir de 14 px. Os passos
+     inteiros (down-01, base, up-01…up-06) são os do padrão gov.br; os meios passos
+     mantêm a densidade do painel. Valores em rem (px de referência / 16). */
+  --odbr-scale-down-01: 0.7292rem;
+  --odbr-scale-down-half: 0.7988rem;
+  --odbr-scale-base: 0.875rem;
+  --odbr-scale-up-half: 0.9585rem;
+  --odbr-scale-up-01: 1.05rem;
+  --odbr-scale-up-1h: 1.1502rem;
+  --odbr-scale-up-02: 1.26rem;
+  --odbr-scale-up-2h: 1.3803rem;
+  --odbr-scale-up-03: 1.512rem;
+  --odbr-scale-up-3h: 1.6563rem;
+  --odbr-scale-up-04: 1.8144rem;
+  --odbr-scale-up-4h: 1.9876rem;
+  --odbr-scale-up-05: 2.1773rem;
+  --odbr-scale-up-5h: 2.3851rem;
+  --odbr-scale-up-06: 2.6127rem;
+  --odbr-fs-page-title: var(--odbr-scale-up-04);
+  --odbr-fs-kpi: var(--odbr-scale-up-04);
+  --odbr-fs-card-title: var(--odbr-scale-up-01);
+  --odbr-fs-subtitle: var(--odbr-scale-base);
+  --odbr-fs-body: var(--odbr-scale-up-half);
+  --odbr-fs-ui: var(--odbr-scale-base);
+  --odbr-fs-small: max(11px, var(--odbr-scale-down-half));
+  --odbr-fs-caption: max(11px, var(--odbr-scale-down-01));
+  --odbr-fs-micro: max(11px, var(--odbr-scale-down-01));
 
   /* Espaço (base 4) */
   --odbr-space-1: 0.25rem;
@@ -152,6 +170,8 @@
   /* Larguras de contêiner ficam em px (DS 2.17): a escala compacta das telas largas
      reduz texto e controles, não a área útil da página. */
   --odbr-content-wide: 1600px;
+  /* Foco (DS 2.18, padrão gov.br): tracejado de 4 px, sem escalar com a página. */
+  --odbr-focus-ring: 4px dashed var(--odbr-focus);
   --odbr-control-h: 2.5rem;
   --odbr-control-compact-h: 2rem;
   --odbr-control-touch-h: 2.75rem;
