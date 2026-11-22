@@ -95,4 +95,13 @@ test("chips da tabela: rótulo, ‹ e × centralizados na mesma altura", async (
   const heights = await page.locator(".pivot-chip, .pivot-zone select, .pivot-swap, .share-base select")
     .evaluateAll((els) => [...new Set(els.map((e) => Math.round(e.getBoundingClientRect().height)))]);
   expect(heights).toHaveLength(1);
+  // DS 2.18 (referência do mantenedor): "Calcular % por" e a unidade à esquerda, sob
+  // "Linhas"; só o botão i na borda direita da barra.
+  const pos = await page.locator(".pivot-toolbar").evaluate((bar) => {
+    const box = (sel: string) => bar.querySelector(sel)!.getBoundingClientRect();
+    return { bar: bar.getBoundingClientRect(), rows: box(".pivot-zone"), share: box(".share-base label"), unit: box(".pivot-unit"), info: box(".info-button") };
+  });
+  expect(Math.abs(pos.share.left - pos.rows.left)).toBeLessThanOrEqual(1);
+  expect(pos.unit.left - pos.share.right).toBeLessThanOrEqual(24);
+  expect(Math.abs(pos.info.right - pos.bar.right)).toBeLessThanOrEqual(1);
 });

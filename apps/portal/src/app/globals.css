@@ -1553,11 +1553,10 @@ mark { background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px; 
 .pivot { gap: 0.5rem; margin-top: 0.5rem; }
 .pivot-toolbar { position: relative; display: flex; flex-direction: column; align-items: stretch; gap: 0.5rem; margin: 0 0 0.5rem; }
 .pivot-toolbar .pivot-controls { gap: 0.5rem 1rem; }
-/* DS 2.18 (referência do mantenedor): "Calcular % por" na segunda linha, alinhado à
-   esquerda sob "Linhas"; unidade e botão i continuam à direita. */
+/* DS 2.18 (referência do mantenedor): "Calcular % por" e a unidade na segunda linha,
+   alinhados à esquerda sob "Linhas"; só o botão i fica à direita. */
 .pivot-toolbar .share-base { position: static; justify-content: flex-start; gap: 0.5rem 1rem; margin: 0; }
-.pivot-toolbar .pivot-unit { margin-left: auto; }
-.pivot-toolbar .share-base .info-button { margin-left: 0; }
+.pivot-toolbar .share-base .info-button { margin-left: auto; }
 .pivot-unit { font-size: var(--odbr-fs-caption); font-weight: 700; color: var(--odbr-text-muted); white-space: nowrap; }
 
 /* Chips, "+ campo", "Trocar" e o seletor do % com a mesma altura e o texto no centro. */
