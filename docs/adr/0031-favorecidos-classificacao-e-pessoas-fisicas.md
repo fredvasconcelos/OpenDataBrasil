@@ -1,7 +1,7 @@
 # ADR-0031: Favorecidos — classificação, identificação e pessoas físicas
 
 - **Estado:** aceito (2026-11-22). A publicação de pessoas físicas foi decidida pelo
-  mantenedor (D3); a decisão 5.6 tem uma opção em aberto.
+  mantenedor (D3), e o `noindex` (5.6) aprovado na D3.1.
 - **Contexto normativo:** CLAUDE.md §9.4, §15.3, §23 e §28.5 ("publicar dados restritos"
   exige aprovação, concedida aqui); ADR-0030.
 
@@ -87,9 +87,10 @@ significado. Medido em 2025-10, na lente B (766.078 linhas):
       fonte. Os releases antigos não ficam navegáveis no portal.
    5. **Canal do titular:** pedidos de correção vão para `portal@opendatabrasil.org`. A
       resposta segue a fonte oficial: correções de conteúdo são encaminhadas à CGU.
-   6. **Em aberto (D3.1):** marcar as fichas individuais de PF com `noindex` (não
-      indexadas por buscadores, mas acessíveis no portal). Reduz a exposição sem esconder
-      o dado. **Recomendado**; aguarda o mantenedor.
+   6. **`noindex` nas fichas de PF (D3.1, aprovada em 2026-11-22):** as fichas
+      individuais de pessoa física não são indexadas por buscadores (`noindex` no HTML e
+      no cabeçalho `X-Robots-Tag`), mas continuam acessíveis no portal. Reduz a exposição
+      sem esconder o dado.
 6. **Sigiloso** (`-11`) aparece como "valor sigiloso na fonte", com o total. O portal nunca
    tenta inferir quem é.
 7. **Benefícios sociais** (Bolsa Família, BPC e outros, com NIS) ficam fora desta fase.

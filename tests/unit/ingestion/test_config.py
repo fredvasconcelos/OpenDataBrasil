@@ -60,7 +60,26 @@ def test_repository_sources_are_valid() -> None:
     assert {catalog.datasets[f"mjsp-sinesp-vde-{y}"].license for y in range(2015, 2027)} == {
         "mjsp-dados-abertos"
     }
-    generated = set(catalog.datasets) - curated - datasus - mjsp
+    # Contas públicas (ADR-0030): CGU, TABMUN do Tesouro e cadastro do SIOP, licenças da D8.
+    contas = {d for d in catalog.datasets if d.startswith(("cgu-", "tesouro-", "siop-"))}
+    assert contas == {
+        "cgu-transferencias",
+        "cgu-despesas-favorecidos",
+        "cgu-despesas-execucao",
+        "cgu-favorecidos-pj",
+        "tesouro-tabmun",
+        "siop-cadastro-acoes",
+        "siop-planos-orcamentarios",
+    }
+    for lic in ("cgu-dados-abertos", "tesouro-dados-abertos", "siop-dados-abertos"):
+        assert catalog.licenses[lic].review_status == "approved"
+    for lens in ("cgu-transferencias", "cgu-despesas-favorecidos", "cgu-despesas-execucao"):
+        params = catalog.datasets[lens].params
+        assert (params["start"], params["end"]) == ("202401", "atual")  # piloto D4 + 2026
+    assert catalog.datasets["cgu-despesas-favorecidos"].access_classification == (
+        "public_conditional"  # pessoas físicas com salvaguardas (ADR-0031)
+    )
+    generated = set(catalog.datasets) - curated - datasus - mjsp - contas
     assert generated
     assert all(d.startswith(("ibge-sidra-", "ibge-medida-t")) for d in generated)
     assert catalog.source_institution["ibge-sidra"] == "ibge"
@@ -70,6 +89,9 @@ def test_repository_sources_are_valid() -> None:
         "ibge-geoftp",
         "datasus-ftp",
         "mjsp-estatistica",
+        "cgu-arquivos",
+        "tesouro-ckan",
+        "siop-dados-abertos",
     }
     assert [d.id for d in catalog.datasets_of("ibge-geoftp")] == [
         "ibge-dtb",

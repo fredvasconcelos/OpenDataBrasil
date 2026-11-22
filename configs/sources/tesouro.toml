@@ -1,0 +1,50 @@
+# Tesouro Nacional (STN): tabelas de apoio às contas públicas.
+#
+# TABMUN: município SIAFI × CNPJ da prefeitura × IBGE (ADR-0032). Em 2026-11-22, casou
+# 5.570 dos 5.571 códigos SIAFI de transferências de 2025-10; ficou de fora 1182, Boa
+# Esperança do Norte/MT (município novo; vai para o suplemento versionado). O CSV não tem
+# cabeçalho: SIAFI;CNPJ;nome;UF;IBGE, ASCII, CRLF.
+
+config_version = "1.0.0"
+
+[institution]
+id = "stn"
+name = "Secretaria do Tesouro Nacional"
+acronym = "STN"
+url = "https://www.tesourotransparente.gov.br"
+
+[[licenses]]
+id = "tesouro-dados-abertos"
+name = "Dados abertos do Tesouro Transparente (Política de Dados Abertos do Poder Executivo Federal)"
+url = "https://www.tesourotransparente.gov.br/ckan/dataset/lista-de-municipios-do-siafi"
+conditions = "Uso, reúso e redistribuição livres; crédito obrigatório 'Fonte: Tesouro Nacional (Tesouro Transparente)'."
+review_status = "approved"
+notes = "Aprovada pelo mantenedor em 2026-11-22 (decisão D8, ADR-0030). O CKAN do Tesouro registra 'License not specified' para a lista de municípios do SIAFI. Base: Decreto nº 8.777/2016, como em cgu-dados-abertos."
+
+[[sources]]
+id = "tesouro-ckan"
+name = "Tesouro Transparente: catálogo CKAN"
+connector = "http_file"
+base_url = "https://www.tesourotransparente.gov.br/ckan/"
+documentation_url = "https://www.tesourotransparente.gov.br/ckan/dataset/lista-de-municipios-do-siafi"
+
+[sources.http]
+min_interval_s = 2.0
+
+[[datasets]]
+id = "tesouro-tabmun"
+source = "tesouro-ckan"
+official_id = "lista-de-municipios-do-siafi"
+title = "Tabela de municípios do SIAFI (TABMUN)"
+description = "Código SIAFI, CNPJ da prefeitura, nome, UF e código IBGE de cada município. Ponte SIAFI→IBGE da lente A (ADR-0032)."
+license = "tesouro-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "eventual"
+reference_url = "https://www.tesourotransparente.gov.br/ckan/dataset/lista-de-municipios-do-siafi"
+
+[datasets.params]
+url = "https://www.tesourotransparente.gov.br/ckan/dataset/abb968cb-3710-4f85-89cf-875c91b9c7f6/resource/eebb3bc6-9eea-4496-8bcf-304f33155282/download/tabmun.csv"
+artifact_name = "tabmun.csv"
+format = "binary"
+min_bytes = 100000
+max_bytes = 5242880

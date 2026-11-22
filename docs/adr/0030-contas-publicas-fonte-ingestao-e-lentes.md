@@ -1,8 +1,8 @@
 # ADR-0030: Contas públicas federais — fonte, ingestão em lote e três lentes
 
 - **Estado:** aceito (2026-11-22) pelo mantenedor nas decisões D1, D2 e D4 do plano de
-  inserção de contas públicas (documento de operação). A licença (decisão 6) **aguarda
-  aprovação**.
+  inserção de contas públicas (documento de operação). A licença (decisão 6) foi
+  **aprovada** na decisão D8, no mesmo dia.
 - **Contexto normativo:** CLAUDE.md §3.3, §5.3, §7.3, §7.6, §10.7, §17, §23 e §26;
   ADR-0015 (release estável), ADR-0025 (Fábrica e Vitrine) e ADR-0028 (licenças).
 
@@ -47,8 +47,9 @@ Medido em 2026-11-22 (amostras de 2025-10 e 2014-01):
    - Uma transferência ao Fundo Municipal de Saúde aparece em A e, como pagamento ao CNPJ do
      fundo, em B. Somar lentes conta o mesmo dinheiro duas vezes.
    - A interface mostra uma lente por vez, com nome e nota próprios.
-3. **Piloto de 24 meses (D4):** 2024-01 a 2025-12, nas três lentes e nos cadastros de
-   apoio. O histórico desde 2014 entra só depois da reconciliação do piloto (etapa CP6).
+3. **Piloto (D4):** de 2024-01 até o mês corrente (`end = "atual"`), nas três lentes e
+   nos cadastros de apoio. O mantenedor incluiu 2026 em 2026-11-22. O histórico desde 2014
+   entra só depois da reconciliação do piloto (etapa CP6).
 4. **Revisão retroativa.** A cada ciclo, o conector confere o ETag e o checksum de
    **todos** os meses publicados. Só reprocessa os meses cujo conteúdo mudou e registra a
    diferença no relatório do ciclo (§7.6). Se só os metadados do zip mudarem, compara-se o
@@ -58,15 +59,39 @@ Medido em 2026-11-22 (amostras de 2025-10 e 2014-01):
    Nada da CGU vai para o núcleo (§3.3). Os downloads são feitos um por vez, com espera
    entre eles e retentativa com recuo. Uma resposta 202 vazia ou um bloqueio **não é
    contornada** (§7.3): a execução para e é registrada como falha.
-6. **Licença (aguarda aprovação).** No dados.gov.br, o conjunto "Despesas Públicas" da CGU
-   (`16337f91-62b1-405f-89d6-f8f52863b659`, com as quatro bases de despesa) está marcado
-   como `dadosAbertos: Sim`, mas com `licenca: notspecified`. **Proposta:** registrar
-   `cgu-dados-abertos` com a mesma base da `mjsp-dados-abertos` (Política de Dados Abertos,
-   Decreto nº 8.777/2016, e definição de licença aberta da INDA), crédito obrigatório
-   "Fonte: Portal da Transparência/CGU" e `review_status = "requires_review"` até a
-   aprovação do mantenedor. Os mesmos passos valem para a TABMUN do Tesouro (CKAN:
-   "License not specified") e para o cadastro de ações do SIOP (ADR-0035). Sem licença
-   aprovada, nada é publicado.
+   - **Caso real (2026-11-22):** com 5 s entre arquivos, o bucket da CGU respondeu 405
+     "Human Verification" depois de cerca de 25 arquivos (≈100 MB) em 2 min, e o bloqueio
+     caiu em menos de 4 min. Desde então:
+     - `halt_on_status = [403, 405]` faz a fonte parar no primeiro bloqueio, inclusive na
+       fase de plano, e pula os demais datasets da mesma fonte na execução;
+     - o conector trata como erro qualquer resposta que não seja 200 ou 304;
+     - o ritmo é de 1 arquivo por minuto.
+6. **Licença (aprovada na D8, 2026-11-22).** No dados.gov.br, o conjunto "Despesas
+   Públicas" da CGU (`16337f91-62b1-405f-89d6-f8f52863b659`, com as quatro bases de
+   despesa) está marcado como `dadosAbertos: Sim`, mas com `licenca: notspecified`.
+   - `cgu-dados-abertos` tem a mesma base da `mjsp-dados-abertos`: Política de Dados
+     Abertos (Decreto nº 8.777/2016) e definição de licença aberta da INDA;
+   - crédito obrigatório: "Fonte: Portal da Transparência/CGU";
+   - `review_status = "approved"`, por decisão do mantenedor;
+   - o mesmo vale para a TABMUN do Tesouro (`tesouro-dados-abertos`; CKAN: "License not
+     specified") e para o cadastro de ações do SIOP (`siop-dados-abertos`, ADR-0035).
+7. **Atualização do ano corrente** (pedido do mantenedor, 2026-11-22):
+   - a CGU atualiza diariamente o arquivo do mês corrente. Com `end = "atual"`, uma
+     execução de `odb ingest run` baixa só os meses que mudaram, e os demais respondem
+     304;
+   - se o mês corrente ainda não foi publicado (dia 1º), uma sondagem de 1 byte o deixa
+     para a próxima execução, com uma nota;
+   - cada atualização do mês corrente é uma versão nova na Bronze, de até 26 MB por dia na
+     lente B. A retenção das versões intermediárias entra na política de arquivamento da
+     Bronze, ainda por decidir.
+   - **Desenvolvimento futuro, para a produção:**
+     - **job diário** de atualização do ano corrente (ingestão → Silver → Gold → release
+       candidato → conferência → ativação, ADR-0015);
+     - **job semanal no fim de semana**, que repete o ciclo do ano corrente para cobrir
+       falhas de processamento da semana e revisões da fonte.
+
+     Os dois dependem do comando único `odb atualizar` (pendente desde o ADR-0015) e não
+     fazem parte da CP1.
 
 ## Consequências
 

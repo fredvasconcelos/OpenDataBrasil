@@ -21,6 +21,7 @@ from odb_ingestion.runner import (
     IngestionRegistry,
     IngestionReport,
     IngestionRunner,
+    SourceHaltedError,
     StoredArtifact,
 )
 
@@ -42,6 +43,7 @@ __all__ = [
     "IngestionRunner",
     "PartitionState",
     "SourceCatalog",
+    "SourceHaltedError",
     "StoredArtifact",
     "ValidationResult",
     "Watermark",

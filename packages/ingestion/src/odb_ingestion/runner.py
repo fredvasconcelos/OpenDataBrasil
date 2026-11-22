@@ -60,6 +60,10 @@ class DeferredIngestionError(RuntimeError):
     """Dataset adiado por falha transitória numa passada com adiamento."""
 
 
+class SourceHaltedError(RuntimeError):
+    """A fonte respondeu com um status de bloqueio (``halt_on_status``): parar de pedir."""
+
+
 @dataclass(frozen=True, slots=True)
 class Checkpoint:
     """Partição já baixada e validada na execução atual (bytes na Bronze)."""
@@ -175,6 +179,7 @@ class IngestionReport:
     notes: list[str] = field(default_factory=list)
     deferred: bool = False
     rounds: int = 1
+    halted: bool = False
 
     def bump(self, status: ArtifactStatus) -> None:
         """Conta um artefato por estado."""
@@ -191,6 +196,16 @@ class IngestionReport:
 
 
 HttpFactory = Callable[[BaseConnector], HttpClient]
+
+
+def _halt_if_blocked(exc: HttpError, http: HttpClient, where: str) -> None:
+    """Lança ``SourceHaltedError`` se o status está em ``halt_on_status`` da fonte."""
+    if exc.status is not None and exc.status in http.policy.halt_on_status:
+        msg = (
+            f"fonte bloqueou com HTTP {exc.status} {where}; "
+            "nenhum outro pedido nesta execução (§7.3)"
+        )
+        raise SourceHaltedError(msg) from exc
 
 
 class IngestionRunner:
@@ -252,10 +267,12 @@ class IngestionRunner:
         started = datetime.now(UTC)
         final: dict[str, IngestionReport] = {}
         queue = list(dict.fromkeys(dataset_ids))
+        halted: dict[str, str] = {}  # fonte -> motivo do bloqueio nesta execução
         for round_no in range(defer_rounds + 1):
             last = round_no == defer_rounds
             deferred: list[str] = []
             for dataset_id in queue:
+                source_id = self._catalog.dataset(dataset_id).source
                 report = self.run(
                     dataset_id,
                     run_id=run_id,
@@ -266,9 +283,12 @@ class IngestionRunner:
                     checkpoint_since=None
                     if full
                     else (resume_since or (started if defer_rounds else None)),
+                    halted_reason=halted.get(source_id),
                 )
                 report.rounds = round_no + 1
                 final[dataset_id] = report
+                if report.halted and source_id not in halted:
+                    halted[source_id] = report.error or "bloqueio da fonte"
                 if report.deferred:
                     deferred.append(dataset_id)
             if not deferred:
@@ -289,8 +309,13 @@ class IngestionRunner:
         defer_transient: bool = False,
         attempts: int | None = None,
         checkpoint_since: datetime | None = None,
+        halted_reason: str | None = None,
     ) -> IngestionReport:
-        """Ingere um dataset. Nunca propaga exceções do dataset; o resultado vai no relatório."""
+        """Ingere um dataset. Nunca propaga exceções do dataset; o resultado vai no relatório.
+
+        Com ``halted_reason``, a fonte já bloqueou nesta execução: o dataset é registrado
+        como falha sem nenhum pedido à fonte.
+        """
         if sync:
             self.sync_catalog()
         dataset = self._catalog.dataset(dataset_id)
@@ -308,6 +333,12 @@ class IngestionRunner:
                 if not dataset.enabled:
                     msg = f"dataset {dataset_id} desabilitado na configuração"
                     raise RuntimeError(msg)
+                if halted_reason is not None:
+                    msg = (
+                        f"não executado: a fonte {dataset.source} bloqueou nesta execução "
+                        f"({halted_reason[:300]})"
+                    )
+                    raise SourceHaltedError(msg)
                 self._capacity_check()
                 self._execute(
                     dataset,
@@ -319,6 +350,11 @@ class IngestionRunner:
                     attempts=attempts,
                     checkpoint_since=checkpoint_since,
                 )
+            except SourceHaltedError as exc:
+                report.status = "failed"
+                report.halted = True
+                report.error = str(exc)
+                logger.error("ingestion halted by source", extra={"reason": str(exc)[:300]})
             except DeferredIngestionError as exc:
                 report.status = "failed"
                 report.deferred = True
@@ -365,7 +401,12 @@ class IngestionRunner:
                 http.policy = http.policy.model_copy(
                     update={"max_attempts": min(attempts, http.policy.max_attempts)}
                 )
-            plan = connector.plan(dataset.id, http, watermark, full=full)
+            try:
+                plan = connector.plan(dataset.id, http, watermark, full=full)
+            except HttpError as exc:
+                # A descoberta também pode encontrar o bloqueio (sondagem do período corrente).
+                _halt_if_blocked(exc, http, "no plano")
+                raise
             report.planned = len(plan.requests)
             report.notes.extend(plan.notes)
             self._registry.save_plan(ingestion_id, plan.to_json())
@@ -402,6 +443,7 @@ class IngestionRunner:
                             **base,
                         ),
                     )
+                    _halt_if_blocked(exc, http, f"em {request.partition_key}")
                     if defer_transient and exc.transient:
                         raise DeferredIngestionError(str(exc)) from exc
                     failures.append(f"{request.partition_key}: {exc}")

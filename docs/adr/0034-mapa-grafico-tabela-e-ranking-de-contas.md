@@ -52,8 +52,20 @@
      (§10.7). DuckDB não os grava (§11.6).
    - Rotas novas: `/api/v1/contas/...`, com contrato OpenAPI, teto de linhas, tempo
      limite e chave de cache com o release (§26.2).
-6. **Período:** grão mensal, com soma no tempo, porque é fluxo (ADR-0013). Seleção de
+6. **Só o nome na apresentação** (pedido do mantenedor, 2026-11-22: "não precisamos
+   apresentar junto seu par CPF/CNPJ ou código do órgão, para não contaminar a visão da
+   tabela"):
+   - na tabela, no tooltip, no ranking e nas fichas, órgãos, unidades gestoras, empresas,
+     entidades e pessoas aparecem só pelo nome. CPF mascarado, CNPJ e códigos SIAFI ficam
+     fora da tela;
+   - internamente, a chave continua sendo código + nome (ADR-0031, decisão 3). Dois
+     homônimos continuam em linhas separadas, e o aviso de homônimo (ADR-0031, 5.3) explica
+     nomes repetidos;
+   - as exportações levam os códigos, para quem reutiliza os dados (padrão proposto, a
+     confirmar);
+   - filtros melhores por esses campos ficam para depois.
+7. **Período:** grão mensal, com soma no tempo, porque é fluxo (ADR-0013). Seleção de
    períodos e acumulado como no ADR-0026. Período parcial como no ADR-0033, decisão 4.
-7. **Aceite de desempenho** (CP4): p95 da tabela e do ranking abaixo do p95 atual do
+8. **Aceite de desempenho** (CP4): p95 da tabela e do ranking abaixo do p95 atual do
    painel no mesmo cenário k6 (`escada.js`), sem 5xx. O teto de 100 páginas e o tamanho
    dos agregados são revistos pela medição.

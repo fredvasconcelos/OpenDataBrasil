@@ -61,6 +61,11 @@ class HttpPolicy(_Strict):
     max_retry_after_s: float = Field(default=300.0, ge=0)
     min_interval_s: float = Field(default=1.0, ge=0)
     max_bytes: int = Field(default=500 * 1024**2, ge=1)
+    # Status que indicam bloqueio pela fonte (verificação humana, WAF): a execução para
+    # de pedir à fonte na hora, em vez de seguir para as próximas partições (§7.3). Caso
+    # real: a CGU respondeu 405 "Human Verification" depois de ~25 arquivos em 2 min
+    # (2026-11-22), e o runner ainda fez mais 47 pedidos ao servidor que já bloqueava.
+    halt_on_status: tuple[int, ...] = ()
     user_agent: str = "OpenDataBrasil (+https://github.com/fredvasconcelos/OpenDataBrasil)"
 
 

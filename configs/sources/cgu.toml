@@ -1,0 +1,218 @@
+# Portal da Transparência (CGU): despesas e recursos federais (bloco "Contas públicas").
+#
+# Decisões: ADR-0030 (fonte, ingestão em lote, três lentes, piloto), ADR-0031 (favorecidos e
+# pessoas físicas), ADR-0032 (território), ADR-0033 (fases da despesa).
+#
+# Os downloads mensais ficam num bucket (`dadosabertos-download.cgu.gov.br`). A página
+# `portaldatransparencia.gov.br/download-de-dados/<base>/<AAAAMM>` responde 302 para lá.
+# Verificado em 2026-11-22:
+#   * ETag e Last-Modified por arquivo; o servidor responde 304 a If-None-Match e a
+#     If-Modified-Since, e 206 a Range;
+#   * a raiz e os arquivos inexistentes respondem 403 (bucket S3);
+#   * a CGU regenera arquivos antigos (Last-Modified de nov/2026 em 2014-01): cada ciclo
+#     confere todos os meses (ADR-0030, decisão 4);
+#   * CSV ISO-8859-1, separador ";", decimal com vírgula, CRLF; layout de 2014-01 idêntico
+#     ao de 2025-10 em transferências e favorecidos.
+# O portal da CGU respondeu 202 vazio a leituras seguidas de páginas: o conector só usa o
+# bucket, um arquivo por vez, e nunca contorna bloqueio (§7.3).
+#
+# Piloto (D4): de 2024-01 até o mês corrente. O ano corrente foi incluído a pedido do
+# mantenedor em 2026-11-22: `end = "atual"` acompanha o mês corrente, e a CGU atualiza o
+# arquivo dele diariamente. Uma execução repetida só baixa o que mudou (os demais meses
+# respondem 304). O agendamento diário e o reprocessamento semanal ficam para a produção
+# (ADR-0030, decisão 7). O histórico desde 2014 entra na etapa CP6.
+
+config_version = "1.0.0"
+
+[institution]
+id = "cgu"
+name = "Controladoria-Geral da União"
+acronym = "CGU"
+url = "https://www.gov.br/cgu"
+
+[[licenses]]
+id = "cgu-dados-abertos"
+name = "Dados abertos do Portal da Transparência (Política de Dados Abertos do Poder Executivo Federal)"
+url = "https://dados.gov.br/dados/conjuntos-dados/despesas-publicas"
+conditions = "Uso, reúso e redistribuição livres; crédito obrigatório 'Fonte: Portal da Transparência/CGU'. Pessoas físicas publicadas como na fonte, com as salvaguardas do ADR-0031."
+review_status = "approved"
+notes = "Aprovada pelo mantenedor em 2026-11-22 (decisão D8, ADR-0030). No dados.gov.br, o conjunto 'Despesas Públicas' da CGU (id 16337f91-62b1-405f-89d6-f8f52863b659, com as quatro bases de despesa) tem dadosAbertos = Sim e licenca = notspecified. Base: Decreto nº 8.777/2016 (Política de Dados Abertos) e definição de licença aberta da INDA, como em mjsp-dados-abertos. Publicação de pessoas físicas: LRF art. 48-A, I (LC 131/2009); LAI art. 8º; LGPD art. 7º §§ 3º, 6º e 7º."
+
+[[sources]]
+id = "cgu-arquivos"
+name = "Portal da Transparência: arquivos de download (bucket de dados abertos da CGU)"
+connector = "http_periodic"
+base_url = "https://dadosabertos-download.cgu.gov.br/PortalDaTransparencia/saida/"
+documentation_url = "https://portaldatransparencia.gov.br/download-de-dados"
+
+[sources.http]
+# Um arquivo por minuto. Em 2026-11-22, com 5 s entre arquivos, o bucket passou a responder
+# 405 "Human Verification" (verificação humana do WAF) depois de ~25 arquivos (~100 MB) em
+# cerca de 2 min. Não contornamos (§7.3): a fonte para na hora (halt_on_status) e a carga
+# segue depois, num ritmo menor. 403 também para: no bucket, ele é tanto "arquivo
+# inexistente" quanto bloqueio, e nos dois casos a execução precisa de revisão.
+min_interval_s = 60.0
+timeout_s = 300.0
+max_attempts = 5
+backoff_initial_s = 30.0
+backoff_max_s = 300.0
+max_bytes = 314572800
+halt_on_status = [403, 405]
+
+[[datasets]]
+id = "cgu-transferencias"
+source = "cgu-arquivos"
+official_id = "transferencias"
+title = "Recursos transferidos (mensal)"
+description = "Transferências da União a estados, municípios, fundos e entidades, por tipo (constitucionais e royalties; legais, voluntárias e específicas), órgão, UG, função, programa, ação, natureza da despesa e favorecido. Valor do pagamento realizado. Lente A (ADR-0030)."
+license = "cgu-dados-abertos"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://portaldatransparencia.gov.br/download-de-dados/transferencias"
+
+[datasets.params]
+url_template = "https://dadosabertos-download.cgu.gov.br/PortalDaTransparencia/saida/transferencias/{period}_Transferencias.zip"
+artifact_template = "transferencias-{period}.zip"
+grain = "month"
+start = "202401"
+end = "atual"
+format = "zip"
+expected_members = ["{period}_Transferencias.csv"]
+min_bytes = 100000
+healthcheck_url = "https://dadosabertos-download.cgu.gov.br/PortalDaTransparencia/saida/transferencias/202401_Transferencias.zip"
+
+[[datasets.params.csv]]
+member = "{period}_Transferencias.csv"
+encoding = "latin-1"
+delimiter = ";"
+columns = [
+  "ANO / MÊS", "TIPO TRANSFERÊNCIA", "TIPO FAVORECIDO", "UF", "CÓDIGO MUNICÍPIO SIAFI",
+  "NOME MUNICÍPIO", "CÓDIGO ÓRGÃO SIAFI", "NOME ÓRGÃO", "CÓDIGO UNIDADE GESTORA",
+  "NOME UNIDADE GESTORA", "CÓDIGO FUNÇÃO", "NOME FUNÇÃO", "CÓDIGO SUBFUNÇÃO", "NOME SUBFUNÇÃO",
+  "CÓDIGO PROGRAMA", "NOME PROGRAMA", "AÇÃO", "NOME AÇÃO", "LINGUAGEM CIDADÃ",
+  "CÓDIGO GRUPO DESPESA", "NOME GRUPO DESPESA", "CÓDIGO MODALIDADE APLICAÇÃO DESPESA",
+  "NOME MODALIDADE APLICAÇÃO DESPESA", "CÓDIGO ELEMENTO DESPESA", "NOME ELEMENTO DESPESA",
+  "CÓDIGO PLANO ORÇAMENTÁRIO", "NOME PLANO ORÇAMENTÁRIO", "CÓDIGO SUBTÍTULO", "NOME SUBTÍTULO",
+  "CÓDIGO LOCALIZADOR", "NOME LOCALIZADOR", "SIGLA LOCALIZADOR",
+  "DESCRIÇÃO COMPLEMENTAR LOCALIZADOR", "CÓDIGO FAVORECIDO", "NOME FAVORECIDO",
+  "VALOR TRANSFERIDO",
+]
+
+[[datasets]]
+id = "cgu-despesas-favorecidos"
+source = "cgu-arquivos"
+official_id = "despesas-favorecidos"
+title = "Recebimento de recursos por favorecido (mensal)"
+description = "Pagamentos federais por favorecido, unidade gestora e mês, com UF e município da sede do favorecido. Inclui pessoas físicas com CPF mascarado na fonte, lançamentos agregados (RB, TN) e fluxos entre UGs. Lente B (ADR-0030, ADR-0031)."
+license = "cgu-dados-abertos"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://portaldatransparencia.gov.br/download-de-dados/despesas-favorecidos"
+
+[datasets.params]
+url_template = "https://dadosabertos-download.cgu.gov.br/PortalDaTransparencia/saida/despesas-favorecidos/{period}_Despesas.zip"
+artifact_template = "favorecidos-{period}.zip"
+grain = "month"
+start = "202401"
+end = "atual"
+format = "zip"
+expected_members = ["{period}_RecebimentosRecursosPorFavorecido.csv"]
+min_bytes = 1000000
+healthcheck_url = "https://dadosabertos-download.cgu.gov.br/PortalDaTransparencia/saida/transferencias/202401_Transferencias.zip"
+
+[[datasets.params.csv]]
+member = "{period}_RecebimentosRecursosPorFavorecido.csv"
+encoding = "latin-1"
+delimiter = ";"
+columns = [
+  "Código Favorecido", "Nome Favorecido", "Sigla UF", "Nome Município", "Código Órgão Superior",
+  "Nome Órgão Superior", "Código Órgão", "Nome Órgão", "Código Unidade Gestora",
+  "Nome Unidade Gestora", "Ano e mês do lançamento", "Valor Recebido",
+]
+
+[[datasets]]
+id = "cgu-despesas-execucao"
+source = "cgu-arquivos"
+official_id = "despesas-execucao"
+title = "Execução da despesa (mensal)"
+description = "Execução orçamentária do Poder Executivo Federal por mês, órgão, UG, gestão, UO, funcional-programática, PO, localizador, natureza, modalidade e autor de emenda: empenhado, liquidado, pago e restos a pagar. Lente C (ADR-0030, ADR-0033)."
+license = "cgu-dados-abertos"
+access_classification = "public_conditional"
+periodicity = "mensal"
+reference_url = "https://portaldatransparencia.gov.br/download-de-dados/despesas-execucao"
+
+[datasets.params]
+url_template = "https://dadosabertos-download.cgu.gov.br/PortalDaTransparencia/saida/despesas-execucao/{period}_Despesas.zip"
+artifact_template = "execucao-{period}.zip"
+grain = "month"
+start = "202401"
+end = "atual"
+format = "zip"
+expected_members = ["{period}_Despesas.csv"]
+min_bytes = 100000
+healthcheck_url = "https://dadosabertos-download.cgu.gov.br/PortalDaTransparencia/saida/transferencias/202401_Transferencias.zip"
+
+[[datasets.params.csv]]
+member = "{period}_Despesas.csv"
+encoding = "latin-1"
+delimiter = ";"
+# "Código Subfução" é a grafia da fonte; o contrato a preserva.
+columns = [
+  "Ano e mês do lançamento", "Código Órgão Superior", "Nome Órgão Superior",
+  "Código Órgão Subordinado", "Nome Órgão Subordinado", "Código Unidade Gestora",
+  "Nome Unidade Gestora", "Código Gestão", "Nome Gestão", "Código Unidade Orçamentária",
+  "Nome Unidade Orçamentária", "Código Função", "Nome Função", "Código Subfução",
+  "Nome Subfunção", "Código Programa Orçamentário", "Nome Programa Orçamentário",
+  "Código Ação", "Nome Ação", "Código Plano Orçamentário", "Plano Orçamentário",
+  "Código Programa Governo", "Nome Programa Governo", "UF", "Município", "Código Subtítulo",
+  "Nome Subtítulo", "Código Localizador", "Nome Localizador", "Sigla Localizador",
+  "Descrição Complementar Localizador", "Código Autor Emenda", "Nome Autor Emenda",
+  "Código Categoria Econômica", "Nome Categoria Econômica", "Código Grupo de Despesa",
+  "Nome Grupo de Despesa", "Código Elemento de Despesa", "Nome Elemento de Despesa",
+  "Código Modalidade da Despesa", "Modalidade da Despesa", "Valor Empenhado (R$)",
+  "Valor Liquidado (R$)", "Valor Pago (R$)", "Valor Restos a Pagar Inscritos (R$)",
+  "Valor Restos a Pagar Cancelado (R$)", "Valor Restos a Pagar Pagos (R$)",
+]
+
+[[datasets]]
+id = "cgu-favorecidos-pj"
+source = "cgu-arquivos"
+official_id = "favorecidos-pj"
+title = "Favorecidos pessoa jurídica (cadastro)"
+description = "Cadastro dos favorecidos PJ: razão social, CNAE, natureza jurídica e município da sede, com as tabelas de CNAE e de natureza jurídica. Usado na classificação de favorecidos (ADR-0031). A página lista só o instantâneo mais recente."
+license = "cgu-dados-abertos"
+access_classification = "public_conditional"
+periodicity = "mensal (instantâneo)"
+reference_url = "https://portaldatransparencia.gov.br/download-de-dados/favorecidos-pj"
+
+[datasets.params]
+url_template = "https://dadosabertos-download.cgu.gov.br/PortalDaTransparencia/saida/favorecidos-pj/{period}_FavorecidosPJ.zip"
+artifact_template = "favorecidos-pj-{period}.zip"
+grain = "month"
+start = "202610"
+end = "202610"
+format = "zip"
+expected_members = ["{period}_CNPJ.csv", "{period}_CNAE.csv", "{period}_NaturezaJuridica.csv"]
+min_bytes = 10000000
+healthcheck_url = "https://dadosabertos-download.cgu.gov.br/PortalDaTransparencia/saida/transferencias/202401_Transferencias.zip"
+
+[[datasets.params.csv]]
+member = "{period}_CNPJ.csv"
+encoding = "latin-1"
+delimiter = ";"
+columns = [
+  "CNPJ", "RAZAOSOCIAL", "NOMEFANTASIA", "COD_CNAE", "COD_NATJURIDICA", "TIPO_PESSOA",
+  "LOGRADOURO", "NUMERO", "COMPLEMENTO", "CEP", "BAIRRO", "MUNICIPIO", "UF",
+]
+
+[[datasets.params.csv]]
+member = "{period}_CNAE.csv"
+encoding = "latin-1"
+delimiter = ";"
+columns = ["COD_SECAO", "DESC_SECAO", "COD_SUBCLASSE", "DESC_SUBCLASSE"]
+
+[[datasets.params.csv]]
+member = "{period}_NaturezaJuridica.csv"
+encoding = "latin-1"
+delimiter = ";"
+columns = ["COD_NATJURIDICA", "DESC_NATJURIDICA", "COD_TIPO_NATJURIDICA", "DESC_TIPO_NATJURIDICA"]

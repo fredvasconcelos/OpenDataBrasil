@@ -3,12 +3,14 @@
 from odb_ingestion.config import ConfigError, SourceCatalog
 from odb_ingestion.connectors.ftp_file import FtpFileConnector
 from odb_ingestion.connectors.http_file import HttpFileConnector
+from odb_ingestion.connectors.http_periodic import HttpPeriodicConnector
 from odb_ingestion.connectors.sidra import SidraConnector
 from odb_ingestion.contract import BaseConnector
 
 CONNECTOR_TYPES: dict[str, type[BaseConnector]] = {
     SidraConnector.connector_type: SidraConnector,
     HttpFileConnector.connector_type: HttpFileConnector,
+    HttpPeriodicConnector.connector_type: HttpPeriodicConnector,
     FtpFileConnector.connector_type: FtpFileConnector,
 }
 
@@ -29,6 +31,7 @@ __all__ = [
     "CONNECTOR_TYPES",
     "FtpFileConnector",
     "HttpFileConnector",
+    "HttpPeriodicConnector",
     "SidraConnector",
     "build_connectors",
 ]

@@ -40,6 +40,12 @@
 5. **O território do valor é o do favorecido, não o do serviço.** A lente A usa o ente,
    fundo ou entidade recebedora. A lente B usa a sede cadastral: uma empresa de SP que
    executa obra no PA aparece em SP. As duas regras vão em nota visível no mapa e na ficha.
+   - **Estratégia futura** (pedido do mantenedor, 2026-11-22): associar o favorecido ao
+     **local de aplicação** do recurso, para responder "quanto dinheiro recebeu cada
+     localidade e como foi empenhado". Os caminhos candidatos estão no plano de contas
+     públicas, seção 15. Até lá, nenhum valor muda de território por inferência: a
+     associação só entra com fonte oficial que ligue o pagamento ao local, e com ADR
+     próprio.
 6. **O localizador da lente C não entra no mapa.** Em 2025-10, ele vinha vazio em 93% do
    valor pago (R$ 403,8 bi de R$ 433,0 bi).
 7. **Ranking contextual** (ADR-0034): "favorecidos do estado X" inclui todos os
