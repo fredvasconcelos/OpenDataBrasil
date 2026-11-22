@@ -322,7 +322,9 @@ test("cabeçalho e rodapé (DS 2.10): Contato no menu, Apoie, redes, rodapé mar
   await page.goto("/dashboard?kpi=populacao_residente");
   await expect(footer).toHaveClass(/slim/);
   const height = await footer.evaluate((el) => el.getBoundingClientRect().height);
-  expect(Math.round(height)).toBe(44);
+  // DS 2.17: 44 px de referência (2,75rem), escalados pela raiz da largura atual.
+  const root = await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).fontSize));
+  expect(height).toBeCloseTo((44 * root) / 16, 0);
   // O painel desconta a faixa: a página continua sem rolagem.
   const overflow = await page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight);
   expect(overflow).toBeLessThanOrEqual(1);
@@ -602,9 +604,9 @@ test("escala do mapa sem colapso e unidade nas colunas (DS 2.3.6)", async ({ pag
   await expect(legend.first()).toBeVisible();
   expect(await legend.count()).toBeGreaterThanOrEqual(4);
   await page.screenshot({ path: "test-results/escala-esperanca-vida-nordeste.png", fullPage: false });
-  // Unidade no cabeçalho: POF de 1995 em % ("Total (%)").
+  // Unidade da tabela (DS 2.17: uma vez na barra, não em cada coluna): POF de 1995 em %.
   await page.goto("/dashboard?kpi=pof_despesa_distribuicao_antiga");
-  await expect(page.locator(".data-table thead th").nth(1).locator(".th-unit")).toHaveText("%");
+  await expect(page.locator(".pivot-unit")).toHaveText("Valores em %");
 });
 
 test("tabela em matriz (DS 2.3.9): grupos, totais de linha, linha de totais e base do %", async ({ page }) => {
@@ -613,7 +615,9 @@ test("tabela em matriz (DS 2.3.9): grupos, totais de linha, linha de totais e ba
   const table = page.locator(".data-table");
   await expect(table.locator("thead")).toContainText("Branca");
   await expect(table.locator("thead")).toContainText("Mulheres");
-  await expect(table.locator("thead .th-unit").first()).toHaveText("pessoas (%)");
+  await expect(page.locator(".pivot-unit")).toHaveText("Valores em pessoas (%)");
+  // DS 2.17: um período só não repete a linha "2022" no cabeçalho (está no título).
+  await expect(table.locator("thead tr")).toHaveCount(2);
   // Linha de totais com o recorte (o valor publicado, não a soma das linhas).
   await expect(table.locator("tfoot")).toContainText("Total: Nordeste");
   const select = page.locator(".share-base select");
@@ -635,7 +639,8 @@ test("POF corrigida pelo IPCA (ADR-0020): seletor, unidade e valores", async ({ 
   await expect(group).toBeVisible();
   await group.getByRole("radio", { name: "IPCA geral" }).click();
   await expect(page).toHaveURL(/correcao=ipca(&|$)/);
-  await expect(page.locator(".data-table thead")).toContainText("R$ de jan/2018");
+  // DS 2.17: a unidade fica uma vez na barra da tabela, não em cada coluna.
+  await expect(page.locator(".pivot-unit")).toContainText("R$ de jan/2018");
   // Método no rodapé "Sobre este indicador" (DS 2.3.10), e não mais na barra lateral.
   await expect(group.getByText("Como é calculado")).toHaveCount(0);
   const more = page.locator(".meta-more");

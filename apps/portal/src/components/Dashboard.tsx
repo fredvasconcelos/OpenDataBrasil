@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PivotControls, PivotTable } from "@/components/PivotTable";
 import { DetailTooltip } from "@/components/DetailTooltip";
 import { DataExport, MapImageExport } from "@/components/ExportMenu";
-import { FilterIcon, ListIcon } from "@/components/icons";
+import { CollapseIcon, ExpandIcon, FilterIcon, ListIcon } from "@/components/icons";
 import { KpiInfo } from "@/components/KpiInfo";
 import { MapView, type FitRequest } from "@/components/MapView";
 import { SeasonChart } from "@/components/SeasonChart";
@@ -101,6 +101,23 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
   const coarse = useMediaQuery(COARSE_QUERY);
   const [sheet, setSheet] = useState<"filters" | "themes" | null>(null);
   const [view, setView] = useState<"map" | "chart" | "table">("map");
+  // Tabela ampliada (DS 2.17): ocupa a janela por cima do painel; Esc ou o mesmo botão fecham.
+  const [tableWide, setTableWide] = useState(false);
+  const tableToggle = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!tableWide) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setTableWide(false);
+      tableToggle.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    document.documentElement.classList.add("has-table-wide");
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.documentElement.classList.remove("has-table-wide");
+    };
+  }, [tableWide]);
   // Tabela dinâmica (B6; única tabela desde o DS 2.9): campos nas linhas e colunas, por
   // KPI e detalhes ativos. Mudar "Detalhar por" volta ao arranjo padrão.
   const [pivotFor, setPivotFor] = useState<{ key: string; rows: string[]; cols: string[] } | null>(null);
@@ -247,6 +264,18 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
   const pivotKey = `${kpiId}|${tableDims.join()}`;
   const pivotLayout =
     pivotFor?.key === pivotKey ? pivotFor : { key: pivotKey, rows: ["territorio"], cols: ["periodo", ...tableDims].slice(0, 4) };
+  const pivotControls = (
+    <PivotControls
+      fields={[
+        { id: "territorio", label: t("table.territory") },
+        { id: "periodo", label: t("table.period") },
+        ...levelDims.map((d) => ({ id: d.classification_id, label: d.label })),
+      ]}
+      rows={pivotLayout.rows}
+      cols={pivotLayout.cols}
+      onChange={(rows, cols) => setPivotFor({ key: pivotKey, rows, cols })}
+    />
+  );
   const pivot = useAsync(
     kpiId
       ? () =>
@@ -712,21 +741,28 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
             )}
           </section>
 
-          <section className="card area-table" aria-labelledby="table-title">
+          <section
+            className={`card area-table${tableWide && !mobile ? " is-wide" : ""}`}
+            aria-labelledby="table-title"
+            role={tableWide && !mobile ? "region" : undefined}
+          >
             <div className="table-head">
               <h2 id="table-title">{`${t("dashboard.tableTitle")} · ${scope} · ${tableLabel}`}</h2>
+              {!mobile ? (
+                <button
+                  ref={tableToggle}
+                  type="button"
+                  className="table-wide-toggle"
+                  aria-pressed={tableWide}
+                  onClick={() => setTableWide((v) => !v)}
+                >
+                  {tableWide ? <CollapseIcon /> : <ExpandIcon />}
+                  {tableWide ? t("dashboard.tableCollapse") : t("dashboard.tableExpand")}
+                </button>
+              ) : null}
             </div>
             <div className="pivot">
-              <PivotControls
-                fields={[
-                  { id: "territorio", label: t("table.territory") },
-                  { id: "periodo", label: t("table.period") },
-                  ...levelDims.map((d) => ({ id: d.classification_id, label: d.label })),
-                ]}
-                rows={pivotLayout.rows}
-                cols={pivotLayout.cols}
-                onChange={(rows, cols) => setPivotFor({ key: pivotKey, rows, cols })}
-              />
+              {pivot.data ? null : pivotControls}
               {pivot.error ? (
                 <Failure error={pivot.error} onRetry={() => setRetry((r) => r + 1)} />
               ) : pivot.data ? (
@@ -740,6 +776,7 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
                   onSelect={(key) => update({ geography: key })}
                   alerts={levelAlerts}
                   notes={state.accumulate ? [t("pivot.accumulateNote")] : []}
+                  controls={pivotControls}
                 />
               ) : (
                 <p className="muted">{t("dashboard.loading")}</p>

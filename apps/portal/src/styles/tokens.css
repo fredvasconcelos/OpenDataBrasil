@@ -112,34 +112,34 @@
   /* Tipografia */
   --odbr-font: var(--font-nunito, "Nunito"), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --odbr-font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --odbr-fs-page-title: 30px;
-  --odbr-fs-kpi: 28px;
-  --odbr-fs-card-title: 17px;
-  --odbr-fs-subtitle: 14px;
-  --odbr-fs-body: 15px;
-  --odbr-fs-ui: 14px;
-  --odbr-fs-small: 13px;
-  --odbr-fs-caption: 12px;
-  --odbr-fs-micro: 11px;
+  --odbr-fs-page-title: 1.875rem;
+  --odbr-fs-kpi: 1.75rem;
+  --odbr-fs-card-title: 1.0625rem;
+  --odbr-fs-subtitle: 0.875rem;
+  --odbr-fs-body: 0.9375rem;
+  --odbr-fs-ui: 0.875rem;
+  --odbr-fs-small: max(11px, 0.8125rem);
+  --odbr-fs-caption: max(11px, 0.75rem);
+  --odbr-fs-micro: max(11px, 0.6875rem);
 
   /* Espaço (base 4) */
-  --odbr-space-1: 4px;
-  --odbr-space-2: 8px;
-  --odbr-space-3: 12px;
-  --odbr-space-4: 16px;
-  --odbr-space-5: 20px;
-  --odbr-space-6: 24px;
-  --odbr-space-8: 32px;
-  --odbr-space-10: 40px;
+  --odbr-space-1: 0.25rem;
+  --odbr-space-2: 0.5rem;
+  --odbr-space-3: 0.75rem;
+  --odbr-space-4: 1rem;
+  --odbr-space-5: 1.25rem;
+  --odbr-space-6: 1.5rem;
+  --odbr-space-8: 2rem;
+  --odbr-space-10: 2.5rem;
 
   /* Forma */
-  --odbr-radius-xs: 4px;
-  --odbr-radius-sm: 8px;
-  --odbr-radius-md: 10px;
-  --odbr-radius-lg: 16px;
-  --odbr-radius-pill: 999px;
-  --odbr-shadow-1: 0 2px 8px rgba(7, 29, 65, 0.10);
-  --odbr-shadow-2: 0 12px 32px rgba(7, 29, 65, 0.16);
+  --odbr-radius-xs: 0.25rem;
+  --odbr-radius-sm: 0.5rem;
+  --odbr-radius-md: 0.625rem;
+  --odbr-radius-lg: 1rem;
+  --odbr-radius-pill: 62.4375rem;
+  --odbr-shadow-1: 0 2px 0.5rem rgba(7, 29, 65, 0.10);
+  --odbr-shadow-2: 0 0.75rem 2rem rgba(7, 29, 65, 0.16);
 
   /* Movimento */
   --odbr-dur-hover: 120ms;
@@ -149,14 +149,16 @@
   --odbr-ease: cubic-bezier(0.2, 0, 0, 1);
 
   /* Layout */
+  /* Larguras de contêiner ficam em px (DS 2.17): a escala compacta das telas largas
+     reduz texto e controles, não a área útil da página. */
   --odbr-content-wide: 1600px;
-  --odbr-control-h: 40px;
-  --odbr-control-compact-h: 32px;
-  --odbr-control-touch-h: 44px;
+  --odbr-control-h: 2.5rem;
+  --odbr-control-compact-h: 2rem;
+  --odbr-control-touch-h: 2.75rem;
   --odbr-content-reading: 72ch;
-  --odbr-header-h: 64px;
-  --odbr-stripe-h: 4px;
-  --odbr-sidebar-w: 260px;
+  --odbr-header-h: 4rem;
+  --odbr-stripe-h: 0.25rem;
+  --odbr-sidebar-w: 16.25rem;
 }
 
 /* Tema dark: escolha explícita */
@@ -231,8 +233,8 @@
   --odbr-chart-label: #C5D4EB;
   --odbr-chart-highlight: #2DB34A;
   --odbr-chart-area-opacity: 0.15;
-  --odbr-shadow-1: 0 2px 8px rgba(0, 0, 0, 0.35);
-  --odbr-shadow-2: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --odbr-shadow-1: 0 2px 0.5rem rgba(0, 0, 0, 0.35);
+  --odbr-shadow-2: 0 0.75rem 2rem rgba(0, 0, 0, 0.45);
 }
 
 /* Tema dark: preferência do sistema, quando o usuário não escolheu */
@@ -308,8 +310,8 @@
     --odbr-chart-label: #C5D4EB;
     --odbr-chart-highlight: #2DB34A;
     --odbr-chart-area-opacity: 0.15;
-    --odbr-shadow-1: 0 2px 8px rgba(0, 0, 0, 0.35);
-    --odbr-shadow-2: 0 12px 32px rgba(0, 0, 0, 0.45);
+    --odbr-shadow-1: 0 2px 0.5rem rgba(0, 0, 0, 0.35);
+    --odbr-shadow-2: 0 0.75rem 2rem rgba(0, 0, 0, 0.45);
   }
 }
 
