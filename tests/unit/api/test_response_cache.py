@@ -103,4 +103,5 @@ def test_cache_de_recusa_do_pivot_preserva_status_e_release() -> None:
     assert third.status_code == 422
     assert third.headers["x-odb-cache"] == "miss"
     assert third.headers["x-odb-release"] == "r2"
-    assert state["calls"] == 2
+    # .get: o mypy guarda o valor 1 do assert anterior para state["calls"].
+    assert state.get("calls") == 2

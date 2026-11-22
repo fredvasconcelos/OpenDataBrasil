@@ -21,7 +21,6 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.exc import OperationalError
 
-from odb_api import gold as gold_module
 from odb_api import kpis as kpi_module
 from odb_api.app import create_app
 from odb_api.config import ApiSettings
@@ -324,7 +323,8 @@ def test_geometria_reutiliza_gzip_e_negocia_variantes(
         calls += 1
         return compress(*args, **kwargs)
 
-    monkeypatch.setattr(gold_module.gzip, "compress", counted)
+    # gold usa gzip.compress pelo módulo: trocar no próprio gzip (sem reexportar).
+    monkeypatch.setattr(gzip, "compress", counted)
     client = stack["client"]
     path = "/api/v1/geometries/uf?within=brasil:1"
     plain = client.get(path, headers={"Accept-Encoding": "identity"})
