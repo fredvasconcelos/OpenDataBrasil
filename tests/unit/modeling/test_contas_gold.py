@@ -47,7 +47,8 @@ def _value(frame: pl.DataFrame, **where: str) -> Decimal:
     for column, wanted in where.items():
         frame = frame.filter(pl.col(column) == wanted)
     assert frame.height == 1, frame
-    return frame["value"][0]
+    value: Decimal = frame["value"][0]
+    return value
 
 
 def test_build_succeeds_with_all_tables_and_no_failure(gold: tuple[GoldContas, GoldBuild]) -> None:
