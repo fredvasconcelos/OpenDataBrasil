@@ -39,9 +39,9 @@
      prefeitura, que recebeu o próprio FPM nos mesmos meses. A causa (por exemplo,
      retenção ou cessão a terceiro) não está na fonte e não é deduzida. Os valores contam
      no território de Cachoeira de Pajeú, com a classe "empresa".
-   - **Teto de não resolvidos (ajuste da CP2, aguarda aprovação do mantenedor):** o
-     bloqueio vale acima de `max_unresolved_territory` linhas por mês (10, na configuração
-     de cada lente). Até esse teto, a linha fica com `territory_status = "nao_resolvido"`,
+   - **Teto de não resolvidos (ajuste da CP2, aprovado em 2026-11-22: "Mantém o teto de
+     10"):** o bloqueio vale acima de `max_unresolved_territory` linhas por mês (10, na
+     configuração de cada lente). Até esse teto, a linha fica com `territory_status = "nao_resolvido"`,
      entra no total da UF e do Brasil, fica fora do mapa municipal e gera aviso com a lista
      dos casos. Depois da correção acima, a lente A não tem nenhuma linha não resolvida
      em 2024-01 a 2026-11.

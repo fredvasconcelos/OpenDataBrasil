@@ -84,8 +84,9 @@
 
    A Gold marca a **completude por mês e tipo de transferência**, e o portal mostra
    "(parcial)" enquanto o tipo não chegou ou a razão A/(C+RP) não fechou. Os meses com
-   razão entre 0,83 e 0,94 (2025-07, 2025-09, 2025-12, 2026-03, 2026-07, 2026-09) serão
-   investigados na reconciliação da CP3.
+   razão entre 0,83 e 0,94 (2025-07, 2025-09, 2025-12, 2026-03, 2026-07, 2026-09) foram
+   investigados na CP3. São parcelas adicionais do FPM e outras ações ausentes na lente A.
+   A regra de "incompleto" está no ADR-0036.
 6. **Restos a pagar:** o "pago" de um mês inclui só o pagamento do exercício. Os restos a
    pagar pagos são uma medida separada na lente C. A lente A já é o fluxo de caixa
    pago, de qualquer exercício de origem; a nota da lente explica isso.

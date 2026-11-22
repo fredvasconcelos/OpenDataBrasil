@@ -149,7 +149,8 @@ def _pj_zip(period: str) -> bytes:
         {"recipient_code": "33333333000133", "company_name": "FUNDO MUNICIPAL DE SAUDE",
          "cnae_code": "8411600", "legal_nature_code": "1333"},
         {"recipient_code": "50875450000104", "company_name": "ATLAS LTDA",
-         "cnae_code": "4789099", "legal_nature_code": "2062"},
+         "cnae_code": "4789099", "legal_nature_code": "2062",
+         "municipality_name_source": "GUARABIRA", "uf": "PB"},
         {"recipient_code": "00000000000191", "company_name": "BANCO DO BRASIL SA",
          "cnae_code": "6422100", "legal_nature_code": "2038"},
     ]  # fmt: skip
