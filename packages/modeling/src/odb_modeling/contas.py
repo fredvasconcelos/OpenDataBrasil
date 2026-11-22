@@ -16,6 +16,7 @@ Regras que não são óbvias:
 
 from __future__ import annotations
 
+import hashlib
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
@@ -213,7 +214,26 @@ def build_dim_recipient(
         .with_columns(pl.col("recipient_class").is_in(NATURAL_PERSON).alias("is_natural_person"))
     )
     frame = _keyed(frame, ["recipient_code", "recipient_name"], "recipient_key", pl.Int64())
+    frame = frame.with_columns(
+        pl.Series(
+            "recipient_id",
+            [
+                recipient_id(code, name)
+                for code, name in zip(frame["recipient_code"], frame["recipient_name"], strict=True)
+            ],
+            dtype=pl.String,
+        )
+    )
     return RecipientDimension(_conform(frame, DIM_RECIPIENT), conflicts)
+
+
+def recipient_id(code: str | None, name: str | None) -> str:
+    """Identificador estável do favorecido: SHA-256 de código + nome, 16 hex (ADR-0036).
+
+    Não revela nada além do que a fonte publica e é o mesmo em todos os releases.
+    """
+    raw = f"{code or ''}\x1f{name or ''}".encode()
+    return hashlib.sha256(raw).hexdigest()[:16]
 
 
 def build_dim_management_unit(frames: Sequence[pl.LazyFrame]) -> pl.DataFrame:
@@ -396,6 +416,9 @@ def _sum(column: str) -> pl.Expr:
     return pl.col(column).sum().cast(VALUE_DTYPE).alias(column)
 
 
+_FACT_ORDER = ["uf_code", "municipality_id", "period", "recipient_key"]
+
+
 def transfer_fact(silver: pl.LazyFrame, dims: Dimensions) -> pl.DataFrame:
     """Lente A no grão do fato (linhas da fonte somadas; a contagem fica em ``source_lines``)."""
     frame = _join_keys(with_territory(silver), dims, ("recipient", "ug", "action", "nature"))
@@ -410,7 +433,8 @@ def transfer_fact(silver: pl.LazyFrame, dims: Dimensions) -> pl.DataFrame:
         .with_columns(gold_period(), pl.col("period").str.slice(0, 4).cast(pl.Int32).alias("year"))
         .collect(engine="streaming")
     )
-    return _conform(out, FACT_FEDERAL_TRANSFER)
+    # Ordem de território e favorecido: o DuckDB poda grupos de linhas pelos mín./máx.
+    return _conform(out, FACT_FEDERAL_TRANSFER).sort(_FACT_ORDER, nulls_last=True)
 
 
 def payment_fact(silver: pl.LazyFrame, dims: Dimensions) -> pl.DataFrame:
@@ -427,7 +451,7 @@ def payment_fact(silver: pl.LazyFrame, dims: Dimensions) -> pl.DataFrame:
         .with_columns(gold_period(), pl.col("period").str.slice(0, 4).cast(pl.Int32).alias("year"))
         .collect(engine="streaming")
     )
-    return _conform(out, FACT_FEDERAL_PAYMENT_RECIPIENT)
+    return _conform(out, FACT_FEDERAL_PAYMENT_RECIPIENT).sort(_FACT_ORDER, nulls_last=True)
 
 
 EXECUTION_MEASURES = (
@@ -576,7 +600,8 @@ def territory_aggregates(frame: pl.DataFrame, lens: str) -> pl.DataFrame:
         )
         .with_columns(pl.lit(lens).alias("lens"))
     )
-    return _conform(out, AGG_CONTAS_TERRITORY)
+    # Ordenado por território: a consulta de um território lê um só grupo de linhas.
+    return _conform(out, AGG_CONTAS_TERRITORY).sort("geography_key", "dimension_id", "period")
 
 
 def recipient_rank(fact: pl.DataFrame, lens: str, top_n: int) -> pl.DataFrame:
@@ -606,7 +631,7 @@ def recipient_rank(fact: pl.DataFrame, lens: str, top_n: int) -> pl.DataFrame:
         .filter(pl.col("rank") <= top_n)
         .with_columns(pl.lit(lens).alias("lens"))
     )
-    return _conform(out, AGG_RECIPIENT_RANK)
+    return _conform(out, AGG_RECIPIENT_RANK).sort("geography_key", "year", "rank")
 
 
 # ------------------------------------------------------------------ conferência e situação

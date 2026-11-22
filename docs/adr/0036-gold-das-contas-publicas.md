@@ -83,8 +83,9 @@ investigação desta CP3 (por mês e ação) mostrou que:
 3. **Situação do mês** (`agg_contas_period_status`):
    - `aberto`: o último mês publicado de cada lente, que a fonte ainda completa;
    - `incompleto` (só na lente A): a falta passa de **5%** do pago na lente C. O limite fica
-     entre o maior ruído medido (2,4%) e a menor lacuna real (6,7%). A linha traz as
-     principais ações em falta;
+     entre o maior ruído medido (2,4%) e a menor lacuna real (6,7%), e foi aprovado pelo
+     mantenedor em 2026-11-22 ("Aprovo o limite de 5%"). A linha traz as principais ações
+     em falta;
    - `fechado`: os demais meses. Nas lentes B e C, isso significa "mês encerrado, sem
      conferência com outra base nesta versão".
 

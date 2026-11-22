@@ -38,3 +38,8 @@ class ApiSettings(BaseSettings):
     # Cache de respostas por release, por processo (MiB); 0 desliga. Ligado na Vitrine.
     response_cache_mb: int = Field(default=0, ge=0, le=4096)
     geometry_cache_size: int = Field(default=8, ge=1)
+    # Bloco de contas públicas (ADR-0037): escopo com release próprio.
+    contas_scope: str = "contas"
+    # Homologação local: serve este release (validado ou ativo) em vez do ativo do escopo.
+    # Vazio em produção. Nunca serve release reprovado.
+    contas_release_id: str = ""

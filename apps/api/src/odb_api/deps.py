@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from sqlalchemy import Engine
 
 from odb_api.config import ApiSettings
+from odb_api.contas import ContasService
 from odb_api.gold import GoldGateway
 from odb_api.kpis import KpiService
 from odb_api.metrics import MetricsService
@@ -15,7 +17,7 @@ from odb_api.release import ReleaseResolver
 from odb_api.repository import CatalogRepository
 from odb_catalog.access_metrics import MetricsReader, metrics_engine
 from odb_catalog.db import make_engine
-from odb_catalog.publication import PublicationService
+from odb_catalog.publication import PublicationError, PublicationService, Release
 from odb_common.settings import Settings
 from odb_common.storage import LakehouseLayout, Layer
 from odb_ingestion.config import SourceCatalog, load_sources
@@ -44,6 +46,8 @@ class ApiDeps:
     engine: ReadEngine
     # Métricas de acesso (ADR-0027); None sem o banco odb_metrics configurado.
     metrics: MetricsService | None = None
+    # Bloco de contas públicas (ADR-0037); None desliga as rotas /contas (503).
+    contas: ContasService | None = None
     closers: list[object] = field(default_factory=list)
 
     def close(self) -> None:
@@ -87,6 +91,28 @@ def table_links(sources: SourceCatalog) -> dict[str, str]:
     return out
 
 
+_SERVABLE = ("validated", "active")
+
+
+def contas_loader(
+    publication: PublicationService, api: ApiSettings
+) -> Callable[[], Release | None]:
+    """Release das contas: o ativo do escopo ou, na homologação, o fixado por id."""
+    if not api.contas_release_id:
+        return lambda: publication.active(api.contas_scope)
+
+    def pinned() -> Release | None:
+        try:
+            release = publication.get(api.contas_release_id)
+        except PublicationError:
+            return None
+        if release.scope != api.contas_scope or release.status not in _SERVABLE:
+            return None
+        return release
+
+    return pinned
+
+
 def build_deps(settings: Settings | None = None, api: ApiSettings | None = None) -> ApiDeps:
     """Componentes reais: PostgreSQL (``odb_reader``) e DuckDB restrito à Gold."""
     settings = settings or Settings()
@@ -116,5 +142,8 @@ def build_deps(settings: Settings | None = None, api: ApiSettings | None = None)
         catalog=CatalogRepository(pg),
         engine=duck,
         metrics=MetricsService(MetricsReader(metrics_pg)) if metrics_pg else None,
+        contas=ContasService(
+            gold, ReleaseResolver(contas_loader(publication, api), ttl_s=api.release_ttl_s)
+        ),
         closers=[duck, pg, *([metrics_pg] if metrics_pg else [])],
     )

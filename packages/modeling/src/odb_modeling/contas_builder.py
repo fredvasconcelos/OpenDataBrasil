@@ -472,6 +472,15 @@ class ContasGoldBuilder:
         )
         natural = small[DIM_RECIPIENT.name].select("recipient_code", "recipient_name")
         duplicated = int(natural.is_duplicated().sum())
+        ids = int(small[DIM_RECIPIENT.name]["recipient_id"].is_duplicated().sum())
+        out.append(
+            CheckResult(
+                "dim_recipient.unique.recipient_id",
+                CheckStatus.FAIL if ids else CheckStatus.PASS,
+                "identificador estável único",
+                observed=ids,
+            )
+        )
         out.append(
             CheckResult(
                 "dim_recipient.unique.natural_key",

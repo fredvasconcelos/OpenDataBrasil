@@ -26,9 +26,11 @@ DEC = VALUE_DTYPE
 
 DIM_RECIPIENT = Contract(
     name="dim_recipient",
-    version="1.1.0",  # 1.1.0: sede do cadastro PJ
+    version="1.2.0",  # 1.1.0: sede do cadastro PJ; 1.2.0: identificador estável
     schema={
         "recipient_key": I64,
+        # SHA-256 de código + nome (16 hex): o mesmo em todos os releases, para links.
+        "recipient_id": S,
         "recipient_code": S,
         "recipient_name": S,
         "recipient_class": S,
@@ -46,7 +48,13 @@ DIM_RECIPIENT = Contract(
         "in_payments": B,
     },
     key=("recipient_key",),
-    required=("recipient_key", "recipient_code", "recipient_class", "is_natural_person"),
+    required=(
+        "recipient_key",
+        "recipient_id",
+        "recipient_code",
+        "recipient_class",
+        "is_natural_person",
+    ),
     partition_by=(),
 )
 
@@ -121,7 +129,7 @@ DIM_AMENDMENT_AUTHOR = Contract(
 # Grão: mês x território x tipo x tipo de favorecido x favorecido x UG x ação x natureza.
 FACT_FEDERAL_TRANSFER = Contract(
     name="fact_federal_transfer",
-    version="1.0.0",
+    version="1.1.0",  # 1.1.0: partição por ano e UF (ADR-0037)
     schema={
         "year": I32,
         "period": S,
@@ -162,13 +170,13 @@ FACT_FEDERAL_TRANSFER = Contract(
         "value",
         "source_lines",
     ),
-    partition_by=("year",),
+    partition_by=("year", "uf_code"),
 )
 
 # Grão: mês x território da sede x favorecido x UG.
 FACT_FEDERAL_PAYMENT_RECIPIENT = Contract(
     name="fact_federal_payment_recipient",
-    version="1.0.0",
+    version="1.1.0",  # 1.1.0: partição por ano e UF (ADR-0037)
     schema={
         "year": I32,
         "period": S,
@@ -193,7 +201,7 @@ FACT_FEDERAL_PAYMENT_RECIPIENT = Contract(
         "value",
         "source_lines",
     ),
-    partition_by=("year",),
+    partition_by=("year", "uf_code"),
 )
 
 # Grão: mês x UG x ação x natureza x autor de emenda. Sem território (ADR-0032, decisão 6).
@@ -237,7 +245,7 @@ FACT_FEDERAL_BUDGET_EXECUTION = Contract(
 # Mapa e gráfico (ADR-0034, decisão 1): total e "detalhar por", por território e mês.
 AGG_CONTAS_TERRITORY = Contract(
     name="agg_contas_territory",
-    version="1.0.0",
+    version="1.1.0",  # 1.1.0: ordenado por território (poda de grupos de linhas)
     schema={
         "lens": S,
         "level_id": S,
@@ -268,7 +276,7 @@ AGG_CONTAS_TERRITORY = Contract(
 # Ranking contextual (ADR-0034, decisão 4): os N maiores destinatários por território e ano.
 AGG_RECIPIENT_RANK = Contract(
     name="agg_recipient_rank",
-    version="1.0.0",
+    version="1.1.0",  # 1.1.0: ordenado por território (poda de grupos de linhas)
     schema={
         "lens": S,
         "level_id": S,

@@ -18,7 +18,7 @@ from odb_api.config import ApiSettings
 from odb_api.deps import ApiDeps, build_deps
 from odb_api.middleware import RateLimiter, make_middleware
 from odb_api.response_cache import ResponseCache, make_cache_middleware
-from odb_api.routes import catalog, kpi, metrics, query, territory
+from odb_api.routes import catalog, contas, kpi, metrics, query, territory
 from odb_api.routes.common import Deps
 from odb_api.schemas import HealthOut
 from odb_common.logging import configure_logging
@@ -67,8 +67,14 @@ def create_app(deps: ApiDeps | None, settings: ApiSettings | None = None) -> Fas
     if deps is not None:
         cache = ResponseCache(settings.response_cache_mb * 1024 * 1024)
         app.state.response_cache = cache
+        contas_svc = deps.contas
+        contas_release = (lambda: contas_svc.resolver.current().release_id) if contas_svc else None
         app.middleware("http")(
-            make_cache_middleware(cache, lambda: deps.resolver.current().release_id)
+            make_cache_middleware(
+                cache,
+                lambda: deps.resolver.current().release_id,
+                contas_release=contas_release,
+            )
         )
     app.middleware("http")(
         make_middleware(RateLimiter(settings.rate_limit_per_minute), settings.trusted_proxies)
@@ -87,7 +93,8 @@ def create_app(deps: ApiDeps | None, settings: ApiSettings | None = None) -> Fas
             "X-ODB-Format",
         ],
     )
-    for router in (catalog.router, territory.router, kpi.router, query.router, metrics.router):
+    routers = (catalog.router, territory.router, kpi.router, query.router, metrics.router)
+    for router in (*routers, contas.router):
         app.include_router(router)
 
     @app.get("/health", tags=["operação"], summary="Saúde do serviço")
