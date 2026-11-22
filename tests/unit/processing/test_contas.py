@@ -16,6 +16,7 @@ from odb_processing.contas import (
     recipient_class,
     resolve_by_name,
     resolve_by_siafi,
+    territory_corrections,
 )
 from odb_processing.parsers import Lineage, ParseError
 
@@ -152,6 +153,59 @@ def test_resolve_by_siafi_and_by_name() -> None:
         ("2506301", "municipio", "nome_uf_dtb"),
         (None, "nao_resolvido", None),
     ]
+
+
+PAJEU = {
+    "uf": "MG",
+    "siafi_code": "4196",
+    "source_name": "CACHOEIRA DO PAJEU",
+    "municipality_id": "3102704",
+    "reason": "grafia errada na fonte",
+    "approved": "2026-11-22, mantenedor",
+}
+
+
+def test_approved_correction_matches_only_the_exact_key() -> None:
+    """Grafia errada confirmada: casa por UF + SIAFI + nome exatos, nunca por semelhança."""
+    tabmun = _tabmun()
+    names = municipality_names(DTB, tabmun)
+    wrong_guarabira = {**PAJEU, "uf": "PB", "siafi_code": "2033", "source_name": "GUARABIRA"}
+    fixes = territory_corrections([PAJEU, wrong_guarabira], ["3102704", "2506301"])
+    lens_a = pl.DataFrame(
+        {
+            "uf": ["MG", "MG", "MG", "SP", "PB"],
+            "siafi_municipality_code": ["4196", "4196", "4197", "4196", "2033"],
+            "municipality_name_source": [
+                "Cachoeira do Pajeú",  # mesma chave depois da normalização
+                "CACHOEIRA DO PAJEUS",
+                "CACHOEIRA DO PAJEU",
+                "CACHOEIRA DO PAJEU",
+                "GUARABIRA",
+            ],
+        }
+    )
+    out = resolve_by_siafi(lens_a, tabmun, names, fixes)
+    assert out.select("municipality_id", "territory_status", "territory_method").rows() == [
+        ("3102704", "municipio", "correcao_aprovada"),
+        (None, "nao_resolvido", None),  # outro nome
+        (None, "nao_resolvido", None),  # outro SIAFI
+        (None, "nao_resolvido", None),  # outra UF
+        ("2506301", "municipio", "tabmun_siafi"),  # o SIAFI oficial vence a correção
+    ]
+
+
+@pytest.mark.parametrize(
+    ("entries", "message"),
+    [
+        ([{**PAJEU, "reason": ""}], "sem"),
+        ([{k: v for k, v in PAJEU.items() if k != "approved"}], "sem"),
+        ([{**PAJEU, "municipality_id": "9999999"}], "fora da DTB"),
+        ([PAJEU, {**PAJEU, "source_name": "Cachoeira do Pajeú"}], "repetidas"),
+    ],
+)
+def test_corrections_are_validated(entries: list[dict[str, str]], message: str) -> None:
+    with pytest.raises(ParseError, match=message):
+        territory_corrections(entries, ["3102704"])
 
 
 @pytest.mark.parametrize(

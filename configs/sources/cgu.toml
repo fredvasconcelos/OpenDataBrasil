@@ -101,12 +101,22 @@ columns = [
 [datasets.silver]
 # Lente A: município SIAFI→IBGE pela TABMUN; classe do favorecido pelo cadastro PJ (ADR-0031, 0032).
 transformer = "cgu_transfer"
-# Até 10 linhas por mês sem município IBGE ficam na UF, com aviso; acima, bloqueia (caso
-# real: SIAFI 4196 "CACHOEIRA DO PAJEU"/MG, fora da TABMUN). Nunca por semelhança de nome.
+# Até 10 linhas por mês sem município IBGE ficam na UF, com aviso; acima, bloqueia.
+# Nunca por semelhança de nome: grafias erradas confirmadas entram na lista abaixo.
 max_unresolved_territory = 10
 territorial_reference = "ibge-dtb"
 siafi_reference = "tesouro-tabmun"
 legal_entity_reference = "cgu-favorecidos-pj"
+
+# Correções aprovadas pelo mantenedor (ADR-0032, decisão 1): casam por igualdade de UF,
+# SIAFI e nome. O SIAFI oficial da TABMUN sempre vence.
+[[datasets.silver.territory_corrections]]
+uf = "MG"
+siafi_code = "4196"
+source_name = "CACHOEIRA DO PAJEU"
+municipality_id = "3102704"  # Cachoeira de Pajeú/MG (TABMUN: SIAFI 4053)
+reason = "Grafia errada na fonte ('do' por 'de') com SIAFI fora da TABMUN; 3 linhas de FPM e CIDE em 2025-03 e 2025-04 pagas a terceiro (CNPJ 32928723000141)."
+approved = "2026-11-22, mantenedor: 'o nome correto é Cachoeira de Pajeú, que é um município do estado de Minas Gerais'"
 
 [[datasets]]
 id = "cgu-despesas-favorecidos"
@@ -143,8 +153,8 @@ columns = [
 [datasets.silver]
 # Lente B: município da sede por nome + UF (DTB e TABMUN, com os nomes antigos oficiais).
 transformer = "cgu_recipient_payment"
-# Até 10 linhas por mês sem município IBGE ficam na UF, com aviso; acima, bloqueia (caso
-# real: SIAFI 4196 "CACHOEIRA DO PAJEU"/MG, fora da TABMUN). Nunca por semelhança de nome.
+# Até 10 linhas por mês sem município IBGE ficam na UF, com aviso; acima, bloqueia.
+# Nunca por semelhança de nome (a lista de correções aprovadas vale só para a lente A).
 max_unresolved_territory = 10
 territorial_reference = "ibge-dtb"
 siafi_reference = "tesouro-tabmun"

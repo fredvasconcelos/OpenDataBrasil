@@ -184,6 +184,7 @@ class FakePortal:
 
     ibge: FakeSources = field(default_factory=FakeSources)
     transfer_suffix: dict[str, str] = field(default_factory=dict)
+    transfer_extra: dict[str, dict[str, str]] = field(default_factory=dict)  # linha a mais
     version: dict[str, int] = field(default_factory=dict)
 
     def handler(self, request: httpx.Request) -> httpx.Response:
@@ -202,7 +203,12 @@ class FakePortal:
                 {
                     f"{period}_Transferencias.csv": _csv(
                         TRANSFER_COLUMNS,
-                        _transfer_rows(period, self.transfer_suffix.get(period, "")),
+                        _transfer_rows(period, self.transfer_suffix.get(period, ""))
+                        + [
+                            {**_transfer_rows(period)[0], **extra}
+                            for extra in [self.transfer_extra.get(period)]
+                            if extra
+                        ],
                     )
                 }
             ),
@@ -373,3 +379,38 @@ def test_unresolved_municipality_above_the_limit_blocks_the_write(tmp_path: Path
     assert "territory.resolved" in (transfer.error or "")
     uri = env.builder.target_uri(env.catalog.dataset("cgu-transferencias"))
     assert not Path(uri.removeprefix("file://")).exists()  # nada gravado
+
+
+def test_approved_correction_resolves_the_misspelled_municipality(env: Env) -> None:
+    """SIAFI 4196 "CACHOEIRA DO PAJEU"/MG → Cachoeira de Pajeú (3102704), aprovado em 22/11."""
+    env.portal.transfer_extra["202410"] = {
+        "uf": "MG",
+        "siafi_municipality_code": "4196",
+        "municipality_name_source": "CACHOEIRA DO PAJEU",
+        "recipient_type": "Entidades Empresariais Privadas",
+        "recipient_code": "32928723000141",
+        "recipient_name": "TV FILME SERVICOS DE TELECOMUNICACOES LTDA",
+        "value_raw": "813837,58",
+    }
+    env.ingest(*ALL)
+    runs = env.builder.build_many(list(ALL))
+    run = next(r for r in runs if r.dataset_id == "cgu-transferencias")
+    assert run.status == "succeeded", run.error
+    assert _checks(env, run.run_id)["territory.resolved"].status.value == "pass"
+    transfer = env.table("cgu-transferencias")
+    fixed = transfer.filter(pl.col("siafi_municipality_code") == "4196")
+    assert fixed.select(
+        "municipality_name_source", "municipality_id", "territory_status", "territory_method"
+    ).rows() == [("CACHOEIRA DO PAJEU", "3102704", "municipio", "correcao_aprovada")]
+    assert "territory_corrections@" in transfer["derivation_refs"][0]
+
+
+def test_corrections_outside_lens_a_are_refused(tmp_path: Path) -> None:
+    env = Env(tmp_path)
+    payment = env.catalog.dataset("cgu-despesas-favorecidos")
+    payment.silver["territory_corrections"] = [{"uf": "MG"}]
+    env.ingest(*ALL)
+    run = env.builder.build_many(list(ALL))
+    failed = next(r for r in run if r.dataset_id == "cgu-despesas-favorecidos")
+    assert failed.status == "failed"
+    assert "só vale para cgu_transfer" in (failed.error or "")

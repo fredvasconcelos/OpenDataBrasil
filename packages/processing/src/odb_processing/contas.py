@@ -10,6 +10,8 @@ Regras que não são óbvias:
 * **Município:** SIAFI→IBGE pela TABMUN (lente A); nome + UF contra os nomes da DTB e da
   TABMUN, com as renomeações oficiais ``(EX-...)`` da própria TABMUN (lente B). O método
   fica registrado por linha (ADR-0032). Sem casamento, a Silver não é escrita.
+* **Correções aprovadas:** erros de grafia da fonte confirmados pelo mantenedor entram
+  numa lista explícita (UF + SIAFI + nome exato → IBGE), nunca por semelhança de nome.
 * **Classe do favorecido** (ADR-0031): pelo formato do código e pela natureza jurídica do
   cadastro PJ; instituições financeiras pela CNAE (bancos e caixas econômicas, 64.2).
 """
@@ -18,8 +20,9 @@ from __future__ import annotations
 
 import csv
 import io
-from collections.abc import Sequence
-from dataclasses import dataclass
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass, field
+from typing import Any
 
 import polars as pl
 
@@ -194,17 +197,70 @@ def municipality_names(dtb: pl.DataFrame, tabmun: pl.DataFrame) -> pl.DataFrame:
     return names
 
 
-def resolve_by_siafi(
-    frame: pl.DataFrame, tabmun: pl.DataFrame, names: pl.DataFrame
+CORRECTION_METHOD = "correcao_aprovada"
+_CORRECTION_FIELDS = ("uf", "siafi_code", "source_name", "municipality_id", "reason", "approved")
+_CORRECTION_SCHEMA = {
+    "uf": pl.String,
+    "siafi_municipality_code": pl.String,
+    "name_key": pl.String,
+    "_fix_ibge": pl.String,
+}
+
+
+def territory_corrections(
+    entries: Sequence[Mapping[str, Any]], valid_ids: Sequence[str]
 ) -> pl.DataFrame:
-    """Lente A: SIAFI→IBGE pela TABMUN; sem SIAFI conhecido, nome + UF (ADR-0032)."""
+    """Lista explícita de grafias erradas da fonte, aprovadas pelo mantenedor (ADR-0032).
+
+    Cada entrada casa por **igualdade** de UF, código SIAFI e nome normalizado: nunca por
+    semelhança. O destino precisa existir na DTB, e cada chave aponta para um só município.
+    """
+    rows: list[dict[str, str]] = []
+    for entry in entries:
+        missing = [k for k in _CORRECTION_FIELDS if not str(entry.get(k, "")).strip()]
+        if missing:
+            msg = f"correção de território sem {missing}: {dict(entry)}"
+            raise ParseError(msg)
+        if str(entry["municipality_id"]) not in set(valid_ids):
+            msg = f"correção aponta para município fora da DTB: {entry['municipality_id']}"
+            raise ParseError(msg)
+        rows.append(
+            {
+                "uf": str(entry["uf"]),
+                "siafi_municipality_code": str(entry["siafi_code"]),
+                "source_name": str(entry["source_name"]),
+                "_fix_ibge": str(entry["municipality_id"]),
+            }
+        )
+    if not rows:
+        return pl.DataFrame(schema=_CORRECTION_SCHEMA)
+    table = pl.DataFrame(rows).with_columns(name_key("source_name").alias("name_key"))
+    table = table.select(list(_CORRECTION_SCHEMA))
+    if table.unique(["uf", "siafi_municipality_code", "name_key"]).height != table.height:
+        msg = "correções de território repetidas para a mesma UF, SIAFI e nome"
+        raise ParseError(msg)
+    return table
+
+
+def resolve_by_siafi(
+    frame: pl.DataFrame,
+    tabmun: pl.DataFrame,
+    names: pl.DataFrame,
+    corrections: pl.DataFrame | None = None,
+) -> pl.DataFrame:
+    """Lente A: SIAFI→IBGE pela TABMUN; correção aprovada; nome + UF (ADR-0032).
+
+    A correção só vale para um SIAFI ausente da TABMUN: o código oficial sempre vence.
+    """
     by_siafi = tabmun.select(
         pl.col("siafi_code").alias("siafi_municipality_code"),
         pl.col("municipality_id").alias("_siafi_ibge"),
     )
+    fixes = corrections if corrections is not None else pl.DataFrame(schema=_CORRECTION_SCHEMA)
     out = (
         frame.join(by_siafi, on="siafi_municipality_code", how="left")
         .with_columns(name_key("municipality_name_source").alias("name_key"))
+        .join(fixes, on=["uf", "siafi_municipality_code", "name_key"], how="left")
         .join(
             names.rename({"municipality_id": "_name_ibge", "territory_method": "_name_method"}),
             on=["uf", "name_key"],
@@ -213,16 +269,14 @@ def resolve_by_siafi(
     )
     code = pl.col("siafi_municipality_code")
     no_municipality = code.is_null() | (code == "")
+    resolved = pl.coalesce("_siafi_ibge", "_fix_ibge", "_name_ibge")
     return out.with_columns(
-        pl.when(no_municipality)
-        .then(None)
-        .otherwise(pl.coalesce("_siafi_ibge", "_name_ibge"))
-        .alias("municipality_id"),
+        pl.when(no_municipality).then(None).otherwise(resolved).alias("municipality_id"),
         pl.when(no_municipality)
         .then(pl.lit("sem_municipio"))
         .when(code == "-14")
         .then(pl.lit("multiplo"))
-        .when(pl.coalesce("_siafi_ibge", "_name_ibge").is_not_null())
+        .when(resolved.is_not_null())
         .then(pl.lit("municipio"))
         .otherwise(pl.lit("nao_resolvido"))
         .alias("territory_status"),
@@ -230,9 +284,11 @@ def resolve_by_siafi(
         .then(None)
         .when(pl.col("_siafi_ibge").is_not_null())
         .then(pl.lit("tabmun_siafi"))
+        .when(pl.col("_fix_ibge").is_not_null())
+        .then(pl.lit(CORRECTION_METHOD))
         .otherwise(pl.col("_name_method"))
         .alias("territory_method"),
-    ).drop("_siafi_ibge", "_name_ibge", "_name_method", "name_key")
+    ).drop("_siafi_ibge", "_fix_ibge", "_name_ibge", "_name_method", "name_key")
 
 
 def resolve_by_name(frame: pl.DataFrame, names: pl.DataFrame) -> pl.DataFrame:
@@ -387,6 +443,9 @@ class ContasRefs:
     names: pl.DataFrame  # municipality_names(DTB, TABMUN)
     legal_entities: pl.DataFrame  # cgu_legal_entity, instantâneo mais recente
     label: str  # ex.: "ibge-dtb@v1;tesouro-tabmun@v2;cgu-favorecidos-pj@v1"
+    corrections: pl.DataFrame = field(
+        default_factory=lambda: pl.DataFrame(schema=_CORRECTION_SCHEMA)
+    )  # territory_corrections() do dataset
 
 
 # ------------------------------------------------------------------ lentes (mensais)
@@ -402,7 +461,7 @@ def transfer_frame(
     """Lente A (Recursos transferidos) de um mês."""
     names = [n for _, n in TRANSFER_COLUMNS]
     frame = table.frame.with_columns(empty_to_null(names))
-    frame = resolve_by_siafi(frame, refs.tabmun, refs.names)
+    frame = resolve_by_siafi(frame, refs.tabmun, refs.names, refs.corrections)
     frame = with_recipient_class(frame, refs.legal_entities, refs.tabmun)
     frame = frame.with_columns(
         pl.lit(period).alias("period"),

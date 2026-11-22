@@ -77,6 +77,7 @@ from odb_processing.datasus import (
 from odb_processing.parsers import (
     Lineage,
     MeshSpec,
+    ParseError,
     extract_member,
     parse_dtb_municipalities,
     parse_sidra,
@@ -971,19 +972,37 @@ class SilverBuilder:
             .drop("snapshot")
             .collect()
         )
+        entries = dataset.silver.get("territory_corrections", [])
+        if entries and self.transformer(dataset) != "cgu_transfer":
+            # Só a lente A resolve por SIAFI; em outra lente a lista seria ignorada.
+            msg = f"{dataset.id}: territory_corrections só vale para cgu_transfer"
+            raise SilverBuildError(msg)
+        try:
+            corrections = contas.territory_corrections(
+                entries, dtb.get_column("municipality_id").to_list()
+            )
+        except ParseError as exc:
+            msg = f"{dataset.id}: {exc}"
+            raise SilverBuildError(msg) from exc
+        labels = [
+            dtb_label,
+            tab_label,
+            pj_label,
+            # A versão da regra de classe entra no estado: mudar a regra refaz os meses.
+            f"recipient_class@{contas.RECIPIENT_CLASS_VERSION}",
+        ]
+        if entries:
+            # Idem para as correções aprovadas de território (ADR-0032).
+            digest = hashlib.sha256(
+                json.dumps(entries, sort_keys=True, ensure_ascii=False).encode()
+            ).hexdigest()[:12]
+            labels.append(f"territory_corrections@{digest}")
         return contas.ContasRefs(
             tabmun=tabmun,
             names=contas.municipality_names(dtb, tabmun),
             legal_entities=entities,
-            # A versão da regra de classe entra no estado: mudar a regra refaz os meses.
-            label=";".join(
-                (
-                    dtb_label,
-                    tab_label,
-                    pj_label,
-                    f"recipient_class@{contas.RECIPIENT_CLASS_VERSION}",
-                )
-            ),
+            label=";".join(labels),
+            corrections=corrections,
         )
 
     @staticmethod
