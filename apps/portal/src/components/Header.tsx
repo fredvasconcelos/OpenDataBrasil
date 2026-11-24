@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
+import { BlockChooser } from "@/components/BlockChooser";
 import { CloseIcon, HeartIcon, MenuIcon } from "@/components/icons";
 import { LanguageMenu } from "@/components/LanguageMenu";
 import { Logo } from "@/components/Logo";
@@ -12,7 +13,8 @@ import { linkTarget, ProjectLinks } from "@/components/ProjectLinks";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { CONTACT_URL } from "@/lib/links";
 
-// Cabeçalho (DS 2.10, opção 4; DS 2.12: Métricas). Menu: Início · Painel de análise · Sobre
+// Cabeçalho (DS 2.10, opção 4; DS 2.12: Métricas; ADR-0039: Painel de análise abre a escolha
+// do bloco). Menu: Início · Painel de análise · Sobre
 // os dados · Contato (texto, mesmo estilo das abas) · Métricas e, logo depois, "Apoie" em amarelo da marca. À direita,
 // dois blocos de 36 px: redes (Instagram e GitHub, só ícones) | preferências (idioma e
 // tema). Até 991 px (DS 2.18): logo, "Apoie" (só o coração) e o botão de menu, que abre uma gaveta
@@ -33,11 +35,9 @@ export function Header() {
   const path = usePathname();
   const [open, setOpen] = useState(false);
   const button = useRef<HTMLButtonElement>(null);
-  const links = [
-    { href: "/", label: t("nav.home") },
-    { href: "/dashboard", label: t("nav.dashboard") },
-    { href: "/sobre", label: t("nav.about") },
-  ];
+  // "Painel de análise" não é link: abre a escolha do bloco (BlockChooser, ADR-0039).
+  const home = { href: "/", label: t("nav.home") };
+  const about = { href: "/sobre", label: t("nav.about") };
 
   // Fecha ao navegar (ajuste de estado durante a renderização, sem efeito em cascata).
   const [seenPath, setSeenPath] = useState(path);
@@ -76,12 +76,14 @@ export function Header() {
             {t("site.name")}
           </span>
         </Link>
-        <nav aria-label="Principal" className="header-nav">
-          {links.map((l) => (
-            <Link key={l.href} href={l.href} aria-current={path === l.href ? "page" : undefined}>
-              {l.label}
-            </Link>
-          ))}
+        <nav aria-label={t("nav.main")} className="header-nav">
+          <Link href={home.href} aria-current={path === home.href ? "page" : undefined}>
+            {home.label}
+          </Link>
+          <BlockChooser key={path} />
+          <Link href={about.href} aria-current={path === about.href ? "page" : undefined}>
+            {about.label}
+          </Link>
           {CONTACT_URL ? (
             <a href={CONTACT_URL} {...linkTarget(CONTACT_URL)}>
               {t("nav.contact")}
@@ -129,11 +131,13 @@ export function Header() {
           <button type="button" className="drawer-backdrop" aria-label={t("nav.closeMenu")} tabIndex={-1} onClick={() => setOpen(false)} />
           <div id="menu-movel" className="drawer" role="dialog" aria-modal="false" aria-label={t("nav.menu")}>
             <nav aria-label={t("nav.menu")}>
-              {links.map((l) => (
-                <Link key={l.href} href={l.href} aria-current={path === l.href ? "page" : undefined}>
-                  {l.label}
-                </Link>
-              ))}
+              <Link href={home.href} aria-current={path === home.href ? "page" : undefined}>
+                {home.label}
+              </Link>
+              <BlockChooser variant="drawer" />
+              <Link href={about.href} aria-current={path === about.href ? "page" : undefined}>
+                {about.label}
+              </Link>
               {CONTACT_URL ? (
                 <a href={CONTACT_URL} {...linkTarget(CONTACT_URL)}>
                   {t("nav.contact")}

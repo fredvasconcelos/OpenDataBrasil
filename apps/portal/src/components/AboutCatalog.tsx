@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { SearchGlyph } from "@/components/HomeCatalog";
 import { ThemeIcon } from "@/components/ThemeIcon";
 import { type CatalogKpi, type CatalogPlanned, dimensionsText, flatten, flattenPlanned, matchKpi, matchPlanned, periodRange } from "@/lib/catalog";
+import { FaIcon } from "@/components/FaIcon";
 import { THEME_ICONS, themeStyle, themeVisual } from "@/lib/themes";
 import type { Navigation } from "@/lib/types";
 
@@ -82,9 +83,7 @@ export function AboutCatalog({ nav, releaseId, activated, licenseReview }: Props
         <div className="theme-chips-row" role="group" aria-label={t("catalog.filterByTheme")}>
           <button type="button" className="theme-chip" aria-pressed={theme === "all"} onClick={() => setTheme("all")}>
             <span className="theme-chip-icon" aria-hidden="true">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                <path d={THEME_ICONS.generico} />
-              </svg>
+              <FaIcon icon={THEME_ICONS.generico} size={14} />
             </span>
             {t("catalog.all")}
           </button>
@@ -93,9 +92,7 @@ export function AboutCatalog({ nav, releaseId, activated, licenseReview }: Props
             return (
               <button key={th.theme_id} type="button" className="theme-chip" aria-pressed={theme === th.theme_id} style={themeStyle(v.family)} onClick={() => setTheme(th.theme_id)}>
                 <span className="theme-chip-icon" aria-hidden="true">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d={THEME_ICONS[v.icon]} />
-                  </svg>
+                  <FaIcon icon={THEME_ICONS[v.icon]} size={14} />
                 </span>
                 {th.label}
               </button>

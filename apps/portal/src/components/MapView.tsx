@@ -22,6 +22,8 @@ export interface FitRequest {
 }
 
 interface Props {
+  /** Expõe controles territoriais como grupo acessível, sem imagem envolvendo botões. */
+  groupedControls?: boolean;
   /** Territórios coloridos: o nível exibido, dentro do recorte quando houver. */
   collection: GeoCollection;
   /** Nível do recorte no país inteiro (desenhado em cinza fora do recorte); null sem recorte. */
@@ -70,6 +72,7 @@ interface Shape {
 // funciona em atributos de apresentação do SVG); estados no globals.css.
 export const MapView = forwardRef<SVGSVGElement | null, Props>(function MapView(
   {
+    groupedControls = false,
     collection,
     context,
     values,
@@ -303,7 +306,7 @@ export const MapView = forwardRef<SVGSVGElement | null, Props>(function MapView(
       <svg
         ref={svgEl}
         viewBox={`0 0 ${size.width} ${size.height}`}
-        role="img"
+        role={groupedControls ? "group" : "img"}
         aria-label={label}
         xmlns="http://www.w3.org/2000/svg"
         onMouseMove={(e) => {

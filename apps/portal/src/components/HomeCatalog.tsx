@@ -6,6 +6,8 @@ import { type CSSProperties, useMemo, useState } from "react";
 import { KpiPreview } from "@/components/KpiPreview";
 import { ThemeIcon } from "@/components/ThemeIcon";
 import { type CatalogKpi, flatten, flattenPlanned, matchKpi, matchPlanned } from "@/lib/catalog";
+import { FaIcon } from "@/components/FaIcon";
+import type { FaDef } from "@/lib/faIcons";
 import { THEME_ICONS, themeStyle, themeVisual } from "@/lib/themes";
 import type { Navigation, Theme } from "@/lib/types";
 
@@ -208,16 +210,14 @@ function Chip({
   on: boolean;
   label: string;
   count: number;
-  icon?: string;
+  icon?: FaDef;
   style?: CSSProperties;
   onClick: () => void;
 }) {
   return (
     <button type="button" className="theme-chip" aria-pressed={on} onClick={onClick} style={style}>
       <span className="theme-chip-icon" aria-hidden="true">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d={icon} />
-        </svg>
+        <FaIcon icon={icon} size={14} />
       </span>
       {label}
       <span className="theme-chip-count">{count}</span>

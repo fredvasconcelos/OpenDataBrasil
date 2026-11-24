@@ -29,7 +29,9 @@
     "preferences": "Preferências",
     "language": "Idioma",
     "languageCurrent": "Idioma: {language}",
-    "languageSoon": "em breve"
+    "languageSoon": "em breve",
+    "chooseBlock": "Escolha o painel",
+    "main": "Principal"
   },
   "theme": {
     "toDark": "Ativar tema escuro",
@@ -332,7 +334,9 @@
     "reviewStatus": {
       "requires_review": "algumas em revisão",
       "approved": "todas aprovadas"
-    }
+    },
+    "iconsCredit": "Ícones Font Awesome Free 6.7.2, da Fonticons, sob CC BY 4.0 (ícones) e MIT (código).",
+    "iconsLicense": "Licenças e atribuição dos ícones."
   },
   "unavailable": {
     "title": "Dados temporariamente indisponíveis",
@@ -617,5 +621,127 @@
       "title": "Como contamos",
       "text": "Sem cookies e sem guardar IP: cada acesso soma uma visualização por dia, página e local aproximado (país e estado, nunca a cidade). Lugares e indicadores com menos de 5 acessos aparecem como \"menos de 5\". O estado vem da localização aproximada do endereço de internet: em redes móveis e com VPN, o acesso pode aparecer no estado da sede da operadora ou como \"Estado não identificado\"."
     }
+  },
+  "blocks": {
+    "title": "O que você quer consultar?",
+    "current": "Você está aqui",
+    "open": "Abrir o painel",
+    "estatisticas": {
+      "name": "Estatísticas oficiais",
+      "short": "Indicadores de fontes oficiais, com mapa, série e tabela",
+      "description": "Os indicadores oficiais do Brasil, das regiões, dos estados e dos municípios: população, saúde, educação, trabalho, economia e outros temas, com mapa, série e tabela."
+    },
+    "contas": {
+      "name": "Contas públicas",
+      "short": "Quanto a União envia a estados e municípios",
+      "description": "Quanto o governo federal envia para estados e municípios: por tipo de transferência e por área, mês a mês. Dados do Portal da Transparência (CGU)."
+    }
+  },
+  "contas": {
+    "question": "Quanto o governo federal envia para estados e municípios?",
+    "lead": "Recursos transferidos pela União: como, para onde e quando.",
+    "filters": "Filtros",
+    "territory": "Território",
+    "period": "Período",
+    "area": "Área",
+    "allAreas": "Todas as áreas",
+    "brasil": "Brasil",
+    "year": "Ano {year}",
+    "lensName": "Recursos transferidos",
+    "highlights": {
+      "total": "Total enviado",
+      "constitutional": "Constitucionais e royalties",
+      "legal": "Legais, voluntárias e específicas",
+      "topArea": "Maior área",
+      "ofTotal": "{share} do total"
+    },
+    "map": {
+      "title": "Para onde vai",
+      "subtitle": "Valor recebido por município, {period}",
+      "legend": "Valor recebido (R$)",
+      "stateLevel": "Sem município (favorecidos estaduais): {value}",
+      "note": "O mapa mostra onde o dinheiro foi recebido. Como cada ente gasta esse dinheiro não está nas bases federais."
+    },
+    "how": {
+      "title": "Como chega",
+      "byType": "Por tipo de transferência",
+      "byArea": "Por área",
+      "areaHint": "Clique numa área para filtrar o total, o mapa e a série."
+    },
+    "when": {
+      "title": "Quando",
+      "monthly": "Mensal",
+      "yearly": "Anual"
+    },
+    "who": {
+      "title": "Quem mais recebeu",
+      "rank": "Posição",
+      "name": "Favorecido",
+      "seat": "Sede",
+      "class": "Classe",
+      "value": "Valor",
+      "page": "Página {page} de {pages}",
+      "count": "{count} favorecidos no território",
+      "note": "Bancos pagadores, lançamentos agregados, valores sigilosos e sem informação não entram no ranking, mas entram nos totais.",
+      "previous": "Página anterior",
+      "next": "Próxima página"
+    },
+    "status": {
+      "closed": "Período fechado",
+      "open": "Mês aberto",
+      "incomplete": "Mês incompleto",
+      "openText": "Último mês publicado: a fonte ainda acrescenta lançamentos.",
+      "incompleteText": "Faltam ações na fonte neste mês."
+    },
+    "source": "Fonte: CGU, Portal da Transparência. Valores nominais, sem correção pela inflação.",
+    "release": "Versão dos dados",
+    "lensesNote": "As lentes não se somam: cada uma responde uma pergunta diferente.",
+    "unavailable": {
+      "title": "Contas públicas temporariamente indisponíveis",
+      "text": "Os dados das contas não responderam agora. As Estatísticas oficiais continuam funcionando.",
+      "retry": "Tentar de novo",
+      "goStats": "Ir para Estatísticas oficiais"
+    },
+    "empty": {
+      "title": "Nenhum valor neste recorte",
+      "text": "Não há transferências para este território no período escolhido. Escolha outro período ou território."
+    },
+    "profile": {
+      "back": "Voltar ao painel",
+      "nature": "Natureza jurídica",
+      "activity": "Atividade econômica",
+      "byLens": "Total por lente, {year}",
+      "lensA": "Recursos transferidos",
+      "lensB": "Recebimento por favorecido",
+      "lensANote": "Pagamentos da União ao ente ou entidade.",
+      "lensBNote": "Tudo o que o favorecido recebeu, de qualquer órgão.",
+      "notSummed": "Os valores das duas lentes não se somam.",
+      "series": "Mês a mês, {year}",
+      "organs": "Órgãos que mais pagaram",
+      "official": "Ver no Portal da Transparência",
+      "homonym": "O CPF mascarado não distingue pessoas: pode haver homônimos. Confira a página oficial no Portal da Transparência.",
+      "fictional": "Exemplo fictício para o desenho da variante pessoa física.",
+      "officialUnavailable": "Consulte o Portal da Transparência; a API ainda não fornece um link específico do favorecido."
+    },
+    "loading": "Carregando contas públicas…",
+    "up": "Voltar ao Brasil",
+    "allStates": "Todos os estados",
+    "scope": "{territory} · {period}",
+    "seriesPeriod": "Série no período selecionado",
+    "filteredArea": "Área selecionada: {area}",
+    "allAreasContext": "Composição de todas as áreas do território no período.",
+    "rankingScope": "Ranking de {year}, em todas as áreas e meses do ano. Os filtros de mês e área não se aplicam a esta seção.",
+    "previous": "Página anterior",
+    "next": "Próxima página",
+    "tesouro": "Fonte complementar: Tesouro Nacional (Tesouro Transparente), licença ODbL.",
+    "notes": "Notas e proveniência",
+    "notFound": "Favorecido não encontrado neste release.",
+    "totalUnavailable": "Total indisponível neste recorte.",
+    "mapTotalNote": "O mapa mostra apenas valores atribuídos aos territórios desenhados; os destaques incluem o total do território.",
+    "territoryTrail": "Território das contas",
+    "officialUnavailable": "Consulte o Portal da Transparência; a API ainda não fornece um link específico do favorecido.",
+    "grain": "Série por",
+    "filterError": "Filtro indisponível neste release. Escolha outro período ou território.",
+    "resetFilters": "Limpar filtros"
   }
 }

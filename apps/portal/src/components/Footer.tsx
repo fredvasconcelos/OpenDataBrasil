@@ -15,7 +15,7 @@ import { ProjectLinks } from "@/components/ProjectLinks";
 export function Footer() {
   const t = useTranslations();
   const path = usePathname();
-  const slim = path?.startsWith("/dashboard") ?? false;
+  const slim = path === "/estatisticas/painel" || path === "/contas/painel" || (path?.startsWith("/dashboard") ?? false);
   return (
     <footer className={slim ? "footer slim" : "footer"}>
       <div className="footer-brand">
