@@ -613,14 +613,15 @@
     "datasets": {
       "title": "Conjuntos de dados mais acessados",
       "sort": "Ordenar por",
-      "byViews": "Mais visualizados",
+      "byViews": "Mais abertos",
       "byDownloads": "Mais baixados",
       "rank": "Posição",
       "name": "Indicador",
       "theme": "Tema",
-      "views": "Visualizações",
+      "views": "Aberturas",
       "downloads": "Downloads",
-      "empty": "Nenhum indicador com 5 ou mais acessos no período."
+      "empty": "Nenhum indicador com 5 ou mais aberturas no período.",
+      "suppressionNote": "Indicadores com menos de 5 aberturas não aparecem."
     },
     "table": {
       "caption": "Acessos por {level}",

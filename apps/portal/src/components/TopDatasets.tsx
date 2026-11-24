@@ -14,7 +14,7 @@ interface Props {
 }
 
 // Conjuntos de dados mais acessados (DS 2.12). A unidade é o indicador (ADR-0027, item 7),
-// que é o que o visitante abre e exporta; o link leva ao Painel. A ordem (visualizações ou
+// que é o que o visitante abre e exporta; o link leva ao Painel. A ordem (aberturas ou
 // downloads) vem da API. No celular, a tabela vira lista (CSS).
 export function TopDatasets({ items, sort, onSort, period }: Props) {
   const t = useTranslations("metrics.datasets");
@@ -32,6 +32,7 @@ export function TopDatasets({ items, sort, onSort, period }: Props) {
         </div> : null}
       </div>
       <p className="muted metrics-period-line">{period}</p>
+      <p className="muted">{t("suppressionNote")}</p>
       {items.length ? (
         <table className="data-table top-datasets">
           <thead>
@@ -52,7 +53,7 @@ export function TopDatasets({ items, sort, onSort, period }: Props) {
               <tr key={d.kpi_id}>
                 <td data-label={t("rank")}>{i + 1}</td>
                 <th scope="row" data-label={t("name")}>
-                  <Link href={`/dashboard?kpi=${encodeURIComponent(d.kpi_id)}`}>{d.title}</Link>
+                  <Link href={`/estatisticas/painel?kpi=${encodeURIComponent(d.kpi_id)}`}>{d.title}</Link>
                 </th>
                 <td data-label={t("theme")}>{d.theme}</td>
                 <td className="num" data-label={t("views")}>
