@@ -1173,7 +1173,9 @@ def test_provenance_from_source_configuration() -> None:
     assert out["datasus-sim-cid10-dores"] == ("MS", None)
 
 
-def test_exclusive_dimensions_and_absent_categories(tmp_path: Path, stack: dict[str, Any]) -> None:
+def test_exclusive_dimensions_and_absent_categories(
+    tmp_path: Path, stack: dict[str, Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
     """ADR-0016: dimensões marginais vão uma por vez; categoria sem dado não aparece."""
     text = (PORTAL_DIR / "demografia.toml").read_text(encoding="utf-8")
     marker = 'indicator = "censo_populacao_cor_raca_sexo"\n'
@@ -1187,6 +1189,33 @@ def test_exclusive_dimensions_and_absent_categories(tmp_path: Path, stack: dict[
         service.series(ctx, "populacao_residente", geography="brasil:1", dimensions=["c86", "c2"])
     one = service.series(ctx, "populacao_residente", geography="brasil:1", dimensions=["c2"])
     assert len(one.series) == 3  # Total, Homens e Mulheres
+    # A tabela devolve o diagnóstico V4, sem executar o cruzamento recusado.
+    with monkeypatch.context() as guarded:
+
+        def reject_query(*args: Any, **kwargs: Any) -> None:
+            raise AssertionError("Cruzamento inválido não pode consultar observações")
+
+        guarded.setattr(stack["gold"], "run_plan", reject_query)
+        pivot = service.pivot(
+            ctx,
+            "populacao_residente",
+            level="uf",
+            within=None,
+            rows=["territorio"],
+            cols=["c86", "c2"],
+        )
+        assert pivot.cells == []
+        assert [a.code for a in pivot.alerts] == ["V4"]
+    with pytest.raises(SemanticError, match="não tem o período"):
+        service.pivot(
+            ctx,
+            "populacao_residente",
+            level="uf",
+            within=None,
+            rows=["territorio"],
+            cols=["periodo"],
+            periods=["2999"],
+        )
     # As fixtures da 9606 só têm o Total de idade: os grupos quinquenais não aparecem.
     detail = service.detail(
         ctx, "populacao_residente", geography="brasil:1", period="2022", dimensions=["c287"]

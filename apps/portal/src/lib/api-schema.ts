@@ -1058,6 +1058,49 @@ export interface components {
             note: string;
         };
         /**
+         * CoverageAlertOut
+         * @description Alerta calculado pela API para a tabela dinâmica (ADR-0040).
+         */
+        CoverageAlertOut: {
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "warning" | "danger";
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "A1" | "A2" | "A3" | "A4" | "V1" | "V2" | "V3" | "V4";
+            params: components["schemas"]["CoverageAlertParams"];
+        };
+        /**
+         * CoverageAlertParams
+         * @description Parâmetros do diagnóstico, sem textos traduzidos ou URLs inventadas.
+         */
+        CoverageAlertParams: {
+            /** Level */
+            level: string;
+            /** Dimension */
+            dimension?: string | null;
+            /** Dimensions */
+            dimensions?: string[];
+            /** Tables */
+            tables?: string[];
+            /** Periods */
+            periods?: string[];
+            /** Available Periods */
+            available_periods?: string[];
+            /** Available Levels */
+            available_levels?: string[];
+            /** Observed */
+            observed?: number | null;
+            /** Expected */
+            expected?: number | null;
+            /** Reference */
+            reference?: string | null;
+        };
+        /**
          * DatasetOut
          * @description Dataset do catálogo.
          */
@@ -1903,6 +1946,8 @@ export interface components {
             cells: (components["schemas"]["CellOut"] | null)[][];
             /** Share Bases */
             share_bases?: components["schemas"]["PivotShareBaseOut"][];
+            /** Alerts */
+            alerts?: components["schemas"]["CoverageAlertOut"][];
             footer?: components["schemas"]["PivotHeaderOut"] | null;
             /**
              * Footer Cells

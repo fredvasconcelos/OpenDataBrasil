@@ -696,6 +696,29 @@ class PivotShareBaseOut(_Out):
     status: str
 
 
+class CoverageAlertParams(_Out):
+    """Parâmetros do diagnóstico, sem textos traduzidos ou URLs inventadas."""
+
+    level: str
+    dimension: str | None = None
+    dimensions: list[str] = Field(default_factory=list)
+    tables: list[str] = Field(default_factory=list)
+    periods: list[str] = Field(default_factory=list)
+    available_periods: list[str] = Field(default_factory=list)
+    available_levels: list[str] = Field(default_factory=list)
+    observed: int | None = None
+    expected: int | None = None
+    reference: str | None = None
+
+
+class CoverageAlertOut(_Out):
+    """Alerta calculado pela API para a tabela dinâmica (ADR-0040)."""
+
+    severity: Literal["warning", "danger"]
+    code: Literal["A1", "A2", "A3", "A4", "V1", "V2", "V3", "V4"]
+    params: CoverageAlertParams
+
+
 class PivotOut(_Out):
     """Tabela dinâmica (B6): linhas e colunas escolhidas; os campos fora dela ficam no
     Total publicado (sem somas novas); nunca acumulada (ADR-0026)."""
@@ -711,6 +734,7 @@ class PivotOut(_Out):
     columns: list[PivotHeaderOut]
     cells: list[list[CellOut | None]]
     share_bases: list[PivotShareBaseOut] = Field(default_factory=list)
+    alerts: list[CoverageAlertOut] = Field(default_factory=list)
     # Linha de totais (território do recorte, ou Brasil), só com Território nas linhas.
     footer: PivotHeaderOut | None = None
     footer_cells: list[CellOut | None] = []

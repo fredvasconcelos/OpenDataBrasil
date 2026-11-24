@@ -1242,12 +1242,16 @@ mark { background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px; 
 .pivot-table tbody tr[aria-selected="true"] th { font-weight: 800; }
 .pivot-table tfoot th, .pivot-table tfoot td { font-weight: 800; border-top: 2px solid var(--odbr-border); }
 .pivot-table .share { color: var(--odbr-text-muted); font-weight: 500; }
-.share-base .info-button.is-alert { color: var(--odbr-danger); background: var(--odbr-danger-bg); box-shadow: 0 0 0 1px var(--odbr-danger-border); }
-.share-base .info-button.is-alert:hover { background: var(--odbr-danger-bg); color: var(--odbr-danger); }
+.share-base .info-button.is-danger { color: var(--odbr-danger); background: var(--odbr-danger-bg); box-shadow: 0 0 0 1px var(--odbr-danger-border); }
+.share-base .info-button.is-danger:hover { background: var(--odbr-danger-bg); color: var(--odbr-danger); }
+.share-base .info-button.is-warning { color: var(--odbr-warning); background: var(--odbr-warning-bg); box-shadow: 0 0 0 1px var(--odbr-warning-border); }
+.share-base .info-button.is-warning:hover { background: var(--odbr-warning-bg); color: var(--odbr-warning); }
 .table-alert {
-  margin: 0 0 0.5rem; padding: 0.5rem 0.75rem; border: 1px solid var(--odbr-danger-border); border-radius: var(--odbr-radius-sm);
-  background: var(--odbr-danger-bg); color: var(--odbr-danger); font-weight: 500;
+  margin: 0 0 0.5rem; padding: 0.5rem 0.75rem; border: 1px solid; border-radius: var(--odbr-radius-sm); font-weight: 500;
 }
+.table-alert.is-danger { background: var(--odbr-danger-bg); color: var(--odbr-danger); border-color: var(--odbr-danger-border); }
+.table-alert.is-warning { background: var(--odbr-warning-bg); color: var(--odbr-warning); border-color: var(--odbr-warning-border); }
+.table-alert a { color: inherit; text-decoration: underline; }
 .table-alert ul { margin: 0.25rem 0 0; padding-left: 1.125rem; }
 .area-table .pivot { flex: 1; min-height: 0; margin-top: 0; }
 @media (min-width: 1600px) { .area-table .pivot .table-wrap { flex: 1; max-height: none; min-height: 7.5rem; } }

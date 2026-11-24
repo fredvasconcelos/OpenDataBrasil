@@ -5546,6 +5546,136 @@
         "title": "CorrectionOut",
         "description": "Correção disponível para o KPI (\"Corrigir por\", ADR-0020)."
       },
+      "CoverageAlertOut": {
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": [
+              "warning",
+              "danger"
+            ],
+            "title": "Severity"
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "V1",
+              "V2",
+              "V3",
+              "V4"
+            ],
+            "title": "Code"
+          },
+          "params": {
+            "$ref": "#/components/schemas/CoverageAlertParams"
+          }
+        },
+        "type": "object",
+        "required": [
+          "severity",
+          "code",
+          "params"
+        ],
+        "title": "CoverageAlertOut",
+        "description": "Alerta calculado pela API para a tabela dinâmica (ADR-0040)."
+      },
+      "CoverageAlertParams": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "dimension": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dimension"
+          },
+          "dimensions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Dimensions"
+          },
+          "tables": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tables"
+          },
+          "periods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Periods"
+          },
+          "available_periods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Available Periods"
+          },
+          "available_levels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Available Levels"
+          },
+          "observed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observed"
+          },
+          "expected": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level"
+        ],
+        "title": "CoverageAlertParams",
+        "description": "Parâmetros do diagnóstico, sem textos traduzidos ou URLs inventadas."
+      },
       "DatasetOut": {
         "properties": {
           "dataset_id": {
@@ -7678,6 +7808,13 @@
             },
             "type": "array",
             "title": "Share Bases"
+          },
+          "alerts": {
+            "items": {
+              "$ref": "#/components/schemas/CoverageAlertOut"
+            },
+            "type": "array",
+            "title": "Alerts"
           },
           "footer": {
             "anyOf": [

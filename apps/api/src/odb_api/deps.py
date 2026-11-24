@@ -138,6 +138,9 @@ def build_deps(settings: Settings | None = None, api: ApiSettings | None = None)
             provenance=provenance(sources),
             table_links=table_links(sources),
             labels=load_short_labels(Path(api.portal_config_dir) / "rotulos.toml"),
+            descriptors=Path(api.panorama_path).parent / "descritores"
+            if api.panorama_path
+            else None,
         ),
         catalog=CatalogRepository(pg),
         engine=duck,

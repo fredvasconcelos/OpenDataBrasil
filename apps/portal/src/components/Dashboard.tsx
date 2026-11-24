@@ -265,7 +265,8 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
   );
   // Detalhes ativos que existem no nível (os demais viram aviso no botão i da tabela).
   const levelDims = (kpi?.dimensions ?? []).filter((d) => !d.levels?.length || d.levels.includes(state.level));
-  const tableDims = state.dimensions.filter((id) => levelDims.some((d) => d.classification_id === id));
+  // O detalhe pedido segue para a API mesmo indisponível: ela emite V1/V2.
+  const tableDims = state.dimensions;
   // Períodos da tabela: os escolhidos (ou as partes dos anos, com Isolar); sem escolha, o
   // padrão do mapa (o último completo). Nunca acumulada (ADR-0026).
   const tablePeriods = (() => {
@@ -284,7 +285,7 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
       fields={[
         { id: "territorio", label: t("table.territory") },
         { id: "periodo", label: t("table.period") },
-        ...levelDims.map((d) => ({ id: d.classification_id, label: d.label })),
+        ...(kpi?.dimensions ?? []).filter((d) => levelDims.includes(d) || state.dimensions.includes(d.classification_id)).map((d) => ({ id: d.classification_id, label: d.label })),
       ]}
       rows={pivotLayout.rows}
       cols={pivotLayout.cols}
@@ -441,16 +442,6 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
   const levelLabel = t(`levels.${state.level}`);
   // Tabela: os períodos dela, sem acumular (ADR-0026).
   const tableLabel = selection.length > 1 || state.isolate ? range : formatPeriod(period);
-  // Detalhe ativo que a fonte não publica neste nível: aviso no botão i da tabela.
-  const levelAlerts = kpi.dimensions
-    .filter((d) => state.dimensions.includes(d.classification_id) && d.levels?.length && !d.levels.includes(state.level))
-    .map((d) =>
-      t("pivot.alertLevel", {
-        dimension: d.label,
-        level: levelLabel,
-        levels: (d.levels ?? []).map((l) => t(`levels.${l}`)).join(", "),
-      }),
-    );
   const crumb =
     nav.themes
       .flatMap((th) =>
@@ -789,7 +780,7 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
                   dimensionOrder={kpi.dimensions.map((d) => d.classification_id)}
                   selected={state.geography}
                   onSelect={(key) => update({ geography: key })}
-                  alerts={levelAlerts}
+                  sources={kpi.source.tables}
                   notes={state.accumulate ? [t("pivot.accumulateNote")] : []}
                   controls={pivotControls}
                 />

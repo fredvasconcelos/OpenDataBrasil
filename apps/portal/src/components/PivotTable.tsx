@@ -3,10 +3,10 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import { ChevronLeftIcon, CloseIcon, InfoIcon, SwapIcon } from "@/components/icons";
-import { formatShare, formatValue, unitShort } from "@/lib/format";
+import { ChevronLeftIcon, CloseIcon, CoverageIcon, InfoIcon, SwapIcon } from "@/components/icons";
+import { formatPeriod, formatShare, formatValue, unitShort } from "@/lib/format";
 import { compositionBases, percentageDimension, type SharePolicies } from "@/lib/categoryShares";
-import type { Pivot } from "@/lib/types";
+import type { Kpi, Pivot } from "@/lib/types";
 
 // Tabela dinâmica (B6, DS 2.8; única tabela do painel desde o DS 2.9): o usuário põe
 // Território, Período e as dimensões de "Detalhar por" nas linhas ou nas colunas, como no
@@ -140,18 +140,6 @@ export function shareBases(data: Pivot, totals: Readonly<Record<string, string>>
   ];
 }
 
-/** Dimensões pedidas que vieram só com o Total (sem detalhe neste recorte). */
-export function emptyDetails(data: Pivot, totals: Readonly<Record<string, string>>): string[] {
-  const out: string[] = [];
-  data.row_fields.forEach((f, i) => {
-    if (totals[f.id] && data.rows.length && data.rows.every((r) => r.keys[i] === totals[f.id])) out.push(f.label);
-  });
-  data.col_fields.forEach((f, i) => {
-    if (totals[f.id] && data.columns.length && data.columns.every((c) => c.keys[i] === totals[f.id])) out.push(f.label);
-  });
-  return out;
-}
-
 interface Props {
   data: Pivot;
   /** Classificação → chave da categoria Total (dimensões do KPI). */
@@ -160,8 +148,8 @@ interface Props {
   shares: boolean;
   selected: string | null;
   onSelect: (geography: string) => void;
-  /** Avisos de detalhe indisponível (deixam o botão i vermelho e abrem a janela). */
-  alerts?: string[];
+  /** Links oficiais já publicados no catálogo, para os diagnósticos da API. */
+  sources?: Kpi["source"]["tables"];
   /** Notas extras para a janela de informação (ex.: acumulado fica no mapa e no gráfico). */
   notes?: string[];
   sharePolicies?: SharePolicies;
@@ -196,9 +184,10 @@ export function columnGroups(columns: Pivot["columns"], level: number): { start:
   return out.map(({ start, span, label }) => ({ start, span, label }));
 }
 
-export function PivotTable({ data, totals, shares, selected, onSelect, alerts = [], notes = [], sharePolicies = {}, dimensionOrder, controls }: Props) {
+export function PivotTable({ data, totals, shares, selected, onSelect, sources = [], notes = [], sharePolicies = {}, dimensionOrder, controls }: Props) {
   const t = useTranslations("pivot");
   const tt = useTranslations("table");
+  const tl = useTranslations("levels");
   const unit = data.provenance.price_base
     ? `${unitShort(data.unit)} de ${data.provenance.price_base}`
     : unitShort(data.unit);
@@ -210,7 +199,22 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
   const rowIds = data.row_fields.map((f) => f.id);
   const colIds = data.col_fields.map((f) => f.id);
   const byTerritory = rowIds[0] === "territorio";
-  const allAlerts = [...alerts, ...emptyDetails(data, totals).map((d) => t("alertEmpty", { dimension: d }))];
+  // A API decide disponibilidade e precedência; o portal só traduz os códigos.
+  const allAlerts = data.alerts ?? [];
+  const severity = allAlerts.some((a) => a.severity === "danger") ? "danger" : allAlerts.length ? "warning" : null;
+  const alertText = (alert: (typeof allAlerts)[number]) => {
+    const p = alert.params;
+    const field = [...data.row_fields, ...data.col_fields].find((f) => f.id === p.dimension);
+    const list = (values: readonly string[] = []) => values.map(formatPeriod).join(", ");
+    const code = alert.code === "A3" && p.reference === "published_total" ? "A3Territories" : alert.code;
+    return t(`coverage.${code}`, {
+      level: tl(p.level), dimension: field?.label ?? p.dimension ?? "",
+      periods: list(p.periods), available: list(p.available_periods),
+      levels: (p.available_levels ?? []).map((l) => tl(l)).join(", "),
+      observed: p.observed ?? 0, expected: p.expected ?? 0,
+      dimensions: (p.dimensions ?? []).map((id) => [...data.row_fields, ...data.col_fields].find((f) => f.id === id)?.label ?? id).join(", "),
+    });
+  };
 
   const values = new Map<string, number | null>();
   data.rows.forEach((r, i) => data.columns.forEach((c, j) => values.set(key(r.keys, c.keys), data.cells[i]?.[j]?.value ?? null)));
@@ -298,13 +302,13 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
   const sortBy = (by: number | null) =>
     setSortState({ shape, by, desc: sort.by === by ? !sort.desc : true });
 
-  // Janela de informação: abre sozinha quando surge um aviso novo.
+  // Só um novo diagnóstico vermelho abre a janela automaticamente (ADR-0040).
   const [info, setInfo] = useState(false);
-  const alertKey = allAlerts.join("|");
+  const alertKey = JSON.stringify(allAlerts.filter((a) => a.severity === "danger"));
   const [seenAlert, setSeenAlert] = useState("");
   if (alertKey !== seenAlert) {
     setSeenAlert(alertKey);
-    if (alertKey) setInfo(true);
+    if (alertKey !== "[]") setInfo(true);
   }
 
   // A linha selecionada (território clicado no mapa) fica à vista dentro do quadro.
@@ -385,27 +389,30 @@ export function PivotTable({ data, totals, shares, selected, onSelect, alerts = 
         <span className="pivot-unit">{tt("unitShort", { unit: base !== "none" ? `${unit} (%)` : unit })}</span>
         <button
           type="button"
-          className={`info-button${allAlerts.length ? " is-alert" : ""}`}
+          className={`info-button${severity ? ` is-${severity}` : ""}`}
           aria-expanded={info}
           aria-controls="table-info"
-          aria-label={allAlerts.length ? t("aboutAlert") : tt("about")}
-          title={allAlerts.length ? t("aboutAlert") : tt("about")}
+          aria-label={severity ? t(`coverage.button.${severity}`) : tt("about")}
+          title={severity ? t(`coverage.button.${severity}`) : tt("about")}
           onClick={() => setInfo((v) => !v)}
         >
-          <InfoIcon />
+          {severity ? <CoverageIcon severity={severity} /> : <InfoIcon />}
         </button>
         {info ? (
           <div id="table-info" className="table-info caption" role="note">
-            {allAlerts.length ? (
-              <div className="table-alert" role="alert">
-                <strong>{t("alertTitle")}</strong>
+            {(["danger", "warning"] as const).map((kind) => allAlerts.some((a) => a.severity === kind) ? (
+              <div key={kind} className={`table-alert is-${kind}`} role={kind === "danger" ? "alert" : "status"}>
+                <strong>{t(`coverage.title.${kind}`)}</strong>
                 <ul>
-                  {allAlerts.map((a) => (
-                    <li key={a}>{a}</li>
+                  {allAlerts.filter((a) => a.severity === kind).map((a) => (
+                    <li key={JSON.stringify(a)}>{alertText(a)}{a.params.tables?.length ? <> {t("coverage.sources")} {a.params.tables.map((id, index) => {
+                      const url = sources.find((s) => s.table_id === id)?.reference_url;
+                      return <span key={id}>{index ? ", " : ""}{url ? <a href={url} target="_blank" rel="noreferrer">{id}</a> : id}</span>;
+                    })}.</> : null}</li>
                   ))}
                 </ul>
               </div>
-            ) : null}
+            ) : null)}
             <p>
               <strong>{tt("aboutUnit")}</strong> {unit}.
             </p>

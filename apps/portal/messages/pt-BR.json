@@ -514,11 +514,27 @@
     },
     "sortByLabel": "Ordenar por {field}",
     "sortByColumn": "Ordenar por {column}",
-    "aboutAlert": "Aviso sobre esta tabela",
-    "alertTitle": "Sem este nível de detalhe",
-    "alertEmpty": "{dimension}: a fonte não traz este detalhe para o recorte escolhido; a tabela mostra só o Total.",
-    "alertLevel": "{dimension}: a fonte não publica este detalhe por {level}. Há detalhe em: {levels}.",
-    "accumulateNote": "A tabela mostra cada período separado; o acumulado aparece no mapa e no gráfico."
+    "accumulateNote": "A tabela mostra cada período separado; o acumulado aparece no mapa e no gráfico.",
+    "coverage": {
+      "button": {
+        "warning": "Aviso: dados parciais nesta tabela",
+        "danger": "Aviso: detalhe indisponível nesta tabela"
+      },
+      "title": {
+        "warning": "Cobertura parcial",
+        "danger": "Dados ou detalhes indisponíveis"
+      },
+      "A1": "No nível {level}, a série tem dados somente em: {available}.",
+      "A2": "Em {periods}, há registros para {observed, number} de {expected, number} territórios do nível {level}, segundo a referência territorial do período.",
+      "A3": "{dimension}: neste nível, há categorias somente em: {available}.",
+      "A3Territories": "{dimension}: em {periods}, pelo menos uma categoria aparece em {observed, number} dos {expected, number} territórios com Total publicado no recorte.",
+      "A4": "Em {periods}, há soma regional parcial: faltam parcelas na fonte. O valor exibido preserva esse status.",
+      "V1": "{dimension}: a fonte não publica este detalhe por {level}. Há detalhe em: {levels}.",
+      "V2": "{dimension}: a fonte não traz este detalhe para o recorte escolhido; a tabela mostra só o Total.",
+      "V3": "Não há dados disponíveis para o nível e os períodos selecionados neste recorte. Sigilo não é classificado como ausência.",
+      "V4": "A fonte não publica o cruzamento entre {dimensions} no nível {level}. Escolha um detalhe por vez.",
+      "sources": "Tabelas de origem:"
+    }
   },
   "metrics": {
     "title": "Métricas do portal",
