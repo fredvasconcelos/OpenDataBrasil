@@ -15,7 +15,7 @@ import { CONTACT_URL } from "@/lib/links";
 // Cabeçalho (DS 2.10, opção 4; DS 2.12: Métricas). Menu: Início · Painel de análise · Sobre
 // os dados · Contato (texto, mesmo estilo das abas) · Métricas e, logo depois, "Apoie" em amarelo da marca. À direita,
 // dois blocos de 36 px: redes (Instagram e GitHub, só ícones) | preferências (idioma e
-// tema). Até 899 px: logo, "Apoie" (só o coração) e o botão de menu, que abre uma gaveta
+// tema). Até 991 px (DS 2.18): logo, "Apoie" (só o coração) e o botão de menu, que abre uma gaveta
 // com as páginas (Contato e Apoie inclusos), as redes, o idioma e o tema. A gaveta fecha
 // ao trocar de página, com Esc e ao tocar fora; o foco volta para o botão de menu.
 export function Header() {

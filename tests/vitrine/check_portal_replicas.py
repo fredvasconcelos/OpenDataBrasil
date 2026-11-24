@@ -86,7 +86,8 @@ def main() -> None:
             def visit() -> str:
                 with urlopen(base + "/dashboard", timeout=10) as response:  # noqa: S310 -- origem local criada acima
                     assert response.status == 200
-                    return response.read().decode().strip()
+                    body: bytes = response.read()
+                    return body.decode().strip()
 
             seen = {visit() for _ in range(60)}
             assert len(seen) == 3, seen

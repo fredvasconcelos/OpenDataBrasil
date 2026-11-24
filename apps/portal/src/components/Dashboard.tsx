@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PivotControls, PivotTable } from "@/components/PivotTable";
 import { DetailTooltip } from "@/components/DetailTooltip";
 import { DataExport, MapImageExport } from "@/components/ExportMenu";
-import { FilterIcon, ListIcon } from "@/components/icons";
+import { CollapseIcon, ExpandIcon, FilterIcon, ListIcon } from "@/components/icons";
 import { KpiInfo } from "@/components/KpiInfo";
 import { MapView, type FitRequest } from "@/components/MapView";
 import { SeasonChart } from "@/components/SeasonChart";
@@ -67,6 +67,21 @@ function Failure({ error, onRetry }: { error: Error; onRetry: () => void }) {
   );
 }
 
+/**
+ * Layout inicial da tabela (DS 2.18). Até dois detalhes ficam nas colunas, sob o Período.
+ * Com três ou mais, o de mais categorias desce para as linhas, ao lado do Território:
+ * Cor ou raça × Sexo × Idade nas colunas dava 6 × 3 × 22 = 396 colunas.
+ */
+export function defaultPivotLayout(
+  dims: readonly string[],
+  catalog: readonly { classification_id: string; categories?: readonly unknown[] }[],
+): { rows: string[]; cols: string[] } {
+  if (dims.length < 3) return { rows: ["territorio"], cols: ["periodo", ...dims] };
+  const size = (id: string) => catalog.find((d) => d.classification_id === id)?.categories?.length ?? 0;
+  const largest = dims.reduce((a, b) => (size(b) > size(a) ? b : a));
+  return { rows: ["territorio", largest], cols: ["periodo", ...dims.filter((d) => d !== largest)].slice(0, 3) };
+}
+
 export function Dashboard({ index, initialKpi }: { index: PortalIndex; initialKpi: Kpi | null }) {
   const t = useTranslations("dashboard");
   const router = useRouter();
@@ -95,12 +110,29 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
   );
   const [retry, setRetry] = useState(0);
   const [hover, setHover] = useState<Hover | null>(null);
-  // Versão mobile (DS v2.5, até 899 px): barra lateral vira painel inferior ("sheet") e
+  // Versão mobile (DS v2.5, até 991 px desde o DS 2.18): barra lateral vira painel inferior ("sheet") e
   // mapa, série e tabela viram abas. No desktop esses estados não têm efeito visual.
   const mobile = useMediaQuery(MOBILE_QUERY);
   const coarse = useMediaQuery(COARSE_QUERY);
   const [sheet, setSheet] = useState<"filters" | "themes" | null>(null);
   const [view, setView] = useState<"map" | "chart" | "table">("map");
+  // Tabela ampliada (DS 2.17): ocupa a janela por cima do painel; Esc ou o mesmo botão fecham.
+  const [tableWide, setTableWide] = useState(false);
+  const tableToggle = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!tableWide) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setTableWide(false);
+      tableToggle.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    document.documentElement.classList.add("has-table-wide");
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.documentElement.classList.remove("has-table-wide");
+    };
+  }, [tableWide]);
   // Tabela dinâmica (B6; única tabela desde o DS 2.9): campos nas linhas e colunas, por
   // KPI e detalhes ativos. Mudar "Detalhar por" volta ao arranjo padrão.
   const [pivotFor, setPivotFor] = useState<{ key: string; rows: string[]; cols: string[] } | null>(null);
@@ -246,7 +278,19 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
   })();
   const pivotKey = `${kpiId}|${tableDims.join()}`;
   const pivotLayout =
-    pivotFor?.key === pivotKey ? pivotFor : { key: pivotKey, rows: ["territorio"], cols: ["periodo", ...tableDims].slice(0, 4) };
+    pivotFor?.key === pivotKey ? pivotFor : { key: pivotKey, ...defaultPivotLayout(tableDims, kpi?.dimensions ?? []) };
+  const pivotControls = (
+    <PivotControls
+      fields={[
+        { id: "territorio", label: t("table.territory") },
+        { id: "periodo", label: t("table.period") },
+        ...levelDims.map((d) => ({ id: d.classification_id, label: d.label })),
+      ]}
+      rows={pivotLayout.rows}
+      cols={pivotLayout.cols}
+      onChange={(rows, cols) => setPivotFor({ key: pivotKey, rows, cols })}
+    />
+  );
   const pivot = useAsync(
     kpiId
       ? () =>
@@ -712,21 +756,28 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
             )}
           </section>
 
-          <section className="card area-table" aria-labelledby="table-title">
+          <section
+            className={`card area-table${tableWide && !mobile ? " is-wide" : ""}`}
+            aria-labelledby="table-title"
+            role={tableWide && !mobile ? "region" : undefined}
+          >
             <div className="table-head">
               <h2 id="table-title">{`${t("dashboard.tableTitle")} · ${scope} · ${tableLabel}`}</h2>
+              {!mobile ? (
+                <button
+                  ref={tableToggle}
+                  type="button"
+                  className="table-wide-toggle"
+                  aria-pressed={tableWide}
+                  onClick={() => setTableWide((v) => !v)}
+                >
+                  {tableWide ? <CollapseIcon /> : <ExpandIcon />}
+                  {tableWide ? t("dashboard.tableCollapse") : t("dashboard.tableExpand")}
+                </button>
+              ) : null}
             </div>
             <div className="pivot">
-              <PivotControls
-                fields={[
-                  { id: "territorio", label: t("table.territory") },
-                  { id: "periodo", label: t("table.period") },
-                  ...levelDims.map((d) => ({ id: d.classification_id, label: d.label })),
-                ]}
-                rows={pivotLayout.rows}
-                cols={pivotLayout.cols}
-                onChange={(rows, cols) => setPivotFor({ key: pivotKey, rows, cols })}
-              />
+              {pivot.data ? null : pivotControls}
               {pivot.error ? (
                 <Failure error={pivot.error} onRetry={() => setRetry((r) => r + 1)} />
               ) : pivot.data ? (
@@ -740,6 +791,7 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
                   onSelect={(key) => update({ geography: key })}
                   alerts={levelAlerts}
                   notes={state.accumulate ? [t("pivot.accumulateNote")] : []}
+                  controls={pivotControls}
                 />
               ) : (
                 <p className="muted">{t("dashboard.loading")}</p>

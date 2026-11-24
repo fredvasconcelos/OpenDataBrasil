@@ -155,3 +155,26 @@ export const GlobeIcon = (p: IconProps) => (
     <path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z" />
   </Stroke>
 );
+
+// Ícones da tabela dinâmica (DS 2.17; o "×" usa o CloseIcon acima): os caracteres "‹" e "×" ficavam em alturas
+// diferentes do rótulo do chip (métrica de cada glifo); em SVG o centro é exato.
+export const ChevronLeftIcon = (p: IconProps) => (
+  <Stroke size={p.size ?? 14}>
+    <path d="m15 6-6 6 6 6" />
+  </Stroke>
+);
+export const SwapIcon = (p: IconProps) => (
+  <Stroke size={p.size ?? 16}>
+    <path d="M7 4 3 8l4 4M3 8h14M17 12l4 4-4 4M21 16H7" />
+  </Stroke>
+);
+export const ExpandIcon = (p: IconProps) => (
+  <Stroke size={p.size ?? 16}>
+    <path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" />
+  </Stroke>
+);
+export const CollapseIcon = (p: IconProps) => (
+  <Stroke size={p.size ?? 16}>
+    <path d="M20 10h-6V4M4 14h6v6M14 10l7-7M10 14l-7 7" />
+  </Stroke>
+);

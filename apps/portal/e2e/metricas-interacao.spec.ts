@@ -121,7 +121,9 @@ test("Métricas: rankings iguais alinham a base do mapa e contêm listas extensa
     expect(Math.max(...cards.map(c => c.height)) - Math.min(...cards.map(c => c.height))).toBeLessThanOrEqual(1);
     const gaps = [cards[1]!.top - cards[0]!.bottom, cards[2]!.top - cards[1]!.bottom];
     expect(Math.abs(gaps[0]! - gaps[1]!)).toBeLessThanOrEqual(1);
-    expect(gaps[0]).toBeCloseTo(24, 0);
+    // DS 2.17: 24 px de referência (1,5rem), escalados pela raiz da largura atual.
+    const root = await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).fontSize));
+    expect(gaps[0]).toBeCloseTo((24 * root) / 16, 0);
     expect(await page.locator(".metrics-rankings > section").nth(1).evaluate(element => element.scrollHeight > element.clientHeight)).toBe(true);
   }
 });
