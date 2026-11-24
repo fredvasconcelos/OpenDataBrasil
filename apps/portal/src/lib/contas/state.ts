@@ -1,6 +1,25 @@
 import type { ContasMeta } from "./types";
 import type { Geography } from "@/lib/types";
 
+const PANEL_PATH = "/contas/painel";
+const PANEL_FIELDS = ["geography", "period", "area", "page", "grain"] as const;
+
+/** Guarda apenas os filtros do painel ao abrir uma ficha, sem aceitar destino externo. */
+export function panelHref(params: URLSearchParams): string {
+  const kept = new URLSearchParams();
+  for (const field of PANEL_FIELDS) {
+    const value = params.get(field);
+    if (value) kept.set(field, value);
+  }
+  return `${PANEL_PATH}${kept.size ? `?${kept}` : ""}`;
+}
+
+/** Restringe o retorno da ficha à rota das contas e aos seus parâmetros conhecidos. */
+export function safePanelHref(value: string | string[] | undefined): string {
+  if (typeof value !== "string" || !(value === PANEL_PATH || value.startsWith(`${PANEL_PATH}?`))) return PANEL_PATH;
+  return panelHref(new URL(value, "https://portal.invalid").searchParams);
+}
+
 /** Segue a hierarquia oficial: o pai imediato de um município pode ser uma região. */
 export async function findState(geography: Geography, load: (key: string) => Promise<Geography>): Promise<Geography | null> {
   let current = geography;

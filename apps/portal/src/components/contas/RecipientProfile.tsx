@@ -26,9 +26,10 @@ function lensSeries(profile: Profile, lens: string, name: string, year: number):
   };
 }
 
-export function RecipientProfile({ profile, year }: {
+export function RecipientProfile({ profile, year, backHref = "/contas/painel" }: {
   profile: Profile;
   year: number;
+  backHref?: string;
 }) {
   const t = useTranslations("contas.profile");
   const common = useTranslations("contas");
@@ -37,7 +38,7 @@ export function RecipientProfile({ profile, year }: {
   const shown = totals.filter((x) => x.total !== null);
   return (
     <main className="page page-wide recipient-page">
-      <Link href="/contas/painel" className="back-link">‹ {t("back")}</Link>
+      <Link href={backHref} className="back-link"><span aria-hidden="true">‹ </span>{t("back")}</Link>
       <header className="recipient-head">
         <span className="recipient-icon" aria-hidden="true"><FaIcon icon={classIcon(r.recipient_class)} size={26} /></span>
         <div>

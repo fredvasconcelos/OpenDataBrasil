@@ -46,6 +46,7 @@ test("contas reais: filtros na URL, valores da API, ranking e ficha sem identifi
   await page.goto("/contas/painel?geography=uf%3A25&period=2025");
   await expect(page.locator(".contas-highlights")).toContainText("R$ 25.651.839.651,83", { timeout: 30_000 });
   await expect(page.locator(".map-focus path.territory")).toHaveCount(223);
+  await expect(page.locator(".map-context path.territory")).toHaveCount(26);
   await page.getByRole("combobox", { name: "Área", exact: true }).selectOption("10");
   await expect(page).toHaveURL(/area=10/);
   await expect(page.locator(".contas-highlights")).toBeVisible();
@@ -63,6 +64,10 @@ test("contas reais: filtros na URL, valores da API, ranking e ficha sem identifi
   expect(await page.locator(".recipient-page").innerText()).not.toMatch(/\d{2}\.\d{3}\.\d{3}\/\d{4}|\*{3}\.\d{3}\.\d{3}/);
   expect(errors).toEqual([]);
   await page.screenshot({ path: "test-results/cp5-ficha.png", fullPage: true });
+  await page.getByRole("link", { name: "Voltar ao painel", exact: true }).click();
+  await expect(page.locator(".contas-ranking-foot")).toContainText("Página 2 de");
+  await expect(page.getByRole("combobox", { name: "Área", exact: true })).toHaveValue("10");
+  expect(new URL(page.url()).searchParams.get("period")).toBe("2025");
 });
 
 test("município e mês incompleto preservam o recorte e as notas oficiais", async ({ page }) => {
@@ -82,10 +87,12 @@ for (const width of [1920, 390]) {
     await page.setViewportSize({ width, height: 960 });
     await page.goto("/contas/painel?geography=uf%3A25&period=2025");
     await expect(page.locator(".contas-highlights")).toBeVisible({ timeout: 30_000 });
+    const compositionFits = await page.locator(".contas-how-card").evaluate((el) => el.scrollHeight <= el.clientHeight + 1);
+    expect(compositionFits).toBe(true);
     for (const theme of ["light", "dark"]) {
       await page.evaluate((theme) => { document.documentElement.dataset.theme = theme; }, theme);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-      await page.screenshot({ path: `test-results/cp5-${width}-${theme}.png`, fullPage: true });
+      await page.screenshot({ path: `test-results/cp5-${width}-${theme}.png`, fullPage: true, animations: "disabled" });
     }
     if (width < 992) {
       await page.getByRole("button", { name: "Abrir menu", exact: true }).click();

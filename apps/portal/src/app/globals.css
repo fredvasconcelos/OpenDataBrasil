@@ -1843,5 +1843,3 @@ button.contas-bar[aria-pressed="true"] { background: var(--odbr-bg-selected); bo
 
 .contas-filter-toggle { background: none; border: none; color: var(--odbr-text-muted); font: inherit; font-weight: 800; text-align: left; text-transform: uppercase; padding: .5rem 0; }
 .contas-filter-toggle[aria-expanded="false"]::after { content: " +"; }
-.contas-dashboard .contas-how-card { max-height: 48rem; overflow-y: auto; }
-@media (max-width: 991px) { .contas-dashboard .contas-how-card { max-height: none; } }

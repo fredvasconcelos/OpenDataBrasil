@@ -12,7 +12,7 @@ import { api } from "@/lib/api";
 import { contasApi } from "@/lib/api/contas";
 import { pointAt, toMapValues, toSeries } from "@/lib/contas/adapt";
 import { periodLabel } from "@/lib/contas/format";
-import { availablePeriods, findState, readContasState } from "@/lib/contas/state";
+import { availablePeriods, findState, panelHref, readContasState } from "@/lib/contas/state";
 import type { ContasMeta } from "@/lib/contas/types";
 import { useAsync } from "@/lib/useAsync";
 
@@ -49,9 +49,10 @@ function LoadedDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () => v
     if (municipality && !within) throw new Error("territory_unavailable");
     const level = within ? "municipio" : "uf";
     const filters = area ? { dimension: "function", categories: [area] } : {};
-    const [map, collection, states, composition, byType, series, totalSeries, ranking] = await Promise.all([
+    const [map, collection, context, states, composition, byType, series, totalSeries, ranking] = await Promise.all([
       contasApi.map({ level, within, periods: [period], ...filters }),
       api.geometry(level, within),
+      within ? api.geometry("uf") : null,
       api.geographies("uf"),
       contasApi.composition(geography, [period]),
       contasApi.series({ geography_key: geography, periods: [period], grain: period.length === 4 ? "ano" : "mes", dimension: "transfer_type" }),
@@ -61,7 +62,7 @@ function LoadedDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () => v
     ]);
     // Se um release trocar durante as chamadas, recarrega o bloco inteiro antes de exibir.
     if ([map, composition, byType, series, totalSeries, ranking].some((r) => r.provenance.release_id !== meta.release_id)) throw new Error("release_changed");
-    return { selected, parent, within, map, collection, states, composition, byType, series, ranking, total: pointAt(totalSeries, area ?? "total", period) };
+    return { selected, parent, within, map, collection, context, states, composition, byType, series, ranking, total: pointAt(totalSeries, area ?? "total", period) };
   }, [geography, period, area, page, grain, meta.release_id]);
 
   const data = loaded.data;
@@ -74,6 +75,13 @@ function LoadedDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () => v
   const periodNotes = meta.lenses.find((l) => l.lens === "A")?.statuses.filter((s) => data?.series.provenance.periods.includes(s.period)) ?? [];
   const hasTesouro = periodNotes.some((s) => s.note.includes("Tesouro"));
   const up = () => change({ geography: data?.parent?.geography_key ?? "brasil:1", page: 1 });
+  const profileHref = (id: string) => {
+    const filters = new URLSearchParams(search);
+    filters.set("geography", geography);
+    filters.set("period", period);
+    const query = new URLSearchParams({ year: period.slice(0, 4), back: panelHref(filters) });
+    return `/contas/favorecidos/${encodeURIComponent(id)}?${query}`;
+  };
   return (
     <main className="contas-dashboard">
       <ContasSidebar trail={trail} territories={territories} period={period} periods={availablePeriods(meta).map((code) => ({ code, label: periodLabel(code) }))} areas={areaOptions} area={area}
@@ -86,7 +94,7 @@ function LoadedDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () => v
             <nav className="contas-trail" aria-label={t("territoryTrail")}>{trail.map((item) => <button key={item.key} type="button" aria-current={item.key === geography ? "location" : undefined} onClick={() => change({ geography: item.key, page: 1 })}>{item.label}</button>)}</nav>
             {area ? <p className="contas-hint">{t("filteredArea", { area: selectedArea ?? "" })}</p> : null}
             <div className="contas-map-wrap">
-              <MapView groupedControls collection={data.collection} context={null} values={toMapValues(data.map)} selected={geography} focus={data.within ?? null} canUp={geography !== "brasil:1"}
+              <MapView groupedControls collection={data.collection} context={data.context} values={toMapValues(data.map)} selected={geography} focus={data.within ?? null} fitRequest={{ key: data.within ?? null, n: 0 }} canUp={geography !== "brasil:1"}
                 onHover={(key, label, event) => setHover(key ? { key, name: label, x: event.clientX, y: event.clientY } : null)}
                 onSelect={(key) => change({ geography: key, page: 1 })} onDrill={(key) => { change({ geography: key, page: 1 }); return true; }} onUp={up} onReset={() => change({ geography: "brasil:1", page: 1 })}
                 label={t("map.title")} legendTitle={t("map.legend")} />
@@ -97,7 +105,7 @@ function LoadedDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () => v
           </>}
           how={<><p className="contas-hint">{t("allAreasContext")}</p><ContasComposition byType={data.byType} composition={data.composition} year={period} area={area} onArea={(code) => change({ area: code === area ? null : code, page: 1 })} /></>}
           when={<><label className="field">{t("grain")}<select value={grain} onChange={(e) => change({ grain: e.target.value })}><option value="mes">{t("when.monthly")}</option><option value="ano">{t("when.yearly")}</option></select></label><div className="contas-series-wrap"><SeriesChart data={toSeries(data.series, name)} /></div></>}
-          who={<><p className="contas-hint" role="note">{t("rankingScope", { year: period.slice(0, 4) })}</p><ContasRankingTable ranking={data.ranking} onPage={(n) => change({ page: n })} hrefOf={(id) => `/contas/favorecidos/${id}?year=${period.slice(0, 4)}`} />{data.ranking.notes.map((note) => <p key={note} className="contas-hint" role="note">{note}</p>)}</>}
+          who={<><p className="contas-hint" role="note">{t("rankingScope", { year: period.slice(0, 4) })}</p><ContasRankingTable ranking={data.ranking} onPage={(n) => change({ page: n })} hrefOf={profileHref} />{data.ranking.notes.map((note) => <p key={note} className="contas-hint" role="note">{note}</p>)}</>}
           foot={<><p>{t("source")}</p>{hasTesouro ? <p>{t("tesouro")}</p> : null}<p>{t("release")}: <code>{data.series.provenance.release_id}</code></p><details><summary>{t("notes")}</summary>{periodNotes.filter((n) => n.note).map((n) => <p key={n.period}>{periodLabel(n.period)}: {n.note}</p>)}{meta.lenses.find((l) => l.lens === "A")?.notes.map((note) => <p key={note}>{note}</p>)}{data.series.provenance.tables.map((table) => <p key={table.table_id}>{table.table_id}: {table.delta_version}</p>)}</details></>} />
       )}
     </main>

@@ -159,3 +159,9 @@ os aliases como a mesma página ao comparar a navegação RSC. Status 308 contin
 fora das contagens; não há dupla contagem. A rota agregada de fichas é
 `/contas/favorecidos`, sem o identificador da pessoa ou entidade. Não se ampliam
 eventos coletados nem se alteram supressões ou dados históricos.
+
+Na revisão visual local de 24/11, o recorte municipal passou a usar as geometrias
+das UFs como contexto e o enquadramento existente do MapView. A composição exibe
+todos os itens retornados pela API, sem uma segunda rolagem interna no desktop.
+Os links de fichas carregam um retorno restrito a `/contas/painel` e aos filtros
+conhecidos, preservando território, período, área, grão e página ao voltar.

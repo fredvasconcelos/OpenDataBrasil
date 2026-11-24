@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { contasQuery } from "@/lib/api/contas";
-import { availablePeriods, defaultPeriod, findState, readContasState } from "./state";
+import { availablePeriods, defaultPeriod, findState, panelHref, readContasState, safePanelHref } from "./state";
 import type { Geography } from "@/lib/types";
 import type { ContasMeta } from "./types";
 
@@ -9,6 +9,18 @@ const months = Array.from({ length: 12 }, (_, i) => `2025M${String(i + 1).padSta
 const meta: ContasMeta = { release_id: "candidato", recipient_classes: {}, notes: [], lenses: [{ lens: "A", label: "Transferências", description: "", notes: [], dimensions: [], group_by: [], periods: [...months, "2026M01"], latest_period: "2026M01", statuses: [...months.map((period) => ({ period, status: "fechado" as const, note: "" })), { period: "2026M01", status: "aberto", note: "Mês aberto" }] }] };
 
 describe("estado das contas", () => {
+  it("retorno da ficha mantém filtros e exclui parâmetros estranhos", () => {
+    const query = new URLSearchParams("geography=uf:25&period=2025&area=10&page=2&grain=ano&extra=ignorar");
+    const back = panelHref(query);
+    expect(safePanelHref(back)).toBe(back);
+    expect(new URL(back, "https://portal.invalid").searchParams.get("page")).toBe("2");
+    expect(back).not.toContain("extra");
+  });
+  it("retorno da ficha rejeita destinos externos e outras rotas", () => {
+    for (const value of ["https://exemplo.org/contas/painel", "//exemplo.org", "/sobre", "/contas/painel-outra", undefined]) {
+      expect(safePanelHref(value)).toBe("/contas/painel");
+    }
+  });
   it("encontra UF pela hierarquia oficial, sem inferir pelo código municipal", async () => {
     const node = (key: string, level: string, parent: string | null): Geography => ({ geography_key: key, level_id: level, parent_key: parent, level_name: null, territory_code: key.split(":")[1]!, name: key, uf_abbreviation: null });
     const municipality = node("municipio:2507507", "municipio", "regiao_imediata:250001");
