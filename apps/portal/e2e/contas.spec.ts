@@ -47,6 +47,12 @@ test("contas reais: filtros na URL, valores da API, ranking e ficha sem identifi
   await expect(page.locator(".contas-highlights")).toContainText("R$ 25.651.839.651,83", { timeout: 30_000 });
   await expect(page.locator(".map-focus path.territory")).toHaveCount(223);
   await expect(page.locator(".map-context path.territory")).toHaveCount(26);
+  const panelReferences = page.locator(".contas-foot .contas-references");
+  await panelReferences.getByText("Dicionários e glossário oficiais", { exact: true }).click();
+  await expect(panelReferences.getByRole("link", { name: "Recursos transferidos (abre em nova aba)", exact: true })).toHaveAttribute("href", "https://portaldatransparencia.gov.br/dicionario-de-dados/recursos-transferidos");
+  await expect(panelReferences.getByRole("link", { name: "Execução da despesa (abre em nova aba)", exact: true })).toHaveAttribute("href", "https://portaldatransparencia.gov.br/dicionario-de-dados/execucao-despesa");
+  await expect(panelReferences.getByRole("link", { name: "Transferências — pagamentos (histórico) (abre em nova aba)", exact: true })).toHaveAttribute("href", "https://portaldatransparencia.gov.br/dicionario-de-dados/transferencias-pagamentos");
+  await expect(panelReferences).toContainText("não substitui os dicionários das bases atuais");
   await page.getByRole("combobox", { name: "Área", exact: true }).selectOption("10");
   await expect(page).toHaveURL(/area=10/);
   await expect(page.locator(".contas-highlights")).toBeVisible();
@@ -58,6 +64,10 @@ test("contas reais: filtros na URL, valores da API, ranking e ficha sem identifi
   const name = await page.locator(".contas-table tbody a").first().innerText();
   await page.locator(".contas-table tbody a").first().click();
   await expect(page.getByRole("heading", { name, level: 1, exact: true })).toBeVisible();
+  const profileReferences = page.locator(".contas-profile-source .contas-references");
+  await profileReferences.getByText("Dicionários e glossário oficiais", { exact: true }).click();
+  await expect(profileReferences.getByRole("link", { name: "Recebimento de recursos por favorecido (abre em nova aba)", exact: true })).toHaveAttribute("href", "https://portaldatransparencia.gov.br/dicionario-de-dados/recursos-por-favorecido");
+  await expect(profileReferences.getByRole("link", { name: "Cadastro de favorecidos pessoa jurídica (abre em nova aba)", exact: true })).toHaveAttribute("href", "https://portaldatransparencia.gov.br/dicionario-de-dados/favorecidos-pj");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
   const response = await request.get(page.url());
   expect(response.headers()["x-robots-tag"]).toContain("noindex");
@@ -87,12 +97,16 @@ for (const width of [1920, 390]) {
     await page.setViewportSize({ width, height: 960 });
     await page.goto("/contas/painel?geography=uf%3A25&period=2025");
     await expect(page.locator(".contas-highlights")).toBeVisible({ timeout: 30_000 });
+    await page.locator(".contas-references summary").focus();
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".contas-references")).toHaveAttribute("open", "");
     const compositionFits = await page.locator(".contas-how-card").evaluate((el) => el.scrollHeight <= el.clientHeight + 1);
     expect(compositionFits).toBe(true);
     for (const theme of ["light", "dark"]) {
       await page.evaluate((theme) => { document.documentElement.dataset.theme = theme; }, theme);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
       await page.screenshot({ path: `test-results/cp5-${width}-${theme}.png`, fullPage: true, animations: "disabled" });
+      await page.locator(".contas-references").screenshot({ path: `test-results/contas-dicionarios-${width}-${theme}.png`, animations: "disabled" });
     }
     if (width < 992) {
       await page.getByRole("button", { name: "Abrir menu", exact: true }).click();
@@ -108,6 +122,7 @@ test("acessibilidade automática das contas, nos dois temas", async ({ page }) =
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/contas/painel?geography=uf%3A25&period=2025");
   await expect(page.locator(".contas-highlights")).toBeVisible({ timeout: 30_000 });
+  await page.locator(".contas-references summary").click();
   await page.addScriptTag({ path: loadModule.resolve("axe-core/axe.min.js") });
   for (const theme of ["light", "dark"]) {
     await page.evaluate((theme) => { document.documentElement.dataset.theme = theme; }, theme);

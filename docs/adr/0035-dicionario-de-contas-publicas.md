@@ -59,3 +59,13 @@ Verificado em 2026-11-22:
    oficial e a marca "descrição oficial não localizada". Nada é preenchido por suposição.
 6. **Atualização:** o cadastro do SIOP é relido a cada exercício novo e a cada revisão. O
    verbete mostra o texto do exercício do dado exibido.
+
+## Referências conferidas em 26/11/2026
+
+O [catálogo de referências das contas](../data_catalog/contas-publicas.md) reúne
+11 dicionários oficiais da CGU e o glossário, com aplicação por base. Inclui
+Recursos transferidos, Recebimento por favorecido, Execução da despesa e cadastro PJ;
+Transferências — Pagamentos permanece identificado como histórico. Os demais
+dicionários complementam conceitos e detalhamentos futuros, sem incorporar bases.
+O portal oferece os links junto às fontes do painel e da ficha. Isso não substitui
+o catálogo de verbetes por código/exercício previsto nesta ADR.

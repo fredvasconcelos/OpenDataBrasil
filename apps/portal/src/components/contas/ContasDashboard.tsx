@@ -7,6 +7,7 @@ import { useState } from "react";
 import { MapView } from "@/components/MapView";
 import { SeriesChart } from "@/components/SeriesChart";
 import { ContasPanel, ContasSidebar } from "@/components/contas/ContasPanel";
+import { ContasReferences } from "@/components/contas/ContasReferences";
 import { ContasComposition, ContasEmpty, ContasHighlights, ContasRankingTable, ContasTooltip, ContasUnavailable, PeriodStatusList } from "@/components/contas/ContasParts";
 import { api } from "@/lib/api";
 import { contasApi } from "@/lib/api/contas";
@@ -106,7 +107,7 @@ function LoadedDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () => v
           how={<><p className="contas-hint">{t("allAreasContext")}</p><ContasComposition byType={data.byType} composition={data.composition} year={period} area={area} onArea={(code) => change({ area: code === area ? null : code, page: 1 })} /></>}
           when={<><label className="field">{t("grain")}<select value={grain} onChange={(e) => change({ grain: e.target.value })}><option value="mes">{t("when.monthly")}</option><option value="ano">{t("when.yearly")}</option></select></label><div className="contas-series-wrap"><SeriesChart data={toSeries(data.series, name)} /></div></>}
           who={<><p className="contas-hint" role="note">{t("rankingScope", { year: period.slice(0, 4) })}</p><ContasRankingTable ranking={data.ranking} onPage={(n) => change({ page: n })} hrefOf={profileHref} />{data.ranking.notes.map((note) => <p key={note} className="contas-hint" role="note">{note}</p>)}</>}
-          foot={<><p>{t("source")}</p>{hasTesouro ? <p>{t("tesouro")}</p> : null}<p>{t("release")}: <code>{data.series.provenance.release_id}</code></p><details><summary>{t("notes")}</summary>{periodNotes.filter((n) => n.note).map((n) => <p key={n.period}>{periodLabel(n.period)}: {n.note}</p>)}{meta.lenses.find((l) => l.lens === "A")?.notes.map((note) => <p key={note}>{note}</p>)}{data.series.provenance.tables.map((table) => <p key={table.table_id}>{table.table_id}: {table.delta_version}</p>)}</details></>} />
+          foot={<><p>{t("source")}</p>{hasTesouro ? <p>{t("tesouro")}</p> : null}<p>{t("release")}: <code>{data.series.provenance.release_id}</code></p><ContasReferences /><details><summary>{t("notes")}</summary>{periodNotes.filter((n) => n.note).map((n) => <p key={n.period}>{periodLabel(n.period)}: {n.note}</p>)}{meta.lenses.find((l) => l.lens === "A")?.notes.map((note) => <p key={note}>{note}</p>)}{data.series.provenance.tables.map((table) => <p key={table.table_id}>{table.table_id}: {table.delta_version}</p>)}</details></>} />
       )}
     </main>
   );

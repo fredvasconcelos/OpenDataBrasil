@@ -783,6 +783,20 @@
     "officialUnavailable": "Consulte o Portal da Transparência; a API ainda não fornece um link específico do favorecido.",
     "grain": "Série por",
     "filterError": "Filtro indisponível neste release. Escolha outro período ou território.",
-    "resetFilters": "Limpar filtros"
+    "resetFilters": "Limpar filtros",
+    "references": {
+      "title": "Dicionários e glossário oficiais",
+      "lead": "Consulte as definições dos campos no Portal da Transparência:",
+      "transfers": "Recursos transferidos",
+      "receipts": "Recebimento de recursos por favorecido",
+      "entities": "Cadastro de favorecidos pessoa jurídica",
+      "execution": "Execução da despesa",
+      "glossary": "Glossário da CGU",
+      "history": "Transferências — pagamentos (histórico)",
+      "historyNote": "Referência histórica; não substitui os dicionários das bases atuais.",
+      "panelNote": "O painel mostra recursos transferidos. Recebimentos por favorecido e execução da despesa são bases distintas; seus valores não se somam.",
+      "recipientNote": "A ficha separa recursos transferidos de recebimentos por favorecido. O cadastro PJ explica a natureza jurídica e a atividade econômica.",
+      "newTab": "(abre em nova aba)"
+    }
   }
 }

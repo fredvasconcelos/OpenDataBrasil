@@ -4,6 +4,13 @@ A evolução do portal, dos primeiros passos às novidades mais recentes.
 Cada entrada destaca o que muda para quem consulta os dados. A situação indicada
 vale para a data do registro: **Em teste** ainda não significa disponível na beta.
 
+## 26/11/2026 — Entender os campos das contas públicas
+
+**Situação: Em teste.**
+
+- Acesse os dicionários e o glossário oficiais junto às fontes do painel e da
+  ficha do recebedor, com a referência histórica identificada separadamente.
+
 ## 25/11/2026 — Comparar a mesma época em diferentes anos
 
 **Situação: Em teste.**

@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 
 import { FaIcon } from "@/components/FaIcon";
 import { SeriesChart } from "@/components/SeriesChart";
+import { ContasReferences } from "@/components/contas/ContasReferences";
 import { brl, brlShort, seat } from "@/lib/contas/format";
 import type { RecipientProfile as Profile } from "@/lib/contas/types";
 import { classIcon } from "@/lib/contas/visual";
@@ -92,6 +93,7 @@ export function RecipientProfile({ profile, year, backHref = "/contas/painel" }:
       })}
       <footer className="contas-profile-source">
         <p>{common("source")}</p>
+        <ContasReferences recipient />
         <p>{common("release")}: <code>{profile.provenance.release_id}</code></p>
         <details>
           <summary>{common("notes")}</summary>

@@ -58,6 +58,7 @@ Com um release ativo, o perfil `web` atende o portal em `localhost:3000` e a API
 - [Instalação no Windows/WSL2](docs/development/setup-windows-wsl2.md)
 - [Decisões arquiteturais](docs/adr/)
 - [Catálogo IBGE](docs/data_catalog/ibge.md)
+- [Contas públicas: dicionários e fontes oficiais](docs/data_catalog/contas-publicas.md)
 - [Ingestão](docs/runbooks/ingestao.md), [Silver](docs/runbooks/silver.md),
   [Gold](docs/runbooks/gold.md), [exportação](docs/runbooks/exportacao.md)
 - [API](docs/runbooks/api.md), [portal](docs/runbooks/portal.md),

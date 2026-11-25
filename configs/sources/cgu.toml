@@ -2,6 +2,8 @@
 #
 # Decisões: ADR-0030 (fonte, ingestão em lote, três lentes, piloto), ADR-0031 (favorecidos e
 # pessoas físicas), ADR-0032 (território), ADR-0033 (fases da despesa).
+# Dicionários oficiais e aplicação por base: docs/data_catalog/contas-publicas.md
+# (conferidos em 26/11/2026; referência histórica separada das três lentes atuais).
 #
 # Os downloads mensais ficam num bucket (`dadosabertos-download.cgu.gov.br`). A página
 # `portaldatransparencia.gov.br/download-de-dados/<base>/<AAAAMM>` responde 302 para lá.
