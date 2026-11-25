@@ -4,6 +4,9 @@ Plataforma para reunir, preservar e consultar dados oficiais do Brasil. O portal
 em desenvolvimento; a abertura do código não representa aprovação de todos os dados
 para publicação. As limitações conhecidas estão em [docs/known-issues.md](docs/known-issues.md).
 
+**Novidades:** acompanhe o [Dev Log](DEVLOG.md), com novos indicadores, funções e
+melhorias do portal, em linguagem simples e com a situação de cada entrega.
+
 **Fonte → Bronze → Silver → Gold → consulta → API → portal.** A Gold oficial existe
 somente no lakehouse. DuckDB consulta versões Delta fixadas por um release;
 PostgreSQL armazena metadados e o estado da publicação.
