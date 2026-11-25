@@ -166,7 +166,7 @@
     },
     "touchHint": "Toque seleciona o território. Use a pinça ou o botão Aproximar para ver o recorte por dentro.",
     "accumulate": "Acumular",
-    "accumulateHint": "Soma os períodos marcados (variações %: composição). Com Isolar período, o acumulado no ano.",
+    "accumulateHint": "Soma os períodos marcados (variações %: composição). Com Isolar período, soma a mesma parte entre os anos do intervalo.",
     "accumulateOff": "Este indicador não acumula: taxas, médias e números-índice não se somam no tempo.",
     "periodShow": "Mostrar as partes de {period}",
     "periodHide": "Esconder as partes de {period}",
@@ -175,6 +175,14 @@
     "periodRange": "{from} a {to}",
     "isolateParts": "Cada barra é uma parte do ano, uma cor por ano marcado ({years}).",
     "isolateAccumulated": "Cada barra é o acumulado no ano até aquela parte ({years}).",
+    "chartInfo": {
+      "title": "Como ler este gráfico",
+      "button": {
+        "normal": "Sobre o método do gráfico",
+        "warning": "Sobre o método do gráfico: dados parciais",
+        "danger": "Sobre o método do gráfico: dados indisponíveis"
+      }
+    },
     "seasonalYear": "Ano",
     "seasonalSum": "Cada barra soma a mesma parte do ano entre {from, number, ::group-off} e {to, number, ::group-off}, incluindo os anos intermediários.",
     "seasonalCoverage": "{present, number} de {expected, number} parcelas com valor.",

@@ -51,7 +51,8 @@ test("Isolar compara anos e Acumular reúne a mesma parte entre anos", async ({ 
   await expect(legend).toContainText("2024");
   await expect(page.locator(".data-table thead")).toContainText("T4 2023");
   await page.getByRole("checkbox", { name: "Acumular" }).click();
-  await expect(page.locator(".season-figure figcaption")).toContainText("Cada barra soma a mesma parte do ano entre 2023 e 2024");
+  await page.getByRole("button", { name: "Sobre o método do gráfico", exact: true }).click();
+  await expect(page.locator(".chart-info")).toContainText("Cada barra soma a mesma parte do ano entre 2023 e 2024");
   await expect(page.locator(".season-bar")).toHaveCount(4);
 });
 

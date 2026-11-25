@@ -890,10 +890,10 @@ mark { background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px; 
 .meta-more .method-list li + li { margin-top: 0.375rem; }
 
 /* DS 2.3.11: rótulos curtos, ícone de informação da tabela e cabeçalhos com quebra. */
-.share-base .info-button { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; width: 1.75rem; height: 1.75rem; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--odbr-text-active); cursor: pointer; }
-.share-base .info-button:hover { background: var(--odbr-bg-hover); }
-.share-base .info-button[aria-expanded="true"] { background: var(--odbr-bg-selected); }
-.table-info { position: absolute; z-index: 3; top: 100%; left: 0; right: 0; margin-top: 0.25rem; max-height: 50vh; overflow: auto; padding: 0.625rem 0.875rem; background: var(--odbr-bg-surface); border: 1px solid var(--odbr-divider); border-radius: var(--odbr-radius-md); box-shadow: var(--odbr-shadow-2); font-weight: 400; color: var(--odbr-text-body); }
+:is(.share-base, .chart-head) .info-button { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; width: 1.75rem; height: 1.75rem; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--odbr-text-active); cursor: pointer; }
+:is(.share-base, .chart-head) .info-button:hover { background: var(--odbr-bg-hover); }
+:is(.share-base, .chart-head) .info-button[aria-expanded="true"] { background: var(--odbr-bg-selected); }
+.table-info, .chart-info { position: absolute; z-index: 3; top: 100%; left: 0; right: 0; margin-top: 0.25rem; max-height: 50vh; overflow: auto; padding: 0.625rem 0.875rem; background: var(--odbr-bg-surface); border: 1px solid var(--odbr-divider); border-radius: var(--odbr-radius-md); box-shadow: var(--odbr-shadow-2); font-weight: 400; color: var(--odbr-text-body); }
 .table-info p { margin: 0 0 0.375rem; }
 .table-info dl { display: grid; grid-template-columns: minmax(7.5rem, max-content) 1fr; gap: 0.25rem 0.75rem; margin: 0 0 0.5rem; }
 .table-info dl > div { display: contents; }
@@ -1242,10 +1242,10 @@ mark { background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px; 
 .pivot-table tbody tr[aria-selected="true"] th { font-weight: 800; }
 .pivot-table tfoot th, .pivot-table tfoot td { font-weight: 800; border-top: 2px solid var(--odbr-border); }
 .pivot-table .share { color: var(--odbr-text-muted); font-weight: 500; }
-.share-base .info-button.is-danger { color: var(--odbr-danger); background: var(--odbr-danger-bg); box-shadow: 0 0 0 1px var(--odbr-danger-border); }
-.share-base .info-button.is-danger:hover { background: var(--odbr-danger-bg); color: var(--odbr-danger); }
-.share-base .info-button.is-warning { color: var(--odbr-warning); background: var(--odbr-warning-bg); box-shadow: 0 0 0 1px var(--odbr-warning-border); }
-.share-base .info-button.is-warning:hover { background: var(--odbr-warning-bg); color: var(--odbr-warning); }
+:is(.share-base, .chart-head) .info-button.is-danger { color: var(--odbr-danger); background: var(--odbr-danger-bg); box-shadow: 0 0 0 1px var(--odbr-danger-border); }
+:is(.share-base, .chart-head) .info-button.is-danger:hover { background: var(--odbr-danger-bg); color: var(--odbr-danger); }
+:is(.share-base, .chart-head) .info-button.is-warning { color: var(--odbr-warning); background: var(--odbr-warning-bg); box-shadow: 0 0 0 1px var(--odbr-warning-border); }
+:is(.share-base, .chart-head) .info-button.is-warning:hover { background: var(--odbr-warning-bg); color: var(--odbr-warning); }
 .table-alert {
   margin: 0 0 0.5rem; padding: 0.5rem 0.75rem; border: 1px solid; border-radius: var(--odbr-radius-sm); font-weight: 500;
 }
@@ -1560,7 +1560,7 @@ mark { background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px; 
 /* DS 2.18 (referência do mantenedor): "Calcular % por" e a unidade na segunda linha,
    alinhados à esquerda sob "Linhas"; só o botão i fica à direita. */
 .pivot-toolbar .share-base { position: static; justify-content: flex-start; gap: 0.5rem 1rem; margin: 0; }
-.pivot-toolbar .share-base .info-button { margin-left: auto; }
+.pivot-toolbar :is(.share-base, .chart-head) .info-button { margin-left: auto; }
 .pivot-unit { font-size: var(--odbr-fs-caption); font-weight: 700; color: var(--odbr-text-muted); white-space: nowrap; }
 
 /* Chips, "+ campo", "Trocar" e o seletor do % com a mesma altura e o texto no centro. */
@@ -1852,7 +1852,15 @@ button.contas-bar[aria-pressed="true"] { background: var(--odbr-bg-selected); bo
 .seasonal-alerts { margin: .75rem 0; padding: .75rem; border: 1px solid; border-radius: .5rem; }
 .seasonal-alerts.is-warning { color: var(--odbr-warning); background: var(--odbr-warning-bg); border-color: var(--odbr-warning-border); }
 .seasonal-alerts.is-danger { color: var(--odbr-danger); background: var(--odbr-danger-bg); border-color: var(--odbr-danger-border); }
-.seasonal-alerts > button { display: flex; align-items: center; gap: .5rem; color: inherit; background: none; border: 0; font: inherit; font-weight: 800; text-align: left; }
 .seasonal-alerts li { margin-top: .5rem; }
 .seasonal-notes { margin-top: .75rem; font-size: var(--odbr-fs-caption); }
 .seasonal-notes summary { cursor: pointer; font-weight: 700; }
+
+/* O acumulado precisa participar da altura flexível do cartão, inclusive em tela larga. */
+.seasonal-result { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.chart-head { position: relative; display: flex; align-items: flex-start; gap: var(--odbr-space-2); margin-bottom: var(--odbr-space-3); flex: none; }
+.chart-head > h2 { margin: 0; flex: 1; min-width: 0; }
+.chart-head .info-button { flex: none; }
+.chart-info { z-index: 6; }
+.chart-info p { margin: .5rem 0; }
+@media (min-width: 1600px) { .area-chart.is-seasonal { overflow: visible; } }

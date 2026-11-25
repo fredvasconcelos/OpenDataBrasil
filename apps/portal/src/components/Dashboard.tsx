@@ -471,6 +471,7 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
           ?.name ??
         shown?.context?.features.find((f) => f.id === state.geography)
           ?.properties.name ??
+        seasonal.data?.geography.name ??
         series.data?.geography.name ??
         state.geography);
   const defaults = readState(new URLSearchParams({ kpi: kpi.kpi_id }), nav, kpi);
@@ -520,6 +521,21 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
   // que exportam (imagem → cabeçalho do mapa; dados → "Gráfico e tabela"). Layout
   // por CSS (.dash-grid): empilhado até 1599 px; tela cheia sem rolagem a partir de
   // 1600 px (mapa à esquerda, gráfico e tabela à direita, fonte no rodapé).
+  const chartHeading = (
+    <h2 id="series-title">
+      {t("dashboard.seriesTitle")} · {selectedName}
+      {state.accumulate ? ` (${t("dashboard.accumulated")})` : ""}{" "}
+      {state.geography !== home ? (
+        <button
+          type="button"
+          className="small"
+          onClick={() => update({ geography: home })}
+        >
+          {t("dashboard.resetSelection")}
+        </button>
+      ) : null}
+    </h2>
+  );
   const sheetOpen = mobile && sheet !== null;
   return (
     <div className="dashboard">
@@ -730,22 +746,10 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
             />
           </div>
 
-          <section className="card area-chart" aria-labelledby="series-title">
-            <h2 id="series-title">
-              {t("dashboard.seriesTitle")} · {selectedName}
-              {state.accumulate ? ` (${t("dashboard.accumulated")})` : ""}{" "}
-              {state.geography !== home ? (
-                <button
-                  type="button"
-                  className="small"
-                  onClick={() => update({ geography: home })}
-                >
-                  {t("dashboard.resetSelection")}
-                </button>
-              ) : null}
-            </h2>
+          <section className={`card area-chart${seasonalMode ? " is-seasonal" : ""}`} aria-labelledby="series-title">
+            {!seasonalMode || !seasonal.data || seasonal.error ? chartHeading : null}
             {seasonalMode ? (seasonal.error ? <Failure error={seasonal.error} onRetry={() => setRetry((r) => r + 1)} />
-              : seasonal.data ? <SeasonalChart data={seasonal.data} />
+              : seasonal.data ? <SeasonalChart data={seasonal.data} heading={chartHeading} />
               : <p className="muted">{t("dashboard.loading")}</p>) : series.error ? (
               <Failure
                 error={series.error}

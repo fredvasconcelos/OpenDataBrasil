@@ -12,6 +12,8 @@ vale para a data do registro: **Em teste** ainda não significa disponível na b
   Onde a soma é permitida, reúna a mesma parte de vários anos em uma barra.
 - Veja avisos quando o acumulado tiver dados parciais, com indicação dos períodos
   que faltam.
+- Consulte o método pelo botão de informação do gráfico, com cores de aviso e
+  leitura corrigida em telas largas.
 
 ## 24/11/2026 — Contas públicas e avisos mais claros
 

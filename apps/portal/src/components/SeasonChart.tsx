@@ -68,8 +68,8 @@ export function SeasonChart({ data, accumulated = false }: { data: Series; accum
 }
 
 /** Desenha valores já calculados pela API, sem somar parcelas no navegador. */
-export function SeasonPlot({ bars, labels, how, unit }: {
-  bars: SeasonBar[]; labels: string[]; how: string; unit: string;
+export function SeasonPlot({ bars, labels, how, unit, showMethod = true }: {
+  bars: SeasonBar[]; labels: string[]; how: string; unit: string; showMethod?: boolean;
 }) {
   const t = useTranslations("dashboard");
   const box = useRef<HTMLDivElement>(null);
@@ -80,7 +80,7 @@ export function SeasonPlot({ bars, labels, how, unit }: {
     if (!el || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(([entry]) => {
       if (!entry) return;
-      setSize({ W: Math.max(280, entry.contentRect.width), H: Math.max(200, entry.contentRect.height) });
+      setSize({ W: Math.max(280, entry.contentRect.width), H: Math.max(80, entry.contentRect.height) });
     });
     observer.observe(el);
     return () => observer.disconnect();
@@ -156,7 +156,7 @@ export function SeasonPlot({ bars, labels, how, unit }: {
           </div>
         ) : null}
       </div>
-      <figcaption className="small">
+      {labels.length > 1 || showMethod ? <figcaption className="small">
         {labels.length > 1 ? (
           <ul className="series-legend">
             {labels.map((l, j) => (
@@ -167,8 +167,8 @@ export function SeasonPlot({ bars, labels, how, unit }: {
             ))}
           </ul>
         ) : null}
-        <p className="muted">{how}</p>
-      </figcaption>
+        {showMethod ? <p className="muted">{how}</p> : null}
+      </figcaption> : null}
     </figure>
   );
 }
