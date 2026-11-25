@@ -37,6 +37,12 @@ primeiro. Somente um diagnóstico vermelho novo abre a explicação automaticame
 Triângulo e círculo com exclamação, nomes acessíveis e textos distinguem as classes
 mesmo sem perceber as cores. O botão continua disponível em uma tabela vazia.
 
+**Ajuste visual solicitado pelo mantenedor em 25/11/2026 (DS 2.23.1):** os botões
+da tabela e do gráfico mantêm o símbolo “i”, colorido conforme o alerta, sem fundo,
+borda ou sombra externos. Essa escolha substitui as formas de aviso do botão
+descritas acima. Nomes acessíveis, títulos e textos da explicação continuam
+identificando o risco. A precedência e a abertura automática do vermelho permanecem.
+
 ### Referências e limites
 
 A dimensão territorial fixada não tem validade histórica por unidade. Sua contagem

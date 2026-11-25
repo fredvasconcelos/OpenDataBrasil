@@ -30,12 +30,12 @@ it("mostra uma barra por trimestre e mantém amarelo fechado até o clique", () 
   expect(screen.queryByText(/Cada barra soma/)).toBeNull();
   fireEvent.click(warning);
   expect(warning.getAttribute("aria-expanded")).toBe("true");
-  expect(screen.getByText(/Sem valor: T1 2026/)).toBeTruthy();
-  expect(within(screen.getByRole("status")).getByText(/3 de 4 parcelas com valor/)).toBeTruthy();
+  expect(screen.getByText(/Sem valor disponível para: T1 2026/)).toBeTruthy();
+  expect(within(screen.getByRole("status")).getByText(/3 de 4 períodos com valor/)).toBeTruthy();
   expect(screen.getByText(/Cada barra soma a mesma parte do ano entre 2023 e 2026/)).toBeTruthy();
 });
 
-it("vermelho prevalece e explica parcela bloqueada automaticamente", () => {
+it("vermelho prevalece e explica período com restrição automaticamente", () => {
   const data = fixture();
   data.series[0]!.points[1] = { ...data.series[0]!.points[1]!, value: null,
     status: "blocked_accumulation", severity: "danger", blocked: ["2024T2"] };
@@ -43,7 +43,7 @@ it("vermelho prevalece e explica parcela bloqueada automaticamente", () => {
   const danger = screen.getByRole("button", { name: "Sobre o método do gráfico: dados indisponíveis" });
   expect(danger.getAttribute("aria-expanded")).toBe("true");
   expect(screen.getByText(/Soma indisponível: há sigilo/)).toBeTruthy();
-  expect(screen.getByText(/Parcelas bloqueadas: T2 2024/)).toBeTruthy();
+  expect(screen.getByText(/Períodos com restrição: T2 2024/)).toBeTruthy();
 });
 
 it("permite consultar por teclado os valores e a cobertura sem depender do hover", () => {
@@ -52,7 +52,7 @@ it("permite consultar por teclado os valores e a cobertura sem depender do hover
   const summary = screen.getByText("Valores e cobertura das barras");
   expect(summary.tagName).toBe("SUMMARY");
   expect(summary.parentElement?.textContent).toContain("1.110 (parcial)");
-  expect(summary.parentElement?.textContent).toContain("3 de 4 parcelas com valor");
+  expect(summary.parentElement?.textContent).toContain("3 de 4 períodos com valor");
 });
 
 
@@ -80,4 +80,20 @@ it("fecha a explicação com Escape devolvendo foco e ao clicar fora", () => {
   fireEvent.click(button);
   fireEvent.pointerDown(document.body);
   expect(screen.queryByRole("note")).toBeNull();
+});
+
+
+it.each(["Total", "Mulheres"])("lista os meses sem valor preservando o rótulo %s", (label) => {
+  const data = fixture();
+  data.series[0]!.label = label;
+  data.series[0]!.points.forEach((p) => { p.severity = null; p.missing = []; });
+  data.series[0]!.points[3] = { ...data.series[0]!.points[3]!, value: null,
+    status: "absent", severity: "danger", present: 0, expected: 3,
+    missing: ["2026M10", "2026M11", "2026M12"] };
+  draw(data);
+  const alert = screen.getByRole("alert");
+  expect(within(alert).getByRole("listitem").textContent?.replace(/\s+/g, " ").trim()).toBe(
+    `T4 · ${label}: Sem valor disponível para: out 2026, nov 2026, dez 2026.`,
+  );
+  expect(alert.textContent).not.toMatch(/parcela|Nenhuma das/i);
 });

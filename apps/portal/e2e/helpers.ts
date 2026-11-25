@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 // Auxiliares dos testes ponta a ponta (DS 2.9).
 
@@ -13,4 +13,14 @@ export async function openPeriods(page: Page) {
 export async function openCatalog(page: Page) {
   await page.getByRole("button", { name: "Trocar indicador" }).click();
   return page.getByRole("dialog", { name: "Escolher indicador" });
+}
+
+
+/** O alerta colore o i; o botão mantém a área de toque sem desenhar um selo ao redor. */
+export async function expectPlainInfo(button: Locator) {
+  const style = await button.evaluate(el => {
+    const css = getComputedStyle(el);
+    return { background: css.backgroundColor, shadow: css.boxShadow, border: css.borderTopWidth };
+  });
+  expect(style).toEqual({ background: "rgba(0, 0, 0, 0)", shadow: "none", border: "0px" });
 }

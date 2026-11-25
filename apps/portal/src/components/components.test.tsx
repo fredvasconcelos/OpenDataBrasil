@@ -1126,14 +1126,13 @@ describe("Tabela dinâmica (DS 2.9): % por, linha de totais e aviso no botão i"
     expect(alert.textContent).toContain("c2: a fonte não publica este detalhe por Município");
   });
 
-  it("amarelo tem outro ícone, abre só no clique e usa a classificação da API", async () => {
+  it("amarelo mantém o i, abre só no clique e usa a classificação da API", async () => {
     const { PivotTable } = await import("./PivotTable");
     const data = { ...base, col_fields: [{ id: "periodo", label: "Período" }], rows: [{ keys: ["uf:29"], labels: ["Bahia"] }], columns: [{ keys: ["2008"], labels: ["2008"] }], cells: [[{ value: 1, status: "valid" }]], alerts: [{ severity: "warning", code: "A1", params: { level: "municipio", available_periods: ["2008"] } }] } as unknown as Pivot;
     wrap(<PivotTable data={data} totals={{}} shares={false} selected={null} onSelect={vi.fn()} />);
     const button = screen.getByRole("button", { name: "Aviso: dados parciais nesta tabela" });
     expect(button.className).toContain("is-warning");
     expect(button.getAttribute("aria-expanded")).toBe("false");
-    expect(button.querySelector("svg path")?.getAttribute("d")).toContain("22 21");
     fireEvent.click(button);
     expect(screen.getByRole("status").textContent).toContain("somente em: 2008");
     fireEvent.click(button);

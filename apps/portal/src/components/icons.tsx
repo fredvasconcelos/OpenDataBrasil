@@ -47,17 +47,6 @@ export function InfoIcon({ size = 18 }: IconProps) {
   );
 }
 
-/** Disponibilidade: formas distintas mantêm o aviso reconhecível sem as cores. */
-export function CoverageIcon({ severity, size = 18 }: IconProps & { severity: "warning" | "danger" }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" focusable="false">
-      {severity === "warning" ? <path d="M12 3 22 21H2Z" strokeLinejoin="round" /> : <circle cx="12" cy="12" r="10" />}
-      <path d="M12 9v5" strokeLinecap="round" />
-      <circle cx="12" cy="17.5" r="1" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
 // Ícones da página Apoie (traço próprio, 24 × 24, sem logos de marca).
 function Stroke({ size = 20, children }: IconProps & { children: React.ReactNode }) {
   return (

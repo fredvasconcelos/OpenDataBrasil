@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
-import { CoverageIcon, InfoIcon } from "@/components/icons";
+import { InfoIcon } from "@/components/icons";
 import { SeasonPlot, type SeasonBar, partLabel } from "@/components/SeasonChart";
 import { formatPeriod, formatValue } from "@/lib/format";
 import type { Seasonal } from "@/lib/types";
@@ -62,7 +62,7 @@ export function SeasonalChart({ data, heading }: { data: Seasonal; heading?: Rea
       <button ref={toggle} type="button" className={`info-button${severity ? ` is-${severity}` : ""}`}
         aria-expanded={open} aria-controls={infoId} aria-label={buttonLabel} title={buttonLabel}
         onClick={() => setOpen((v) => !v)}>
-        {severity ? <CoverageIcon severity={severity} /> : <InfoIcon />}
+        <InfoIcon />
       </button>
       {open ? <div id={infoId} className="chart-info caption" role="note" aria-label={t("chartInfo.title")}>
         <strong>{t("chartInfo.title")}</strong>
@@ -71,8 +71,10 @@ export function SeasonalChart({ data, heading }: { data: Seasonal; heading?: Rea
           <strong>{t(`seasonalRisk.${severity}`)}</strong>
           <ul>{alerts.map((p) => <li key={`${p.label}|${p.part}`}>
             <strong>{p.part === "ano" ? t("seasonalYear") : partLabel(p.part)} · {p.label}: </strong>
-            {t(p.blocked.length ? "seasonalBlocked" : p.present ? "seasonalCoverage" : "seasonalEmpty",
-              { present: p.present, expected: p.expected })}
+            {p.blocked.length || p.present || !p.missing.length ? t(
+              p.blocked.length ? "seasonalBlocked" : p.present ? "seasonalCoverage" : "seasonalEmpty",
+              { present: p.present, expected: p.expected },
+            ) : null}
             {p.missing.length ? <span> {t("seasonalMissing", { periods: p.missing.map(formatPeriod).join(", ") })}</span> : null}
             {p.blocked.length ? <span> {t("seasonalBlockedParts", { periods: p.blocked.map(formatPeriod).join(", ") })}</span> : null}
             {p.input_partial.length ? <span> {t("seasonalInputPartial")}</span> : null}

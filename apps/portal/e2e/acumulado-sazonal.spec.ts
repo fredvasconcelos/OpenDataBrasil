@@ -13,7 +13,7 @@ for (const theme of ["light", "dark"]) {
     await expect(page.locator(".seasonal-alerts")).toContainText("out 2026");
     await expect(page.locator(".chart-info")).toContainText("2023 e 2026");
     await page.getByText("Valores e cobertura das barras", { exact: true }).click();
-    await expect(page.locator(".seasonal-result")).toContainText("parcelas com valor");
+    await expect(page.locator(".seasonal-result")).toContainText("períodos com valor");
     await page.screenshot({ path: `test-results/sazonal-${theme}.png`, fullPage: true });
   });
 }

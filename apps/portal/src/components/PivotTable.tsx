@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import { ChevronLeftIcon, CloseIcon, CoverageIcon, InfoIcon, SwapIcon } from "@/components/icons";
+import { ChevronLeftIcon, CloseIcon, InfoIcon, SwapIcon } from "@/components/icons";
 import { formatPeriod, formatShare, formatValue, unitShort } from "@/lib/format";
 import { compositionBases, percentageDimension, type SharePolicies } from "@/lib/categoryShares";
 import type { Kpi, Pivot } from "@/lib/types";
@@ -396,7 +396,7 @@ export function PivotTable({ data, totals, shares, selected, onSelect, sources =
           title={severity ? t(`coverage.button.${severity}`) : tt("about")}
           onClick={() => setInfo((v) => !v)}
         >
-          {severity ? <CoverageIcon severity={severity} /> : <InfoIcon />}
+          <InfoIcon />
         </button>
         {info ? (
           <div id="table-info" className="table-info caption" role="note">
