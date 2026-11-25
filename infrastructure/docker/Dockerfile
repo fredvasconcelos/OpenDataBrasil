@@ -66,6 +66,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 COPY tests tests
 # Os testes do coordenador do host precisam ler os scripts, sem incluí-los no runtime.
 COPY infrastructure/scripts/carga_agro_sequencial.py infrastructure/scripts/carga_agro_silver.py infrastructure/scripts/carga_lote_sequencial.py infrastructure/scripts/public_boundary.py infrastructure/scripts/
+COPY infrastructure/scripts/revisao_detalhamento_kpis.py infrastructure/scripts/
 RUN chown -R odb:odb /app
 USER odb
 CMD ["pytest"]
