@@ -4,7 +4,8 @@ import { expectCompactInfo } from "./helpers";
 
 function contrastOf(el: HTMLElement | SVGElement) {
   const symbol = el.querySelector<HTMLElement>(".info-symbol") ?? el;
-  const css = getComputedStyle(symbol);
+  const disc = symbol.querySelector<SVGCircleElement>("circle[stroke]");
+  const css = getComputedStyle(disc ?? symbol);
   const luminance = (color: string) => {
     const channels = color.match(/[\d.]+/g)!.slice(0, 3).map(v => {
       const s = Number(v) / 255;
@@ -12,13 +13,13 @@ function contrastOf(el: HTMLElement | SVGElement) {
     });
     return channels[0]! * 0.2126 + channels[1]! * 0.7152 + channels[2]! * 0.0722;
   };
-  // Medir contra o círculo visível do alerta; sem fundo, procurar a superfície opaca.
-  let surface: Element | null = symbol, background = css.backgroundColor;
+  // O fundo e o contorno pertencem ao mesmo círculo do SVG.
+  let surface: Element | null = symbol, background = disc ? css.fill : css.backgroundColor;
   while (surface && (background === "rgba(0, 0, 0, 0)" || background === "transparent")) {
     surface = surface.parentElement;
     if (surface) background = getComputedStyle(surface).backgroundColor;
   }
-  const values = [luminance(css.color), luminance(background)].sort((a, b) => a - b);
+  const values = [luminance(disc ? css.stroke : css.color), luminance(background)].sort((a, b) => a - b);
   return (values[1]! + 0.05) / (values[0]! + 0.05);
 }
 for (const theme of ["light", "dark"]) {

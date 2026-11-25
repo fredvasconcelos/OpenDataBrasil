@@ -49,6 +49,11 @@ do i de no mínimo 18 px. Os dois crescem proporcionalmente em escalas maiores.
 O círculo é separado da área de clique do botão para não herdar sua altura mínima
 e se alongar. Mantêm-se o i, as cores, os nomes acessíveis e o comportamento do painel.
 
+**Ajuste de encaixe em 26/11/2026 (DS 2.23.3):** o fundo do alerta preenche o
+próprio círculo do SVG do i, usando o mesmo desenho do contorno. Remover o círculo
+externo e seu contêiner visual; a área de clique continua independente. O amarelo
+e o vermelho usam os tokens de fundo correspondentes, inclusive no tema escuro.
+
 ### Referências e limites
 
 A dimensão territorial fixada não tem validade histórica por unidade. Sua contagem

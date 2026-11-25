@@ -62,7 +62,7 @@ export function SeasonalChart({ data, heading }: { data: Seasonal; heading?: Rea
       <button ref={toggle} type="button" className={`info-button${severity ? ` is-${severity}` : ""}`}
         aria-expanded={open} aria-controls={infoId} aria-label={buttonLabel} title={buttonLabel}
         onClick={() => setOpen((v) => !v)}>
-        <span className="info-symbol"><InfoIcon /></span>
+        <InfoIcon />
       </button>
       {open ? <div id={infoId} className="chart-info caption" role="note" aria-label={t("chartInfo.title")}>
         <strong>{t("chartInfo.title")}</strong>

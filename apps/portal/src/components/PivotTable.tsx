@@ -396,7 +396,7 @@ export function PivotTable({ data, totals, shares, selected, onSelect, sources =
           title={severity ? t(`coverage.button.${severity}`) : tt("about")}
           onClick={() => setInfo((v) => !v)}
         >
-          <span className="info-symbol"><InfoIcon /></span>
+          <InfoIcon />
         </button>
         {info ? (
           <div id="table-info" className="table-info caption" role="note">

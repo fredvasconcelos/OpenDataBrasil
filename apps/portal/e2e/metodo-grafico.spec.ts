@@ -63,7 +63,7 @@ test("indisponibilidade vermelha abre o método automaticamente e permite fechar
 
 for (const theme of ["light", "dark"]) {
   for (const width of [1920, 390]) {
-    test(`i com círculo compacto e meses sem valor: ${theme} ${width}`, async ({ page }) => {
+    test(`fundo no próprio i e meses sem valor: ${theme} ${width}`, async ({ page }) => {
       await page.setViewportSize({ width, height: width === 390 ? 844 : 1080 });
       await page.addInitScript(value => localStorage.setItem("odbr-theme", value), theme);
       await page.goto("/estatisticas/painel?kpi=sinesp_feminicidio&nivel=uf&grao=trimestre&periodo=2026&acumular=1&territorio=uf%3A25&isolar=1");
@@ -72,6 +72,7 @@ for (const theme of ["light", "dark"]) {
       const red = chart.getByRole("button", { name: "Sobre o método do gráfico: dados indisponíveis", exact: true });
       await expect(red).toHaveAttribute("aria-expanded", "true");
       await expectCompactInfo(red);
+      await red.locator("svg").screenshot({ path: `test-results/icone-exato-vermelho-${theme}-${width}.png` });
       await expect(chart.getByRole("alert").locator("li")).toHaveText(
         "T4 · Total: Sem valor disponível para: out 2026, nov 2026, dez 2026.",
       );
@@ -84,6 +85,7 @@ for (const theme of ["light", "dark"]) {
       await expect(yellow).toHaveAttribute("aria-expanded", "false");
       await yellow.hover();
       await expectCompactInfo(yellow);
+      await yellow.locator("svg").screenshot({ path: `test-results/icone-exato-amarelo-${theme}-${width}.png` });
       await yellow.click();
       await expectCompactInfo(yellow);
       await expect(page.locator(".seasonal-alerts")).toContainText("9 de 12 períodos com valor");

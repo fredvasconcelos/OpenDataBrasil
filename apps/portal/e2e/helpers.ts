@@ -16,33 +16,32 @@ export async function openCatalog(page: Page) {
 }
 
 
-/** O círculo do alerta acompanha o i, sem herdar a altura maior da área de toque. */
+/** Só o círculo do SVG recebe o fundo; nenhuma camada HTML desenha outro halo. */
 export async function expectCompactInfo(button: Locator) {
-  const style = await button.evaluate(el => {
-    const css = getComputedStyle(el);
-    return { background: css.backgroundColor, shadow: css.boxShadow, border: css.borderTopWidth };
+  const appearance = await button.evaluate(el => {
+    const svg = el.querySelector("svg")!, disc = svg.querySelector("circle[stroke]")!;
+    const icon = svg.getBoundingClientRect(), control = el.getBoundingClientRect();
+    const layers = [el, ...el.querySelectorAll("*")].filter(n => n instanceof HTMLElement)
+      .map(n => {
+        const css = getComputedStyle(n);
+        return { background: css.backgroundColor, border: css.borderTopWidth, shadow: css.boxShadow };
+      });
+    return { layers, width: icon.width, height: icon.height,
+      within: icon.left >= control.left && icon.right <= control.right
+        && icon.top >= control.top && icon.bottom <= control.bottom,
+      dx: control.x + control.width / 2 - icon.x - icon.width / 2,
+      dy: control.y + control.height / 2 - icon.y - icon.height / 2,
+      fill: getComputedStyle(disc).fill, stroke: getComputedStyle(disc).stroke };
   });
-  expect(style).toEqual({ background: "rgba(0, 0, 0, 0)", shadow: "none", border: "0px" });
-  const geometry = await button.evaluate(el => {
-    const symbol = el.querySelector(".info-symbol")!, svg = symbol.querySelector("svg")!;
-    const circle = symbol.getBoundingClientRect(), icon = svg.getBoundingClientRect();
-    const control = el.getBoundingClientRect();
-    return { width: circle.width, height: circle.height, ratio: circle.width / icon.width,
-      iconWidth: icon.width, controlWidth: control.width, controlHeight: control.height,
-      dx: circle.x + circle.width / 2 - icon.x - icon.width / 2,
-      dy: circle.y + circle.height / 2 - icon.y - icon.height / 2,
-      radius: getComputedStyle(symbol).borderRadius,
-      background: getComputedStyle(symbol).backgroundColor };
-  });
-  expect(geometry.width).toBeGreaterThanOrEqual(24);
-  expect(geometry.iconWidth).toBeGreaterThanOrEqual(18);
-  expect(geometry.width).toBeLessThanOrEqual(geometry.controlWidth);
-  expect(geometry.height).toBeLessThanOrEqual(geometry.controlHeight);
-  expect(Math.abs(geometry.width - geometry.height)).toBeLessThan(0.5);
-  expect(geometry.ratio).toBeGreaterThan(1);
-  expect(geometry.ratio).toBeLessThanOrEqual(1.5);
-  expect(Math.abs(geometry.dx)).toBeLessThan(0.5);
-  expect(Math.abs(geometry.dy)).toBeLessThan(0.5);
-  expect(geometry.radius).toBe("50%");
-  expect(geometry.background).not.toBe("rgba(0, 0, 0, 0)");
+  expect(appearance.layers.length).toBeGreaterThan(0);
+  for (const layer of appearance.layers) {
+    expect(layer).toEqual({ background: "rgba(0, 0, 0, 0)", shadow: "none", border: "0px" });
+  }
+  expect(appearance.width).toBeGreaterThanOrEqual(18);
+  expect(Math.abs(appearance.width - appearance.height)).toBeLessThan(0.5);
+  expect(appearance.within).toBe(true);
+  expect(Math.abs(appearance.dx)).toBeLessThan(0.5);
+  expect(Math.abs(appearance.dy)).toBeLessThan(0.5);
+  expect(appearance.fill).not.toMatch(/^(none|transparent|rgba\(0, 0, 0, 0\))$/);
+  expect(appearance.stroke).not.toBe("none");
 }
