@@ -17,6 +17,7 @@ import type {
   PortalIndex,
   Release,
   Series,
+  Seasonal,
   Table,
 } from "./types";
 import { periodParams } from "./metrics";
@@ -148,6 +149,11 @@ export const api = {
     },
   ) =>
     get<Series>(`/kpis/${encodeURIComponent(kpi)}/series${query(p)}`),
+  seasonal: (kpi: string, p: {
+    geography: string; year_from: number; year_to: number;
+    dimensions: readonly string[]; categories?: readonly string[];
+    grain?: string | null; correction?: string | null;
+  }) => get<Seasonal>(`/kpis/${encodeURIComponent(kpi)}/seasonal${query(p)}`),
   table: (
     kpi: string,
     p: {

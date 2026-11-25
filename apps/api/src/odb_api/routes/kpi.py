@@ -21,6 +21,7 @@ from odb_api.schemas import (
     NavigationOut,
     PivotOut,
     PortalIndexOut,
+    SeasonalOut,
     SeriesOut,
     TableOut,
 )
@@ -199,6 +200,37 @@ def kpi_series(
         categories=cats,
         periods=periods,
         accumulate=accumulate,
+    )
+
+
+@router.get(
+    "/kpis/{kpi_id}/seasonal",
+    response_model=SeasonalOut,
+    summary="Soma da mesma parte do ano entre anos",
+)
+def kpi_seasonal(
+    d: Deps,
+    ctx: Ctx,
+    kpi_id: KpiId,
+    geography: Geography,
+    dims: Dims,
+    cats: Cats,
+    year_from: Annotated[int, Query(ge=1, le=9999)],
+    year_to: Annotated[int, Query(ge=1, le=9999)],
+    grain: GrainQ = None,
+    correction: CorrectionQ = None,
+) -> SeasonalOut:
+    """Uma barra por parte e categoria, com cobertura do intervalo (ADR-0041)."""
+    return d.kpis.seasonal(
+        ctx,
+        kpi_id,
+        geography=geography,
+        year_from=year_from,
+        year_to=year_to,
+        dimensions=dims,
+        categories=cats,
+        grain=grain,
+        correction=correction,
     )
 
 

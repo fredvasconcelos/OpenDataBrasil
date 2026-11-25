@@ -2069,6 +2069,209 @@
         }
       }
     },
+    "/api/v1/kpis/{kpi_id}/seasonal": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Soma da mesma parte do ano entre anos",
+        "description": "Uma barra por parte e categoria, com cobertura do intervalo (ADR-0041).",
+        "operationId": "kpi_seasonal_api_v1_kpis__kpi_id__seasonal_get",
+        "parameters": [
+          {
+            "name": "kpi_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "title": "Kpi Id"
+            }
+          },
+          {
+            "name": "geography",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$",
+              "description": "Território, ex.: uf:29.",
+              "title": "Geography"
+            },
+            "description": "Território, ex.: uf:29."
+          },
+          {
+            "name": "year_from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 9999,
+              "minimum": 1,
+              "title": "Year From"
+            }
+          },
+          {
+            "name": "year_to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 9999,
+              "minimum": 1,
+              "title": "Year To"
+            }
+          },
+          {
+            "name": "grain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "mes",
+                    "trimestre",
+                    "semestre",
+                    "ano"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos).",
+              "title": "Grain"
+            },
+            "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos)."
+          },
+          {
+            "name": "correction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,31}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo.",
+              "title": "Correction"
+            },
+            "description": "Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo."
+          },
+          {
+            "name": "dimensions",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2.",
+              "title": "Dimensions"
+            },
+            "description": "Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2."
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtro de categorias das dimensões detalhadas (repetível ou separadas por vírgula), ex.: c79:2670,c79:2681. Sem filtro numa dimensão: todas. Em indicadores somáveis, o Total vira a soma das categorias escolhidas.",
+              "title": "Categories"
+            },
+            "description": "Filtro de categorias das dimensões detalhadas (repetível ou separadas por vírgula), ex.: c79:2670,c79:2681. Sem filtro numa dimensão: todas. Em indicadores somáveis, o Total vira a soma das categorias escolhidas."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonalOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/kpis/{kpi_id}/table": {
       "get": {
         "tags": [
@@ -6854,6 +7057,9 @@
             ],
             "title": "Time Aggregation"
           },
+          "temporal": {
+            "$ref": "#/components/schemas/TemporalCapabilitiesOut"
+          },
           "source": {
             "$ref": "#/components/schemas/KpiSourceOut"
           }
@@ -8580,6 +8786,210 @@
         "title": "SearchHitOut",
         "description": "Resultado da busca."
       },
+      "SeasonalOut": {
+        "properties": {
+          "kpi_id": {
+            "type": "string",
+            "title": "Kpi Id"
+          },
+          "geography": {
+            "$ref": "#/components/schemas/GeographyRefOut"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "grain": {
+            "type": "string",
+            "enum": [
+              "mes",
+              "trimestre",
+              "semestre",
+              "ano"
+            ],
+            "title": "Grain"
+          },
+          "native_grain": {
+            "type": "string",
+            "enum": [
+              "mes",
+              "trimestre",
+              "semestre",
+              "ano"
+            ],
+            "title": "Native Grain"
+          },
+          "year_from": {
+            "type": "integer",
+            "title": "Year From"
+          },
+          "year_to": {
+            "type": "integer",
+            "title": "Year To"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/SeasonalSeriesOut"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kpi_id",
+          "geography",
+          "unit",
+          "grain",
+          "native_grain",
+          "year_from",
+          "year_to",
+          "series",
+          "notes",
+          "provenance"
+        ],
+        "title": "SeasonalOut",
+        "description": "Resultado derivado do acumulado entre anos (ADR-0041)."
+      },
+      "SeasonalPointOut": {
+        "properties": {
+          "part": {
+            "type": "string",
+            "title": "Part"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "warning",
+                  "danger"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity"
+          },
+          "expected": {
+            "type": "integer",
+            "title": "Expected"
+          },
+          "present": {
+            "type": "integer",
+            "title": "Present"
+          },
+          "missing": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing"
+          },
+          "blocked": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Blocked"
+          },
+          "contributors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Contributors"
+          },
+          "input_partial": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Input Partial"
+          }
+        },
+        "type": "object",
+        "required": [
+          "part",
+          "value",
+          "status",
+          "severity",
+          "expected",
+          "present",
+          "missing",
+          "blocked",
+          "contributors",
+          "input_partial"
+        ],
+        "title": "SeasonalPointOut",
+        "description": "Subtotal por parte e intervalo, com parcelas explícitas."
+      },
+      "SeasonalSeriesOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "categories": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Categories"
+          },
+          "depth": {
+            "type": "integer",
+            "title": "Depth"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/SeasonalPointOut"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "categories",
+          "depth",
+          "points"
+        ],
+        "title": "SeasonalSeriesOut",
+        "description": "Uma série acumulada por parte, sem misturar combinações de categorias."
+      },
       "SeriesItemOut": {
         "properties": {
           "key": {
@@ -9107,6 +9517,43 @@
         ],
         "title": "TableVersionOut",
         "description": "Tabela Gold e versão Delta usadas na resposta."
+      },
+      "TemporalCapabilitiesOut": {
+        "properties": {
+          "isolate": {
+            "type": "boolean",
+            "title": "Isolate",
+            "default": false
+          },
+          "accumulate": {
+            "type": "boolean",
+            "title": "Accumulate",
+            "default": false
+          },
+          "seasonal_sum": {
+            "type": "boolean",
+            "title": "Seasonal Sum",
+            "default": false
+          },
+          "accumulation_rule": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "sum",
+                  "compound"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accumulation Rule"
+          }
+        },
+        "type": "object",
+        "title": "TemporalCapabilitiesOut",
+        "description": "Operações temporais independentes, calculadas na API (ADR-0041)."
       },
       "ThemeIndexOut": {
         "properties": {

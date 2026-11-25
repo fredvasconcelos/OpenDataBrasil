@@ -229,6 +229,15 @@ class TimeGrainOut(_Out):
     complete_periods: list[str]
 
 
+class TemporalCapabilitiesOut(_Out):
+    """Operações temporais independentes, calculadas na API (ADR-0041)."""
+
+    isolate: bool = False
+    accumulate: bool = False
+    seasonal_sum: bool = False
+    accumulation_rule: Literal["sum", "compound"] | None = None
+
+
 class KpiOut(_Out):
     """KPI do portal com os metadados do indicador no release."""
 
@@ -261,6 +270,7 @@ class KpiOut(_Out):
     time_grains: list[TimeGrainOut] = []
     # Como os grãos maiores saem do publicado: "sum", "mean" ou "last" (ADR-0017).
     time_aggregation: Literal["sum", "mean", "last", "compound"] | None = None
+    temporal: TemporalCapabilitiesOut = Field(default_factory=TemporalCapabilitiesOut)
     source: KpiSourceOut
 
 
@@ -492,6 +502,46 @@ class SeriesOut(_Out):
     share_methods: list[Literal["published_total", "published_group", "displayed_sum", "none"]] = (
         Field(default_factory=list)
     )
+    provenance: Provenance
+
+
+class SeasonalPointOut(_Out):
+    """Subtotal por parte e intervalo, com parcelas explícitas."""
+
+    part: str
+    value: float | None
+    status: str
+    severity: Literal["warning", "danger"] | None
+    expected: int
+    present: int
+    missing: list[str]
+    blocked: list[str]
+    contributors: list[str]
+    input_partial: list[str]
+
+
+class SeasonalSeriesOut(_Out):
+    """Uma série acumulada por parte, sem misturar combinações de categorias."""
+
+    key: str
+    label: str
+    categories: dict[str, str]
+    depth: int
+    points: list[SeasonalPointOut]
+
+
+class SeasonalOut(_Out):
+    """Resultado derivado do acumulado entre anos (ADR-0041)."""
+
+    kpi_id: str
+    geography: GeographyRefOut
+    unit: str
+    grain: Grain
+    native_grain: Grain
+    year_from: int
+    year_to: int
+    series: list[SeasonalSeriesOut]
+    notes: list[str]
     provenance: Provenance
 
 

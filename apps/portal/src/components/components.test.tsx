@@ -257,6 +257,17 @@ describe("percentuais recebidos na série", () => {
 });
 
 describe("SeasonChart (Isolar período)", () => {
+  it("compara anos anuais sem acrescentar um sufixo ao código do período", async () => {
+    const { seasonBars } = await import("./SeasonChart");
+    const data = { series: [{ label: "Total", depth: 0, points: [
+      { period: "2024", value: 100, status: "valid" },
+      { period: "2025", value: 110, status: "valid" },
+    ] }] } as Series;
+    expect(seasonBars(data).bars).toEqual([
+      { part: "ano", values: [100, 110], statuses: ["valid", "valid"] },
+    ]);
+  });
+
   it("uma barra por ano marcado em cada parte, sem somar entre anos (ADR-0026)", async () => {
     const { seasonBars, partOf } = await import("./SeasonChart");
     expect(partOf("2025M08")).toBe("M08");

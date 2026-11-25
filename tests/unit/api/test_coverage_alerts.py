@@ -26,7 +26,7 @@ def cell(
 
 def classify(**changes: Any) -> list[Any]:
     """Recorte completo por padrão; cada caso troca só o que precisa demonstrar."""
-    args = dict(
+    args: dict[str, Any] = dict(
         level="municipio",
         periods=["2008"],
         level_periods=["2008"],
@@ -42,7 +42,7 @@ def classify(**changes: Any) -> list[Any]:
 
 def dimension(**changes: Any) -> DimensionOut:
     """Dimensão com o Total oficial e as categorias publicadas pela fixture."""
-    args = dict(
+    args: dict[str, Any] = dict(
         classification_id="c1",
         label="Situação",
         full_label="Situação",

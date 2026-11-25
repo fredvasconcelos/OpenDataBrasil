@@ -1,0 +1,77 @@
+# PermiteSomaPeriodos confirmado no descritor oficial em 25/11/2026 (ADR-0041).
+# A política só vale se tabela/variável coincidirem com a Gold do release.
+config_version = "1.0.0"
+scope = "demografia"
+themes = []
+
+[[temporal_sums]]
+kpi = "casamentos"
+table = "4412"
+variable = "4993"
+note = "Soma de casamentos por ano do registro; não redistribui meses de anos anteriores."
+
+[[temporal_sums]]
+kpi = "divorcios"
+table = "1695"
+variable = "393"
+note = "Soma dos divórcios concedidos nos anos escolhidos (ADR-0041)."
+
+[[temporal_sums]]
+kpi = "producao_lavouras"
+table = "5457"
+variable = "8331"
+note = "Área plantada acumulada nas safras; não representa extensão única de terra."
+
+[[temporal_sums]]
+kpi = "valor_producao_lavouras"
+table = "5457"
+variable = "215"
+note = "Soma dos valores correntes da produção; não representa crescimento real."
+
+[[temporal_sums]]
+kpi = "area_colhida_lavouras"
+table = "5457"
+variable = "216"
+note = "Área colhida acumulada nas safras; não representa extensão única de terra."
+
+[[temporal_sums]]
+kpi = "pib_municipios"
+table = "5938"
+variable = "37"
+note = "Soma de valores correntes do PIB; não representa crescimento real."
+
+[[temporal_sums]]
+kpi = "pib_municipios_v498"
+table = "5938"
+variable = "498"
+note = "Soma de valores correntes do valor adicionado; não representa crescimento real."
+
+[[temporal_sums]]
+kpi = "pib_municipios_v513"
+table = "5938"
+variable = "513"
+note = "Soma de valores correntes do valor adicionado; não representa crescimento real."
+
+[[temporal_sums]]
+kpi = "pib_municipios_v525"
+table = "5938"
+variable = "525"
+note = "Soma de valores correntes do valor adicionado; não representa crescimento real."
+
+[[temporal_sums]]
+kpi = "pib_municipios_v543"
+table = "5938"
+variable = "543"
+note = "Soma de impostos líquidos de subsídios, em valores correntes dos anos escolhidos."
+
+[[temporal_sums]]
+kpi = "pib_municipios_v6575"
+table = "5938"
+variable = "6575"
+note = "Soma de valores correntes do valor adicionado; não representa crescimento real."
+
+[[temporal_sums]]
+kpi = "focos_calor"
+table = "5805"
+variable = "2142"
+note = "Soma dos focos de calor registrados nos anos escolhidos (ADR-0041)."

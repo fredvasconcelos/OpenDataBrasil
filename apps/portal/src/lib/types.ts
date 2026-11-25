@@ -15,6 +15,7 @@ export type Detail = S["DetailOut"];
 export type DetailNode = S["DetailNodeOut"];
 export type Series = S["SeriesOut"];
 export type SeriesItem = S["SeriesItemOut"];
+export type Seasonal = S["SeasonalOut"];
 export type Table = S["TableOut"];
 export type Release = S["ReleaseOut"];
 export type Dataset = S["DatasetOut"];

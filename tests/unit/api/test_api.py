@@ -198,6 +198,18 @@ def _get(stack: dict[str, Any], path: str, status: int = 200) -> Any:
     return response.json()
 
 
+def test_acumulado_sazonal_recusa_populacao_sem_alterar_a_serie(stack: dict[str, Any]) -> None:
+    body = _get(
+        stack,
+        "/api/v1/kpis/populacao_estimada/seasonal?geography=brasil:1&year_from=2023&year_to=2025",
+        422,
+    )
+    assert body["error"]["code"] == "semantic_rule"
+    meta = _get(stack, "/api/v1/kpis/populacao_estimada")
+    assert not meta["temporal"]["seasonal_sum"]
+    assert meta["temporal"]["isolate"]
+
+
 def test_catalog_down_is_503_and_recovers(stack: dict[str, Any]) -> None:
     # Ex.: o PostgreSQL não voltou depois de um reinício do Docker. Sem traceback
     # (500): 503 com nova tentativa, e a API volta sozinha quando o banco volta.

@@ -11,6 +11,7 @@ import { CollapseIcon, ExpandIcon, FilterIcon, ListIcon } from "@/components/ico
 import { KpiInfo } from "@/components/KpiInfo";
 import { MapView, type FitRequest } from "@/components/MapView";
 import { SeasonChart } from "@/components/SeasonChart";
+import { SeasonalChart } from "@/components/SeasonalChart";
 import { SeriesChart } from "@/components/SeriesChart";
 import { Sidebar } from "@/components/Sidebar";
 import { api, ApiRequestError } from "@/lib/api";
@@ -25,6 +26,8 @@ import {
   selectablePeriods,
   writeState,
   yearsOf,
+  canAccumulate,
+  timeGrains,
   type DashboardState,
 } from "@/lib/state";
 import type {
@@ -247,8 +250,15 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
     [kpiId, focusLevel, pqKey, state.dimensions.join(), state.categories.join(), state.correction], retry,
   );
   const batchDetails = useMemo(() => new Map([...(batch.data ?? []), ...(contextBatch.data ?? [])].map((detail) => [detail.geography.geography_key, detail])), [batch.data, contextBatch.data]);
+  const seasonalMode = state.isolate && state.accumulate;
+  const seasonalYears = pq.series.periods;
+  const seasonal = useAsync(seasonalMode && seasonalYears.length ? () => api.seasonal(kpiId, {
+    geography: state.geography, dimensions: state.dimensions, categories: state.categories,
+    grain: state.grain, correction: state.correction,
+    year_from: Number(seasonalYears[0]), year_to: Number(seasonalYears.at(-1)),
+  }) : null, [kpiId, state.geography, state.dimensions.join(), state.categories.join(), state.grain, state.correction, pqKey], retry);
   const series = useAsync(
-    kpiId
+    kpiId && !seasonalMode
       ? () =>
           api.series(kpiId, {
             geography: state.geography,
@@ -432,7 +442,9 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
   const first = selection[0] ?? period;
   const last = selection.at(-1) ?? period;
   const range = first === last ? formatPeriod(last) : t("dashboard.periodRange", { from: formatPeriod(first), to: formatPeriod(last) });
-  const periodLabel = state.isolate
+  const periodLabel = seasonalMode || (state.isolate && !timeGrains(kpi).some((g) => g.grain === "ano"))
+    ? formatPeriod(pq.map.period ?? period)
+    : state.isolate
     ? `${selection.map(formatPeriod).join(", ")}${state.accumulate ? ` (${t("dashboard.accumulated")})` : ""}`
     : state.accumulate
       ? `${range} (${t("dashboard.accumulated")})`
@@ -545,12 +557,13 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
         level={state.level}
         selection={selection}
         grain={state.grain}
-        onGrain={(grain) => update({ grain, period: null, periods: [], isolate: grain === "ano" ? false : state.isolate })}
+        onGrain={(grain) => update({ grain, period: null, periods: [] })}
         isolate={state.isolate}
         onIsolate={(isolate) => {
           // Isolar: a seleção vira o ano do período atual; sem Isolar, volta ao padrão.
           const years = isolate ? yearsOf([period]) : [];
-          update({ isolate, periods: years, period: years.at(-1) ?? null });
+          update({ isolate, periods: years, period: years.at(-1) ?? null,
+            accumulate: canAccumulate(kpi, isolate) && state.accumulate });
         }}
         accumulate={state.accumulate}
         onAccumulate={(accumulate) => update({ accumulate })}
@@ -731,7 +744,9 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
                 </button>
               ) : null}
             </h2>
-            {series.error ? (
+            {seasonalMode ? (seasonal.error ? <Failure error={seasonal.error} onRetry={() => setRetry((r) => r + 1)} />
+              : seasonal.data ? <SeasonalChart data={seasonal.data} />
+              : <p className="muted">{t("dashboard.loading")}</p>) : series.error ? (
               <Failure
                 error={series.error}
                 onRetry={() => setRetry((r) => r + 1)}

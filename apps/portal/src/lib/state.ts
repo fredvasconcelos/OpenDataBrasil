@@ -91,8 +91,16 @@ export function grainPeriods(kpi: Kpi, grain: string | null, level?: string): { 
 }
 
 /** O KPI admite acumular períodos? Só fluxos (soma) e variações % (composição). */
-export function canAccumulate(kpi: Kpi | null): boolean {
-  return timeGrains(kpi).length > 1 && ["sum", "compound"].includes(kpi?.time_aggregation ?? "");
+export function canAccumulate(kpi: Kpi | null, isolate = false): boolean {
+  if (kpi?.temporal) return isolate ? kpi.temporal.seasonal_sum : kpi.temporal.accumulate;
+  return timeGrains(kpi).length > 1 && (isolate
+    ? kpi?.time_aggregation === "sum" : ["sum", "compound"].includes(kpi?.time_aggregation ?? ""));
+}
+
+/** Comparar partes é independente de somar períodos (ADR-0041). */
+export function canIsolate(kpi: Kpi | null, grain: string | null): boolean {
+  return kpi?.temporal?.isolate ?? (timeGrains(kpi).length > 1
+    && (grain ?? timeGrains(kpi)[0]?.grain ?? "ano") !== "ano");
 }
 
 /** Anos (em ordem) que contêm os períodos dados. */
@@ -139,8 +147,7 @@ function readBase(params: URLSearchParams, nav: Navigation | PortalIndex, kpi: K
   // O grão publicado (o primeiro) não vai na URL: null.
   const grain = requested && grains.slice(1).some((g) => g.grain === requested) ? requested : null;
   // Só com grão menor que o ano (mês, trimestre ou semestre).
-  const isolate =
-    params.get("isolar") === "1" && grains.length > 1 && (grain ?? grains[0]?.grain ?? "ano") !== "ano";
+  const isolate = params.get("isolar") === "1" && canIsolate(kpi, grain);
   const valid = kpi ? selectablePeriods(kpi, grain, chosen, isolate) : [];
   const picked = valid.filter((p) => asked_periods.includes(p));
   const asked = params.get("correcao");
@@ -155,7 +162,7 @@ function readBase(params: URLSearchParams, nav: Navigation | PortalIndex, kpi: K
     correction,
     period: picked.at(-1) ?? null,
     periods: picked,
-    accumulate: params.get("acumular") === "1" && canAccumulate(kpi),
+    accumulate: params.get("acumular") === "1" && canAccumulate(kpi, isolate),
     // Dimensões marginais (exclusive_dimensions): uma por vez.
     // Cruzamentos completos (C1): até UF, as dimensões de um mesmo grupo se cruzam.
     dimensions: (() => {
@@ -243,13 +250,19 @@ export function periodQuery(kpi: Kpi | null, state: DashboardState): PeriodQuery
   if (state.isolate) {
     const { periods, complete } = grainPeriods(kpi, state.grain, state.level);
     const fallback = complete.at(-1) ?? periods.at(-1);
-    const years = selection.length ? selection : fallback ? yearsOf([fallback]) : [];
+    let years = selection.length ? selection : fallback ? yearsOf([fallback]) : [];
+    if (state.accumulate && years.length) {
+      const from = Number(years[0]), to = Number(years.at(-1));
+      years = Array.from({ length: to - from + 1 }, (_, i) => String(from + i));
+    }
     const parts = periods.filter((p) => years.includes(p.slice(0, 4)));
     const hasYear = timeGrains(kpi).some((g) => g.grain === "ano");
     return {
-      map: { period: years.at(-1) ?? null, grain: hasYear ? "ano" : state.grain, periods: [], accumulate: false },
-      table: { period: null, grain: state.grain, periods: parts, accumulate: state.accumulate ? "year" : null },
-      series: { periods: years, accumulate: state.accumulate ? "year" : null },
+      map: { period: hasYear ? years.at(-1) ?? null : parts.at(-1) ?? null,
+        grain: hasYear ? "ano" : state.grain, periods: [], accumulate: false },
+      table: { period: null, grain: state.grain, periods: parts, accumulate: null },
+      // O modo combinado usa /seasonal; nunca pedir o antigo acumulado no ano.
+      series: { periods: years, accumulate: null },
       selection: years,
     };
   }

@@ -1,7 +1,9 @@
 # ADR-0041 — Acumulado da mesma parte do ano entre anos
 
 - Data: 25/11/2026.
-- Estado: proposta validada em auditor/protótipo; **não implementada no produto**.
+- Estado: implementada e validada em candidata local, após o pedido de continuação
+  do mantenedor. Aceite visual final pendente; sem substituir o localhost existente
+  nem implantar na beta.
 - Pedido: Isolar + Acumular deve apresentar uma barra por parte do ano, totalizando
   o intervalo escolhido, aproveitando parcelas disponíveis e explicando faltas.
   O mantenedor confirmou uma barra por trimestre com o total de 2023–2025.
@@ -10,7 +12,7 @@
 
 ## Mudança de significado
 
-O comportamento atual acumula dentro de cada ano (T1, T1+T2, …), com uma barra
+O comportamento anterior acumulava dentro de cada ano (T1, T1+T2, …), com uma barra
 por ano. O novo modo acumula a mesma parte entre anos:
 
 `T1 = T1/2023 + T1/2024 + T1/2025`, e analogamente T2, T3 e T4.
@@ -75,13 +77,13 @@ O alerta do agregado avalia o agregado pedido: uma parcela futura omitida não
 vira uma observação publicada com valor zero. Consultas antigas a um período
 isolado indisponível continuam com suas recusas/alertas existentes.
 
-## Contrato e apresentação a implementar
+## Contrato e apresentação implementados
 
 O cálculo e a severidade ficam na API/camada semântica, sobre a Gold Delta do
 release fixado. O gráfico recebe valores, cobertura e alertas estruturados. Não
 somar no navegador nem armazenar réplicas de fatos em PostgreSQL/DuckDB.
 
-O contrato futuro distingue resultado por intervalo/parte de uma observação
+O contrato distingue resultado por intervalo/parte de uma observação
 de um ano: não rotular uma soma 2023–2025 como se fosse apenas 2025T1. A capacidade
 de comparar, agregar calendário, acumular cronologicamente e acumular por parte
 deve ser independente, incluindo grão único anual/trimestral.
@@ -93,8 +95,33 @@ não alterar a composição ou os agregados oficiais por efeito colateral.
 Tabela e exportações preservam as observações/derivados já permitidos pela
 ADR-0026; este pedido do gráfico não autoriza substituir seus dados por acumulados.
 Deve ser possível inspecionar as parcelas que produziram a barra, sem apresentar
-o subtotal como célula oficial do SIDRA. Contrato OpenAPI, textos e DS serão
-alterados junto da implementação, com prova por recorte e navegador.
+o subtotal como célula oficial do SIDRA. Contrato OpenAPI, textos e DS acompanham
+a implementação, com prova por recorte e navegador.
+
+`KpiOut.temporal` informa `isolate`, `accumulate`, `seasonal_sum` e
+`accumulation_rule`. A API oferece a comparação nos 170 KPIs que têm partes
+subanuais ou mais de um ano; os outros 71 só têm um ano anual no release avaliado.
+Isso é independente da soma, habilitada em 24 KPIs. Os 17 trimestrais de grão
+único podem comparar sem receber agregação anual. Sem grão anual permitido,
+o mapa mostra a última parte efetivamente publicada, identificada no rótulo.
+
+`GET /api/v1/kpis/{id}/seasonal` recebe `geography`, `year_from`, `year_to`,
+`grain`, `dimensions`, `categories` e `correction`. Retorna séries por combinação
+de categorias, com `part`, `value`, `status`, `severity`, `expected`, `present`,
+`missing`, `blocked`, `contributors` e `input_partial`, além do grão nativo,
+intervalo, notas e linhagem marcada como derivada. A ausência não ganha valor zero.
+O novo resultado não se identifica como observação de um ano isolado.
+
+As doze permissões anuais ficam em `configs/portal/demografia/temporal.toml`,
+com tabela, variável e nota metodológica explícitas; só valem quando a linhagem
+do release coincide integralmente. As doze somas subanuais usam sua regra já
+declarada na Gold. Não há alteração de fatos, schema ou manifesto de release.
+
+Cada consulta admite até 120 posições nativas de calendário e 60 mil células
+estimadas. Exceder um limite ou receber resultado truncado gera recusa explícita;
+nunca uma barra calculada de uma leitura truncada. São até dez anos mensais,
+trinta trimestrais, sessenta semestrais ou 120 anuais. O calendário enumera posições
+esperadas para medir cobertura, sem fabricar observações da fonte.
 
 ## Validação já executada e limites
 
@@ -104,3 +131,10 @@ KPIs com descritores/linhagem fixados e uma série real por KPI. O protótipo fe
 ausência, zeros, sigilo, duplicidade, frequências e meses de trimestre incompleto.
 Uma série por KPI não homologa todos os municípios ou cruzamentos de categorias.
 Os 30 pareceres pendentes não foram convertidos em permissões por suposição.
+
+A API real da candidata reproduziu os 64 experimentos, inclusive valores,
+severidade, cobertura e parcelas faltantes, sem truncamento. O relatório
+`docs/relatorios/2026-11-25-implementacao-acumulado-sazonal.md` registra testes,
+capturas e imagens exatas. O operador usa os detalhes já publicados; mês × sexo/
+idade/natureza/local da 2654 e os demais conjuntos ausentes da Gold permanecem
+na trilha de captura e processamento. Implementar o operador não os materializa.

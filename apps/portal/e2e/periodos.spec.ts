@@ -37,7 +37,7 @@ test("Acumular soma os períodos marcados no mapa e no gráfico; a tabela mostra
   await expect(page.locator("#table-info")).toContainText("o acumulado aparece no mapa e no gráfico");
 });
 
-test("Isolar: o Período lista anos; barras por parte, uma por ano; acumulado no ano", async ({ page }) => {
+test("Isolar compara anos e Acumular reúne a mesma parte entre anos", async ({ page }) => {
   await page.goto("/dashboard?kpi=obitos_mensal&nivel=uf&grao=trimestre");
   await page.getByRole("checkbox", { name: "Isolar período" }).click();
   await expect(page).toHaveURL(/isolar=1/);
@@ -51,7 +51,8 @@ test("Isolar: o Período lista anos; barras por parte, uma por ano; acumulado no
   await expect(legend).toContainText("2024");
   await expect(page.locator(".data-table thead")).toContainText("T4 2023");
   await page.getByRole("checkbox", { name: "Acumular" }).click();
-  await expect(page.locator(".season-figure figcaption")).toContainText("acumulado no ano");
+  await expect(page.locator(".season-figure figcaption")).toContainText("Cada barra soma a mesma parte do ano entre 2023 e 2024");
+  await expect(page.locator(".season-bar")).toHaveCount(4);
 });
 
 test("taxas não acumulam: a caixa fica desabilitada e a API recusa", async ({ page, request }) => {

@@ -521,10 +521,14 @@ test("grão de tempo (ADR-0013): Sinesp por ano soma os meses; ano incompleto pa
   await page.screenshot({ path: "test-results/sinesp-grao-mes.png", fullPage: false });
 });
 
-test("grão de tempo: KPI de estoque ou anual não oferece o seletor", async ({ page }) => {
+test("grão de tempo: população anual permite comparar sem inventar grãos ou soma", async ({ page }) => {
   await page.goto("/dashboard?kpi=populacao_estimada");
   await expect(page.getByRole("group", { name: "Período", exact: true })).toBeVisible();
-  await expect(page.getByRole("group", { name: "Período por" })).toHaveCount(0);
+  const temporal = page.getByRole("group", { name: "Período por", exact: true });
+  await expect(temporal.getByRole("radio")).toHaveCount(1);
+  await expect(temporal.getByRole("radio", { name: "Ano", exact: true })).toBeChecked();
+  await expect(temporal.getByRole("checkbox", { name: "Isolar período", exact: true })).toBeEnabled();
+  await expect(temporal.getByRole("checkbox", { name: "Acumular", exact: true })).toBeDisabled();
 });
 
 test("População por sexo e idade (9606): detalhe por idade em grupos quinquenais", async ({ page }) => {

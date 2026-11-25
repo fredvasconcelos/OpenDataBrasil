@@ -20,8 +20,9 @@ import threading
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, replace
 from decimal import Decimal
+from math import prod
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal, cast
 
 from odb_api.coverage_alerts import CoverageCell, coverage_alerts, historical_expected
 from odb_api.gold import GoldGateway, NotFoundError
@@ -37,6 +38,7 @@ from odb_api.schemas import (
     DimensionOut,
     FilterOut,
     GeographyRefOut,
+    Grain,
     HistoryOut,
     HistoryRowOut,
     KpiIndexOut,
@@ -53,6 +55,9 @@ from odb_api.schemas import (
     PointOut,
     PortalIndexOut,
     Provenance,
+    SeasonalOut,
+    SeasonalPointOut,
+    SeasonalSeriesOut,
     SeriesItemOut,
     SeriesOut,
     SourceTableOut,
@@ -61,6 +66,7 @@ from odb_api.schemas import (
     TableOut,
     TableRowOut,
     TableVersionOut,
+    TemporalCapabilitiesOut,
     ThemeIndexOut,
     ThemeOut,
     TimeGrainOut,
@@ -101,6 +107,7 @@ from odb_semantics.portal import (
     dimension_share_basis,
     release_problems,
 )
+from odb_semantics.seasonal import SeasonalInput, seasonal_groups, seasonal_sum
 
 logger = logging.getLogger(__name__)
 
@@ -402,6 +409,8 @@ class KpiService:
         meta = self._gold.indicators(ctx)[kpi.indicator]
         geometry = set(self._gold.geometry_levels(ctx))
         levels = list(meta["available_levels"] or ())
+        temporal = self._temporal(ctx, kpi)
+        policy = next((p for p in self._portal.temporal_sums if p.kpi == kpi.id), None)
         return KpiOut(
             kpi_id=kpi.id,
             label=kpi.label,
@@ -429,11 +438,15 @@ class KpiService:
                 CorrectionOut(correction_id=c.id, label=c.label, note=c.note)
                 for c in kpi.corrections
             ],
-            caveats=list(meta["caveats"] or ()),
+            caveats=[
+                *list(meta["caveats"] or ()),
+                *([policy.note] if policy and temporal.seasonal_sum else []),
+            ],
             time_grains=self._time_grains(kpi, meta),
             time_aggregation=(
                 meta.get("time_aggregation") if len(meta.get("time_grains") or ()) > 1 else None
             ),
+            temporal=temporal,
             source=KpiSourceOut(
                 dataset_id=meta["dataset_id"],
                 source_table_id=meta["source_table_id"],
@@ -678,10 +691,45 @@ class KpiService:
 
     # ------------------------------------------------- vários períodos e acumulado (ADR-0026)
 
+    def _accumulation_rule(
+        self,
+        ctx: ReleaseContext,
+        kpi: KpiConfig,
+    ) -> Literal["sum", "compound"] | None:
+        """Regra declarada ou política curada cuja linhagem coincide (ADR-0041)."""
+        meta = self._gold.indicators(ctx)[kpi.indicator]
+        if kpi.map_share is not None:
+            return None
+        policy = next((p for p in self._portal.temporal_sums if p.kpi == kpi.id), None)
+        if policy and (
+            meta["source_variable_id"] == policy.variable
+            and set(self._gold.coverage(ctx).get(kpi.indicator, {})) == {policy.table}
+        ):
+            return "sum"
+        rule = meta.get("time_aggregation")
+        if len(meta.get("time_grains") or ()) > 1:
+            if rule == "sum":
+                return "sum"
+            if rule == "compound":
+                return "compound"
+        return None
+
+    def _temporal(self, ctx: ReleaseContext, kpi: KpiConfig) -> TemporalCapabilitiesOut:
+        """Capacidades independentes, inclusive grão único anual/trimestral."""
+        meta = self._gold.indicators(ctx)[kpi.indicator]
+        grains = meta.get("time_grains") or ()
+        rule = self._accumulation_rule(ctx, kpi)
+        years = {p[:4] for p in meta["periods"] or ()}
+        return TemporalCapabilitiesOut(
+            isolate=bool(grains and (grains[0] != "ano" or len(years) > 1)),
+            accumulate=rule is not None,
+            seasonal_sum=rule == "sum",
+            accumulation_rule=rule,
+        )
+
     def _rule(self, ctx: ReleaseContext, kpi: KpiConfig) -> str:
         """Regra para acumular períodos: soma (fluxos) ou composição (variações %)."""
-        meta = self._gold.indicators(ctx)[kpi.indicator]
-        rule = meta.get("time_aggregation") if len(meta.get("time_grains") or ()) > 1 else None
+        rule = self._accumulation_rule(ctx, kpi)
         if rule not in ACCUMULABLE or kpi.map_share is not None:
             msg = (
                 f"{kpi.id}: acumular períodos só vale para fluxos (soma) e variações % "
@@ -1613,6 +1661,111 @@ class KpiService:
                 )
             ),
             provenance=prov,
+        )
+
+    def seasonal(
+        self,
+        ctx: ReleaseContext,
+        kpi_id: str,
+        *,
+        geography: str,
+        year_from: int,
+        year_to: int,
+        dimensions: Sequence[str],
+        grain: str | None = None,
+        categories: Sequence[str] = (),
+        correction: str | None = None,
+    ) -> SeasonalOut:
+        """Soma a mesma parte entre anos com parcelas nativas e risco (ADR-0041)."""
+        kpi = self.kpi(ctx, kpi_id)
+        if not self._temporal(ctx, kpi).seasonal_sum:
+            raise SemanticError(f"{kpi_id}: soma da mesma parte entre anos não autorizada")
+        meta = self._gold.indicators(ctx)[kpi.indicator]
+        native = str(meta["time_grains"][0])
+        target = grain or native
+        self._grain(ctx, kpi, target)
+        try:
+            groups = seasonal_groups(native, target, year_from, year_to)
+        except PeriodError as exc:
+            raise SemanticError(str(exc)) from exc
+        ref = self._ref(ctx, geography)
+        dims = self._dims(kpi, dimensions, ref.level_id)
+        selected = self._selection(ctx, kpi, categories)
+        periods = sorted(p for values in groups.values() for p in values)
+        count = prod(len(ids) for ids in self._breakdown(ctx, kpi, dims, selected).values())
+        if count * len(periods) > PIVOT_MAX_CELLS:
+            raise SemanticError("Acumulado entre anos grande demais: reduza detalhes ou anos")
+        obs, prov = self._observations(
+            ctx,
+            kpi,
+            level=ref.level_id,
+            within=geography,
+            periods=periods,
+            dims=dims,
+            max_rows=PIVOT_MAX_CELLS + 1,
+            selected=selected,
+            correction=correction,
+        )
+        if prov.truncated:
+            raise SemanticError("Acumulado entre anos truncado: reduza detalhes ou anos")
+        by_combo: dict[Combo, list[SeasonalInput]] = {}
+        for observation in obs:
+            if observation.geography_key == geography:
+                by_combo.setdefault(observation.combo, []).append(
+                    SeasonalInput(observation.period, observation.value, observation.status)
+                )
+        totals = [self._gold.total_category(ctx, d)["category_key"] for d in dims]
+        series = []
+        for combo in self._combos(ctx, kpi, dims, selected=selected):
+            try:
+                values = seasonal_sum(
+                    by_combo.get(combo, []),
+                    native=native,
+                    target=target,
+                    start=year_from,
+                    end=year_to,
+                )
+            except PeriodError as exc:
+                raise SemanticError(str(exc)) from exc
+            series.append(
+                SeasonalSeriesOut(
+                    key="|".join(combo) or "total",
+                    label=self._label(ctx, combo, dims),
+                    categories=dict(zip(dims, combo, strict=True)),
+                    depth=sum(c != t for c, t in zip(combo, totals, strict=True)),
+                    points=[
+                        SeasonalPointOut(
+                            part=v.part,
+                            value=to_float(v.value),
+                            status=v.status,
+                            severity="danger"
+                            if v.value is None
+                            else "warning"
+                            if v.missing or v.input_partial
+                            else None,
+                            expected=v.expected,
+                            present=v.present,
+                            missing=list(v.missing),
+                            blocked=list(v.blocked),
+                            contributors=list(v.contributors),
+                            input_partial=list(v.input_partial),
+                        )
+                        for v in values
+                    ],
+                )
+            )
+        policy = next((p for p in self._portal.temporal_sums if p.kpi == kpi.id), None)
+        return SeasonalOut(
+            kpi_id=kpi.id,
+            geography=ref,
+            unit=meta["unit"],
+            grain=cast(Grain, target),
+            native_grain=cast(Grain, native),
+            year_from=year_from,
+            year_to=year_to,
+            series=series,
+            notes=[*list(meta["caveats"] or ()), *([policy.note] if policy else [])],
+            provenance=prov.model_copy(update={"derived": True}),
         )
 
     def _series_shares(

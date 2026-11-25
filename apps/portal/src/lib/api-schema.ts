@@ -344,6 +344,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/kpis/{kpi_id}/seasonal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Soma da mesma parte do ano entre anos
+         * @description Uma barra por parte e categoria, com cobertura do intervalo (ADR-0041).
+         */
+        get: operations["kpi_seasonal_api_v1_kpis__kpi_id__seasonal_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/kpis/{kpi_id}/table": {
         parameters: {
             query?: never;
@@ -1568,6 +1588,7 @@ export interface components {
             time_grains: components["schemas"]["TimeGrainOut"][];
             /** Time Aggregation */
             time_aggregation?: ("sum" | "mean" | "last" | "compound") | null;
+            temporal?: components["schemas"]["TemporalCapabilitiesOut"];
             source: components["schemas"]["KpiSourceOut"];
         };
         /**
@@ -2217,6 +2238,80 @@ export interface components {
             detail?: string | null;
         };
         /**
+         * SeasonalOut
+         * @description Resultado derivado do acumulado entre anos (ADR-0041).
+         */
+        SeasonalOut: {
+            /** Kpi Id */
+            kpi_id: string;
+            geography: components["schemas"]["GeographyRefOut"];
+            /** Unit */
+            unit: string;
+            /**
+             * Grain
+             * @enum {string}
+             */
+            grain: "mes" | "trimestre" | "semestre" | "ano";
+            /**
+             * Native Grain
+             * @enum {string}
+             */
+            native_grain: "mes" | "trimestre" | "semestre" | "ano";
+            /** Year From */
+            year_from: number;
+            /** Year To */
+            year_to: number;
+            /** Series */
+            series: components["schemas"]["SeasonalSeriesOut"][];
+            /** Notes */
+            notes: string[];
+            provenance: components["schemas"]["Provenance"];
+        };
+        /**
+         * SeasonalPointOut
+         * @description Subtotal por parte e intervalo, com parcelas explícitas.
+         */
+        SeasonalPointOut: {
+            /** Part */
+            part: string;
+            /** Value */
+            value: number | null;
+            /** Status */
+            status: string;
+            /** Severity */
+            severity: ("warning" | "danger") | null;
+            /** Expected */
+            expected: number;
+            /** Present */
+            present: number;
+            /** Missing */
+            missing: string[];
+            /** Blocked */
+            blocked: string[];
+            /** Contributors */
+            contributors: string[];
+            /** Input Partial */
+            input_partial: string[];
+        };
+        /**
+         * SeasonalSeriesOut
+         * @description Uma série acumulada por parte, sem misturar combinações de categorias.
+         */
+        SeasonalSeriesOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Categories */
+            categories: {
+                [key: string]: string;
+            };
+            /** Depth */
+            depth: number;
+            /** Points */
+            points: components["schemas"]["SeasonalPointOut"][];
+        };
+        /**
          * SeriesItemOut
          * @description Série de uma combinação de categorias.
          */
@@ -2431,6 +2526,29 @@ export interface components {
             table_id: string;
             /** Delta Version */
             delta_version: number;
+        };
+        /**
+         * TemporalCapabilitiesOut
+         * @description Operações temporais independentes, calculadas na API (ADR-0041).
+         */
+        TemporalCapabilitiesOut: {
+            /**
+             * Isolate
+             * @default false
+             */
+            isolate: boolean;
+            /**
+             * Accumulate
+             * @default false
+             */
+            accumulate: boolean;
+            /**
+             * Seasonal Sum
+             * @default false
+             */
+            seasonal_sum: boolean;
+            /** Accumulation Rule */
+            accumulation_rule?: ("sum" | "compound") | null;
         };
         /**
          * ThemeIndexOut
@@ -3661,6 +3779,86 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SeriesOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    kpi_seasonal_api_v1_kpis__kpi_id__seasonal_get: {
+        parameters: {
+            query: {
+                /** @description Território, ex.: uf:29. */
+                geography: string;
+                year_from: number;
+                year_to: number;
+                /** @description Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos). */
+                grain?: ("mes" | "trimestre" | "semestre" | "ano") | null;
+                /** @description Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo. */
+                correction?: string | null;
+                /** @description Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2. */
+                dimensions?: string[] | null;
+                /** @description Filtro de categorias das dimensões detalhadas (repetível ou separadas por vírgula), ex.: c79:2670,c79:2681. Sem filtro numa dimensão: todas. Em indicadores somáveis, o Total vira a soma das categorias escolhidas. */
+                categories?: string[] | null;
+            };
+            header?: never;
+            path: {
+                kpi_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonalOut"];
                 };
             };
             /** @description Recurso inexistente no release */
