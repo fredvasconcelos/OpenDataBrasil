@@ -890,9 +890,14 @@ mark { background: #FFE58A; color: #071D41; border-radius: 3px; padding: 0 1px; 
 .meta-more .method-list li + li { margin-top: 0.375rem; }
 
 /* DS 2.3.11: rótulos curtos, ícone de informação da tabela e cabeçalhos com quebra. */
-:is(.share-base, .chart-head) .info-button { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; width: 1.75rem; height: 1.75rem; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--odbr-text-active); cursor: pointer; }
+:is(.share-base, .chart-head) .info-button { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; width: 1.75rem; min-width: 28px; height: 1.75rem; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--odbr-text-active); cursor: pointer; }
 :is(.share-base, .chart-head) .info-button:hover { background: none; }
 :is(.share-base, .chart-head) .info-button[aria-expanded="true"] { background: none; }
+/* A área de clique herda a altura dos controles; o círculo visual acompanha apenas o i. */
+.info-button .info-symbol { display: inline-grid; place-items: center; flex: none; width: max(24px, 1.5rem); height: max(24px, 1.5rem); box-sizing: border-box; border: 1px solid transparent; border-radius: 50%; }
+.info-button .info-symbol svg { display: block; width: max(18px, 1.125rem); height: max(18px, 1.125rem); }
+.info-button.is-warning .info-symbol { background: var(--odbr-warning-bg); border-color: var(--odbr-warning-border); }
+.info-button.is-danger .info-symbol { background: var(--odbr-danger-bg); border-color: var(--odbr-danger-border); }
 .table-info, .chart-info { position: absolute; z-index: 3; top: 100%; left: 0; right: 0; margin-top: 0.25rem; max-height: 50vh; overflow: auto; padding: 0.625rem 0.875rem; background: var(--odbr-bg-surface); border: 1px solid var(--odbr-divider); border-radius: var(--odbr-radius-md); box-shadow: var(--odbr-shadow-2); font-weight: 400; color: var(--odbr-text-body); }
 .table-info p { margin: 0 0 0.375rem; }
 .table-info dl { display: grid; grid-template-columns: minmax(7.5rem, max-content) 1fr; gap: 0.25rem 0.75rem; margin: 0 0 0.5rem; }

@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test";
 
-import { expectPlainInfo } from "./helpers";
+import { expectCompactInfo } from "./helpers";
 
 function contrastOf(el: HTMLElement | SVGElement) {
-  const css = getComputedStyle(el);
+  const symbol = el.querySelector<HTMLElement>(".info-symbol") ?? el;
+  const css = getComputedStyle(symbol);
   const luminance = (color: string) => {
     const channels = color.match(/[\d.]+/g)!.slice(0, 3).map(v => {
       const s = Number(v) / 255;
@@ -11,8 +12,8 @@ function contrastOf(el: HTMLElement | SVGElement) {
     });
     return channels[0]! * 0.2126 + channels[1]! * 0.7152 + channels[2]! * 0.0722;
   };
-  // O i não tem fundo próprio: medir o contraste contra a superfície opaca do cartão.
-  let surface: Element | null = el, background = css.backgroundColor;
+  // Medir contra o círculo visível do alerta; sem fundo, procurar a superfície opaca.
+  let surface: Element | null = symbol, background = css.backgroundColor;
   while (surface && (background === "rgba(0, 0, 0, 0)" || background === "transparent")) {
     surface = surface.parentElement;
     if (surface) background = getComputedStyle(surface).backgroundColor;
@@ -37,7 +38,7 @@ for (const theme of ["light", "dark"]) {
     await expect(warning.getByRole("link", { name: "1594", exact: true })).toHaveAttribute("href", "https://sidra.ibge.gov.br/tabela/1594");
     await expect(page.locator(".pivot-table tbody tr")).toHaveCount(26);
     await page.screenshot({ path: `test-results/cobertura-${theme}-amarelo.png`, fullPage: true });
-    await expectPlainInfo(yellow);
+    await expectCompactInfo(yellow);
     // Nome acessível e texto do aviso acompanham a cor do i.
     const contrast = await yellow.evaluate(contrastOf);
     expect(contrast).toBeGreaterThanOrEqual(3);
@@ -48,7 +49,7 @@ for (const theme of ["light", "dark"]) {
     const red = page.getByRole("button", { name: "Aviso: detalhe indisponível nesta tabela", exact: true });
     await expect(red).toHaveAttribute("aria-expanded", "true", { timeout: 30_000 });
     await expect(red).toHaveClass(/is-danger/);
-    await expectPlainInfo(red);
+    await expectCompactInfo(red);
     expect(await red.evaluate(contrastOf)).toBeGreaterThanOrEqual(3);
     await expect(page.locator(".table-alert.is-danger")).toContainText("a fonte não publica este detalhe por Município");
     await expect(page.locator(".pivot-table tbody tr")).toHaveCount(223);

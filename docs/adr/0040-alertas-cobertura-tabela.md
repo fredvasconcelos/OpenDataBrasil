@@ -43,6 +43,12 @@ borda ou sombra externos. Essa escolha substitui as formas de aviso do botão
 descritas acima. Nomes acessíveis, títulos e textos da explicação continuam
 identificando o risco. A precedência e a abertura automática do vermelho permanecem.
 
+**Revisão seguinte do mantenedor em 25/11/2026 (DS 2.23.2):** restaurar fundo e
+contorno dos alertas em um círculo compacto, com mínimo de 24 × 24 px ao redor
+do i de no mínimo 18 px. Os dois crescem proporcionalmente em escalas maiores.
+O círculo é separado da área de clique do botão para não herdar sua altura mínima
+e se alongar. Mantêm-se o i, as cores, os nomes acessíveis e o comportamento do painel.
+
 ### Referências e limites
 
 A dimensão territorial fixada não tem validade histórica por unidade. Sua contagem

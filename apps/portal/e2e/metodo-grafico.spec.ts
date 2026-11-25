@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { expectPlainInfo } from "./helpers";
+import { expectCompactInfo } from "./helpers";
 
 const url = "/estatisticas/painel?kpi=sinesp_feminicidio&nivel=regiao&grao=semestre&periodo=2023%2C2024%2C2025&acumular=1&territorio=uf%3A25&isolar=1";
 
@@ -62,28 +62,33 @@ test("indisponibilidade vermelha abre o método automaticamente e permite fechar
 
 
 for (const theme of ["light", "dark"]) {
-  test(`i sem elipse e meses sem valor no trimestre: ${theme}`, async ({ page }) => {
-    await page.addInitScript(value => localStorage.setItem("odbr-theme", value), theme);
-    await page.goto("/estatisticas/painel?kpi=sinesp_feminicidio&nivel=uf&grao=trimestre&periodo=2026&acumular=1&territorio=uf%3A25&isolar=1");
-    const chart = page.getByRole("region", { name: /Evolução temporal/ });
-    const red = chart.getByRole("button", { name: "Sobre o método do gráfico: dados indisponíveis", exact: true });
-    await expect(red).toHaveAttribute("aria-expanded", "true");
-    await expectPlainInfo(red);
-    await expect(chart.getByRole("alert").locator("li")).toHaveText(
-      "T4 · Total: Sem valor disponível para: out 2026, nov 2026, dez 2026.",
-    );
-    await expect(chart.getByRole("alert")).not.toContainText(/parcela|Nenhuma das/i);
-    await chart.scrollIntoViewIfNeeded();
-    await page.screenshot({ path: `test-results/icone-vermelho-${theme}.png`, fullPage: true });
-    await page.goto("/estatisticas/painel?kpi=sinesp_homicidio_doloso&nivel=uf&grao=trimestre&periodo=2023,2026&acumular=1&territorio=uf%3A25&isolar=1");
-    const yellow = page.getByRole("button", { name: "Sobre o método do gráfico: dados parciais", exact: true });
-    await expect(yellow).toHaveAttribute("aria-expanded", "false");
-    await yellow.hover();
-    await expectPlainInfo(yellow);
-    await yellow.click();
-    await expectPlainInfo(yellow);
-    await expect(page.locator(".seasonal-alerts")).toContainText("9 de 12 períodos com valor");
-    await page.locator(".area-chart").scrollIntoViewIfNeeded();
-    await page.screenshot({ path: `test-results/icone-amarelo-${theme}.png`, fullPage: true });
-  });
+  for (const width of [1920, 390]) {
+    test(`i com círculo compacto e meses sem valor: ${theme} ${width}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: width === 390 ? 844 : 1080 });
+      await page.addInitScript(value => localStorage.setItem("odbr-theme", value), theme);
+      await page.goto("/estatisticas/painel?kpi=sinesp_feminicidio&nivel=uf&grao=trimestre&periodo=2026&acumular=1&territorio=uf%3A25&isolar=1");
+      if (width < 992) await page.getByRole("button", { name: "Série", exact: true }).click();
+      const chart = page.getByRole("region", { name: /Evolução temporal/ });
+      const red = chart.getByRole("button", { name: "Sobre o método do gráfico: dados indisponíveis", exact: true });
+      await expect(red).toHaveAttribute("aria-expanded", "true");
+      await expectCompactInfo(red);
+      await expect(chart.getByRole("alert").locator("li")).toHaveText(
+        "T4 · Total: Sem valor disponível para: out 2026, nov 2026, dez 2026.",
+      );
+      await expect(chart.getByRole("alert")).not.toContainText(/parcela|Nenhuma das/i);
+      await chart.scrollIntoViewIfNeeded();
+      await page.screenshot({ path: `test-results/icone-vermelho-${theme}-${width}.png`, fullPage: true });
+      await page.goto("/estatisticas/painel?kpi=sinesp_homicidio_doloso&nivel=uf&grao=trimestre&periodo=2023,2026&acumular=1&territorio=uf%3A25&isolar=1");
+      if (width < 992) await page.getByRole("button", { name: "Série", exact: true }).click();
+      const yellow = page.getByRole("button", { name: "Sobre o método do gráfico: dados parciais", exact: true });
+      await expect(yellow).toHaveAttribute("aria-expanded", "false");
+      await yellow.hover();
+      await expectCompactInfo(yellow);
+      await yellow.click();
+      await expectCompactInfo(yellow);
+      await expect(page.locator(".seasonal-alerts")).toContainText("9 de 12 períodos com valor");
+      await page.locator(".area-chart").scrollIntoViewIfNeeded();
+      await page.screenshot({ path: `test-results/icone-amarelo-${theme}-${width}.png`, fullPage: true });
+    });
+  }
 }
