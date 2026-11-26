@@ -1812,9 +1812,10 @@ button.contas-bar[aria-pressed="true"] { background: var(--odbr-bg-selected); bo
 .block-catalog { scroll-margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--odbr-divider); }
 .block-catalog > h2 { margin: 0 0 1rem; }
 .block-catalog .home-hero { padding-top: 0; }
-.accounts-search { max-width: 42rem; margin-bottom: 1.5rem; }
-.accounts-catalog-card { max-width: 42rem; display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; }
-.accounts-catalog-card h3, .accounts-catalog-card p { margin: 0; }
+/* Catálogo das contas: os itens são links para o painel, com a aparência dos itens das Estatísticas. */
+a.kpi-link { text-decoration: none; }
+a.kpi-link:hover { text-decoration: underline; }
+.contas-section-title { scroll-margin-top: 5rem; }
 /* DS 2.23.7 · Painel das contas na moldura do Painel das Estatísticas.
    A barra lateral, a área central (.main), o mapa e a faixa da fonte usam as mesmas
    classes e medidas; aqui ficam só a grade dos cinco blocos e as peças próprias. */

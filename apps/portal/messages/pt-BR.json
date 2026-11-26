@@ -825,11 +825,39 @@
     "updating": "Atualizando os dados… O recorte anterior permanece visível até a consulta terminar.",
     "catalog": {
       "search": "Buscar indicador de contas públicas",
-      "placeholder": "Ex.: transferências, recursos, saúde",
-      "keywords": "transferências federais recursos constitucionais royalties legais voluntárias saúde educação",
-      "details": "Consulte valores enviados, tipos de transferência, áreas, territórios, evolução e recebedores.",
-      "open": "Consultar indicador",
-      "empty": "Nenhum indicador de contas públicas encontrado."
+      "placeholder": "Ex.: saúde, FPM, municípios, recebedores",
+      "hint": "Busca no nome do indicador, no tipo de transferência e na área de governo · ignora acentos",
+      "groupsTitle": "Grupos",
+      "filterByGroup": "Filtrar por grupo",
+      "seeGroup": "Ver o grupo →",
+      "empty": "Nenhum indicador de contas públicas encontrado. A busca ignora acentos e maiúsculas.",
+      "groups": {
+        "visao": {
+          "name": "Visão geral",
+          "note": "Recursos transferidos pela União",
+          "terms": "transferências federais repasses recursos união governo federal"
+        },
+        "tipos": {
+          "name": "Por tipo de transferência",
+          "note": "Abre a distribuição por tipo no painel",
+          "terms": "transferências"
+        },
+        "areas": {
+          "name": "Por área de governo",
+          "note": "Funções de governo, da maior para a menor em {year}",
+          "terms": "função funções"
+        }
+      },
+      "items": {
+        "total": "Total enviado pela União",
+        "onde": "Destino dos recursos por município",
+        "ondeTerms": "mapa estados municípios território",
+        "quando": "Evolução dos repasses mês a mês",
+        "quem": "Quem mais recebeu",
+        "quemTerms": "favorecidos recebedores ranking",
+        "constitutionalTerms": "FPM FPE fundo de participação royalties",
+        "legalTerms": "convênios"
+      }
     },
     "typeAreaContext": "Tipos de transferência em {area}. A lista abaixo inclui todas as áreas.",
     "sourcesTitle": "Fontes e informações sobre os dados",

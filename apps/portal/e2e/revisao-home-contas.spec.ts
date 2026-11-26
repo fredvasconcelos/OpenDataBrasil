@@ -10,17 +10,30 @@ test("Início revela somente os indicadores do bloco escolhido", async ({ page }
   await expect(page.locator(".theme-grid")).toBeVisible();
   await page.screenshot({ path: "test-results/revisao-inicio-estatisticas.png", fullPage: true });
   await page.getByRole("button", { name: "Ver indicadores: Contas públicas", exact: true }).click();
-  await expect(page.locator(".theme-grid")).toHaveCount(0);
+  // Contas no molde das Estatísticas: mesma busca, etiquetas e grade de cartões.
   await expect(page.getByRole("searchbox", { name: "Buscar indicador de contas públicas", exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Consultar indicador", exact: true })).toHaveAttribute("href", "/contas/painel");
+  await expect(page.locator(".block-catalog .theme-grid .theme-card")).toHaveCount(3, { timeout: 30_000 });
+  await expect(page.getByRole("link", { name: "Total enviado pela União", exact: true })).toHaveAttribute("href", "/contas/painel");
+  await expect(page.getByRole("link", { name: "Saúde", exact: true })).toHaveAttribute("href", "/contas/painel?area=10");
   await page.screenshot({ path: "test-results/revisao-inicio-contas.png", fullPage: true });
   for (const theme of ["light", "dark"]) {
     await page.evaluate((theme) => { document.documentElement.dataset.theme = theme; }, theme);
     const colors = await page.locator(".block-card").evaluateAll((cards) => cards.map((el) => getComputedStyle(el).borderTopColor));
     expect(colors[0]).toBe(colors[1]);
   }
+  await page.getByRole("button", { name: /^Por área de governo/ }).click();
+  await expect(page.locator(".block-catalog .theme-panel")).toHaveCount(1);
+  await page.getByRole("button", { name: /^Todos/ }).click();
+  await page.getByRole("searchbox").fill("fpm");
+  await expect(page.locator(".block-catalog .home-search-status")).toContainText("encontrado");
+  await expect(page.locator(".block-catalog .theme-panel h2")).toHaveText("Por tipo de transferência");
+  await expect(page.locator(".block-catalog .theme-panel a")).toHaveText(["Constitucionais e royalties"]);
   await page.getByRole("searchbox").fill("IPCA");
-  await expect(page.getByRole("status")).toContainText("Nenhum indicador de contas públicas encontrado.");
+  await expect(page.locator(".block-catalog .empty")).toContainText("Nenhum indicador de contas públicas encontrado.");
+  await page.getByRole("searchbox").fill("recebedores");
+  await page.getByRole("link", { name: "Quem mais recebeu", exact: true }).click();
+  await expect(page).toHaveURL(/\/contas\/painel#quem$/);
+  await expect(page.locator("#quem")).toBeInViewport({ timeout: 30_000 });
 });
 
 test("área atualiza os cinco cartões e recebedores sem desmontar o mapa", async ({ page, request }) => {
