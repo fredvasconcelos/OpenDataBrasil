@@ -4,6 +4,13 @@ A evolução do portal, dos primeiros passos às novidades mais recentes.
 Cada entrada destaca o que muda para quem consulta os dados. A situação indicada
 vale para a data do registro: **Em teste** ainda não significa disponível na beta.
 
+## 26/11/2026 — Leitura do painel de contas
+
+**Situação: Em teste local.**
+
+- Compare os valores dos repasses e consulte o mapa, a distribuição e os recebedores em blocos alinhados. A sede aparece junto ao nome do favorecido.
+- Nos dois painéis, a ação de limpar a seleção fica junto aos filtros.
+
 ## 26/11/2026 — Navegação por bloco e contas mais fáceis de explorar
 
 **Situação: Em teste local.**

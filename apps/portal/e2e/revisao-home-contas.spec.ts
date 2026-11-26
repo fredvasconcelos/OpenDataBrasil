@@ -57,9 +57,11 @@ test("área atualiza os cinco cartões e recebedores sem desmontar o mapa", asyn
   await expect(page.getByRole("heading", { level: 1, name: "Brasil · 2025", exact: true })).toBeVisible();
 });
 
-test("Estatísticas oferece limpeza dos filtros junto ao título", async ({ page }) => {
+test("Estatísticas oferece uma única limpeza junto aos filtros", async ({ page }) => {
   await page.goto("/estatisticas/painel?kpi=populacao_residente&nivel=uf&territorio=uf%3A25&dim=c2");
-  const clear = page.locator(".dashboard-reset");
+  const clear = page.getByRole("button", { name: "Limpar todos os filtros", exact: true });
+  await expect(clear).toHaveCount(1);
+  await expect(page.locator(".sidebar .filters")).toContainText("Limpar todos os filtros");
   await expect(clear).toBeEnabled();
   await clear.click();
   await expect(clear).toBeDisabled();
@@ -69,7 +71,7 @@ test("Estatísticas oferece limpeza dos filtros junto ao título", async ({ page
   expect(query.has("territorio")).toBe(false);
 });
 
-for (const width of [2560, 1920, 1440, 390]) {
+for (const width of [3440, 2560, 1920, 1440, 390]) {
   test(`cinco blocos, mapa contido e áreas com rolagem, largura ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1080 });
     await page.emulateMedia({ reducedMotion: "reduce" });
@@ -82,6 +84,7 @@ for (const width of [2560, 1920, 1440, 390]) {
     const typeBefore = await page.locator("#como-tipo").boundingBox();
     await areas.evaluate((el) => el.scrollTo(0, el.scrollHeight));
     expect(await page.locator("#como-tipo").boundingBox()).toEqual(typeBefore);
+    await areas.evaluate((el) => el.scrollTo(0, 0));
     const map = await page.locator(".contas-map-wrap .map-panel").boundingBox();
     for (const selector of [".map-hint", ".legend", ".map-zoom"]) {
       const box = await page.locator(`.contas-map-wrap ${selector}`).boundingBox();
@@ -93,7 +96,12 @@ for (const width of [2560, 1920, 1440, 390]) {
     const card = await page.locator(".contas-when").boundingBox();
     expect(chart!.height).toBeGreaterThan(100);
     expect(chart!.y + chart!.height).toBeLessThanOrEqual(card!.y + card!.height);
-    if (width >= 1800) {
+    if (width >= 1600) {
+      const highlights = await page.locator(".contas-highlights").boundingBox();
+      const recipients = await page.locator(".contas-who").boundingBox();
+      expect(Math.abs(highlights!.x + highlights!.width - recipients!.x - recipients!.width)).toBeLessThan(1);
+      const textSize = await page.locator(".contas-table td").first().evaluate(el => parseFloat(getComputedStyle(el).fontSize));
+      expect(textSize).toBeGreaterThanOrEqual(13);
       const when = await page.locator(".contas-when").boundingBox();
       const who = await page.locator(".contas-who").boundingBox();
       expect(when!.y).toBeGreaterThan(map!.y);

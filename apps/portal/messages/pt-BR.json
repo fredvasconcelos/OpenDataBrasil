@@ -679,6 +679,7 @@
     }
   },
   "contas": {
+    "blockName": "Contas públicas",
     "question": "Quanto o governo federal envia para estados e municípios?",
     "lead": "Recursos transferidos pela União: como, para onde e quando.",
     "filters": "Filtros",
@@ -696,27 +697,27 @@
       "topArea": "Maior área",
       "ofTotal": "{share} do total",
       "applied": "Valor aplicado pelo recebedor",
-      "appliedShare": "Percentual aplicado do enviado",
-      "unavailable": "Aplicação ainda não disponível",
+      "appliedShare": "Parcela aplicada do total (%)",
+      "unavailable": "Indisponível",
       "whyUnavailable": "Entenda este dado",
       "applicationNote": "Ainda não integramos uma fonte que ligue o recurso recebido às despesas realizadas pelo estado ou município. A ausência desta informação não significa que o recurso não foi aplicado.",
       "noRecords": "Sem registros neste recorte"
     },
     "map": {
-      "title": "Para onde vai",
+      "title": "Destino dos recursos",
       "subtitle": "Valor recebido por município, {period}",
       "legend": "Valor recebido (R$)",
       "stateLevel": "Sem município (favorecidos estaduais): {value}",
-      "note": "O mapa mostra onde o dinheiro foi recebido. As bases atualmente integradas ao portal não informam a aplicação posterior pelo recebedor."
+      "note": "O mapa identifica quem recebeu o recurso. A aplicação pelo recebedor ainda é desconhecida."
     },
     "how": {
-      "title": "Como chega",
+      "title": "Distribuição dos recursos",
       "byType": "Por tipo de transferência",
       "byArea": "Por área",
-      "areaHint": "Selecione uma área para filtrar os cartões, o mapa, a evolução e os recebedores. Selecione novamente para limpar. Role a lista para ver todas as áreas."
+      "areaHint": "Selecione uma área para filtrar o painel. Clique novamente para limpar."
     },
     "when": {
-      "title": "Quando",
+      "title": "Evolução dos repasses",
       "monthly": "Mensal",
       "yearly": "Anual"
     },
@@ -777,7 +778,6 @@
     "scope": "{territory} · {period}",
     "seriesPeriod": "Série no período selecionado",
     "filteredArea": "Área selecionada: {area}",
-    "allAreasContext": "Composição de todas as áreas do território no período.",
     "rankingScope": "Ranking de {year}, em todas as áreas e meses do ano. Os filtros de mês e área não se aplicam a esta seção.",
     "previous": "Página anterior",
     "next": "Próxima página",
@@ -814,8 +814,8 @@
       "open": "Consultar indicador",
       "empty": "Nenhum indicador de contas públicas encontrado."
     },
-    "typeAreaContext": "Tipos de transferência em {area}. A lista de áreas mantém o total do território no período para permitir trocar o filtro.",
-    "rankingFilteredScope": "Recebimentos em {period} · {area}. A tabela acompanha os filtros do painel.",
+    "typeAreaContext": "Tipos de transferência em {area}. A lista abaixo inclui todas as áreas.",
+    "rankingFilteredScope": "{period} · {area}",
     "sourcesTitle": "Fontes e informações sobre os dados"
   }
 }

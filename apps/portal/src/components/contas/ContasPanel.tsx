@@ -43,12 +43,14 @@ export function ContasSidebar({ trail, territories, periods, period, areas, area
       <div className="sb-current contas-current">
         <span className="contas-current-icon" aria-hidden="true"><FaIcon icon={FA.contas} size={18} /></span>
         <div>
-          <p className="sb-crumb">{t("lensName")}</p>
-          <p className="sb-kpi">{t("question")}</p>
+          <p className="sb-crumb">{t("blockName")}</p>
+          <p className="sb-kpi">{t("lensName")}</p>
         </div>
       </div>
       <section className="filters" aria-label={t("filters")}>
-        <button type="button" className="contas-filter-toggle" aria-expanded={!mobile || filtersOpen} aria-controls="contas-filtros" onClick={() => setFiltersOpen((o) => !o)}>{t("filters")}</button>
+        {mobile ? (
+          <button type="button" className="contas-filter-toggle" aria-expanded={filtersOpen} aria-controls="contas-filtros" onClick={() => setFiltersOpen((o) => !o)}>{t("filters")}</button>
+        ) : <h2>{t("filters")}</h2>}
         <div id="contas-filtros" hidden={mobile && !filtersOpen}>
         <div className="filters-body">
           <label className="field">

@@ -22,15 +22,15 @@ Durante a atualização, os cartões e o mapa permanecem montados com o **contex
 
 ## Aplicação pelo recebedor
 
-O mantenedor escolheu medir a execução pelo estado/município, e não uma fase da despesa federal. As fontes atualmente integradas não permitem esse cálculo. Dois cartões permanecem visíveis com “—”, indisponibilidade e explicação acessível. Ausência não vira zero, não indica recurso não aplicado e não recebe cor de avaliação de desempenho.
+O mantenedor escolheu medir a execução pelo estado/município, e não uma fase da despesa federal. As fontes atualmente integradas não permitem esse cálculo. Dois cartões permanecem visíveis com o estado “Indisponível” e explicação acessível. Ausência não vira zero, não indica recurso não aplicado e não recebe cor de avaliação de desempenho.
 
 Não há barra de aplicado nem percentual estimado. Para habilitá-los, é necessário um contrato específico que identifique fonte, recorte coberto, vínculo com a transferência, estágios da despesa, exercícios/saldos anteriores, contrapartida e denominador comparável. A integração exige reconciliação antes de qualquer publicação.
 
 ## Organização visual e acessibilidade
 
-Cinco blocos: cartões; mapa; tipos/áreas; evolução; recebedores. Em telas largas, mapa e evolução ficam na coluna esquerda, distribuição na central e tabela na direita. Fontes e rodapé vêm abaixo. Em telas menores, os blocos se reorganizam sem esconder conteúdo.
+Cinco blocos: cartões; mapa; tipos/áreas; evolução; recebedores. Em telas largas, mapa e distribuição ficam lado a lado acima da evolução, e a tabela de recebedores ocupa as duas linhas à direita. Fontes e rodapé vêm abaixo. Em telas menores, os blocos se reorganizam sem esconder conteúdo.
 
-Tipos ficam fixos, separados por divisor neutro. Somente a lista de áreas tem rolagem própria, com cerca de cinco itens visíveis, teclado e todas as categorias disponíveis. O mapa reutiliza o componente das Estatísticas e reserva espaço para legenda e instruções no modo compacto. Ambos os painéis oferecem limpeza dos filtros, mantendo o indicador escolhido nas Estatísticas.
+Tipos ficam fixos, separados por divisor neutro. Somente a lista de áreas tem rolagem própria, com cerca de cinco itens visíveis, teclado e todas as categorias disponíveis. O mapa reutiliza o componente das Estatísticas e reserva espaço para legenda e instruções no modo compacto. Ambos os painéis oferecem a limpeza junto aos filtros da barra lateral, mantendo o indicador escolhido nas Estatísticas.
 
 ## Validação
 

@@ -44,8 +44,7 @@ export function ContasHighlights({ total, byType }: {
       })}
       {["applied", "appliedShare"].map((key) => <li key={key} className="contas-kpi is-unavailable">
         <span className="contas-kpi-label">{t(key)}</span>
-        <span className="contas-kpi-value">—</span>
-        <span className="contas-kpi-note">{t("unavailable")}</span>
+        <span className="contas-kpi-status">{t("unavailable")}</span>
         <details className="contas-method-note"><summary>{t("whyUnavailable")}</summary><p>{t("applicationNote")}</p></details>
       </li>)}
     </ul>
@@ -144,7 +143,6 @@ export function ContasRankingTable({ ranking, hrefOf, onPage }: { ranking: Conta
           <tr>
             <th scope="col" className="num">{t("rank")}</th>
             <th scope="col">{t("name")}</th>
-            <th scope="col">{t("seat")}</th>
             <th scope="col">{t("class")}</th>
             <th scope="col" className="num">{t("value")}</th>
           </tr>
@@ -155,8 +153,8 @@ export function ContasRankingTable({ ranking, hrefOf, onPage }: { ranking: Conta
               <td className="num rank" data-l={t("rank")}>{r.rank}º</td>
               <td data-l={t("name")}>
                 {hrefOf ? <Link href={hrefOf(r.recipient.recipient_id)}>{r.recipient.name ?? "—"}</Link> : r.recipient.name ?? "—"}
+                <span className="contas-seat"><span className="sr-only">{t("seat")} · </span>{seat(r.recipient.seat_municipality, r.recipient.seat_uf)}</span>
               </td>
-              <td data-l={t("seat")}>{seat(r.recipient.seat_municipality, r.recipient.seat_uf)}</td>
               <td data-l={t("class")}>
                 <span className="contas-class">
                   <FaIcon icon={classIcon(r.recipient.recipient_class)} size={13} />

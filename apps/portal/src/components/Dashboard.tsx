@@ -607,7 +607,6 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
                 {kpi.label}
               </h1>
             </div>
-            <button type="button" className="small dashboard-reset" disabled={!filtered} onClick={clear}>{t("dashboard.clearFilters")}</button>
           {kpi.map_levels.includes("municipio") && state.geography.startsWith("uf:") && !(state.level === "municipio" && focus === state.geography) ? (
             <div className="map-municipal-action">
               <button type="button" onClick={() => drill(state.geography, "click")}>
