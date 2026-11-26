@@ -1041,6 +1041,162 @@
         }
       }
     },
+    "/api/v1/dictionaries": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Dicionários e apoios",
+        "description": "Inventário documental; candidatas continuam separadas dos KPIs publicados.",
+        "operationId": "dictionary_index_api_v1_dictionaries_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DictionaryIndexOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dictionaries/{entry_id}": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Ficha, códigos, fontes e métodos do indicador",
+        "description": "Documentação obtida, com origem, versão e lacunas de cada variável/edição.",
+        "operationId": "dictionary_entry_api_v1_dictionaries__entry_id__get",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]{0,95}$",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DictionaryEntryOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/kpis/{kpi_id}": {
       "get": {
         "tags": [
@@ -5024,6 +5180,22 @@
             "type": "string",
             "title": "Name"
           },
+          "parent_category_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Category Key"
+          },
+          "depth": {
+            "type": "integer",
+            "title": "Depth",
+            "default": 0
+          },
           "full_name": {
             "type": "string",
             "title": "Full Name",
@@ -6141,6 +6313,183 @@
         "title": "DetailOut",
         "description": "Detalhe de um território (tooltip): sub-KPIs aninhados."
       },
+      "DictionaryEntryOut": {
+        "properties": {
+          "entry_id": {
+            "type": "string",
+            "title": "Entry Id"
+          },
+          "indicator_id": {
+            "type": "string",
+            "title": "Indicator Id"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "documentary_status": {
+            "type": "string",
+            "title": "Documentary Status",
+            "default": "revisao_parcial"
+          },
+          "document": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Document"
+          },
+          "links": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Links"
+          },
+          "methods": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Methods"
+          },
+          "fields": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Fields"
+          },
+          "codes": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Codes"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context"
+          },
+          "expansion": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expansion"
+          },
+          "preparation": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preparation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entry_id",
+          "indicator_id",
+          "version",
+          "document"
+        ],
+        "title": "DictionaryEntryOut",
+        "description": "Ficha, referências e códigos obtidos; lacunas permanecem explícitas."
+      },
+      "DictionaryIndexOut": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "documentacao_parcial_nao_certifica_disponibilidade"
+          },
+          "entries": {
+            "items": {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Entries"
+          },
+          "expansions": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Expansions"
+          },
+          "artifacts": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Artifacts"
+          },
+          "preparation": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preparation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "entries",
+          "expansions",
+          "artifacts"
+        ],
+        "title": "DictionaryIndexOut",
+        "description": "Inventário documental, incluindo apoios e candidatas sem ativação."
+      },
       "DimensionOut": {
         "properties": {
           "classification_id": {
@@ -6211,6 +6560,14 @@
             },
             "type": "array",
             "title": "Categories"
+          },
+          "explorable_categories": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryOut"
+            },
+            "type": "array",
+            "title": "Explorable Categories",
+            "description": "Categorias observadas no indicador, sem certificar todos os recortes. O filtro aceita seleções sem sobreposição de pai e filhos."
           },
           "levels": {
             "items": {

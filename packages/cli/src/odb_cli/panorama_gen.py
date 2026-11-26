@@ -1914,6 +1914,19 @@ def add_monthly(  # noqa: PLR0917 - contexto da geração de um KPI
         )
         return
     others = [d for d in (detail, *extras) if d is not month]
+    monthly_details = [d for d in others if d.source_cid in kpi.mes_detalhes]
+    missing_details = set(kpi.mes_detalhes) - {d.source_cid for d in monthly_details}
+    if missing_details:
+        raise ValueError(f"{kpi.id}: detalhes mensais não declarados: {sorted(missing_details)}")
+    required = {month.source_cid, *(d.source_cid for d in monthly_details)}
+    if monthly_details and not any(required <= set(group) for group in kpi.cruzar):
+        raise ValueError(f"{kpi.id}: projeção mensal exige captura conjunta de {sorted(required)}")
+    source = next((d for d in out.datasets if d["id"] == fact["dataset"]), None)
+    if monthly_details and not any(
+        required <= set(group) for group in (source or {}).get("params", {}).get("cross_sets", [])
+    ):
+        raise ValueError(f"{kpi.id}: captura mensal conjunta foi recusada pelo planejador")
+    fixed = [d for d in others if d not in monthly_details]
     fact["classifications"] = {
         k: v for k, v in (fact.get("classifications") or {}).items() if k != month.cid
     }
@@ -1926,22 +1939,43 @@ def add_monthly(  # noqa: PLR0917 - contexto da geração de um KPI
     out.extra_dimensions[kpi.id] = [
         d for d in out.extra_dimensions.get(kpi.id, []) if d["classification"] != month.cid
     ]
+    if kpi.id in out.crossed:
+        out.crossed[kpi.id] = [group for group in out.crossed[kpi.id] if month.cid not in group]
     monthly_id = f"{kpi.id}_mensal"
     out.facts.append(
         {
             "id": f"{fact['id']}_mensal",
             "dataset": fact["dataset"],
-            "grain": "território x mês",
+            "grain": "território x mês" + "".join(f" x {d.name}" for d in monthly_details),
             "description": f"{kpi.label} por mês de ocorrência (tabela SIDRA {kpi.tabela}).",
+            **(
+                {"classifications": {d.cid: f"{d.cid}_category_key" for d in monthly_details}}
+                if monthly_details
+                else {}
+            ),
             "table_rules": {
                 kpi.tabela: {
                     "month_dimension": month.name,
-                    "keep_categories": {d.name: [d.total] for d in others},
-                    "fixed_categories": {d.name: d.total for d in others},
+                    "keep_categories": {d.name: [d.total] for d in fixed},
+                    "fixed_categories": {d.name: d.total for d in fixed},
                 }
             },
         }
     )
+    if monthly_details:
+        available_dims = [out.dimensions.get(kpi.id), *out.extra_dimensions.get(kpi.id, [])]
+        monthly_dims = [
+            d
+            for d in available_dims
+            if d and d["classification"] in {item.cid for item in monthly_details}
+        ]
+        if len(monthly_dims) != len(monthly_details):
+            raise ValueError(f"{kpi.id}: dimensão mensal sem contrato de exposição")
+        out.dimensions[monthly_id] = dict(monthly_dims[0])
+        out.extra_dimensions[monthly_id] = [dict(d) for d in monthly_dims[1:]]
+        if len(monthly_dims) > 1:
+            out.crossed[monthly_id] = [[d.cid for d in monthly_details]]
+            out.crossed_levels[monthly_id] = out.crossed_levels.get(kpi.id, list(CROSS_LEVELS))
     base = out.indicators[-1]
     out.indicators.append(
         {
@@ -2031,6 +2065,12 @@ def render_portal(gen: Generated, scope: str) -> str:
                 dims.sort(
                     key=lambda d: first.get(re.sub(r"t\d+$", "", d["classification"]), len(first))
                 )
+            dims = [
+                {**d, "native_categories": True}
+                if re.sub(r"t\d+$", "", d["classification"]) in kpi.categorias_nativas
+                else d
+                for d in dims
+            ]
             lines.append(f"dimensions = [{', '.join(_value(d) for d in dims)}]")
             if len(dims) > 1:
                 lines.append("exclusive_dimensions = true")

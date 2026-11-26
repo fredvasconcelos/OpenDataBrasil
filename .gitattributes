@@ -15,6 +15,7 @@ Dockerfile text eol=lf
 
 # Respostas reais de fontes: preservar os bytes exatos (sem normalizar finais de linha).
 tests/fixtures/** -text
+tests/fixtures/ibge/sidra/t2654_n1_p2024_v343_c244_c2.json whitespace=cr-at-eol
 # Artefatos oficiais com SHA-256 registrado (snapshot do acervo, descritores SIDRA).
 configs/catalog/sidra_acervo_*.csv -text
 configs/catalog/descritores/** -text

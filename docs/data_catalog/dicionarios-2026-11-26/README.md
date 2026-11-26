@@ -1,5 +1,11 @@
 # Dicionários dos indicadores — revisão documental de 26/11/2026
 
+**Integração em desenvolvimento local:** as fichas, apoios, códigos, fontes e métodos
+obtidos passaram a compor a API documental e os metadados das exportações. A
+[preparação das 50 candidatas](preparacao-expansao.json) confere configuração e
+mantém seus impedimentos. Ver [contrato implementado](../../development/exportacao-rastreavel.md).
+A integração preserva o estado de revisão parcial e não ativa dados ou publica a beta.
+
 Inventário da configuração vigente: **291 KPIs e 334 indicadores semânticos**, em 335 fichas (uma por KPI e por indicador de apoio sem KPI). Dois KPIs usam o mesmo indicador semântico. A disponibilidade abaixo vem do snapshot da API do release `f1b77232-3f14-4e63-b943-82fed4fa2886`, confrontado com a configuração atual; **não é conferência ao vivo**.
 
 **Estado: revisão parcial com inventário completo da configuração.** Todos têm lacunas metodológicas ou conceituais explícitas; nomes oficiais e links não são apresentados como definições completas.

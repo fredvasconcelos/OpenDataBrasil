@@ -4,6 +4,14 @@ A evolução do portal, dos primeiros passos às novidades mais recentes.
 Cada entrada destaca o que muda para quem consulta os dados. A situação indicada
 vale para a data do registro: **Em teste** ainda não significa disponível na beta.
 
+## 26/11/2026 — Dicionários e arquivos exportados com rastreabilidade
+
+**Situação: Em desenvolvimento e testes locais.**
+
+- Integração das fichas, códigos, fontes, métodos e informações auxiliares aos arquivos exportados, mantendo as lacunas documentais identificadas.
+- Excel com apresentação, dados, metadados, dicionário, fontes e métodos; códigos e valores decimais textuais preservados junto aos valores numéricos auxiliares.
+- Preparação dos 50 indicadores de expansão e suporte à consulta das idades adicionais da tabela de nascidos vivos, com proteção contra dupla contagem.
+
 ## 26/11/2026 — Leitura do painel de contas
 
 **Situação: Em teste local.**

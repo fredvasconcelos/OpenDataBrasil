@@ -161,7 +161,7 @@ filtros = ["sexo", "idade"]
 id = "nascimentos_obitos"
 label = "Nascimentos e óbitos"
 kpis = [
-  { id = "nascidos_vivos", label = "Nascidos vivos", tabela = "2609", pesquisa = "Estatísticas do Registro Civil", filtros = ["sexo"], cruzar = [["c240", "c2"]] },
+  { id = "nascidos_vivos", label = "Nascidos vivos", tabela = "2609", pesquisa = "Estatísticas do Registro Civil", filtros = ["sexo"], cruzar = [["c240", "c2"]], categorias_nativas = ["c240"] },
   { id = "obitos", label = "Óbitos", tabela = "2654", pesquisa = "Estatísticas do Registro Civil", filtros = ["sexo", "idade"], cruzar = [["c2", "c260"]], mes_como_periodo = "c244" },
   { id = "obitos_mensal", label = "Óbitos por mês de ocorrência", tabela = "2654", pesquisa = "Estatísticas do Registro Civil", kpi = "obitos_mensal" },
 ]

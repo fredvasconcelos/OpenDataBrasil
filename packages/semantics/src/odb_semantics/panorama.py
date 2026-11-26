@@ -114,6 +114,10 @@ class PanoramaKpi(_Strict):
     # Recorte da classificação principal (códigos do descritor): só estas categorias
     # (ex.: ovos de galinha e de codorna na 74, na mesma unidade).
     categorias: list[str] = Field(default_factory=list)
+    # Exposição adicional, optativa, de categorias já observadas na Gold.
+    categorias_nativas: tuple[str, ...] = ()
+    # Detalhes preservados na projeção mensal. Habilitar só em candidata reconciliada.
+    mes_detalhes: tuple[str, ...] = ()
     # Total derivado (ADR-0023): a classificação não tem Total, ou o da fonte mistura
     # unidades; o Total do KPI é a soma das categorias, com nota de método.
     total_somado: bool = False
