@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { MapView } from "@/components/MapView";
 import { SeriesChart } from "@/components/SeriesChart";
@@ -66,6 +66,15 @@ function LoadedDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () => v
   }, [geography, period, area, page, grain, order, meta.release_id], 0, true);
 
   const data = loaded.data;
+  // Os links do catálogo (#onde, #quando, #quem, #como) apontam para seções que só existem
+  // depois da primeira carga; rola até elas uma vez, quando aparecem.
+  const jumped = useRef(false);
+  useEffect(() => {
+    if (!data || jumped.current) return;
+    jumped.current = true;
+    const target = window.location.hash ? document.getElementById(decodeURIComponent(window.location.hash.slice(1))) : null;
+    target?.scrollIntoView({ block: "start" });
+  }, [data]);
   // Mantém o contexto dos valores anteriores durante a atualização dos filtros.
   const displayed = data?.scope ?? state;
   const trail = [{ key: "brasil:1", label: t("brasil") }, ...(data?.parent ? [{ key: data.parent.geography_key, label: data.parent.name }] : []), ...(data && displayed.geography !== "brasil:1" ? [{ key: displayed.geography, label: data.selected.name }] : [])];
