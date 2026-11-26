@@ -60,6 +60,16 @@ describe("adaptadores", () => {
     expect(pointAt(series, "total", "2020")).toBeNull();
     expect(pointAt(series, "outra", "2026M11")).toBeNull();
   });
+  it("a área selecionada não mistura a série de Demais ao contexto filtrado", () => {
+    const data = { ...series, lines: [
+      { ...series.lines[0]!, category_code: "10", label: "Saúde" },
+      { ...series.lines[0]!, category_code: "__other__", label: "Demais" },
+    ] };
+    const filtered = toSeries(data, "Paraíba", "10");
+    expect(filtered.series.map((line) => line.label)).toEqual(["Saúde"]);
+    expect(filtered.series[0]!.points.map((point) => point.value)).toEqual([798745718.17, 427741854.76]);
+    expect(toSeries(data, "Paraíba", "12").series).toEqual([]);
+  });
   it("alertas: sem os fechados, em ordem do tempo", () => {
     expect(periodAlerts(provenance.period_notes).map((n) => n.period)).toEqual(["2026M03", "2026M11"]);
     expect(periodAlerts(undefined)).toEqual([]);

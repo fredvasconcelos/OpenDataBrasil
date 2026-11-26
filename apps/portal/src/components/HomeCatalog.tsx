@@ -21,10 +21,12 @@ export function HomeCatalog({
   nav,
   releaseId,
   institutions = [],
+  compact = false,
 }: {
   nav: Navigation;
   releaseId: string | null;
   institutions?: string[];
+  compact?: boolean;
 }) {
   const t = useTranslations();
   const [q, setQ] = useState("");
@@ -52,7 +54,7 @@ export function HomeCatalog({
   return (
     <>
       <section className="home-hero">
-        <h1>{t("home.title")}</h1>
+        {!compact ? <><h1>{t("home.title")}</h1>
         <p className="lead">{t("home.lead")}</p>
         <ul className="home-stats">
           <li>
@@ -74,7 +76,7 @@ export function HomeCatalog({
               </a>
             </li>
           ) : null}
-        </ul>
+        </ul></> : null}
         <div role="search" className="home-search">
           <label htmlFor="home-busca">{t("home.searchLabel")}</label>
           <SearchGlyph />

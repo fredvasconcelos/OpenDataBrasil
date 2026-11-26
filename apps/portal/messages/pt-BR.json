@@ -79,7 +79,7 @@
     "categoriesOf": "Categorias: {dimension}",
     "hideCategories": "Ocultar categorias",
     "emptyChildren": "+ {count, plural, one {# item} other {# itens}} com zero ou sem dado (veja a tabela)",
-    "clearFilters": "Limpar filtros",
+    "clearFilters": "Limpar todos os filtros",
     "zoom": {
       "group": "Zoom do mapa",
       "in": "Aproximar",
@@ -666,7 +666,7 @@
   "blocks": {
     "title": "O que você quer consultar?",
     "current": "Você está aqui",
-    "open": "Abrir o painel",
+    "open": "Ver indicadores",
     "estatisticas": {
       "name": "Estatísticas oficiais",
       "short": "Indicadores de fontes oficiais, com mapa, série e tabela",
@@ -694,20 +694,26 @@
       "constitutional": "Constitucionais e royalties",
       "legal": "Legais, voluntárias e específicas",
       "topArea": "Maior área",
-      "ofTotal": "{share} do total"
+      "ofTotal": "{share} do total",
+      "applied": "Valor aplicado pelo recebedor",
+      "appliedShare": "Percentual aplicado do enviado",
+      "unavailable": "Aplicação ainda não disponível",
+      "whyUnavailable": "Entenda este dado",
+      "applicationNote": "Ainda não integramos uma fonte que ligue o recurso recebido às despesas realizadas pelo estado ou município. A ausência desta informação não significa que o recurso não foi aplicado.",
+      "noRecords": "Sem registros neste recorte"
     },
     "map": {
       "title": "Para onde vai",
       "subtitle": "Valor recebido por município, {period}",
       "legend": "Valor recebido (R$)",
       "stateLevel": "Sem município (favorecidos estaduais): {value}",
-      "note": "O mapa mostra onde o dinheiro foi recebido. Como cada ente gasta esse dinheiro não está nas bases federais."
+      "note": "O mapa mostra onde o dinheiro foi recebido. As bases atualmente integradas ao portal não informam a aplicação posterior pelo recebedor."
     },
     "how": {
       "title": "Como chega",
       "byType": "Por tipo de transferência",
       "byArea": "Por área",
-      "areaHint": "Clique numa área para filtrar o total, o mapa e a série."
+      "areaHint": "Selecione uma área para filtrar os cartões, o mapa, a evolução e os recebedores. Selecione novamente para limpar. Role a lista para ver todas as áreas."
     },
     "when": {
       "title": "Quando",
@@ -725,7 +731,8 @@
       "count": "{count} favorecidos no território",
       "note": "Bancos pagadores, lançamentos agregados, valores sigilosos e sem informação não entram no ranking, mas entram nos totais.",
       "previous": "Página anterior",
-      "next": "Próxima página"
+      "next": "Próxima página",
+      "limit": "A consulta permite navegar pelos {count} primeiros recebedores deste recorte."
     },
     "status": {
       "closed": "Período fechado",
@@ -783,7 +790,7 @@
     "officialUnavailable": "Consulte o Portal da Transparência; a API ainda não fornece um link específico do favorecido.",
     "grain": "Série por",
     "filterError": "Filtro indisponível neste release. Escolha outro período ou território.",
-    "resetFilters": "Limpar filtros",
+    "resetFilters": "Limpar todos os filtros",
     "references": {
       "title": "Dicionários e glossário oficiais",
       "lead": "Consulte as definições dos campos no Portal da Transparência:",
@@ -797,6 +804,18 @@
       "panelNote": "O painel mostra recursos transferidos. Recebimentos por favorecido e execução da despesa são bases distintas; seus valores não se somam.",
       "recipientNote": "A ficha separa recursos transferidos de recebimentos por favorecido. O cadastro PJ explica a natureza jurídica e a atividade econômica.",
       "newTab": "(abre em nova aba)"
-    }
+    },
+    "updating": "Atualizando os dados… O recorte anterior permanece visível até a consulta terminar.",
+    "catalog": {
+      "search": "Buscar indicador de contas públicas",
+      "placeholder": "Ex.: transferências, recursos, saúde",
+      "keywords": "transferências federais recursos constitucionais royalties legais voluntárias saúde educação",
+      "details": "Consulte valores enviados, tipos de transferência, áreas, territórios, evolução e recebedores.",
+      "open": "Consultar indicador",
+      "empty": "Nenhum indicador de contas públicas encontrado."
+    },
+    "typeAreaContext": "Tipos de transferência em {area}. A lista de áreas mantém o total do território no período para permitir trocar o filtro.",
+    "rankingFilteredScope": "Recebimentos em {period} · {area}. A tabela acompanha os filtros do painel.",
+    "sourcesTitle": "Fontes e informações sobre os dados"
   }
 }

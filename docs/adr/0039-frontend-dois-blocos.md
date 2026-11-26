@@ -165,3 +165,7 @@ das UFs como contexto e o enquadramento existente do MapView. A composição exi
 todos os itens retornados pela API, sem uma segunda rolagem interna no desktop.
 Os links de fichas carregam um retorno restrito a `/contas/painel` e aos filtros
 conhecidos, preservando território, período, área, grão e página ao voltar.
+
+## Revisão autorizada em 26/11/2026
+
+A [ADR-0042](0042-navegacao-e-contexto-das-contas.md) substitui o comportamento do Início, a lista resumida de áreas e a restrição visual do ranking anual. A rota paginada `/contas/table` já aceita os cruzamentos de função, período e tipo; o portal passa a consumi-la, sem alterar os contratos públicos. Aplicação pelo recebedor permanece indisponível até integração e validação de fonte própria.

@@ -7,9 +7,9 @@ import { useTranslations } from "next-intl";
 import type { CSSProperties, ReactNode } from "react";
 
 import { FaIcon } from "@/components/FaIcon";
-import { pointAt, periodAlerts } from "@/lib/contas/adapt";
+import { periodAlerts } from "@/lib/contas/adapt";
 import { brl, brlShort, periodLabel, seat, share } from "@/lib/contas/format";
-import type { ContasComposition, ContasProvenance, ContasRanking, ContasSeries } from "@/lib/contas/types";
+import type { ContasProvenance, ContasRanking, ContasTable } from "@/lib/contas/types";
 import { classIcon, functionVisual } from "@/lib/contas/visual";
 import { FA } from "@/lib/faIcons";
 import { themeStyle } from "@/lib/themes";
@@ -18,17 +18,15 @@ const TYPE_CONSTITUTIONAL = "Constitucionais e Royalties";
 const TYPE_LEGAL = "Legais, Voluntárias e Específicas";
 
 /** Quanto: total do território e a divisão por tipo, como a API entrega. */
-export function ContasHighlights({ total, byType, composition, year }: {
+export function ContasHighlights({ total, byType }: {
   total: number;
-  byType?: ContasSeries | null;
-  composition?: ContasComposition | null;
-  year: string;
+  byType: ContasTable;
 }) {
   const t = useTranslations("contas.highlights");
-  const constitutional = byType ? pointAt(byType, TYPE_CONSTITUTIONAL, year) : null;
-  const legal = byType ? pointAt(byType, TYPE_LEGAL, year) : null;
-  const top = composition?.rows[0];
-  const topVisual = top ? functionVisual(top.category_code) : null;
+  const types = [
+    { key: "constitutional", code: TYPE_CONSTITUTIONAL },
+    { key: "legal", code: TYPE_LEGAL },
+  ];
   return (
     <ul className="contas-highlights">
       <li className="contas-kpi is-main">
@@ -36,28 +34,20 @@ export function ContasHighlights({ total, byType, composition, year }: {
         <span className="contas-kpi-value">{brlShort(total)}</span>
         <span className="contas-kpi-note">{brl(total)}</span>
       </li>
-      {constitutional !== null ? (
-        <li className="contas-kpi">
-          <span className="contas-kpi-label">{t("constitutional")}</span>
-          <span className="contas-kpi-value">{brlShort(constitutional)}</span>
-        </li>
-      ) : null}
-      {legal !== null ? (
-        <li className="contas-kpi">
-          <span className="contas-kpi-label">{t("legal")}</span>
-          <span className="contas-kpi-value">{brlShort(legal)}</span>
-        </li>
-      ) : null}
-      {top && topVisual ? (
-        <li className="contas-kpi" style={themeStyle(topVisual.family)}>
-          <span className="contas-kpi-label">{t("topArea")}</span>
-          <span className="contas-kpi-area">
-            <span className="contas-area-icon" aria-hidden="true"><FaIcon icon={topVisual.icon} size={16} /></span>
-            {top.label}
-          </span>
-          <span className="contas-kpi-note">{t("ofTotal", { share: share(top.share) })}</span>
-        </li>
-      ) : null}
+      {types.map(({ key, code }) => {
+        const value = byType.rows.find((r) => r.key === code)?.value;
+        return <li key={key} className="contas-kpi">
+          <span className="contas-kpi-label">{t(key)}</span>
+          <span className="contas-kpi-value">{value === undefined ? "—" : brlShort(value)}</span>
+          <span className="contas-kpi-note">{value === undefined ? t("noRecords") : brl(value)}</span>
+        </li>;
+      })}
+      {["applied", "appliedShare"].map((key) => <li key={key} className="contas-kpi is-unavailable">
+        <span className="contas-kpi-label">{t(key)}</span>
+        <span className="contas-kpi-value">—</span>
+        <span className="contas-kpi-note">{t("unavailable")}</span>
+        <details className="contas-method-note"><summary>{t("whyUnavailable")}</summary><p>{t("applicationNote")}</p></details>
+      </li>)}
     </ul>
   );
 }
@@ -96,18 +86,15 @@ function Bar({ label, value, width, note, icon, style, pressed, onClick }: {
   );
 }
 
-/** Como: por tipo de transferência (série anual, ano escolhido) e por área (composição). */
-export function ContasComposition({ byType, composition, year, area, onArea }: {
-  byType: ContasSeries;
-  composition: ContasComposition;
-  year: string;
+/** Como: tipos no recorte selecionado e todas as áreas do território no período. */
+export function ContasComposition({ byType, composition, area, onArea }: {
+  byType: ContasTable;
+  composition: ContasTable;
   area?: string | null;
   onArea?: (code: string) => void;
 }) {
   const t = useTranslations("contas.how");
-  const types = byType.lines
-    .map((l) => ({ code: l.category_code, label: l.label, value: pointAt(byType, l.category_code, year) }))
-    .filter((r): r is { code: string; label: string; value: number } => r.value !== null);
+  const types = byType.rows;
   // Largura relativa à maior barra de cada lista: só desenho, não é dado novo.
   const maxType = Math.max(...types.map((r) => r.value), 1);
   const maxArea = Math.max(...composition.rows.map((r) => r.value), 1);
@@ -117,27 +104,26 @@ export function ContasComposition({ byType, composition, year, area, onArea }: {
         <h3 id="como-tipo">{t("byType")}</h3>
         <ul className="contas-bars">
           {types.map((r) => (
-            <Bar key={r.code} label={r.label} value={r.value} width={r.value / maxType} />
+            <Bar key={r.key} label={r.label} value={r.value} width={r.value / maxType} note={share(r.share)} />
           ))}
         </ul>
       </section>
-      <section aria-labelledby="como-area">
+      <section className="contas-areas" aria-labelledby="como-area">
         <h3 id="como-area">{t("byArea")}</h3>
-        <ul className="contas-bars">
+        <ul className="contas-bars contas-area-scroll" tabIndex={0} aria-labelledby="como-area">
           {composition.rows.map((r) => {
-            const v = functionVisual(r.category_code);
-            const other = r.label.startsWith("Demais");
+            const v = functionVisual(r.key);
             return (
               <Bar
-                key={r.category_code + r.label}
+                key={r.key}
                 label={r.label}
                 value={r.value}
                 width={r.value / maxArea}
                 note={share(r.share)}
-                icon={other ? null : <FaIcon icon={v.icon} size={13} />}
-                style={other ? undefined : themeStyle(v.family)}
-                pressed={area === r.category_code}
-                onClick={onArea && !other ? () => onArea(r.category_code) : undefined}
+                icon={<FaIcon icon={v.icon} size={13} />}
+                style={themeStyle(v.family)}
+                pressed={area === r.key}
+                onClick={onArea ? () => onArea(r.key) : undefined}
               />
             );
           })}
@@ -191,6 +177,7 @@ export function ContasRankingTable({ ranking, hrefOf, onPage }: { ranking: Conta
         </span>
       </div>
       <p className="contas-hint">{t("note")}</p>
+      {ranking.total_recipients > ranking.pages * ranking.page_size ? <p className="contas-hint">{t("limit", { count: (ranking.pages * ranking.page_size).toLocaleString("pt-BR") })}</p> : null}
     </div>
   );
 }

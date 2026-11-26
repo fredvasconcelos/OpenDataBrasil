@@ -366,6 +366,7 @@ input[type="checkbox"] { width: 1rem; height: 1rem; margin: 0; accent-color: var
 /* Mapa (d3-geo + d3-zoom). Altura definida pelo contêiner e SVG em posição absoluta:
    um SVG que dita a altura do contêiner entra em ciclo de redimensionamento. */
 .map-panel { position: relative; height: clamp(22.5rem, 58vh, 42.5rem); padding: 0; overflow: hidden; background: var(--odbr-bg-surface); }
+.map-viewport { position: absolute; inset: 0; overflow: hidden; }
 .map-panel svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
 .map-panel svg:active { cursor: grabbing; }
 .map-panel path.territory {
@@ -1688,7 +1689,7 @@ select {
   background: var(--odbr-bg-surface); border: 1px solid var(--odbr-border); border-radius: var(--odbr-radius-lg);
   box-shadow: var(--odbr-shadow-1); border-top: 0.3125rem solid var(--odbr-primary);
 }
-.block-card[data-block="contas"] { border-top-color: var(--odbr-logo-br, var(--odbr-primary)); }
+
 .block-card-icon {
   width: 3.75rem; height: 3.75rem; border-radius: 1rem; display: inline-flex; align-items: center; justify-content: center;
   background: var(--odbr-bg-selected); color: var(--odbr-primary);
@@ -1729,7 +1730,7 @@ select {
 /* Destaques */
 .contas-highlights { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr)); gap: var(--odbr-space-3); }
 .contas-kpi { display: flex; flex-direction: column; gap: 0.25rem; padding: 1rem 1.125rem; background: var(--odbr-bg-surface); border: 1px solid var(--odbr-border); border-radius: var(--odbr-radius-md); min-width: 0; }
-.contas-kpi.is-main { background: var(--odbr-bg-selected); border-color: var(--odbr-primary); }
+.contas-kpi.is-main { border-color: var(--odbr-border); }
 .contas-kpi-label { font-size: var(--odbr-fs-caption); font-weight: 800; color: var(--odbr-text-muted); }
 .contas-kpi-value { font-size: var(--odbr-fs-kpi); font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; color: var(--odbr-text); white-space: nowrap; }
 .contas-kpi.is-main .contas-kpi-value { color: var(--odbr-text-active); }
@@ -1837,25 +1838,96 @@ button.contas-bar[aria-pressed="true"] { background: var(--odbr-bg-selected); bo
   .recipient-lenses, .recipient-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* Integração CP5: moldura com rolagem própria, sem ocultar seções no desktop. */
-.contas-dashboard { display: grid; grid-template-columns: 20rem minmax(0, 1fr); min-height: calc(100dvh - var(--odbr-header-h) - var(--notice-h)); }
-.contas-dashboard .contas-sidebar { position: sticky; top: 0; max-height: 100dvh; overflow-y: auto; }
-.contas-dashboard .contas-grid { min-width: 0; padding: 1.5rem; }
-.contas-map-wrap { height: 32rem; min-height: 24rem; }
-.contas-map-wrap .map-panel { height: 100%; }
-.contas-series-wrap { height: 22rem; }
-.contas-trail { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .5rem; }
-.contas-trail button { color: var(--odbr-link); background: var(--odbr-bg-surface); border: 1px solid var(--odbr-border); padding: .4rem .7rem; border-radius: .25rem; }
+/* DS 2.23.6: entrada por bloco e cinco blocos analíticos das contas. */
+.block-card-link { border: 0; font: inherit; font-weight: 800; cursor: pointer; }
+.block-card-link[aria-expanded="true"] { box-shadow: 0 0 0 3px var(--odbr-bg-surface), 0 0 0 5px var(--odbr-primary); }
+.block-catalog { scroll-margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--odbr-divider); }
+.block-catalog > h2 { margin: 0 0 1rem; }
+.block-catalog .home-hero { padding-top: 0; }
+.accounts-search { max-width: 42rem; margin-bottom: 1.5rem; }
+.accounts-catalog-card { max-width: 42rem; display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; }
+.accounts-catalog-card h3, .accounts-catalog-card p { margin: 0; }
+.dashboard-reset { flex: none; }
+.contas-dashboard { display: grid; grid-template-columns: 16rem minmax(0, 1fr); min-height: calc(100dvh - var(--odbr-header-h) - var(--notice-h)); }
+.contas-dashboard .contas-sidebar { position: sticky; top: 0; align-self: start; max-height: 100dvh; overflow-y: auto; padding: 1.25rem 1rem; }
+.contas-sidebar .contas-current { padding: 0 0 1.25rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--odbr-divider); }
+.contas-current { flex-direction: column; }
+.contas-sidebar .sb-kpi { margin-top: .5rem; font-size: var(--odbr-fs-ui); line-height: 1.5; }
+.contas-sidebar .filters { padding: 0; }
+.contas-sidebar .filters-body { gap: 1rem; padding-top: .75rem; }
+.contas-sidebar .field { display: flex; flex-direction: column; gap: .375rem; font-size: var(--odbr-fs-small); font-weight: 700; }
+.contas-sidebar select { width: 100%; min-height: 2.75rem; }
+.contas-filter-toggle { background: none; border: none; color: var(--odbr-text-muted); font: inherit; font-weight: 800; text-align: left; padding: .375rem 0; }
+.contas-filter-toggle[aria-expanded="false"]::after { content: " +"; }
+.contas-content { position: relative; min-width: 0; }
+.contas-update { position: sticky; top: 0; z-index: 10; margin: 0; font-size: var(--odbr-fs-caption); background: var(--odbr-info-bg); color: var(--odbr-text); }
+.contas-update:not(:empty) { padding: .5rem 1rem; }
+.contas-dashboard .contas-grid { min-width: 0; padding: 1.25rem; gap: 1rem; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); grid-template-areas: "head head" "kpis kpis" "where how" "when who" "foot foot"; align-items: start; }
+.contas-dashboard .contas-section { padding: 1rem; gap: .75rem; }
+.contas-highlights { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .75rem; }
+.contas-kpi { padding: .875rem 1rem; min-height: 7rem; }
+.contas-kpi-value { font-size: clamp(1.15rem, 1.4vw, 1.75rem); }
+.contas-kpi.is-unavailable .contas-kpi-value { color: var(--odbr-text-muted); }
+.contas-method-note { font-size: var(--odbr-fs-caption); color: var(--odbr-text-body); }
+.contas-method-note summary { cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.contas-method-note p { line-height: 1.5; }
+.contas-map-wrap { min-height: 0; height: clamp(20rem, 31vh, 25rem); }
+.contas-map-wrap .map-panel { height: 100%; min-height: 0; border: 1px solid var(--odbr-border); border-radius: var(--odbr-radius-md); }
+.contas-map-wrap .map-hint { left: .75rem; right: .75rem; bottom: .5rem; max-width: calc(100% - 1.5rem); white-space: normal; overflow-wrap: anywhere; line-height: 1.35; }
+.contas-map-wrap .legend { bottom: 3.75rem; padding: .5rem; }
+.contas-map-wrap .legend ol { gap: 1px; }
+.map-compact { display: flex; flex-direction: column; gap: .5rem; padding: .5rem; }
+.map-compact .map-viewport { position: relative; inset: auto; flex: 1; min-height: 7rem; }
+.contas-map-wrap .map-compact .legend { position: static; padding: .375rem .5rem; flex: none; }
+.map-compact .legend ol { flex-direction: row; flex-wrap: wrap; gap: .25rem .625rem; }
+.map-compact .legend li { gap: .25rem; }
+.contas-map-wrap .map-compact .map-hint { position: static; max-width: none; padding: 0; flex: none; }
+
+.contas-series-wrap { display: flex; flex-direction: column; height: clamp(12rem, 22vh, 18rem); min-height: 0; }
+.contas-series-wrap .series-plot { min-height: 0; }
+.contas-when .field { align-self: flex-start; display: flex; align-items: center; gap: .5rem; }
+.contas-trail { display: flex; flex-wrap: wrap; gap: .375rem; }
+.contas-trail button { color: var(--odbr-link); background: var(--odbr-bg-surface); border: 1px solid var(--odbr-border); padding: .25rem .625rem; border-radius: var(--odbr-radius-sm); font-size: var(--odbr-fs-caption); }
 .contas-tooltip-position { position: fixed; z-index: 100; pointer-events: none; width: 19rem; }
+.contas-how { gap: 1rem; }
+.contas-areas { min-width: 0; border-top: 1px solid var(--odbr-divider); padding-top: 1rem; }
+.contas-area-scroll { max-height: 23.125rem; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding-right: .25rem; }
+.contas-area-scroll .contas-bar { min-height: 4.375rem; justify-content: center; gap: .625rem; }
+.contas-area-scroll .contas-bar-track { height: .75rem; }
+.contas-bar-head { flex-wrap: wrap; }
+.contas-bar-label { white-space: normal; line-height: 1.35; overflow-wrap: anywhere; }
+.contas-area-scroll .contas-bar-label { flex-basis: calc(100% - 2rem); }
+.contas-bar-value { margin-left: auto; }
+.contas-ranking { min-width: 0; overflow-x: auto; }
+.contas-who .contas-table { font-size: var(--odbr-fs-caption); }
+.contas-who .contas-table th, .contas-who .contas-table td { padding: .5rem .375rem; overflow-wrap: anywhere; }
+.contas-who .contas-table td.rank { width: 2rem; }
+.contas-foot.card { display: flex; flex-direction: column; gap: .75rem; padding: 1rem; }
+.contas-foot p { margin: 0; overflow-wrap: anywhere; }
+.contas-foot > h2 { font-size: var(--odbr-fs-small); }
+@media (min-width: 1800px) {
+  .contas-dashboard .contas-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1.2fr); grid-template-areas: "head head head" "kpis kpis kpis" "where how who" "when how who" "foot foot foot"; }
+  .contas-highlights { max-width: 94rem; }
+  .contas-map-wrap { height: clamp(18rem, 28vh, 24rem); }
+  .contas-series-wrap { height: clamp(11rem, 17vh, 16rem); }
+}
+@media (max-width: 1279px) {
+  .contas-dashboard { grid-template-columns: 14rem minmax(0, 1fr); }
+  .contas-highlights { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .contas-dashboard .contas-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "kpis" "where" "how" "when" "who" "foot"; }
+}
 @media (max-width: 991px) {
   .contas-dashboard { display: block; }
   .contas-dashboard .contas-sidebar { position: static; max-height: none; width: auto; }
   .contas-dashboard .contas-grid { padding: 1rem; }
-  .contas-map-wrap { height: 28rem; }
+  .contas-highlights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .contas-highlights .is-main { grid-column: 1 / -1; }
+  .contas-map-wrap { height: 27rem; }
 }
 
-.contas-filter-toggle { background: none; border: none; color: var(--odbr-text-muted); font: inherit; font-weight: 800; text-align: left; text-transform: uppercase; padding: .5rem 0; }
-.contas-filter-toggle[aria-expanded="false"]::after { content: " +"; }
+@media (max-width: 575px) {
+  .contas-who .contas-table td { padding: 2px 0 2px 6.5rem; }
+}
 
 /* ADR-0041: o sinal acompanha texto e parcelas; vermelho prevalece sobre amarelo. */
 .seasonal-alerts { margin: .75rem 0; padding: .75rem; border: 1px solid; border-radius: .5rem; }

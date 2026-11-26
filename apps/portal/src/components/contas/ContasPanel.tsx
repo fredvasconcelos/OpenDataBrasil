@@ -21,7 +21,7 @@ export interface AreaOption {
 }
 
 /** Barra lateral: só território, período e área (opcional). */
-export function ContasSidebar({ trail, territories, periods, period, areas, area, onTerritory, onPeriod, onArea }: {
+export function ContasSidebar({ trail, territories, periods, period, areas, area, onTerritory, onPeriod, onArea, onClear, canClear }: {
   trail: TrailItem[];
   territories: { key: string; label: string }[];
   periods: { code: string; label: string }[];
@@ -31,6 +31,8 @@ export function ContasSidebar({ trail, territories, periods, period, areas, area
   onTerritory: (key: string) => void;
   onPeriod: (period: string) => void;
   onArea: (area: string) => void;
+  onClear: () => void;
+  canClear: boolean;
 }) {
   const t = useTranslations("contas");
   const mobile = useMediaQuery(MOBILE_QUERY);
@@ -70,6 +72,7 @@ export function ContasSidebar({ trail, territories, periods, period, areas, area
             </select>
           </label>
         </div>
+        <div className="filters-foot"><button type="button" className="clear" disabled={!canClear} onClick={onClear}>{t("resetFilters")}</button></div>
         </div>
       </section>
     </aside>
@@ -99,7 +102,7 @@ export function ContasPanel({ crumb, title, status, highlights, map, how, when, 
         {status}
       </header>
       {highlights}
-      <section className="contas-section contas-where" aria-labelledby="onde">
+      <section className="contas-section card contas-where" aria-labelledby="onde">
         <h2 id="onde" className="contas-section-title"><FaIcon icon={FA.municipio} size={16} />{t("map.title")}</h2>
         {map}
       </section>
@@ -115,7 +118,7 @@ export function ContasPanel({ crumb, title, status, highlights, map, how, when, 
         <h2 id="quem" className="contas-section-title"><FaIcon icon={FA.recebimento} size={16} />{t("who.title")}</h2>
         {who}
       </section>
-      <footer className="contas-foot">{foot}</footer>
+      <footer className="contas-foot card">{foot}</footer>
     </div>
   );
 }

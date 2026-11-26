@@ -71,3 +71,9 @@ Os textos desta página são explicações do Open Data Brasil a partir das font
 vinculadas. As definições oficiais completas permanecem nos links da CGU.
 A varredura abrangeu os temas relacionados às contas públicas; não é um inventário
 de todos os dicionários de benefícios, servidores, sanções ou outros temas da CGU.
+
+## Valores enviados e aplicação pelo recebedor
+
+O painel usa os valores transferidos da lente A. Área, tipo de transferência, território e período são cruzados pela API sobre a Gold; a classificação da transferência não comprova a área de execução posterior pelo ente. A tabela de recebedores acompanha os mesmos filtros. Não se somam as lentes A/B/C.
+
+O valor e o percentual aplicado pelo estado ou município **ainda não estão disponíveis**. Os cartões com “—” não indicam aplicação zero. Siconfi/MSC e Transferegov são caminhos candidatos para uma integração futura, não fontes já incorporadas. É necessário comprovar a correspondência e a cobertura antes de dividir a execução pelo total transferido; execução de um subconjunto não comprova execução do universo inteiro. Ver [ADR-0042](../adr/0042-navegacao-e-contexto-das-contas.md).

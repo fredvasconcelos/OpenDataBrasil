@@ -4,6 +4,15 @@ A evolução do portal, dos primeiros passos às novidades mais recentes.
 Cada entrada destaca o que muda para quem consulta os dados. A situação indicada
 vale para a data do registro: **Em teste** ainda não significa disponível na beta.
 
+## 26/11/2026 — Navegação por bloco e contas mais fáceis de explorar
+
+**Situação: Em teste local.**
+
+- Escolha Estatísticas oficiais ou Contas públicas no Início e veja os indicadores desse bloco.
+- Limpe os filtros de uma vez. Nas contas, cartões e recebedores acompanham a área e o período escolhidos, sem a página desaparecer durante a atualização.
+- Painel reorganizado com mapa, evolução, distribuição e recebedores; todas as áreas podem ser consultadas na lista.
+- A aplicação posterior pelo recebedor ainda não está disponível; os cartões explicam essa lacuna.
+
 ## 26/11/2026 — Dicionários e exportação com métodos explícitos
 
 **Situação: Documentação em revisão.**

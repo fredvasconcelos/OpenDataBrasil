@@ -16,7 +16,7 @@ interface Settled<T> {
 
 // Carrega dados quando as dependências mudam. O estado "carregando" é derivado da
 // chave das dependências; respostas atrasadas de chaves antigas são descartadas.
-export function useAsync<T>(load: (() => Promise<T>) | null, deps: readonly unknown[], retry = 0): AsyncState<T> {
+export function useAsync<T>(load: (() => Promise<T>) | null, deps: readonly unknown[], retry = 0, keepPreviousData = false): AsyncState<T> {
   const key = JSON.stringify([...deps, retry, Boolean(load)]);
   const [settled, setSettled] = useState<Settled<T> | null>(null);
   useEffect(() => {
@@ -33,6 +33,6 @@ export function useAsync<T>(load: (() => Promise<T>) | null, deps: readonly unkn
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
   if (!load) return { data: null, error: null, loading: false };
-  if (settled?.key !== key) return { data: null, error: null, loading: true };
+  if (settled?.key !== key) return { data: keepPreviousData ? settled?.data ?? null : null, error: null, loading: true };
   return { data: settled.data, error: settled.error, loading: false };
 }

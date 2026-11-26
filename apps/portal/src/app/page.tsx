@@ -1,5 +1,4 @@
-import { BlockCards } from "@/components/BlockCards";
-import { HomeCatalog } from "@/components/HomeCatalog";
+import { HomeExplorer } from "@/components/HomeExplorer";
 import { api } from "@/lib/api";
 import { groupInstitutions } from "@/lib/sources";
 
@@ -12,8 +11,7 @@ export default async function Home() {
   const institutions = groupInstitutions(sources, datasets).map((i) => i.name);
   return (
     <main className="page page-wide">
-      <BlockCards />
-      <HomeCatalog nav={nav} releaseId={nav.release_id ?? null} institutions={institutions} />
+      <HomeExplorer nav={nav} institutions={institutions} />
     </main>
   );
 }

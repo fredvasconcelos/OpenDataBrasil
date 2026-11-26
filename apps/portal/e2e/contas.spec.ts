@@ -57,7 +57,7 @@ test("contas reais: filtros na URL, valores da API, ranking e ficha sem identifi
   await expect(page).toHaveURL(/area=10/);
   await expect(page.locator(".contas-highlights")).toBeVisible();
   await expect(page.getByText("Área selecionada: Saúde", { exact: true })).toBeVisible();
-  await expect(page.locator(".contas-who")).toContainText("Ranking de 2025, em todas as áreas e meses do ano.");
+  await expect(page.locator(".contas-who")).toContainText("Recebimentos em 2025 · Saúde. A tabela acompanha os filtros do painel.");
   await page.getByRole("button", { name: "Próxima página", exact: true }).click();
   await expect(page).toHaveURL(/page=2/);
   await expect(page.locator(".contas-ranking-foot")).toContainText("Página 2 de");
