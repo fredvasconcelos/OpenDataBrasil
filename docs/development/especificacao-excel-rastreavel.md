@@ -98,6 +98,32 @@ não adicionar linhas de marca ao CSV nem campos institucionais como medidas.
 
 ### Estrutura tabular
 
+#### Modelo visual com a marca do projeto
+
+Proposta visual `0.2.0-visual-proposta`, gerada em 26/11/2026 a pedido do mantenedor:
+seis abas, incluindo **Apresentação**, com logo oficial, cores do Design System,
+resumo do arquivo, identificação de demonstração e navegação interna. A capa é
+editorial e fica fora de `data_sheets`; as cinco abas tabulares continuam obrigatórias.
+O objeto comum mantém o esquema documental `0.1.1-proposta`.
+
+As abas `dados`, `metadados`, `dicionario`, `fontes` e `metodos` usam tabelas nativas
+do Excel, com filtros, linhas alternadas, cabeçalhos fixos e nomes de coluna estáveis.
+Não há linha de total automática. Todos os dados e códigos permanecem como no objeto
+comum, incluindo precisão decimal textual, zeros à esquerda, nulos e estados.
+Colunas de identificação da aba `dados` ficam agrupadas e recolhidas na abertura;
+os sinais de expansão do Excel permitem consultá-las sem retirar campos do arquivo.
+
+Logo, blocos e células mescladas de apresentação ficam somente na capa. Nas tabelas,
+o cabeçalho de colunas continua em A1 e não há mescla de células. A logo também
+é incorporada ao cabeçalho de impressão das abas tabulares, fora das células.
+O PNG deriva do SVG oficial, sem redesenho; a paleta do tema vem dos tokens do projeto.
+
+O novo arquivo é uma demonstração com valores fictícios e não substitui os três
+modelos anteriores. Validação XML/OOXML confirma tabelas, filtros, navegação, logo,
+tipos, valores, cabeçalhos fixos e ausência de fórmulas/macros. Prévias HTML derivadas
+do próprio XLSX foram inspecionadas; não equivalem à renderização no Microsoft
+Excel ou LibreOffice. A implementação do exportador permanece futura.
+
 As cinco abas obrigatórias são tabelas sem células mescladas nem conteúdo
 semântico apenas em cores/comentários. Cada coluna tem identificador estável;
 as legendas são legíveis em pt-BR. Valores literais; fórmulas da planilha não

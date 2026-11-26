@@ -9,8 +9,8 @@ vale para a data do registro: **Em teste** ainda não significa disponível na b
 **Situação: Documentação em revisão.**
 
 - Inventário dos indicadores com fontes, unidades, categorias e lacunas de definição; revisão de códigos e base legal das contas, com exercício identificado.
-- Proposta de Excel com dados, metadados, dicionário, fontes e métodos, distinguindo o que aparece no gráfico do que efetivamente sai no arquivo.
-- Pesquisa metodológica ainda parcial; o novo template e o guia explicativo não estão implementados.
+- Proposta de Excel com a identidade do portal, apresentação e tabelas com filtros, reunindo dados, metadados, dicionário, fontes e métodos.
+- Pesquisa metodológica ainda parcial; os modelos demonstrativos e o futuro guia ainda não foram integrados ao portal.
 
 ## 26/11/2026 — Entender os campos das contas públicas
 
