@@ -1,0 +1,52 @@
+{
+  "consultado_em": "2026-11-26",
+  "sha256_manifesto_lido": "cc19f9b8248d3514aad43299d4416c51f7cb112017f243f0cccf7fd1e4a2df76",
+  "conteudo_revalidado": false,
+  "registros": [
+    {
+      "artifact_id": "f792c6f8-a9b7-4323-b848-7caf675f3ef3",
+      "dataset_id": "tesouro-tabmun",
+      "reference_period": "",
+      "file_size_bytes": "435942",
+      "checksum_sha256": "3651c930ca1ddfde0bb7b47130795f332330d4c66b3db70f49f3ca3494e4242d",
+      "retrieved_at": "2026-11-22 10:32:06.635738+00",
+      "situacao": "manifesto histórico lido; bytes do cadastro não acessíveis nesta execução"
+    },
+    {
+      "artifact_id": "247b9902-3708-4d51-99b3-f97b837568d3",
+      "dataset_id": "siop-cadastro-acoes",
+      "reference_period": "2024",
+      "file_size_bytes": "10593789",
+      "checksum_sha256": "aa68c4aea3fd20344064d5b5fbf711109c5ccdef5e79e8125ee48ee436ddd09b",
+      "retrieved_at": "2026-11-22 10:32:12.964912+00",
+      "situacao": "manifesto histórico lido; bytes do cadastro não acessíveis nesta execução"
+    },
+    {
+      "artifact_id": "1ecd2b3c-70fe-4db8-a8c1-b8f73aba1796",
+      "dataset_id": "siop-cadastro-acoes",
+      "reference_period": "2025",
+      "file_size_bytes": "11030258",
+      "checksum_sha256": "38ca44ed54c7e5168cb59c5013f41a024a544b5278de19d719c9f4d984ef716b",
+      "retrieved_at": "2026-11-22 10:32:18.226167+00",
+      "situacao": "manifesto histórico lido; bytes do cadastro não acessíveis nesta execução"
+    },
+    {
+      "artifact_id": "755b4cf3-a864-40d7-8781-c8e863324fcb",
+      "dataset_id": "siop-planos-orcamentarios",
+      "reference_period": "2024",
+      "file_size_bytes": "5814035",
+      "checksum_sha256": "9fe77e6968a26684c61bb6168023273c658250b799c158eb357cda27851ae899",
+      "retrieved_at": "2026-11-22 10:32:22.713724+00",
+      "situacao": "manifesto histórico lido; bytes do cadastro não acessíveis nesta execução"
+    },
+    {
+      "artifact_id": "ee97868c-37b6-479e-a8d2-2ad54f6b49c1",
+      "dataset_id": "siop-planos-orcamentarios",
+      "reference_period": "2025",
+      "file_size_bytes": "5960696",
+      "checksum_sha256": "bc3392f83ea380ba7e2ff10b338b4c3e9f0cc677d89c54198bc850ce32e94f8f",
+      "retrieved_at": "2026-11-22 10:32:25.017882+00",
+      "situacao": "manifesto histórico lido; bytes do cadastro não acessíveis nesta execução"
+    }
+  ]
+}

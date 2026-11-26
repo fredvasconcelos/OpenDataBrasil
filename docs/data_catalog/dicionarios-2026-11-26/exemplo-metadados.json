@@ -1,0 +1,553 @@
+{
+  "schema_version": "0.1.1-proposta",
+  "artifact": {
+    "kind": "demonstracao_sintetica",
+    "generator_name": "Open Data Brasil",
+    "generator_url": "https://opendatabrasil.org",
+    "generator_role": "geracao_do_arquivo",
+    "generated_at": "2026-11-26T09:53:15.891066Z",
+    "generator_version": "proposta-documental-0.1.1",
+    "disclaimer": "EXEMPLO FICTÍCIO. Não representa indicador, release, operação habilitada ou dados oficiais."
+  },
+  "release": {
+    "release_id": null,
+    "tables": [],
+    "missing_reason": "exemplo sem release ou tabelas reais"
+  },
+  "selection": {
+    "data": {
+      "indicator_id": "indicador_demonstracao",
+      "levels": [
+        "exemplo_sintetico"
+      ],
+      "within": null,
+      "periods": [
+        "2023M01",
+        "2024M01",
+        "2025M01"
+      ],
+      "dimensions": [
+        "categoria_sintetica"
+      ],
+      "categories": [
+        "001"
+      ],
+      "correction": null
+    },
+    "view": {
+      "isolate": true,
+      "accumulate": true,
+      "years": [
+        2023,
+        2025
+      ],
+      "parts": [
+        "M01"
+      ],
+      "note": "Visualização sintética inclui o intervalo 2023–2025, inclusive 2024; dados exportados continuam separados."
+    }
+  },
+  "data_sheets": [
+    {
+      "sheet_id": "dados",
+      "kind": "published",
+      "rows": [
+        {
+          "row_id": "d1",
+          "indicator_id": "indicador_demonstracao",
+          "kpi_id": null,
+          "dataset_id": "dataset_sintetico",
+          "source_table_id": null,
+          "source_variable_id": null,
+          "geography_key": "exemplo:001",
+          "territory_code": "001",
+          "territory_type": "exemplo_sintetico",
+          "period": "2023M01",
+          "period_role": "referencia_sintetica",
+          "interval_from": null,
+          "interval_to": null,
+          "part": null,
+          "category_code": "001",
+          "category_label": "Categoria sintética",
+          "value_exact": "10.000000",
+          "source_value": "10.000000",
+          "status": "valid",
+          "unit": "unidades sintéticas",
+          "multiplier": "1",
+          "source_id": "fonte_sintetica",
+          "method_id": "identidade_fixture",
+          "release_id": null
+        },
+        {
+          "row_id": "d2",
+          "indicator_id": "indicador_demonstracao",
+          "kpi_id": null,
+          "dataset_id": "dataset_sintetico",
+          "source_table_id": null,
+          "source_variable_id": null,
+          "geography_key": "exemplo:001",
+          "territory_code": "001",
+          "territory_type": "exemplo_sintetico",
+          "period": "2024M01",
+          "period_role": "referencia_sintetica",
+          "interval_from": null,
+          "interval_to": null,
+          "part": null,
+          "category_code": "001",
+          "category_label": "Categoria sintética",
+          "value_exact": "0",
+          "source_value": "0",
+          "status": "true_zero",
+          "unit": "unidades sintéticas",
+          "multiplier": "1",
+          "source_id": "fonte_sintetica",
+          "method_id": "identidade_fixture",
+          "release_id": null
+        }
+      ]
+    }
+  ],
+  "dictionary": [
+    {
+      "sheet_id": "dados",
+      "column_id": "row_id",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Identificador local e único da linha, usado nas arestas de linhagem.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "indicator_id",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Identificador semântico estável; neste arquivo é fictício.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "kpi_id",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Identificador de apresentação do KPI; nulo se não houver KPI próprio.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "dataset_id",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Identificador do conjunto de origem; neste exemplo é fictício.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "source_table_id",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Identificador oficial da tabela, quando existente; não inventar para uma fonte sem tabela.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "source_variable_id",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Identificador oficial da variável, quando existente; não é o rótulo.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "geography_key",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Chave do território no domínio de referência explicitado.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "territory_code",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Código territorial como texto; preserva zeros à esquerda.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "territory_type",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Sistema e tipo territorial, distinguindo códigos oficiais e exemplos.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "period",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Código temporal de uma observação; nulo em resultado por intervalo.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "period_role",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Significado do tempo: referência, registro, ocorrência ou intervalo derivado.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "interval_from",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Limite inclusivo inicial de um derivado por intervalo; não é uma observação anual.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "interval_to",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Limite inclusivo final de um derivado por intervalo.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "part",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Parte do calendário, como M01; não inventa frequência menor que a nativa.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "category_code",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Código da categoria como texto no domínio da coluna.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "category_label",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Rótulo da categoria; nomes não substituem códigos como chaves.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "value_exact",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Decimal exato em texto com ponto; nulo é acompanhado de status.",
+      "data_type": "decimal_string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "source_value",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Representação original, quando conhecida; nula em derivado sem representação original.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "status",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Estado do valor, distinguindo valor válido, zero verdadeiro, sigilo e subtotal parcial.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "unit",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Unidade conceitual da observação, incluindo pessoa, moeda, área ou unidade sintética.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "multiplier",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Multiplicador de escala da unidade como decimal em texto; não conversão inferida.",
+      "data_type": "decimal_string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "source_id",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Referência inequívoca a uma linha de fontes.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "method_id",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Referência ao método versionado que descreve a observação ou derivado.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "release_id",
+      "entry_type": "column",
+      "code": null,
+      "definition": "Manifesto lógico dos dados; nulo no exemplo sem release real.",
+      "data_type": "string",
+      "domain": null,
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    },
+    {
+      "sheet_id": "dados",
+      "column_id": "category_code",
+      "entry_type": "code",
+      "code": "001",
+      "definition": "Categoria criada para este exemplo; não é código oficial.",
+      "data_type": "string",
+      "domain": "categoria_sintetica",
+      "parent_code": null,
+      "valid_from": null,
+      "valid_to": null,
+      "source_id": "fonte_sintetica",
+      "missing_definition_reason": null
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "fonte_sintetica",
+      "producer": "Exemplo documental Open Data Brasil",
+      "system": null,
+      "official_id": null,
+      "url": null,
+      "section": null,
+      "edition": "0.1.0-proposta",
+      "consulted_at": null,
+      "retrieved_at": null,
+      "published_at": null,
+      "license": "exemplo documental; não define licença de dados de produtor",
+      "citation": "Exemplo fictício desta especificação.",
+      "assertion": "Os números 10 e 0 foram escolhidos apenas para demonstrar a cobertura parcial.",
+      "missing_reason": "não há produtor, coleta ou publicação oficial neste exemplo"
+    }
+  ],
+  "methods": [
+    {
+      "method_id": "identidade_fixture",
+      "version": "0.1.0-proposta",
+      "author_role": "synthetic_fixture",
+      "definition": "Preserva as entradas fictícias sem transformação.",
+      "formula": "y=x",
+      "source_ids": [
+        "fonte_sintetica"
+      ],
+      "restrictions": [
+        "não é método estatístico oficial"
+      ]
+    },
+    {
+      "method_id": "soma_fixture",
+      "version": "0.1.0-proposta",
+      "author_role": "synthetic_fixture",
+      "definition": "Soma didática dos contribuintes do mesmo mês no intervalo; só para demonstração.",
+      "formula": "y=sum(value_exact dos contribuintes)",
+      "source_ids": [
+        "fonte_sintetica"
+      ],
+      "restrictions": [
+        "não autoriza soma em indicador real",
+        "sigilo bloqueia; ausência não vira zero"
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "operation_id": "op_view",
+      "sequence": 1,
+      "method_id": "soma_fixture",
+      "method_version": "0.1.0-proposta",
+      "scope": "view",
+      "applied_to_export": false,
+      "inputs": [
+        "d1",
+        "d2"
+      ],
+      "outputs": [
+        "view:subtotal_janeiro"
+      ],
+      "parameters": {
+        "year_from": 2023,
+        "year_to": 2025,
+        "years_included": [
+          2023,
+          2024,
+          2025
+        ],
+        "part": "M01",
+        "grain": "mes"
+      },
+      "coverage": {
+        "expected": 3,
+        "present": 2,
+        "contributors": [
+          "d1",
+          "d2"
+        ],
+        "missing": [
+          "2025M01"
+        ],
+        "blocked": [],
+        "warnings": [
+          "Subtotal parcial; janeiro/2025 ausente."
+        ]
+      },
+      "note": "A aba dados contém os períodos separados; não contém o subtotal da visualização."
+    }
+  ]
+}

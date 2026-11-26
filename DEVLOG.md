@@ -4,6 +4,14 @@ A evolução do portal, dos primeiros passos às novidades mais recentes.
 Cada entrada destaca o que muda para quem consulta os dados. A situação indicada
 vale para a data do registro: **Em teste** ainda não significa disponível na beta.
 
+## 26/11/2026 — Dicionários e exportação com métodos explícitos
+
+**Situação: Documentação em revisão.**
+
+- Inventário dos indicadores com fontes, unidades, categorias e lacunas de definição; revisão de códigos e base legal das contas, com exercício identificado.
+- Proposta de Excel com dados, metadados, dicionário, fontes e métodos, distinguindo o que aparece no gráfico do que efetivamente sai no arquivo.
+- Pesquisa metodológica ainda parcial; o novo template e o guia explicativo não estão implementados.
+
 ## 26/11/2026 — Entender os campos das contas públicas
 
 **Situação: Em teste.**

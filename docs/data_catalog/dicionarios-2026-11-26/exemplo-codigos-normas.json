@@ -1,0 +1,148 @@
+{
+  "schema_version": "0.1.1-proposta-codigos",
+  "generation": {
+    "generator_name": "Open Data Brasil",
+    "generator_url": "https://opendatabrasil.org",
+    "generator_role": "geracao_do_arquivo",
+    "generator_version": "proposta-documental-0.1.1",
+    "generated_at": "2026-11-26T09:53:16.022414Z"
+  },
+  "artifact_type": "demonstracao_documental_sem_dados_financeiros",
+  "release_id": null,
+  "data_rows": [],
+  "code_entries": [
+    {
+      "entry_id": "siop:2016:10:73104:28:845:0903:0A53",
+      "system": "SIOP",
+      "domain": "acao_orcamentaria",
+      "code": "0A53",
+      "exercise": "2016",
+      "context": {
+        "esfera": "10",
+        "uo": "73104",
+        "funcao": "28",
+        "subfuncao": "845",
+        "programa": "0903"
+      },
+      "official_label": "Transferências das Participações pela Produção de Petróleo e Gás Natural (Lei nº 9.478, de 1997)",
+      "source_url": "https://www.gov.br/planejamento/pt-br/assuntos/orcamento/orcamentos-anuais/2016/cadastro-de-acoes/0903.pdf/@@display-file/file",
+      "section": "p. 11, programa 0903, ocorrência 10/73104/28/845/0001",
+      "edition": "LOA 2016, situação 09/03/2016",
+      "consulted_at": "2026-11-26"
+    }
+  ],
+  "legal_references": [
+    {
+      "norm_id": "cf20",
+      "identifier": "CF/1988",
+      "provision": "art. 20, §1º",
+      "official_url": "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm",
+      "consulted_at": "2026-11-26",
+      "direct_text_access": false,
+      "applicable_wording": null,
+      "validity_status": "cited_only",
+      "gap": "Dispositivo citado no cadastro; redação/aplicabilidade ao recebimento não confirmadas. Leitura direta indisponível ou não realizada."
+    },
+    {
+      "norm_id": "l9478-48",
+      "identifier": "Lei 9.478/1997",
+      "provision": "art. 48",
+      "official_url": "https://www.planalto.gov.br/ccivil_03/leis/l9478compilado.htm",
+      "consulted_at": "2026-11-26",
+      "direct_text_access": true,
+      "applicable_wording": null,
+      "validity_status": "period_application_pending",
+      "gap": "Dispositivo citado no cadastro; redação/aplicabilidade ao recebimento não confirmadas. Leitura do compilado não homologa redação histórica nem efeito judicial."
+    },
+    {
+      "norm_id": "l9478-49",
+      "identifier": "Lei 9.478/1997",
+      "provision": "art. 49",
+      "official_url": "https://www.planalto.gov.br/ccivil_03/leis/l9478compilado.htm",
+      "consulted_at": "2026-11-26",
+      "direct_text_access": true,
+      "applicable_wording": null,
+      "validity_status": "period_application_pending",
+      "gap": "Dispositivo citado no cadastro; redação/aplicabilidade ao recebimento não confirmadas. Leitura do compilado não homologa redação histórica nem efeito judicial."
+    },
+    {
+      "norm_id": "l9478-50",
+      "identifier": "Lei 9.478/1997",
+      "provision": "art. 50",
+      "official_url": "https://www.planalto.gov.br/ccivil_03/leis/l9478compilado.htm",
+      "consulted_at": "2026-11-26",
+      "direct_text_access": true,
+      "applicable_wording": null,
+      "validity_status": "period_application_pending",
+      "gap": "Dispositivo citado no cadastro; redação/aplicabilidade ao recebimento não confirmadas. Leitura do compilado não homologa redação histórica nem efeito judicial."
+    },
+    {
+      "norm_id": "l7525-6",
+      "identifier": "Lei 7.525/1986",
+      "provision": "art. 6º",
+      "official_url": "https://www.planalto.gov.br/ccivil_03/leis/L7525.htm",
+      "consulted_at": "2026-11-26",
+      "direct_text_access": false,
+      "applicable_wording": null,
+      "validity_status": "cited_only",
+      "gap": "Dispositivo citado no cadastro; redação/aplicabilidade ao recebimento não confirmadas. Leitura direta indisponível ou não realizada."
+    }
+  ],
+  "code_legal_links": [
+    {
+      "entry_id": "siop:2016:10:73104:28:845:0903:0A53",
+      "norm_id": "cf20",
+      "relation": "cited_by_register",
+      "source_url": "https://www.gov.br/planejamento/pt-br/assuntos/orcamento/orcamentos-anuais/2016/cadastro-de-acoes/0903.pdf/@@display-file/file",
+      "section": "p. 11, Base Legal da Ação",
+      "exercise": "2016"
+    },
+    {
+      "entry_id": "siop:2016:10:73104:28:845:0903:0A53",
+      "norm_id": "l9478-48",
+      "relation": "cited_by_register",
+      "source_url": "https://www.gov.br/planejamento/pt-br/assuntos/orcamento/orcamentos-anuais/2016/cadastro-de-acoes/0903.pdf/@@display-file/file",
+      "section": "p. 11, Base Legal da Ação",
+      "exercise": "2016"
+    },
+    {
+      "entry_id": "siop:2016:10:73104:28:845:0903:0A53",
+      "norm_id": "l9478-49",
+      "relation": "cited_by_register",
+      "source_url": "https://www.gov.br/planejamento/pt-br/assuntos/orcamento/orcamentos-anuais/2016/cadastro-de-acoes/0903.pdf/@@display-file/file",
+      "section": "p. 11, Base Legal da Ação",
+      "exercise": "2016"
+    },
+    {
+      "entry_id": "siop:2016:10:73104:28:845:0903:0A53",
+      "norm_id": "l9478-50",
+      "relation": "cited_by_register",
+      "source_url": "https://www.gov.br/planejamento/pt-br/assuntos/orcamento/orcamentos-anuais/2016/cadastro-de-acoes/0903.pdf/@@display-file/file",
+      "section": "p. 11, Base Legal da Ação",
+      "exercise": "2016"
+    },
+    {
+      "entry_id": "siop:2016:10:73104:28:845:0903:0A53",
+      "norm_id": "l7525-6",
+      "relation": "cited_by_register",
+      "source_url": "https://www.gov.br/planejamento/pt-br/assuntos/orcamento/orcamentos-anuais/2016/cadastro-de-acoes/0903.pdf/@@display-file/file",
+      "section": "p. 11, Base Legal da Ação",
+      "exercise": "2016"
+    }
+  ],
+  "row_code_links": [],
+  "unverified_input": {
+    "raw_action_code": "0A53",
+    "state": "RJ",
+    "municipality_label": "Não se aplica",
+    "citizen_label": "Royalties",
+    "special_label": "Sem informação",
+    "amount_as_informed": "22616971984.28",
+    "amount_origin": "informado pelo mantenedor; não reconciliado",
+    "reference_period": null,
+    "filters": null,
+    "code_entry_id": null,
+    "reason": "Sem período/filtros: não ligar ao cadastro de 2016 ou criar linha financeira."
+  },
+  "warning": "PROPOSTA DOCUMENTAL. Não é exportação de dados do portal nem confirmação do recebimento ou exercício atual."
+}

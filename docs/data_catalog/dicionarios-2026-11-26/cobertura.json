@@ -1,0 +1,79 @@
+{
+  "kpis_configurados": 291,
+  "kpis_snapshot": 241,
+  "indicadores_semanticos": 334,
+  "indicadores_gold_snapshot": 278,
+  "fichas": 335,
+  "estados": {
+    "disponivel_snapshot": 241,
+    "indisponivel_snapshot": 50,
+    "apoio_no_release_snapshot": 38,
+    "apoio_apenas_configurado": 6
+  },
+  "tabelas_sidra": 204,
+  "tabelas_sidra_configuradas": 206,
+  "tabelas_sidra_sem_descritor": [
+    "9723",
+    "9970"
+  ],
+  "ligacoes": 512,
+  "campos": 1140,
+  "codigos": 5325,
+  "campos_sem_definicao": 1140,
+  "codigos_sem_definicao": 5325,
+  "pareceres": {
+    "comparison_only": 183,
+    "flow_method_review_required": 30,
+    "sum_method_supported": 24,
+    "contiguous_compound_only": 4
+  },
+  "metodos_pesquisa": 50,
+  "inconsistencias": [
+    {
+      "ficha": "apoio--censo_percentual_quilombolas_territorios",
+      "codigo": "METODO_INDEPENDENTE_AUSENTE",
+      "detalhe": "9723: None; descritor não substitui manual"
+    },
+    {
+      "ficha": "apoio--censo_pessoas_indigenas_idade",
+      "codigo": "METODO_INDEPENDENTE_AUSENTE",
+      "detalhe": "9970: None; descritor não substitui manual"
+    },
+    {
+      "ficha": "apoio--censo_quilombolas_em_territorios",
+      "codigo": "METODO_INDEPENDENTE_AUSENTE",
+      "detalhe": "9723: None; descritor não substitui manual"
+    },
+    {
+      "ficha": "apoio--censo_residentes_territorios_quilombolas",
+      "codigo": "METODO_INDEPENDENTE_AUSENTE",
+      "detalhe": "9723: None; descritor não substitui manual"
+    },
+    {
+      "ficha": "pobreza_linha_nacional",
+      "codigo": "METODO_INDEPENDENTE_AUSENTE",
+      "detalhe": "5845: Objetivos de Desenvolvimento Sustentável; descritor não substitui manual"
+    },
+    {
+      "ficha": "pobreza_linha_nacional",
+      "codigo": "METODO_INDEPENDENTE_AUSENTE",
+      "detalhe": "5877: Objetivos de Desenvolvimento Sustentável; descritor não substitui manual"
+    }
+  ],
+  "live_reconciliado": false,
+  "fichas_com_sintese_comum": 330,
+  "fichas_sem_sintese_suficiente": [
+    "apoio--censo_percentual_quilombolas_territorios",
+    "apoio--censo_pessoas_indigenas_idade",
+    "apoio--censo_quilombolas_em_territorios",
+    "apoio--censo_residentes_territorios_quilombolas",
+    "pobreza_linha_nacional"
+  ],
+  "fichas_com_contexto_complementar": [
+    "apoio--censo_percentual_quilombolas_territorios",
+    "apoio--censo_quilombolas_em_territorios",
+    "apoio--censo_residentes_territorios_quilombolas",
+    "apoio--censo_pessoas_indigenas_idade",
+    "pobreza_linha_nacional"
+  ]
+}
