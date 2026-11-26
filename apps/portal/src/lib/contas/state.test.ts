@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { contasQuery } from "@/lib/api/contas";
-import { availablePeriods, defaultPeriod, findState, panelHref, readContasState, safePanelHref } from "./state";
+import { availablePeriods, defaultPeriod, findState, panelHref, readContasState, readFederalState, safePanelHref } from "./state";
 import type { Geography } from "@/lib/types";
 import type { ContasMeta } from "./types";
 
@@ -47,5 +47,32 @@ describe("estado das contas", () => {
     expect(params.getAll("periods")).toEqual(["2025M01", "2025M02"]);
     expect(params.getAll("categories")).toEqual(["10", "12"]);
     expect(params.has("within")).toBe(false);
+  });
+});
+
+
+describe("lentes federais", () => {
+  const federal: ContasMeta = { ...meta, lenses: [...meta.lenses,
+    { ...meta.lenses[0]!, lens: "B", periods: ["2024M01"], latest_period: "2024M01", statuses: [], group_by: [{ id: "recipient", label: "Favorecido" }, { id: "territory", label: "Território" }], dimensions: [{ id: "organ", label: "Órgão" }] },
+    { ...meta.lenses[0]!, lens: "C", periods: ["2023M01"], latest_period: "2023M01", statuses: [], dimensions: [{ id: "function", label: "Função" }, { id: "organ", label: "Órgão" }] },
+  ] };
+  it("não herda calendário, grupo ou dimensão de outra lente", () => {
+    const state = readFederalState(new URLSearchParams("period=2025&group=recipient&filter=cnae_section:A&page=101"), federal, "C");
+    expect(state).toMatchObject({ period: "2023M01", group: "function", page: 1, filters: [] });
+    expect(availablePeriods(federal, "B")).toEqual(["2024", "2024M01"]);
+  });
+  it("recompõe cruzamentos da URL com uma categoria por dimensão", () => {
+    const state = readFederalState(new URLSearchParams("group=organ&filter=function:10&filter=organ:123&filter=function:12&filter=organ:&page=2"), federal, "C");
+    expect(state.filters).toEqual(["function:12", "organ:123"]);
+    expect(state.page).toBe(2);
+  });
+  it("não oferece subdivisão territorial abaixo do município", () => {
+    expect(readFederalState(new URLSearchParams("group=territory&geography=municipio:2507507"), federal, "B").group).toBe("recipient");
+  });
+  it("volta à lente B e aos cruzamentos ao sair de uma ficha", () => {
+    const href = safePanelHref(panelHref(new URLSearchParams("lens=B&group=organ&filter=organ:123&filter=recipient_class:empresa&period=2024M01")));
+    const query = new URL(href, "https://portal.invalid").searchParams;
+    expect(query.get("lens")).toBe("B");
+    expect(query.getAll("filter")).toEqual(["organ:123", "recipient_class:empresa"]);
   });
 });

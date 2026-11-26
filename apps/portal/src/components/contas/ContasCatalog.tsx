@@ -29,7 +29,7 @@ interface Item {
 }
 
 interface Group {
-  id: "visao" | "tipos" | "areas";
+  id: "visao" | "tipos" | "areas" | "recebimentos" | "execucao";
   label: string;
   note: string;
   icon: FaDef;
@@ -40,7 +40,7 @@ interface Group {
 
 // Catálogo das Contas públicas no molde do catálogo das Estatísticas (DS ODBr): busca
 // com lupa, etiquetas de grupo, grade de cartões em "Todos" e lista completa ao escolher
-// um grupo ou buscar. Cada item abre o painel da lente A já no recorte certo. Tipos e
+// um grupo ou buscar. Cada item abre o painel da lente correspondente. Tipos e
 // áreas vêm da API (release vigente); só a área filtra o painel, os tipos levam à
 // distribuição, onde aparecem lado a lado.
 export function ContasCatalog() {
@@ -56,7 +56,7 @@ export function ContasCatalog() {
       contasApi.areas("brasil:1", [period]),
       contasApi.table({ geography_key: "brasil:1", periods: [period], group_by: "transfer_type" }),
     ]);
-    return { period, areas: areas.rows, types: types.rows };
+    return { meta, period, areas: areas.rows, types: types.rows };
   }, [], retry);
 
   const groups: Group[] = loaded.data
@@ -93,7 +93,17 @@ export function ContasCatalog() {
           terms: c("groups.areas.terms"),
           items: loaded.data.areas.map((r) => ({ id: r.key, label: r.label, href: `${PANEL}?${new URLSearchParams({ area: r.key })}` })),
         },
-      ]
+        {
+          id: "recebimentos", label: t("contas.federal.B"), note: t("contas.federal.receiptsNote"),
+          icon: FA.recebimento, family: "petroleo", terms: "favorecido pagamento sede estado município CNAE órgão",
+          items: [{ id: "pagamentos", label: t("contas.federal.B"), href: `${PANEL}?lens=B` }],
+        },
+        {
+          id: "execucao", label: t("contas.federal.C"), note: t("contas.federal.noSum"),
+          icon: FA.gestao, family: "roxo", terms: "execução empenhado liquidado pago restos pagar orçamento",
+          items: ["committed", "liquidated", "paid", "payables_registered", "payables_cancelled", "payables_paid"].map((phase) => ({ id: phase, label: t(`contas.federal.phases.${phase}`), href: `${PANEL}?lens=C#fase-${phase}` })),
+        },
+      ].filter((g) => g.id !== "recebimentos" && g.id !== "execucao" || loaded.data?.meta.lenses.some((l) => l.lens === (g.id === "recebimentos" ? "B" : "C"))) as Group[]
     : [];
 
   const query = normalize(q.trim());

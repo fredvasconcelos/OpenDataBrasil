@@ -12,7 +12,7 @@ test("Início revela somente os indicadores do bloco escolhido", async ({ page }
   await page.getByRole("button", { name: "Ver indicadores: Contas públicas", exact: true }).click();
   // Contas no molde das Estatísticas: mesma busca, etiquetas e grade de cartões.
   await expect(page.getByRole("searchbox", { name: "Buscar indicador de contas públicas", exact: true })).toBeVisible();
-  await expect(page.locator(".block-catalog .theme-grid .theme-card")).toHaveCount(3, { timeout: 30_000 });
+  await expect(page.locator(".block-catalog .theme-grid .theme-card")).toHaveCount(5, { timeout: 30_000 });
   await expect(page.getByRole("link", { name: "Total enviado pela União", exact: true })).toHaveAttribute("href", "/contas/painel");
   await expect(page.getByRole("link", { name: "Saúde", exact: true })).toHaveAttribute("href", "/contas/painel?area=10");
   await page.screenshot({ path: "test-results/revisao-inicio-contas.png", fullPage: true });

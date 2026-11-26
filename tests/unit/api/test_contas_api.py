@@ -212,3 +212,18 @@ def test_responses_carry_the_contas_release_and_are_cached(client: TestClient) -
     assert first.headers["x-odb-release"] == "contas-1"
     assert first.headers["x-odb-cache"] == "miss"
     assert second.headers["x-odb-cache"] == "hit"
+
+
+def test_execucao_preserva_totais_em_pagina_sem_linhas(client: TestClient) -> None:
+    primeira = _get(client, "/api/v1/contas/execucao?periods=2024M10&dimension=action")
+    distante = _get(client, "/api/v1/contas/execucao?periods=2024M10&dimension=action&page=100")
+    assert distante["rows"] == []
+    assert distante["total"] == primeira["total"]
+    assert distante["rows_total"] == primeira["rows_total"]
+    assert distante["pages"] == primeira["pages"]
+    vazio = _get(
+        client,
+        "/api/v1/contas/execucao?periods=2024M10&dimension=action&filter=function:inexistente",
+    )
+    assert vazio["rows_total"] == 0
+    assert vazio["total"]["paid"] == 0

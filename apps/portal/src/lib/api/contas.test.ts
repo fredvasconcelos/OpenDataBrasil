@@ -27,3 +27,22 @@ it("não apresenta lista incompleta quando uma página repete categorias", async
   vi.spyOn(contasApi, "table").mockResolvedValueOnce(page(["10"])).mockResolvedValueOnce(page(["10"]));
   await expect(contasApi.areas("brasil:1", ["2025"])).rejects.toThrow("incomplete_areas");
 });
+
+
+it("envia lente B e os filtros sem convertê-los para transferências", async () => {
+  const fetcher = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({})));
+  await contasApi.table({ lens: "B", geography_key: "municipio:2507507", periods: ["2025"], group_by: "organ", filter: ["recipient_class:empresa"] });
+  const query = new URL(String(fetcher.mock.calls[0]![0]), "http://portal").searchParams;
+  expect(query.get("lens")).toBe("B");
+  expect(query.get("geography_key")).toBe("municipio:2507507");
+  expect(query.getAll("filter")).toEqual(["recipient_class:empresa"]);
+});
+
+it("consulta fases da execução sem enviar território nem somar fases", async () => {
+  const fetcher = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({})));
+  await contasApi.execution({ periods: ["2025"], dimension: "organ", filter: ["function:10", "organ:123"], page: 2 });
+  const url = new URL(String(fetcher.mock.calls[0]![0]), "http://portal");
+  expect(url.pathname).toMatch(/contas\/execucao$/);
+  expect(url.searchParams.getAll("filter")).toEqual(["function:10", "organ:123"]);
+  expect(url.searchParams.has("geography_key")).toBe(false);
+});

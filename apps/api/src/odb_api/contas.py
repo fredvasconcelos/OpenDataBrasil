@@ -1033,21 +1033,36 @@ class ContasService:
             join_sql += f" LEFT JOIN {{{{{name}}}}} {name} ON {on}"
         sums = ", ".join(f"sum(f.{p}) AS {p}" for p in _PHASES)
         totals = ", ".join(f"sum({p}) OVER () AS t_{p}" for p in _PHASES)
+        grouped = (
+            f"SELECT coalesce({column.code}, '{MISSING_CODE}') AS key, "
+            f"max({column.label}) AS label, {sums} FROM {{{{f}}}} f{join_sql} "
+            f"WHERE {' AND '.join(where)} GROUP BY 1"
+        )
         rows = self._rows(
             ctx,
-            f"WITH g AS (SELECT coalesce({column.code}, '{MISSING_CODE}') AS key, "
-            f"max({column.label}) AS label, {sums} FROM {{{{f}}}} f{join_sql} "
-            f"WHERE {' AND '.join(where)} GROUP BY 1) "
-            f"SELECT *, count(*) OVER () AS n, {totals} FROM g "
+            f"WITH g AS ({grouped}) SELECT *, count(*) OVER () AS n, {totals} FROM g "
             f"ORDER BY paid DESC, key LIMIT {PAGE_SIZE} OFFSET $offset",
             tables,
             params,
         )
-        n = int(rows[0]["n"]) if rows else 0
+        # Página vazia não significa ausência de execução no restante do recorte.
+        count = (
+            rows[0]
+            if rows
+            else self._rows(
+                ctx,
+                "SELECT count(*) AS n, "
+                + ", ".join(f"sum({p}) AS t_{p}" for p in _PHASES)
+                + f" FROM ({grouped})",
+                tables,
+                {key: value for key, value in params.items() if key != "offset"},
+            )[0]
+        )
+        n = int(count["n"] or 0)
         total = ExecutionRowOut(
             category_code="total",
             label="Total",
-            **{p: _float(rows[0][f"t_{p}"]) if rows else 0.0 for p in _PHASES},
+            **{p: _float(count[f"t_{p}"]) for p in _PHASES},
         )
         return ContasExecutionOut(
             dimension=dimension,
