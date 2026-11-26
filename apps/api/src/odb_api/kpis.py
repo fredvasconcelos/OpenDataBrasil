@@ -361,6 +361,7 @@ class KpiService:
         out = []
         for dim in kpi.dimensions:
             cats = self._gold.partition_categories(ctx, dim.classification, dim.partition)
+            native = self._native_categories(ctx, kpi, dim) if dim.native_categories else []
             tables = sorted(
                 t for t, v in coverage.items() if dim.classification in v["classifications"]
             )
@@ -391,12 +392,26 @@ class KpiService:
                         str(meta["unit"]), str(meta["additivity"]), dim
                     ),
                     share_base_category_key=dim.share_base_category,
+                    explorable_categories=[
+                        CategoryOut(
+                            category_key=c["category_key"],
+                            category_id=c["category_id"],
+                            name=self._name(ctx, c["category_key"]),
+                            full_name=c["name"],
+                            parent_category_key=c.get("parent_category_key"),
+                            depth=c.get("depth", 0),
+                        )
+                        for c in native
+                        if c["category_key"] not in {p["category_key"] for p in cats}
+                    ],
                     categories=[
                         CategoryOut(
                             category_key=c["category_key"],
                             category_id=c["category_id"],
                             name=self._name(ctx, c["category_key"]),
                             full_name=c["name"],
+                            parent_category_key=c.get("parent_category_key"),
+                            depth=c.get("depth", 0),
                         )
                         for c in cats
                     ],
@@ -793,6 +808,17 @@ class KpiService:
             )
         return out
 
+    def _native_categories(
+        self, ctx: ReleaseContext, kpi: KpiConfig, dim: DimensionConfig
+    ) -> list[dict[str, Any]]:
+        """Usa a evidência do indicador, sem confundir catálogo global com observações."""
+        present = self._gold.observed_category_keys(ctx, kpi.indicator, dim.classification)
+        return [
+            c
+            for key, c in self._gold.categories(ctx).items()
+            if key in present and c["classification_id"] == dim.classification and not c["is_total"]
+        ]
+
     def _selection(
         self, ctx: ReleaseContext, kpi: KpiConfig, categories: Sequence[str]
     ) -> dict[str, frozenset[str]]:
@@ -802,16 +828,38 @@ class KpiService:
             return {}
         chosen: dict[str, set[str]] = {}
         every: dict[str, set[str]] = {}
+        allowed: dict[str, set[str]] = {}
         for key in categories:
             dim = key.split(":", 1)[0]
             cfg = next((d for d in kpi.dimensions if d.classification == dim), None)
             if cfg is not None and dim not in every:
                 cats = self._gold.partition_categories(ctx, dim, cfg.partition)
                 every[dim] = {c["category_key"] for c in cats}
-            if key not in every.get(dim, set()):
+                allowed[dim] = every[dim] | (
+                    {c["category_key"] for c in self._native_categories(ctx, kpi, cfg)}
+                    if cfg.native_categories
+                    else set()
+                )
+            if key not in allowed.get(dim, set()):
                 msg = f"{kpi.id}: categoria {key} fora das dimensões expostas do KPI"
                 raise SemanticError(msg)
             chosen.setdefault(dim, set()).add(key)
+        # O Total publicado não é refeito pela soma de grupos e idades sobrepostos.
+        catalog = self._gold.categories(ctx)
+        for keys in chosen.values():
+            for key in keys:
+                parent = catalog.get(key, {}).get("parent_category_key")
+                seen = {key}
+                while parent:
+                    if parent in keys:
+                        raise SemanticError(
+                            f"{kpi.id}: pai e filho não podem compor o mesmo filtro de soma; "
+                            "escolha categorias sem sobreposição"
+                        )
+                    if parent in seen:
+                        raise SemanticError(f"{kpi.id}: ciclo na hierarquia de categorias")
+                    seen.add(parent)
+                    parent = catalog.get(parent, {}).get("parent_category_key")
         return {dim: frozenset(keys) for dim, keys in chosen.items() if keys != every[dim]}
 
     def _partition(
@@ -820,6 +868,8 @@ class KpiService:
         """Categorias da partição exposta, só as escolhidas quando há filtro."""
         cats = self._gold.partition_categories(ctx, dim.classification, dim.partition)
         chosen = (selected or {}).get(dim.classification)
+        if chosen and dim.native_categories:
+            return [c for key, c in self._gold.categories(ctx).items() if key in chosen]
         return [c for c in cats if c["category_key"] in chosen] if chosen else list(cats)
 
     def _breakdown(

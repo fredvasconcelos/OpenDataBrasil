@@ -82,6 +82,7 @@ class DimensionConfig(_Strict):
     share_base_category: str | None = None
     # Níveis em que a fonte publica esta classificação (vazio: todos os do KPI).
     levels: tuple[str, ...] = ()
+    native_categories: bool = False
 
     @model_validator(mode="after")
     def _share_base(self) -> DimensionConfig:

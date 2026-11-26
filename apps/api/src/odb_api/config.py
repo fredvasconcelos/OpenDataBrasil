@@ -18,6 +18,7 @@ class ApiSettings(BaseSettings):
 
     scope: str = "demografia"
     portal_config_dir: str = "configs/portal"
+    dictionaries_dir: str = "docs/data_catalog/dicionarios-2026-11-26"
     # Taxonomia do panorama (ADR-0010). Vazio: navegação só com os KPIs do portal.
     panorama_path: str = "configs/catalog/panorama.toml"
     # Origens do portal autorizadas (CORS restritivo, §18.5).

@@ -69,7 +69,7 @@ label = "Nascimentos e óbitos"
 id = "nascidos_vivos"
 label = "Nascidos vivos"
 indicator = "nascidos_vivos"
-dimensions = [{ "classification" = "c232", "partition" = "p0", "label" = "Ano de nascimento" }, { "classification" = "c2t2609", "partition" = "p0", "label" = "Sexo" }, { "classification" = "c240", "partition" = "p0", "label" = "Idade da mãe na ocasião do parto" }]
+dimensions = [{ "classification" = "c232", "partition" = "p0", "label" = "Ano de nascimento" }, { "classification" = "c2t2609", "partition" = "p0", "label" = "Sexo" }, { "classification" = "c240", "partition" = "p0", "label" = "Idade da mãe na ocasião do parto", "native_categories" = true }]
 exclusive_dimensions = true
 crossed = [["c2t2609", "c240"]]
 crossed_levels = ["brasil", "regiao", "uf"]

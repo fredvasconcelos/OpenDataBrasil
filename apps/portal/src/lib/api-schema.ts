@@ -244,6 +244,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/dictionaries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Dicionários e apoios
+         * @description Inventário documental; candidatas continuam separadas dos KPIs publicados.
+         */
+        get: operations["dictionary_index_api_v1_dictionaries_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dictionaries/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ficha, códigos, fontes e métodos do indicador
+         * @description Documentação obtida, com origem, versão e lacunas de cada variável/edição.
+         */
+        get: operations["dictionary_entry_api_v1_dictionaries__entry_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/kpis/{kpi_id}": {
         parameters: {
             query?: never;
@@ -772,6 +812,13 @@ export interface components {
             category_id: string;
             /** Name */
             name: string;
+            /** Parent Category Key */
+            parent_category_key?: string | null;
+            /**
+             * Depth
+             * @default 0
+             */
+            depth: number;
             /**
              * Full Name
              * @description Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11).
@@ -1212,6 +1259,84 @@ export interface components {
             provenance: components["schemas"]["Provenance"];
         };
         /**
+         * DictionaryEntryOut
+         * @description Ficha, referências e códigos obtidos; lacunas permanecem explícitas.
+         */
+        DictionaryEntryOut: {
+            /** Entry Id */
+            entry_id: string;
+            /** Indicator Id */
+            indicator_id: string;
+            /** Version */
+            version: string;
+            /**
+             * Documentary Status
+             * @default revisao_parcial
+             */
+            documentary_status: string;
+            /** Document */
+            document: {
+                [key: string]: unknown;
+            };
+            /** Links */
+            links?: {
+                [key: string]: unknown;
+            }[];
+            /** Methods */
+            methods?: {
+                [key: string]: unknown;
+            }[];
+            /** Fields */
+            fields?: {
+                [key: string]: string;
+            }[];
+            /** Codes */
+            codes?: {
+                [key: string]: string;
+            }[];
+            /** Context */
+            context?: {
+                [key: string]: unknown;
+            } | null;
+            /** Expansion */
+            expansion?: {
+                [key: string]: string;
+            } | null;
+            /** Preparation */
+            preparation?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /**
+         * DictionaryIndexOut
+         * @description Inventário documental, incluindo apoios e candidatas sem ativação.
+         */
+        DictionaryIndexOut: {
+            /** Version */
+            version: string;
+            /**
+             * Status
+             * @default documentacao_parcial_nao_certifica_disponibilidade
+             */
+            status: string;
+            /** Entries */
+            entries: {
+                [key: string]: string | null;
+            }[];
+            /** Expansions */
+            expansions: {
+                [key: string]: string;
+            }[];
+            /** Artifacts */
+            artifacts: {
+                [key: string]: string;
+            };
+            /** Preparation */
+            preparation?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /**
          * DimensionOut
          * @description Dimensão exposta de um KPI.
          */
@@ -1241,6 +1366,11 @@ export interface components {
             share_base_category_key?: string | null;
             /** Categories */
             categories: components["schemas"]["CategoryOut"][];
+            /**
+             * Explorable Categories
+             * @description Categorias observadas no indicador, sem certificar todos os recortes. O filtro aceita seleções sem sobreposição de pai e filhos.
+             */
+            explorable_categories?: components["schemas"]["CategoryOut"][];
             /**
              * Levels
              * @default []
@@ -3376,6 +3506,138 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PortalIndexOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    dictionary_index_api_v1_dictionaries_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DictionaryIndexOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    dictionary_entry_api_v1_dictionaries__entry_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DictionaryEntryOut"];
                 };
             };
             /** @description Recurso inexistente no release */

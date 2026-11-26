@@ -710,6 +710,46 @@ def test_query_endpoint_applies_semantic_rules(stack: dict[str, Any]) -> None:
     assert sql.status_code == 422
 
 
+def test_dicionarios_expoem_fichas_apoios_e_candidatas_sem_ativacao(stack: dict[str, Any]) -> None:
+    index = _get(stack, "/api/v1/dictionaries")
+    assert len(index["entries"]) == 335
+    assert len(index["expansions"]) == 50
+    assert index["preparation"]["total"] == 50
+    entry = _get(stack, "/api/v1/dictionaries/nascidos_vivos")
+    assert entry["document"]["lacunas"]
+    assert entry["methods"][0]["id"] == "M04"
+    assert entry["documentary_status"] == "revisao_parcial"
+    _get(stack, "/api/v1/dictionaries/inexistente", 404)
+
+
+def test_exportacao_de_marginais_conserva_todos_os_filtros_e_blocos(
+    stack: dict[str, Any],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    deps = stack["client"].app.state.deps
+    cfg = deps.kpis.kpi(deps.resolver.current(), "populacao_residente")
+    monkeypatch.setattr(
+        deps.kpis, "kpi", lambda *_args: cfg.model_copy(update={"exclusive_dimensions": True})
+    )
+    response = stack["client"].post(
+        "/api/v1/exports",
+        json={
+            "kpi_id": "populacao_residente",
+            "level": "uf",
+            "format": "json",
+            "dimensions": ["c86", "c2"],
+            "categories": ["c86:2779"],
+        },
+    )
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["metadata"]["filtros"]["dimensions"] == ["c86", "c2"]
+    assert payload["metadata"]["filtros"]["categories"] == ["c86:2779"]
+    assert len(payload["metadata"]["blocos"]) == 2
+    assert {row["block_id"] for row in payload["rows"]} == {"bloco-1", "bloco-2"}
+    assert len({row["row_id"] for row in payload["rows"]}) == len(payload["rows"])
+
+
 def test_exports_carry_metadata(stack: dict[str, Any]) -> None:
     client = stack["client"]
     payload = {"kpi_id": "populacao_residente", "level": "uf", "dimensions": ["c86", "c2"]}
@@ -719,7 +759,11 @@ def test_exports_carry_metadata(stack: dict[str, Any]) -> None:
     with zipfile.ZipFile(io.BytesIO(csv.content)) as archive:
         rows = archive.read("dados.csv").decode("utf-8-sig").splitlines()
         meta = json.loads(archive.read("metadados.json"))
-    assert rows[0] == "geography_key,territorio,uf,periodo,Cor ou raça,Sexo,valor,status,unidade"
+    assert rows[0].startswith(
+        "row_id,geography_key,territorio,uf,periodo,Cor ou raça,Sexo,valor,status,unidade,"
+    )
+    assert "value_exact" in rows[0]
+    assert "c86_code" in rows[0]
     # 27 UFs x 2 censos x (Total + 5 cores ou raças) x (Total + 2 sexos)
     assert len(rows) - 1 == meta["linhas"] == 27 * 2 * 6 * 3
     assert meta["release"]["release_id"] == "rel-1"

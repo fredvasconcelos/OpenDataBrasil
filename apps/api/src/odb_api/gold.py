@@ -332,6 +332,28 @@ class GoldGateway:
             if c["classification_id"] == classification_id and c["partition_id"] == partition_id
         ]
 
+    def observed_category_keys(
+        self, ctx: ReleaseContext, indicator_id: str, classification_id: str
+    ) -> set[str]:
+        """Categorias presentes no indicador; não certifica completude por recorte."""
+
+        def build() -> set[str]:
+            result = self.execute(
+                ctx,
+                "SELECT DISTINCT part AS category_key FROM "
+                "(SELECT unnest(string_split(breakdown_key, '|')) AS part "
+                "FROM {{obs}} WHERE indicator_id = $indicator) "
+                "WHERE split_part(part, ':', 1) = $classification",
+                {"obs": "indicator_observation"},
+                {"indicator": indicator_id, "classification": classification_id},
+                max_rows=10_000,
+            )
+            if result.truncated:
+                raise RuntimeError("categorias observadas excederam o limite de metadados")
+            return {str(row["category_key"]) for row in rows(result)}
+
+        return self._meta.get((ctx.release_id, f"native:{indicator_id}:{classification_id}"), build)
+
     def total_category(self, ctx: ReleaseContext, classification_id: str) -> dict[str, Any]:
         """Categoria Total de uma classificação."""
         for c in self.categories(ctx).values():

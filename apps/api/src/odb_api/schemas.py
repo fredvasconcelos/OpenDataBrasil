@@ -156,6 +156,8 @@ class CategoryOut(_Out):
     category_key: str
     category_id: str
     name: str
+    parent_category_key: str | None = None
+    depth: int = 0
     full_name: str = Field(
         "", description="Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11)."
     )
@@ -183,6 +185,11 @@ class DimensionOut(_Out):
     )
     share_base_category_key: str | None = None
     categories: list[CategoryOut]
+    explorable_categories: list[CategoryOut] = Field(
+        default_factory=list,
+        description="Categorias observadas no indicador, sem certificar todos os recortes. "
+        "O filtro aceita seleções sem sobreposição de pai e filhos.",
+    )
     # Níveis com o detalhe; vazio: todos os do KPI (ex.: situação na PNS, só Brasil).
     # Também restrito quando o release não traz as categorias num nível (DS 2.9).
     levels: list[str] = []

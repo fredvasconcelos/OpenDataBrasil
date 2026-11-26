@@ -19,3 +19,9 @@ docs
 apps/portal/.next
 apps/portal/test-results
 apps/portal/playwright-report
+!docs
+docs/*
+!docs/data_catalog
+docs/data_catalog/*
+!docs/data_catalog/dicionarios-2026-11-26
+!docs/data_catalog/dicionarios-2026-11-26/**

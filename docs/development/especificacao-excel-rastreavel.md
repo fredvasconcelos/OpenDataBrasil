@@ -1,5 +1,11 @@
 # Proposta de Excel rastreável e metadados comuns
 
+**Atualização de 26/11/2026:** o mantenedor solicitou a implementação. O primeiro
+contrato executável, seus campos e limites estão em
+[exportacao-rastreavel.md](exportacao-rastreavel.md) e na ADR-0043. O texto abaixo
+preserva o escopo da proposta; itens adicionais, como agregados/contribuintes e
+ligações normativas por lançamento, não são anunciados como entregues.
+
 26/11/2026 · versão documental `0.1.1-proposta` · **aguarda revisão do mantenedor**.
 Não implementada no portal/API. Não altera arquitetura, schema Gold, estatística,
 releases ou exportadores. Base: [inventário de dicionários](../data_catalog/dicionarios-2026-11-26/README.md).

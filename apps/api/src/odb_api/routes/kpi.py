@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Literal, cast
+from typing import Annotated, Any, Literal, cast
 
+import polars as pl
 from fastapi import APIRouter, Path, Query, Request
 from fastapi.responses import Response
 
 from odb_api import exports
+from odb_api.dictionaries import DictionaryEntryOut, DictionaryIndexOut, load_dictionaries
 from odb_api.routes.common import ERRORS, GEOGRAPHY_KEY, ID, PERIOD, Cats, Ctx, Deps, Dims, Periods
 from odb_api.schemas import (
     DetailOut,
@@ -69,6 +71,24 @@ def navigation(request: Request, d: Deps, ctx: Ctx) -> Response:
 def portal_index(request: Request, d: Deps, ctx: Ctx) -> Response:
     """Temas, subtemas e campos de busca; metadados completos em ``/kpis/{id}``."""
     return _cached_json(request, ctx.release_id, "index", d.kpis.serialized_index(ctx))
+
+
+@router.get("/dictionaries", response_model=DictionaryIndexOut, summary="Dicionários e apoios")
+def dictionary_index(d: Deps) -> DictionaryIndexOut:
+    """Inventário documental; candidatas continuam separadas dos KPIs publicados."""
+    return load_dictionaries(d.settings.dictionaries_dir).index()
+
+
+@router.get(
+    "/dictionaries/{entry_id}",
+    response_model=DictionaryEntryOut,
+    summary="Ficha, códigos, fontes e métodos do indicador",
+)
+def dictionary_entry(
+    d: Deps, entry_id: Annotated[str, Path(pattern=r"^[a-z][a-z0-9_-]{0,95}$")]
+) -> DictionaryEntryOut:
+    """Documentação obtida, com origem, versão e lacunas de cada variável/edição."""
+    return load_dictionaries(d.settings.dictionaries_dir).entry(entry_id)
 
 
 @router.get("/kpis/{kpi_id}", response_model=KpiOut, summary="KPI")
@@ -387,9 +407,13 @@ def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
     grains: list[str | None] = list(body.grains) or [body.grain]
     multi = len(levels) > 1 or len(grains) > 1 or bool(body.levels or body.grains)
     frames = []
+    blocks: list[dict[str, Any]] = []
+    provenances = []
+    all_dims: list[str] = []
     total = 0
     published = d.kpis.published_grain(ctx, body.kpi_id)
     cfg = d.kpis.kpi(ctx, body.kpi_id)
+    indicator = d.gold.indicators(ctx)[cfg.indicator]
     selected_grains = {grain or published for grain in grains}
     if set(body.periods_by_grain) - selected_grains:
         msg = "a seleção de períodos contém um grão não escolhido na exportação"
@@ -419,6 +443,30 @@ def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
                 categories=body.categories,
             )
             total += len(obs)
+            all_dims = list(dict.fromkeys([*all_dims, *dims]))
+            provenances.append(prov)
+            block_id = f"bloco-{len(blocks) + 1}"
+            blocks.append(
+                {
+                    "block_id": block_id,
+                    "level": level,
+                    "grain": grain or published,
+                    "dimensions": dims,
+                    "categories": body.categories,
+                    "periods_requested": body.periods_by_grain.get(
+                        cast(Grain, grain or published), body.periods if not multi else []
+                    ),
+                    "periods_exported": sorted({o.period for o in obs}),
+                    "rows": len(obs),
+                    "provenance": prov.model_dump(),
+                    "time_aggregation": indicator.get("time_aggregation")
+                    if grain and grain != published
+                    else None,
+                    "correction_config": next(
+                        (c.model_dump() for c in cfg.corrections if c.id == body.correction), None
+                    ),
+                }
+            )
             # prov.truncated: o motor de consulta cortou o resultado no próprio teto
             # (duckdb_max_rows). Nunca entregar um arquivo incompleto como se fosse inteiro.
             if total > limit or prov.truncated:
@@ -428,7 +476,6 @@ def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
                     "para um extrato completo, use o contato do portal"
                 )
                 raise exports.ExportTooLargeError(msg)
-            indicator = d.gold.indicators(ctx)[kpi_cfg.indicator]
             categories = d.gold.categories(ctx)
             labels = {dim.classification: dim.label for dim in kpi_cfg.dimensions}
             ufs = {
@@ -449,6 +496,12 @@ def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
                     else indicator["unit"]
                 ),
             )
+            part = part.with_columns(
+                pl.lit(block_id).alias("block_id"),
+                pl.lit(kpi_cfg.id).alias("kpi_id"),
+                pl.lit(kpi_cfg.indicator).alias("indicator_id"),
+                pl.lit(ctx.release_id).alias("release_id"),
+            )
             if multi:
                 derived = grain is not None and grain != published
                 part = exports.tag(
@@ -459,6 +512,8 @@ def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
                 )
             frames.append(part)
     data = exports.concat(frames)
+    data = data.with_row_index("row_id", offset=1)
+    prov = exports.merge_provenance(provenances, ctx.release_id)
     found = d.catalog.datasets(indicator["dataset_id"])
     meta = exports.metadata(
         kpi={"kpi_id": kpi_cfg.id, "label": kpi_cfg.label},
@@ -472,11 +527,19 @@ def export(d: Deps, ctx: Ctx, body: ExportIn) -> Response:
             "within": body.within,
             "periods": body.periods or "todos",
             "periods_by_grain": body.periods_by_grain,
-            "dimensions": dims,
+            "dimensions": all_dims,
+            "categories": body.categories,
             "correction": body.correction,
         },
         provenance=prov,
         rows=data.height,
+        documentation=(
+            dictionaries.entry(kpi_cfg.id) if kpi_cfg.id in dictionaries.documents else None
+        )
+        if (dictionaries := load_dictionaries(d.settings.dictionaries_dir))
+        else None,
+        blocks=blocks,
+        columns=data.schema,
     )
     content = exports.render(data, meta, body.format)
     where = "niveis" if len(levels) > 1 else levels[0]

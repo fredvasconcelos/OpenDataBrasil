@@ -9,6 +9,7 @@ const ALLOWED = new Set([
   "geographies",
   "indicators",
   "datasets",
+  "dictionaries",
   "sources",
   "release",
   "exports",
