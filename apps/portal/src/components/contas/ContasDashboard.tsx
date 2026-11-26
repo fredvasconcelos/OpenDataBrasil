@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
+import { FederalDashboard, ContasLensNav } from "@/components/contas/FederalDashboard";
 import { MapView } from "@/components/MapView";
 import { SeriesChart } from "@/components/SeriesChart";
 import { ContasPanel, ContasSidebar } from "@/components/contas/ContasPanel";
@@ -28,6 +29,12 @@ export function ContasDashboard() {
 }
 
 function LoadedDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () => void }) {
+  const search = useSearchParams();
+  const lens = search.get("lens") === "B" ? "B" : search.get("lens") === "C" ? "C" : "A";
+  return <div className="contas-lenses"><ContasLensNav meta={meta} lens={lens} />{lens === "A" ? <TransfersDashboard meta={meta} onRetry={onRetry} /> : <FederalDashboard key={lens} meta={meta} lens={lens} onRetry={onRetry} />}</div>;
+}
+
+function TransfersDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () => void }) {
   const t = useTranslations("contas");
   const search = useSearchParams();
   const router = useRouter();

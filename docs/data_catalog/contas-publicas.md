@@ -14,9 +14,12 @@ incorporadas ao portal.
 | Execução da despesa (lente C) | [Execução da despesa](https://portaldatransparencia.gov.br/dicionario-de-dados/execucao-despesa) | Organização e classificação do gasto; localizador; emenda; valores empenhados, liquidados, pagos e restos a pagar. |
 | Cadastro dos favorecidos PJ | [Favorecidos — Pessoa Jurídica](https://portaldatransparencia.gov.br/dicionario-de-dados/favorecidos-pj) | Identificação cadastral, atividade econômica (CNAE), natureza jurídica, tipo de pessoa e endereço; inclui os dicionários das tabelas de CNAE e natureza jurídica. |
 
-As três lentes respondem perguntas diferentes e **não se somam**. O painel atual
-usa a lente A; a ficha do favorecido apresenta A e B separadamente. A lente C
-tem contrato de dados próprio e não é exibida como outro total do painel.
+As três lentes respondem perguntas diferentes e **não se somam**. Na candidata em
+**teste local de 27/11/2026**, o painel permite escolher A, B ou C; a ficha mantém A e B
+separadas. B consulta a sede cadastral por estado/município. C mostra seis fases
+independentes da execução federal e não distribui valores por local de aplicação.
+O detalhamento e os limites estão na [ADR-0044](../adr/0044-lentes-federais-b-c-no-portal.md).
+Essa implementação local não significa disponibilidade na beta.
 
 Para consultar os arquivos, use o [índice oficial de dados abertos](https://portaldatransparencia.gov.br/download-de-dados).
 O [Glossário da CGU](https://portaldatransparencia.gov.br/glossario) complementa
@@ -74,6 +77,6 @@ de todos os dicionários de benefícios, servidores, sanções ou outros temas d
 
 ## Valores enviados e aplicação pelo recebedor
 
-O painel usa os valores transferidos da lente A. Área, tipo de transferência, território e período são cruzados pela API sobre a Gold; a classificação da transferência não comprova a área de execução posterior pelo ente. A tabela de recebedores acompanha os mesmos filtros. Não se somam as lentes A/B/C.
+Na perspectiva de recursos transferidos, o painel usa os valores da lente A. Área, tipo de transferência, território e período são cruzados pela API sobre a Gold; a classificação da transferência não comprova a área de execução posterior pelo ente. A tabela de recebedores acompanha os mesmos filtros. Não se somam as lentes A/B/C.
 
 O valor e o percentual aplicado pelo estado ou município **ainda não estão disponíveis**. Os cartões com “—” não indicam aplicação zero. Siconfi/MSC e Transferegov são caminhos candidatos para uma integração futura, não fontes já incorporadas. É necessário comprovar a correspondência e a cobertura antes de dividir a execução pelo total transferido; execução de um subconjunto não comprova execução do universo inteiro. Ver [ADR-0042](../adr/0042-navegacao-e-contexto-das-contas.md).

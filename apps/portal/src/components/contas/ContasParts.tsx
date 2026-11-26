@@ -241,12 +241,13 @@ export function PeriodStatusList({ provenance }: { provenance: ContasProvenance 
 }
 
 /** Tooltip do mapa das contas: a mesma estrutura do DetailTooltip, com o conteúdo do bloco 2. */
-export function ContasTooltip({ name, value, shareOfTotal, period, inline = false }: {
+export function ContasTooltip({ name, value, shareOfTotal, period, inline = false, lensLabel }: {
   name: string;
   value: number;
   shareOfTotal?: number | null;
   period: string;
   inline?: boolean;
+  lensLabel?: string;
 }) {
   const t = useTranslations("contas");
   return (
@@ -262,7 +263,7 @@ export function ContasTooltip({ name, value, shareOfTotal, period, inline = fals
           {shareOfTotal !== undefined && shareOfTotal !== null ? <span className="tt-total-share">{share(shareOfTotal)}</span> : null}
         </div>
         <p className="tt-full">{brl(value)}</p>
-        <p className="tt-lens"><FaIcon icon={FA.transferidos} size={12} />{t("lensName")} · {t("source").split(".")[0]}</p>
+        <p className="tt-lens"><FaIcon icon={FA.transferidos} size={12} />{lensLabel ?? t("lensName")} · {t("source").split(".")[0]}</p>
       </div>
     </div>
   );

@@ -4,6 +4,14 @@ A evolução do portal, dos primeiros passos às novidades mais recentes.
 Cada entrada destaca o que muda para quem consulta os dados. A situação indicada
 vale para a data do registro: **Em teste** ainda não significa disponível na beta.
 
+## 27/11/2026 — Pagamentos a favorecidos e execução federal
+
+**Situação: Em teste local.**
+
+- Consulta de pagamentos por estado e município da sede cadastral, com busca de favorecidos pessoa jurídica.
+- Execução federal com empenhado, liquidado, pago e três valores de restos a pagar separados, com detalhamentos e filtros compartilháveis.
+- Limites territoriais e de cobertura explícitos: a aplicação posterior pelo recebedor e a localização da execução federal ainda dependem de vínculos oficiais.
+
 ## 26/11/2026 — Dicionários e arquivos exportados com rastreabilidade
 
 **Situação: Em desenvolvimento e testes locais.**

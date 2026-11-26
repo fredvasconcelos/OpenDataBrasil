@@ -16,3 +16,8 @@ export type RecipientProfile = S["RecipientProfileOut"];
 export type RecipientRef = S["RecipientRefOut"];
 export type RankingRow = S["RankingRowOut"];
 export type CompositionRow = S["CompositionRowOut"];
+
+export type ContasExecution = S["ContasExecutionOut"];
+export type ContasSearch = S["ContasSearchOut"];
+export type ExecutionRow = S["ExecutionRowOut"];
+export type ContasLens = "A" | "B" | "C";

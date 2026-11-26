@@ -1,6 +1,6 @@
 // Cliente do bloco 2 sobre o contrato completo gerado. Não compartilha o cache dos KPIs.
 import { ApiRequestError } from "@/lib/api";
-import type { ContasComposition, ContasMap, ContasMeta, ContasRanking, ContasSeries, ContasTable, RecipientProfile } from "@/lib/contas/types";
+import type { ContasExecution, ContasSearch, ContasComposition, ContasMap, ContasMeta, ContasRanking, ContasSeries, ContasTable, RecipientProfile } from "@/lib/contas/types";
 
 type Params = Record<string, string | number | readonly string[] | null | undefined>;
 
@@ -26,11 +26,11 @@ async function get<T>(path: string, params: Params = {}): Promise<T> {
 
 export const contasApi = {
   meta: () => get<ContasMeta>("meta"),
-  map: (p: { level: "uf" | "municipio"; within?: string | null; periods: string[]; dimension?: string; categories?: string[] }) => get<ContasMap>("map", { ...p, lens: "A" }),
+  map: (p: { level: "uf" | "municipio"; within?: string | null; periods: string[]; dimension?: string; categories?: string[]; lens?: "A" | "B" }) => get<ContasMap>("map", { lens: "A", ...p }),
   composition: (geography: string, periods: string[]) => get<ContasComposition>("composition", { lens: "A", geography_key: geography, periods, dimension: "function", limit: 10 }),
-  series: (p: { geography_key: string; periods: string[]; grain: "mes" | "ano"; dimension?: string; categories?: string[] }) => get<ContasSeries>("series", { ...p, lens: "A" }),
+  series: (p: { geography_key: string; periods: string[]; grain: "mes" | "ano"; dimension?: string; categories?: string[]; lens?: "A" | "B" }) => get<ContasSeries>("series", { lens: "A", ...p }),
   ranking: (geography: string, year: number, page: number) => get<ContasRanking>("ranking", { lens: "A", geography_key: geography, year, page }),
-  table: (p: { geography_key: string; periods: string[]; group_by: "function" | "transfer_type" | "recipient"; filter?: string[]; page?: number; sort?: "value" | "name" }) => get<ContasTable>("table", { ...p, lens: "A" }),
+  table: (p: { geography_key: string; periods: string[]; group_by: string; filter?: string[]; page?: number; sort?: "value" | "name"; lens?: "A" | "B" }) => get<ContasTable>("table", { lens: "A", ...p }),
   /** Percorre a paginação oficial, sem esconder áreas num grupo de demais. */
   areas: async (geography: string, periods: string[]): Promise<ContasTable> => {
     const params = { geography_key: geography, periods, group_by: "function" as const };
@@ -44,5 +44,7 @@ export const contasApi = {
     if (rows.length !== first.rows_total || new Set(rows.map((r) => r.key)).size !== rows.length) throw new Error("incomplete_areas");
     return { ...first, rows };
   },
+  execution: (p: { periods: string[]; dimension: string; filter?: string[]; page?: number }) => get<ContasExecution>("execucao", p),
+  search: (q: string) => get<ContasSearch>("busca", { q }),
   recipient: (id: string, periods?: string[]) => get<RecipientProfile>(`favorecidos/${encodeURIComponent(id)}`, { periods }),
 };
