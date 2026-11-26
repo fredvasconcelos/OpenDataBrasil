@@ -1705,12 +1705,6 @@ select {
 @media (max-width: 991px) { .block-cards ul { grid-template-columns: minmax(0, 1fr); } .block-card { padding: 1.25rem; } }
 
 /* ---------- Painel das contas ---------- */
-.contas-sidebar .contas-current { display: flex; gap: 0.75rem; align-items: flex-start; margin: 0 0 var(--odbr-space-5); padding: var(--odbr-space-2) var(--odbr-space-2) var(--odbr-space-4); }
-.contas-current-icon { flex: none; width: 2.5rem; height: 2.5rem; border-radius: 0.625rem; display: inline-flex; align-items: center; justify-content: center; background: var(--odbr-primary); color: var(--odbr-on-primary); }
-.contas-sidebar .sb-crumb { margin: 0; font-size: var(--odbr-fs-caption); font-weight: 800; color: var(--odbr-text-muted); }
-.contas-sidebar .sb-kpi { margin: 2px 0 0; font-weight: 900; line-height: 1.3; color: var(--odbr-text); }
-.contas-sidebar .filters-body { display: flex; flex-direction: column; gap: var(--odbr-space-3); }
-.contas-side-note { margin: var(--odbr-space-4) var(--odbr-space-2) 0; font-size: var(--odbr-fs-caption); color: var(--odbr-text-muted); line-height: 1.4; }
 .contas-grid { display: grid; gap: var(--odbr-space-5); grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
   grid-template-areas: "head head" "kpis kpis" "where how" "when when" "who who" "foot foot"; }
 .contas-head { grid-area: head; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--odbr-space-3); }
@@ -1723,10 +1717,6 @@ select {
 .contas-section { display: flex; flex-direction: column; gap: 0.875rem; }
 .contas-section-title { display: flex; align-items: center; gap: 0.5rem; margin: 0; font-size: var(--odbr-fs-card-title); font-weight: 900; }
 .contas-section-title svg { color: var(--odbr-primary); }
-.contas-where .map-panel { height: clamp(22rem, 52vh, 34rem); border: 1px solid var(--odbr-border); border-radius: var(--odbr-radius-md); }
-.contas-map-note { margin: 0; display: flex; gap: 0.5rem; font-size: var(--odbr-fs-caption); color: var(--odbr-text-muted); line-height: 1.4; }
-.contas-map-note svg { flex: none; margin-top: 2px; color: var(--odbr-info); }
-.contas-state-line { margin: 0; font-size: var(--odbr-fs-small); font-weight: 700; color: var(--odbr-text-body); }
 /* Destaques */
 .contas-highlights { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr)); gap: var(--odbr-space-3); }
 .contas-kpi { display: flex; flex-direction: column; gap: 0.25rem; padding: 1rem 1.125rem; background: var(--odbr-bg-surface); border: 1px solid var(--odbr-border); border-radius: var(--odbr-radius-md); min-width: 0; }
@@ -1735,7 +1725,6 @@ select {
 .contas-kpi-value { font-size: var(--odbr-fs-kpi); font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; color: var(--odbr-text); white-space: nowrap; }
 .contas-kpi.is-main .contas-kpi-value { color: var(--odbr-text-active); }
 .contas-kpi-note { font-size: var(--odbr-fs-caption); font-weight: 600; color: var(--odbr-text-muted); }
-.contas-kpi-area { display: flex; align-items: center; gap: 0.5rem; font-size: var(--odbr-scale-up-01); font-weight: 900; line-height: 1.2; }
 .contas-area-icon { flex: none; width: 1.75rem; height: 1.75rem; border-radius: 0.5rem; display: inline-flex; align-items: center; justify-content: center; background: var(--theme-icon-bg, var(--odbr-bg-selected)); color: var(--theme-icon, var(--odbr-text-active)); }
 /* Composição: barras horizontais em cor de dados; a cor do tema fica só no quadro do ícone. */
 .contas-how { display: flex; flex-direction: column; gap: 1.25rem; }
@@ -1756,26 +1745,6 @@ button.contas-bar[aria-pressed="true"] { background: var(--odbr-bg-selected); bo
 .contas-chart, .recipient-chart { display: flex; flex-direction: column; }
 .contas-chart .series-figure, .recipient-chart .series-figure { flex: 1; min-height: 0; }
 /* Ranking */
-.contas-table { width: 100%; border-collapse: collapse; font-size: var(--odbr-fs-small); }
-.contas-table th { text-align: left; font-size: var(--odbr-fs-caption); font-weight: 800; color: var(--odbr-text-muted); padding: 0.5rem 0.625rem; border-bottom: 2px solid var(--odbr-border); }
-.contas-table td { padding: 0.5625rem 0.625rem; border-bottom: 1px solid var(--odbr-divider); vertical-align: middle; }
-.contas-table tbody tr:hover { background: var(--odbr-bg-hover); }
-.contas-table .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.contas-table td.rank { font-weight: 900; color: var(--odbr-text-muted); width: 4.5rem; }
-.contas-table td:nth-child(2) { font-weight: 800; }
-.contas-table a { color: var(--odbr-link); font-weight: 800; text-decoration: underline; text-underline-offset: 2px; }
-.contas-class { display: inline-flex; align-items: center; gap: 0.375rem; color: var(--odbr-text-body); }
-.contas-class svg { flex: none; color: var(--odbr-text-muted); }
-.contas-ranking-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem; padding-top: 0.75rem; font-size: var(--odbr-fs-caption); font-weight: 700; color: var(--odbr-text-muted); }
-.contas-pager { display: inline-flex; align-items: center; gap: 0.5rem; }
-.contas-pager button { width: 2.25rem; height: 2.25rem; min-height: 0; padding: 0; border-radius: var(--odbr-radius-sm); font-size: 1.125rem; }
-@media (max-width: 575px) {
-  .contas-table thead { display: none; }
-  .contas-table tr { display: grid; padding: 0.625rem 0; border-bottom: 1px solid var(--odbr-divider); }
-  .contas-table td { display: flow-root; border: 0; padding: 2px 0 2px 6.5rem; text-align: left; }
-  .contas-table td::before { content: attr(data-l); float: left; width: 6rem; margin-left: -6.5rem; font-size: var(--odbr-fs-caption); font-weight: 800; color: var(--odbr-text-muted); }
-  .contas-table td.rank { width: auto; }
-}
 /* Situação do período */
 .period-alerts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.375rem; }
 .period-badge { align-self: flex-start; display: inline-flex; align-items: center; gap: 0.375rem; min-height: 1.875rem; padding: 0 0.75rem; border-radius: var(--odbr-radius-pill); border: 1px solid var(--odbr-border); font-size: var(--odbr-fs-caption); font-weight: 700; }
@@ -1784,7 +1753,6 @@ button.contas-bar[aria-pressed="true"] { background: var(--odbr-bg-selected); bo
 .period-badge.is-open { background: var(--odbr-info-bg); border-color: var(--odbr-info); color: var(--odbr-info); }
 .period-badge.is-incomplete { background: var(--odbr-warning-bg); border-color: var(--odbr-warning-border); color: var(--odbr-text); }
 .period-badge.is-incomplete svg { color: var(--odbr-warning); }
-.contas-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 1.5rem; padding-top: 0.75rem; border-top: 1px solid var(--odbr-divider); font-size: var(--odbr-fs-caption); color: var(--odbr-text-muted); }
 .contas-references { flex-basis: 100%; min-width: 0; color: var(--odbr-text-body); }
 .contas-references summary { width: fit-content; cursor: pointer; font-weight: 600; }
 .contas-references ul { padding-inline-start: 1.25rem; }
@@ -1847,157 +1815,140 @@ button.contas-bar[aria-pressed="true"] { background: var(--odbr-bg-selected); bo
 .accounts-search { max-width: 42rem; margin-bottom: 1.5rem; }
 .accounts-catalog-card { max-width: 42rem; display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; }
 .accounts-catalog-card h3, .accounts-catalog-card p { margin: 0; }
-/* A grade reserva a mesma largura para a faixa de indicadores e os dados que ela resume. */
-.contas-dashboard {
-  display: grid;
-  grid-template-columns: var(--odbr-sidebar-w) minmax(0, 1fr);
-  max-width: calc(var(--odbr-content-wide) + var(--odbr-sidebar-w) + 2 * var(--odbr-space-8));
-  min-height: calc(100dvh - var(--odbr-header-h) - var(--notice-h));
-  margin-inline: auto;
-}
-.contas-dashboard .contas-sidebar {
-  position: sticky;
-  top: 0;
-  align-self: start;
-  height: 100dvh;
-  max-height: 100dvh;
-  overflow-y: auto;
-  padding: var(--odbr-space-5);
-  gap: var(--odbr-space-5);
-}
-.contas-sidebar .contas-current {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  margin: 0;
-  padding: 0 0 var(--odbr-space-5);
-  border-bottom: 1px solid var(--odbr-border);
-}
-.contas-sidebar .sb-kpi { font-size: var(--odbr-fs-card-title); line-height: 1.25; }
-.contas-sidebar .filters { flex: none; gap: var(--odbr-space-4); padding: 0; border: 0; }
-.contas-sidebar .filters > h2 { padding: 0; }
-.contas-sidebar .filters-body { gap: var(--odbr-space-4); padding: 0; overflow: visible; }
-.contas-sidebar .filters-foot { padding: var(--odbr-space-4) 0 0; margin-top: var(--odbr-space-5); }
-.contas-sidebar .field { font-size: var(--odbr-fs-ui); font-weight: 700; }
-.contas-sidebar .field select { min-height: var(--odbr-control-touch-h); font-size: var(--odbr-fs-ui); }
-.contas-filter-toggle { text-align: left; font-weight: 800; }
+/* DS 2.23.7 · Painel das contas na moldura do Painel das Estatísticas.
+   A barra lateral, a área central (.main), o mapa e a faixa da fonte usam as mesmas
+   classes e medidas; aqui ficam só a grade dos cinco blocos e as peças próprias. */
+.contas-sidebar .filters > .contas-filters { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.contas-sidebar .filters > .contas-filters[hidden] { display: none; }
+.contas-filter-toggle { width: 100%; text-align: left; font-weight: 800; }
 .contas-filter-toggle::after { content: "−"; float: right; }
 .contas-filter-toggle[aria-expanded="false"]::after { content: "+"; }
-.contas-content { position: relative; min-width: 0; }
-.contas-update { position: sticky; top: 0; z-index: 10; margin: 0; font-size: var(--odbr-fs-small); background: var(--odbr-info-bg); color: var(--odbr-text); }
-.contas-update:not(:empty) { padding: var(--odbr-space-2) var(--odbr-space-4); }
-.contas-dashboard .contas-grid {
-  min-width: 0;
-  padding: var(--odbr-space-6) var(--odbr-space-8);
-  gap: var(--odbr-space-5);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-  grid-template-areas: "head head" "kpis kpis" "where how" "when when" "who who" "foot foot";
-}
-.contas-head { justify-content: flex-start; align-items: center; column-gap: var(--odbr-space-5); }
-.contas-head .period-badge { align-self: center; }
-.contas-head .page-title { gap: var(--odbr-space-1); }
-.contas-head .crumb { font-size: var(--odbr-fs-ui); }
-.contas-dashboard .contas-section, .contas-foot.card {
-  padding: var(--odbr-space-5);
-  gap: var(--odbr-space-3);
-  border-radius: var(--odbr-radius-lg);
-}
-.contas-section-title { font-weight: 800; line-height: 1.3; }
-.contas-highlights { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--odbr-space-3); }
-.contas-kpi {
-  gap: var(--odbr-space-2);
-  padding: var(--odbr-space-4) var(--odbr-space-5);
-  border-radius: var(--odbr-radius-lg);
-}
-.contas-kpi-label { color: var(--odbr-text-body); font-size: var(--odbr-fs-ui); font-weight: 700; }
-.contas-kpi-value { font-variant-numeric: tabular-nums; white-space: normal; }
-.contas-kpi-note, .contas-method-note { font-size: var(--odbr-fs-small); }
-.contas-kpi-status { font-size: var(--odbr-fs-card-title); font-weight: 700; color: var(--odbr-text-muted); }
-.contas-method-note summary { cursor: pointer; color: var(--odbr-link); text-decoration: underline; text-underline-offset: 2px; }
-.contas-method-note p { margin-bottom: 0; line-height: 1.5; }
-.contas-hint { font-size: var(--odbr-fs-small); margin: 0; line-height: 1.45; }
-.contas-map-wrap { display: flex; flex: 1; min-height: 19rem; }
-.contas-map-wrap .map-panel { flex: 1; height: auto; min-height: 0; border-radius: var(--odbr-radius-md); }
-.map-compact { display: flex; flex-direction: column; padding: var(--odbr-space-2); gap: var(--odbr-space-2); }
-.map-compact .map-viewport { position: relative; inset: auto; flex: 1; min-height: 12rem; }
-.contas-map-wrap .map-compact .legend, .contas-map-wrap .map-compact .map-hint { position: static; max-width: none; flex: none; }
-.contas-map-wrap .map-compact .legend { padding: var(--odbr-space-2); background: var(--odbr-bg-subtle); border: 0; }
-.map-compact .legend ol { flex-direction: row; flex-wrap: wrap; gap: var(--odbr-space-1) var(--odbr-space-3); }
-.map-compact .map-hint { white-space: normal; line-height: 1.4; }
-.contas-series-wrap { display: flex; flex-direction: column; min-height: 12rem; flex: 1; }
-.contas-series-wrap .series-plot { min-height: 0; }
-.contas-when { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto minmax(12rem, 1fr); align-content: start; }
-.contas-when .field { display: flex; align-items: center; gap: var(--odbr-space-2); font-weight: 700; font-size: var(--odbr-fs-ui); }
-.contas-when .contas-series-wrap { grid-column: 1 / -1; }
-.contas-trail { display: flex; flex-wrap: wrap; gap: var(--odbr-space-2); }
-.contas-trail button { font-size: var(--odbr-fs-ui); }
-.contas-trail [aria-current="location"] { color: var(--odbr-text); background: var(--odbr-bg-subtle); }
-.contas-tooltip-position { position: fixed; z-index: 100; pointer-events: none; width: 19rem; }
-.contas-how { gap: var(--odbr-space-4); }
-.contas-how h3 { font-size: var(--odbr-fs-ui); color: var(--odbr-text); }
-.contas-areas { min-width: 0; border-top: 1px solid var(--odbr-border); padding-top: var(--odbr-space-4); }
-.contas-area-scroll { max-height: 18.75rem; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
-.contas-area-scroll + .contas-hint { margin-top: var(--odbr-space-3); }
-.contas-bar { gap: var(--odbr-space-2); padding: var(--odbr-space-2); align-items: stretch; }
-.contas-bar-head { font-size: var(--odbr-fs-ui); flex-wrap: wrap; }
-.contas-bar-label { min-width: 6ch; white-space: normal; line-height: 1.35; overflow-wrap: anywhere; font-weight: 700; }
-.contas-bar-share, .contas-bar-value { width: auto; font-variant-numeric: tabular-nums; }
-.contas-bar-share { min-width: 3.5em; }
-.contas-ranking { min-width: 0; overflow-x: auto; }
-.contas-who .contas-table { font-size: var(--odbr-fs-ui); line-height: 1.35; }
-.contas-who .contas-table th { font-size: var(--odbr-fs-small); background: var(--odbr-bg-subtle); }
-.contas-who .contas-table :is(th, td) { padding: var(--odbr-space-2); overflow-wrap: anywhere; }
-.contas-who .contas-table td.rank { width: 1%; }
-.contas-seat, .contas-class { color: var(--odbr-text-muted); font-size: var(--odbr-fs-small); font-weight: 600; }
-.contas-seat { display: block; }
-.contas-ranking-foot { font-size: var(--odbr-fs-small); }
-.contas-ranking .contas-hint { margin-top: var(--odbr-space-2); }
-.contas-foot.card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; font-size: var(--odbr-fs-small); }
-.contas-foot > h2 { grid-column: 1 / -1; }
-.contas-foot p { margin: 0; overflow-wrap: anywhere; }
-.contas-foot > p:has(code) { grid-column: 1 / -1; }
-.contas-foot summary { cursor: pointer; color: var(--odbr-link); }
+.contas-update { position: sticky; top: -1.25rem; z-index: 10; margin: 0; font-size: var(--odbr-fs-caption); font-weight: 700; color: var(--odbr-text); background: var(--odbr-info-bg); border-radius: var(--odbr-radius-sm); }
+.contas-update:not(:empty) { padding: var(--odbr-space-1) var(--odbr-space-3); margin-bottom: var(--odbr-space-2); }
 
+.contas-dashboard .contas-grid {
+  gap: var(--odbr-space-4) var(--odbr-space-5);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: "head head" "kpis kpis" "where how" "when who" "foot foot";
+}
+.contas-head { align-items: flex-end; }
+/* Títulos das seções com o botão i (classe .chart-head das Estatísticas). */
+.contas-section > .chart-head { margin: 0; align-items: center; }
+.contas-section-scope { font-weight: 700; color: var(--odbr-text-muted); }
+.contas-info { z-index: 30; }
+.contas-info p { margin: 0 0 0.375rem; line-height: 1.5; }
+.contas-info p:last-child { margin-bottom: 0; }
+.contas-kpi-head { margin: 0; align-items: center; gap: var(--odbr-space-1); }
+.contas-kpi-head .contas-kpi-label { flex: 1; min-width: 0; }
+.contas-kpi-head .info-button { width: 1.5rem; height: 1.5rem; min-width: 24px; }
+.contas-head .period-badge, .contas-head .period-alerts { align-self: flex-end; margin-bottom: 0.25rem; }
+.contas-dashboard .contas-section { padding: var(--odbr-space-4) var(--odbr-space-5); gap: var(--odbr-space-3); min-height: 0; }
+
+/* Cartões: baixos, ocupando toda a faixa superior. */
+.contas-highlights { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--odbr-space-3); }
+.contas-kpi { position: relative; gap: 2px; padding: 0.625rem 0.875rem; border-radius: var(--odbr-radius-md); }
+.contas-kpi-label { font-size: var(--odbr-fs-caption); font-weight: 800; color: var(--odbr-text-muted); line-height: 1.3; }
+.contas-kpi-value { font-size: var(--odbr-scale-up-2, 1.5rem); font-variant-numeric: tabular-nums; }
+.contas-kpi-note { font-variant-numeric: tabular-nums; }
+.contas-kpi-status { font-size: var(--odbr-scale-up-1h, 1.25rem); font-weight: 800; line-height: 1.2; color: var(--odbr-text-muted); }
+/* Mapa: mesmo painel das Estatísticas (legenda, dica e trilha sobrepostas). */
+.contas-map-wrap { position: relative; min-height: 0; }
+/* Balão do mapa: flutua sobre a página (como o DetailTooltip das Estatísticas), fora do fluxo do card. */
+.contas-tooltip-position { position: fixed; z-index: 100; pointer-events: none; width: 19rem; }
+.contas-map-wrap .map-panel { height: clamp(20rem, 46vh, 28rem); border: 1px solid var(--odbr-border); border-radius: var(--odbr-radius-md); box-shadow: none; }
+/* Oito faixas de valor: legenda em duas colunas e dica numa faixa própria no pé,
+   para não cobrirem o recorte num mapa mais baixo que o das Estatísticas. */
+.contas-map-wrap .legend { bottom: 1.75rem; padding: 0.5rem 0.625rem; }
+.contas-map-wrap .legend ol { display: grid; grid-template-columns: repeat(2, auto); gap: 3px 0.875rem; }
+.contas-map-wrap .map-hint { left: var(--odbr-space-3); right: var(--odbr-space-3); bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Distribuição: tipos fixos; só as áreas rolam, separadas por um fio neutro. */
+.contas-how { gap: var(--odbr-space-3); }
+.contas-how h3 { margin: 0 0 var(--odbr-space-1); font-size: var(--odbr-fs-caption); font-weight: 800; color: var(--odbr-text-muted); }
+.contas-areas { min-width: 0; border-top: 1px solid var(--odbr-divider); padding-top: var(--odbr-space-3); }
+.contas-area-scroll { max-height: 18rem; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.contas-bar { gap: 0.25rem; padding: 0.3125rem 0.5rem; }
+.contas-bar-head { font-size: var(--odbr-fs-small); }
+.contas-bar-value, .contas-bar-share { font-variant-numeric: tabular-nums; }
+.contas-areas .contas-hint { margin-top: var(--odbr-space-2); }
+
+/* Evolução: seletor da série na linha do título. */
+.contas-when { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto minmax(0, 1fr); align-items: center; column-gap: var(--odbr-space-4); }
+.contas-when .field { display: flex; align-items: center; gap: var(--odbr-space-2); font-size: var(--odbr-fs-caption); font-weight: 800; color: var(--odbr-text-muted); }
+.contas-when .field select { min-height: 2rem; font-size: var(--odbr-fs-small); }
+.contas-when .contas-series-wrap { grid-column: 1 / -1; align-self: stretch; height: 16rem; }
+.contas-series-wrap { display: flex; flex-direction: column; min-height: 0; }
+.contas-series-wrap > * { flex: 1; min-height: 0; }
+.contas-series-wrap .series-plot { min-height: 0; }
+
+/* Recebedores: a tabela do Painel das Estatísticas (.share-base + .table-wrap + .data-table),
+   com rolagem própria; subtotal da página e total do recorte no fim, como lá. */
+.contas-ranking { display: flex; flex-direction: column; min-width: 0; }
+.contas-ranking-bar { margin: 0 0 var(--odbr-space-2); }
+.contas-ranking-bar .contas-pager { margin-left: auto; font-weight: 700; color: var(--odbr-text-muted); }
+.contas-ranking-bar .contas-info-inline { display: contents; }
+.contas-ranking-bar .info-button { margin-left: 0; }
+.contas-pager { display: inline-flex; align-items: center; gap: 0.375rem; font-size: var(--odbr-fs-small); }
+.contas-pager button { width: 1.75rem; height: 1.75rem; min-height: 0; padding: 0; border-radius: var(--odbr-radius-sm); }
+.contas-table-wrap { min-height: 0; max-height: 30rem; }
+.contas-table { table-layout: fixed; }
+.contas-table thead th:first-child { width: 5rem; }
+.contas-table thead th:last-child { width: 15rem; max-width: none; }
+.contas-table thead th:nth-child(2) { text-align: left; }
+.contas-table tbody th[scope="row"] { position: static; text-align: left; white-space: normal; overflow-wrap: anywhere; font-weight: 700; }
+.contas-table td.rank { color: var(--odbr-text-muted); font-weight: 800; }
+.contas-table .th-short { display: none; }
+.contas-table tbody tr { cursor: default; }
+.contas-table a { color: var(--odbr-link); font-weight: 700; text-underline-offset: 2px; }
+.contas-table tfoot th { position: static; text-align: left; }
+.contas-table tfoot tr:first-child :is(th, td) { font-weight: 700; color: var(--odbr-text-body); }
+.contas-table tfoot tr + tr :is(th, td) { border-top: 0; }
+
+/* Fonte: a mesma faixa do Painel das Estatísticas. */
+.contas-foot { grid-area: foot; min-width: 0; }
+.contas-foot .meta-body ul { margin: 0; padding-left: 1.25rem; }
+.contas-foot .contas-references { margin-top: var(--odbr-space-2); color: var(--odbr-text-body); }
+
+/* Tela cheia (≥ 1600 px), como as Estatísticas: tudo na altura da janela.
+   Bloco esquerdo: mapa sobre a evolução. Bloco direito: distribuição por área sobre
+   os recebedores, nas mesmas alturas. */
 @media (min-width: 1600px) {
-  /* Compensa a escala compacta do portal nas células e nos rótulos que carregam dados. */
-  .contas-dashboard {
-    --odbr-fs-ui: var(--odbr-scale-up-01);
-    --odbr-fs-small: var(--odbr-scale-up-half);
-    --odbr-fs-card-title: var(--odbr-scale-up-2h);
-    --odbr-fs-kpi: var(--odbr-scale-up-05);
-    --odbr-fs-page-title: var(--odbr-scale-up-5h);
-  }
   .contas-dashboard .contas-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.45fr);
-    grid-template-areas: "head head head" "kpis kpis kpis" "where how who" "when when who" "foot foot foot";
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: "head head" "kpis kpis" "where how" "when who" "foot foot";
   }
 }
-@media (min-width: 1280px) and (max-width: 1599px) {
-  .contas-kpi-label { min-height: 2.7em; line-height: 1.35; }
-  .contas-when .contas-series-wrap { height: 16rem; }
+@media (min-width: 1600px) and (min-height: 851px) {
+  .contas-dashboard .contas-grid { flex: 1; min-height: 0; grid-template-rows: auto auto minmax(0, 1.2fr) minmax(0, 1fr) auto; }
+  .contas-dashboard .contas-section { overflow: hidden; }
+  .contas-where .contas-map-wrap { flex: 1; display: flex; }
+  .contas-where .contas-map-wrap .map-panel { flex: 1; height: auto; min-height: 0; }
+  .contas-how-card .contas-how, .contas-how-card .contas-areas { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .contas-how-card .contas-area-scroll { flex: 1; min-height: 0; max-height: none; }
+  .contas-when .contas-series-wrap { height: auto; min-height: 0; }
+  .contas-who .contas-ranking { flex: 1; min-height: 0; }
+  .contas-who .contas-table-wrap { flex: 1; max-height: none; }
 }
 @media (max-width: 1279px) {
-  .contas-highlights { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-  .contas-highlights > li { grid-column: span 2; }
-  .contas-highlights .is-unavailable { grid-column: span 3; }
+  .contas-highlights { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .contas-dashboard .contas-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "kpis" "where" "how" "when" "who" "foot"; }
-  .contas-map-wrap { min-height: 24rem; }
 }
 @media (max-width: 991px) {
-  .contas-dashboard { display: block; }
-  .contas-dashboard .contas-sidebar { position: static; height: auto; max-height: none; gap: var(--odbr-space-3); }
-  .contas-sidebar .contas-current { padding: 0; border: 0; }
-  .contas-dashboard .contas-grid { padding: var(--odbr-space-4); }
+  .contas-dashboard .contas-sidebar { max-height: none; }
+  .contas-sidebar .sb-current { display: flex; flex-direction: column; gap: 2px; padding: 0 0 var(--odbr-space-3); }
   .contas-highlights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .contas-highlights > li, .contas-highlights .is-unavailable { grid-column: auto; }
   .contas-highlights .is-main { grid-column: 1 / -1; }
 }
 @media (max-width: 575px) {
-  .contas-kpi, .contas-dashboard .contas-section { padding: var(--odbr-space-4); }
-  .contas-when { grid-template-columns: 1fr; grid-template-rows: auto auto minmax(12rem, 1fr); }
-  .contas-who .contas-table td { padding: var(--odbr-space-1) 0 var(--odbr-space-1) 6.5rem; }
-  .contas-who .contas-table td.rank { width: auto; }
-  .contas-foot.card { grid-template-columns: minmax(0, 1fr); }
+  .contas-dashboard .contas-section { padding: var(--odbr-space-4); }
+  .contas-when { grid-template-columns: minmax(0, 1fr); }
+  .contas-table-wrap { max-height: none; border: 0; }
+  .contas-table thead th:first-child { width: 2.75rem; }
+  .contas-table .th-long { display: none; }
+  .contas-table .th-short { display: inline; }
+  .contas-table :is(th, td) { padding-inline: 0.375rem; }
+  .contas-table thead th:last-child { width: 8.25rem; }
+  .contas-table td.num { white-space: normal; }
 }
 
 /* ADR-0041: o sinal acompanha texto e parcelas; vermelho prevalece sobre amarelo. */

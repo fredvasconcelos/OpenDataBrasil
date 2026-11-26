@@ -28,6 +28,8 @@ describe("format", () => {
   it("participação vem como fração da API", () => {
     expect(share(0.39067717839703014)).toBe("39,1%");
     expect(share(null)).toBe("");
+    expect(share(0.0001)).toBe("<0,1%");
+    expect(share(0)).toBe("0,0%");
   });
   it("períodos", () => {
     expect(periodLabel("2025M03")).toBe("mar/2025");

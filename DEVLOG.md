@@ -8,7 +8,8 @@ vale para a data do registro: **Em teste** ainda não significa disponível na b
 
 **Situação: Em teste local.**
 
-- Compare os valores dos repasses e consulte o mapa, a distribuição e os recebedores em blocos alinhados. A sede aparece junto ao nome do favorecido.
+- O painel de contas ganhou o mesmo visual do painel de estatísticas: barra lateral, mapa e faixa da fonte iguais, e cartões mais baixos. Em telas largas, tudo cabe numa só tela, com o mapa sobre a evolução e a distribuição sobre os recebedores.
+- Cada bloco tem o botão i com as notas sobre os dados. A tabela de recebedores calcula o % de cada favorecido, mostra subtotal e total e pode ser ordenada por nome ou por valor.
 - Nos dois painéis, a ação de limpar a seleção fica junto aos filtros.
 
 ## 26/11/2026 — Navegação por bloco e contas mais fáceis de explorar

@@ -697,7 +697,7 @@
       "topArea": "Maior área",
       "ofTotal": "{share} do total",
       "applied": "Valor aplicado pelo recebedor",
-      "appliedShare": "Parcela aplicada do total (%)",
+      "appliedShare": "Percentual aplicado do enviado",
       "unavailable": "Indisponível",
       "whyUnavailable": "Entenda este dado",
       "applicationNote": "Ainda não integramos uma fonte que ligue o recurso recebido às despesas realizadas pelo estado ou município. A ausência desta informação não significa que o recurso não foi aplicado.",
@@ -714,7 +714,7 @@
       "title": "Distribuição dos recursos",
       "byType": "Por tipo de transferência",
       "byArea": "Por área",
-      "areaHint": "Selecione uma área para filtrar o painel. Clique novamente para limpar."
+      "areaHint": "Selecione uma área para filtrar os cartões, o mapa, a evolução e os recebedores. Selecione de novo para limpar. A lista de áreas mantém o total do território, para permitir trocar o filtro."
     },
     "when": {
       "title": "Evolução dos repasses",
@@ -729,11 +729,25 @@
       "class": "Classe",
       "value": "Valor",
       "page": "Página {page} de {pages}",
-      "count": "{count} favorecidos no território",
+      "count": "{count, plural, one {# favorecido} other {# favorecidos}} no recorte.",
       "note": "Bancos pagadores, lançamentos agregados, valores sigilosos e sem informação não entram no ranking, mas entram nos totais.",
       "previous": "Página anterior",
       "next": "Próxima página",
-      "limit": "A consulta permite navegar pelos {count} primeiros recebedores deste recorte."
+      "limit": "A consulta permite navegar pelos {count} primeiros recebedores deste recorte.",
+      "shareOf": "Calcular % por",
+      "shareNone": "Sem %",
+      "shareTotal": "Total: {name}",
+      "unit": "Valores em R$",
+      "about": "Sobre esta tabela",
+      "caption": "Favorecidos por valor recebido · {scope}",
+      "sortByName": "Ordenar por nome do favorecido",
+      "sortByValue": "Ordenar por valor recebido",
+      "pageSubtotal": "Subtotal desta página",
+      "footer": "Total: {name}",
+      "aboutShare": "Entre parênteses: % do total recebido por {name} no recorte, calculado pela API.",
+      "aboutTotal": "A última linha (Total: {name}) é o total do recorte e inclui o que não entra no ranking; por isso é maior que a soma das linhas.",
+      "aboutOrder": "Clique em Favorecido para ordenar por nome ou em Valor para voltar ao ranking. A ordem vale para todas as páginas; em ordem alfabética, a posição fica em branco.",
+      "rankShort": "Nº"
     },
     "status": {
       "closed": "Período fechado",
@@ -743,6 +757,9 @@
       "incompleteText": "Faltam ações na fonte neste mês."
     },
     "source": "Fonte: CGU, Portal da Transparência. Valores nominais, sem correção pela inflação.",
+    "sourceLabel": "Fonte",
+    "sourceBody": "CGU, Portal da Transparência · Valores nominais, sem correção pela inflação",
+    "tesouroShort": "Tesouro Nacional (Tesouro Transparente), licença ODbL",
     "release": "Versão dos dados",
     "lensesNote": "As lentes não se somam: cada uma responde uma pergunta diferente.",
     "unavailable": {
@@ -815,7 +832,13 @@
       "empty": "Nenhum indicador de contas públicas encontrado."
     },
     "typeAreaContext": "Tipos de transferência em {area}. A lista abaixo inclui todas as áreas.",
-    "rankingFilteredScope": "{period} · {area}",
-    "sourcesTitle": "Fontes e informações sobre os dados"
+    "sourcesTitle": "Fontes e informações sobre os dados",
+    "info": {
+      "map": "Sobre o mapa",
+      "how": "Sobre a distribuição",
+      "when": "Sobre a evolução"
+    },
+    "whenNote": "Valores nominais por mês de pagamento, sem correção pela inflação. Meses abertos ou incompletos podem mudar nas próximas atualizações da fonte.",
+    "allAreasContext": "Tipos de transferência e áreas do território no período."
   }
 }

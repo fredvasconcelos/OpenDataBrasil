@@ -2,26 +2,7 @@
 // Só mudam a forma; nenhum valor é somado, dividido ou estimado aqui (ADR-0039, seção 5).
 import type { MapValue, Series } from "@/lib/types";
 
-import type { ContasMap, ContasRanking, ContasSeries, ContasTable, PeriodStatus } from "./types";
-
-/** Preserva os valores da tabela filtrada da API no componente de recebedores. */
-export function toRanking(table: ContasTable, year: number): ContasRanking {
-  return {
-    lens: table.lens,
-    geography_key: table.geography_key,
-    year,
-    page: table.page,
-    page_size: table.page_size,
-    pages: table.pages,
-    total_recipients: table.rows_total,
-    rows: table.rows.map((row, index) => {
-      if (!row.recipient) throw new Error("recipient_unavailable");
-      return { rank: (table.page - 1) * table.page_size + index + 1, recipient: row.recipient, value: row.value };
-    }),
-    notes: table.notes,
-    provenance: table.provenance,
-  };
-}
+import type { ContasMap, ContasSeries, PeriodStatus } from "./types";
 
 /** Linhas do mapa das contas → valores do MapView. */
 export function toMapValues(map: ContasMap): MapValue[] {

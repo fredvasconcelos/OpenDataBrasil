@@ -47,6 +47,8 @@ test("contas reais: filtros na URL, valores da API, ranking e ficha sem identifi
   await expect(page.locator(".contas-highlights")).toContainText("R$ 25.651.839.651,83", { timeout: 30_000 });
   await expect(page.locator(".map-focus path.territory")).toHaveCount(223);
   await expect(page.locator(".map-context path.territory")).toHaveCount(26);
+  // A faixa da fonte segue a das Estatísticas: os dicionários ficam em "Notas e proveniência".
+  await page.locator(".contas-foot .meta-more > summary").click();
   const panelReferences = page.locator(".contas-foot .contas-references");
   await panelReferences.getByText("Dicionários e glossário oficiais", { exact: true }).click();
   await expect(panelReferences.getByRole("link", { name: "Recursos transferidos (abre em nova aba)", exact: true })).toHaveAttribute("href", "https://portaldatransparencia.gov.br/dicionario-de-dados/recursos-transferidos");
@@ -56,11 +58,11 @@ test("contas reais: filtros na URL, valores da API, ranking e ficha sem identifi
   await page.getByRole("combobox", { name: "Área", exact: true }).selectOption("10");
   await expect(page).toHaveURL(/area=10/);
   await expect(page.locator(".contas-highlights")).toBeVisible();
-  await expect(page.getByText("Área selecionada: Saúde", { exact: true })).toBeVisible();
-  await expect(page.locator(".contas-who")).toContainText("2025 · Saúde");
+  await expect(page.locator(".contas-where h2")).toContainText("Saúde");
+  await expect(page.locator(".contas-who h2")).toContainText("Saúde");
   await page.getByRole("button", { name: "Próxima página", exact: true }).click();
   await expect(page).toHaveURL(/page=2/);
-  await expect(page.locator(".contas-ranking-foot")).toContainText("Página 2 de");
+  await expect(page.locator(".contas-pager")).toContainText("Página 2 de");
   const name = await page.locator(".contas-table tbody a").first().innerText();
   await page.locator(".contas-table tbody a").first().click();
   await expect(page.getByRole("heading", { name, level: 1, exact: true })).toBeVisible();
@@ -75,7 +77,7 @@ test("contas reais: filtros na URL, valores da API, ranking e ficha sem identifi
   expect(errors).toEqual([]);
   await page.screenshot({ path: "test-results/cp5-ficha.png", fullPage: true });
   await page.getByRole("link", { name: "Voltar ao painel", exact: true }).click();
-  await expect(page.locator(".contas-ranking-foot")).toContainText("Página 2 de");
+  await expect(page.locator(".contas-pager")).toContainText("Página 2 de");
   await expect(page.getByRole("combobox", { name: "Área", exact: true })).toHaveValue("10");
   expect(new URL(page.url()).searchParams.get("period")).toBe("2025");
 });
@@ -97,6 +99,7 @@ for (const width of [1920, 390]) {
     await page.setViewportSize({ width, height: 960 });
     await page.goto("/contas/painel?geography=uf%3A25&period=2025");
     await expect(page.locator(".contas-highlights")).toBeVisible({ timeout: 30_000 });
+    await page.locator(".contas-foot .meta-more > summary").click();
     await page.locator(".contas-references summary").focus();
     await page.keyboard.press("Enter");
     await expect(page.locator(".contas-references")).toHaveAttribute("open", "");
@@ -122,6 +125,7 @@ test("acessibilidade automática das contas, nos dois temas", async ({ page }) =
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/contas/painel?geography=uf%3A25&period=2025");
   await expect(page.locator(".contas-highlights")).toBeVisible({ timeout: 30_000 });
+  await page.locator(".contas-foot .meta-more > summary").click();
   await page.locator(".contas-references summary").click();
   await page.addScriptTag({ path: loadModule.resolve("axe-core/axe.min.js") });
   for (const theme of ["light", "dark"]) {

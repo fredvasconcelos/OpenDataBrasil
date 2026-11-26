@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { useState, type ReactNode } from "react";
 
 import { FaIcon } from "@/components/FaIcon";
+import { ContasInfo } from "@/components/contas/ContasInfo";
 import { FA } from "@/lib/faIcons";
 import { MOBILE_QUERY, useMediaQuery } from "@/lib/useMediaQuery";
 
@@ -39,19 +40,18 @@ export function ContasSidebar({ trail, territories, periods, period, areas, area
   const [filtersOpen, setFiltersOpen] = useState(false);
   const here = trail[trail.length - 1];
   return (
+    // Mesma marcação da barra das Estatísticas (Sidebar.tsx): indicador atual, filtros e,
+    // no pé, a limpeza. No celular, os filtros recolhem atrás de um botão.
     <aside className="sidebar contas-sidebar">
-      <div className="sb-current contas-current">
-        <span className="contas-current-icon" aria-hidden="true"><FaIcon icon={FA.contas} size={18} /></span>
-        <div>
-          <p className="sb-crumb">{t("blockName")}</p>
-          <p className="sb-kpi">{t("lensName")}</p>
-        </div>
+      <div className="sb-current">
+        <p className="sb-crumb">{t("blockName")}</p>
+        <p className="sb-kpi">{t("lensName")}</p>
       </div>
       <section className="filters" aria-label={t("filters")}>
         {mobile ? (
           <button type="button" className="contas-filter-toggle" aria-expanded={filtersOpen} aria-controls="contas-filtros" onClick={() => setFiltersOpen((o) => !o)}>{t("filters")}</button>
         ) : <h2>{t("filters")}</h2>}
-        <div id="contas-filtros" hidden={mobile && !filtersOpen}>
+        <div id="contas-filtros" className="contas-filters" hidden={mobile && !filtersOpen}>
         <div className="filters-body">
           <label className="field">
             {t("territory")}
@@ -81,8 +81,9 @@ export function ContasSidebar({ trail, territories, periods, period, areas, area
   );
 }
 
-/** Moldura da área central: título, destaques e as seções na ordem da pergunta. */
-export function ContasPanel({ crumb, title, status, highlights, map, how, when, who, foot }: {
+/** Moldura da área central: título, destaques e as seções na ordem da pergunta.
+ *  Cada seção tem um botão i com as notas de origem e de uso (mesmo padrão das Estatísticas). */
+export function ContasPanel({ crumb, title, status, highlights, map, how, when, who, foot, info, scope }: {
   crumb: string;
   title: string;
   status: ReactNode;
@@ -92,8 +93,17 @@ export function ContasPanel({ crumb, title, status, highlights, map, how, when, 
   when: ReactNode;
   who: ReactNode;
   foot: ReactNode;
+  info: { map: ReactNode; how: ReactNode; when: ReactNode };
+  /** Recorte de área, repetido no título das seções filtradas (ex.: "Saúde"). */
+  scope?: string | null;
 }) {
   const t = useTranslations("contas");
+  // A lista de áreas mostra sempre todas as áreas: só mapa, evolução e recebedores levam o recorte no título.
+  const head = (id: string, icon: Parameters<typeof FaIcon>[0]["icon"], label: string, body: ReactNode, about: string, scoped = true) => (
+    <ContasInfo label={about} title={<h2 id={id} className="contas-section-title"><FaIcon icon={icon} size={16} />{label}{scoped && scope ? <span className="contas-section-scope"> · {scope}</span> : null}</h2>}>
+      {body}
+    </ContasInfo>
+  );
   return (
     <div className="contas-grid">
       <header className="contas-head">
@@ -105,22 +115,22 @@ export function ContasPanel({ crumb, title, status, highlights, map, how, when, 
       </header>
       {highlights}
       <section className="contas-section card contas-where" aria-labelledby="onde">
-        <h2 id="onde" className="contas-section-title"><FaIcon icon={FA.municipio} size={16} />{t("map.title")}</h2>
+        {head("onde", FA.municipio, t("map.title"), info.map, t("info.map"))}
         {map}
       </section>
       <section className="contas-section card contas-how-card" aria-labelledby="como">
-        <h2 id="como" className="contas-section-title"><FaIcon icon={FA.transferidos} size={16} />{t("how.title")}</h2>
+        {head("como", FA.transferidos, t("how.title"), info.how, t("info.how"), false)}
         {how}
       </section>
       <section className="contas-section card contas-when" aria-labelledby="quando">
-        <h2 id="quando" className="contas-section-title"><FaIcon icon={FA.contasNacionais} size={16} />{t("when.title")}</h2>
+        {head("quando", FA.contasNacionais, t("when.title"), info.when, t("info.when"))}
         {when}
       </section>
       <section className="contas-section card contas-who" aria-labelledby="quem">
-        <h2 id="quem" className="contas-section-title"><FaIcon icon={FA.recebimento} size={16} />{t("who.title")}</h2>
+        <h2 id="quem" className="contas-section-title"><FaIcon icon={FA.recebimento} size={16} />{t("who.title")}{scope ? <span className="contas-section-scope"> · {scope}</span> : null}</h2>
         {who}
       </section>
-      <footer className="contas-foot card">{foot}</footer>
+      <div className="area-meta contas-foot">{foot}</div>
     </div>
   );
 }

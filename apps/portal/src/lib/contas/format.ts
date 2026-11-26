@@ -21,7 +21,10 @@ export function brlShort(value: number): string {
 
 /** Participação vinda da API como fração (0–1): "39,1%". Nunca calculada aqui. */
 export function share(fraction: number | null | undefined): string {
-  return fraction === null || fraction === undefined ? "" : `${pct.format(fraction * 100)}%`;
+  if (fraction === null || fraction === undefined) return "";
+  // Parcela positiva abaixo de 0,05% não arredonda para "0,0%", que sugeriria zero.
+  if (fraction > 0 && fraction < 0.0005) return `<${pct.format(0.1)}%`;
+  return `${pct.format(fraction * 100)}%`;
 }
 
 /** Período da API: "2025" → "2025"; "2025M03" → "mar/2025"; "2025T1" → "1º tri/2025". */

@@ -30,7 +30,7 @@ export const contasApi = {
   composition: (geography: string, periods: string[]) => get<ContasComposition>("composition", { lens: "A", geography_key: geography, periods, dimension: "function", limit: 10 }),
   series: (p: { geography_key: string; periods: string[]; grain: "mes" | "ano"; dimension?: string; categories?: string[] }) => get<ContasSeries>("series", { ...p, lens: "A" }),
   ranking: (geography: string, year: number, page: number) => get<ContasRanking>("ranking", { lens: "A", geography_key: geography, year, page }),
-  table: (p: { geography_key: string; periods: string[]; group_by: "function" | "transfer_type" | "recipient"; filter?: string[]; page?: number }) => get<ContasTable>("table", { ...p, lens: "A" }),
+  table: (p: { geography_key: string; periods: string[]; group_by: "function" | "transfer_type" | "recipient"; filter?: string[]; page?: number; sort?: "value" | "name" }) => get<ContasTable>("table", { ...p, lens: "A" }),
   /** Percorre a paginação oficial, sem esconder áreas num grupo de demais. */
   areas: async (geography: string, periods: string[]): Promise<ContasTable> => {
     const params = { geography_key: geography, periods, group_by: "function" as const };

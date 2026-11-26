@@ -45,7 +45,7 @@ test("área atualiza os cinco cartões e recebedores sem desmontar o mapa", asyn
   await expect(page.locator(".contas-content")).toHaveAttribute("aria-busy", "false");
   await expect(page.locator(".contas-highlights .is-main")).toContainText(expected.value_total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }).replace(/\u00a0/g, " "));
   await expect(page.locator(".contas-highlights")).toContainText("Sem registros neste recorte");
-  await expect(page.locator(".contas-who")).toContainText("2025 · Saúde");
+  await expect(page.locator(".contas-who h2")).toContainText("Saúde");
   await expect(page.locator(".contas-when .series-legend li")).toHaveCount(1);
   await expect(page.locator(".contas-when .series-legend")).toHaveText("Saúde");
   expect(await map!.evaluate((el) => el.isConnected)).toBe(true);
@@ -69,6 +69,19 @@ test("Estatísticas oferece uma única limpeza junto aos filtros", async ({ page
   expect(query.get("kpi")).toBe("populacao_residente");
   expect(query.has("dim")).toBe(false);
   expect(query.has("territorio")).toBe(false);
+});
+
+test("balão do mapa flutua sem empurrar nem encolher o mapa", async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.goto("/contas/painel?period=2025");
+  await expect(page.locator(".contas-highlights")).toBeVisible({ timeout: 30_000 });
+  const panel = page.locator(".contas-map-wrap .map-panel");
+  const before = await panel.boundingBox();
+  await page.locator(".contas-map-wrap path.territory").nth(4).hover();
+  const tip = page.locator(".contas-tooltip-position");
+  await expect(tip).toBeVisible();
+  expect(await tip.evaluate((el) => getComputedStyle(el).position)).toBe("fixed");
+  expect(await panel.boundingBox()).toEqual(before);
 });
 
 for (const width of [3440, 2560, 1920, 1440, 390]) {
@@ -99,9 +112,17 @@ for (const width of [3440, 2560, 1920, 1440, 390]) {
     if (width >= 1600) {
       const highlights = await page.locator(".contas-highlights").boundingBox();
       const recipients = await page.locator(".contas-who").boundingBox();
+      // Cartões ocupam toda a faixa superior, até a borda dos recebedores.
       expect(Math.abs(highlights!.x + highlights!.width - recipients!.x - recipients!.width)).toBeLessThan(1);
-      const textSize = await page.locator(".contas-table td").first().evaluate(el => parseFloat(getComputedStyle(el).fontSize));
-      expect(textSize).toBeGreaterThanOrEqual(13);
+      // Versão B: distribuição sobre os recebedores, alinhada ao mapa e à evolução.
+      const how = await page.locator(".contas-how-card").boundingBox();
+      expect(Math.abs(how!.x - recipients!.x)).toBeLessThan(1);
+      expect(recipients!.y).toBeGreaterThan(how!.y + how!.height - 1);
+      const where = await page.locator(".contas-where").boundingBox();
+      expect(Math.abs(how!.y - where!.y)).toBeLessThan(1);
+      // Mesma fonte da tabela do Painel das Estatísticas (.data-table).
+      const textSize = await page.locator(".contas-table td").first().evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+      expect(textSize).toBeGreaterThanOrEqual(11);
       const when = await page.locator(".contas-when").boundingBox();
       const who = await page.locator(".contas-who").boundingBox();
       expect(when!.y).toBeGreaterThan(map!.y);

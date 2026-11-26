@@ -57,5 +57,7 @@ export function readContasState(search: URLSearchParams, meta: ContasMeta) {
     area: search.get("area") || null,
     page: Number.isInteger(page) && page >= 1 && page <= 100 ? page : 1,
     grain: search.get("grain") === "ano" ? "ano" as const : "mes" as const,
+    // Ordem da tabela de recebedores; a API ordena por valor (padrão) ou por nome.
+    order: search.get("order") === "name" ? "name" as const : "value" as const,
   };
 }

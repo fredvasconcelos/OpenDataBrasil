@@ -11,7 +11,7 @@ import { ContasReferences } from "@/components/contas/ContasReferences";
 import { ContasComposition, ContasEmpty, ContasHighlights, ContasRankingTable, ContasTooltip, ContasUnavailable, PeriodStatusList } from "@/components/contas/ContasParts";
 import { api } from "@/lib/api";
 import { contasApi } from "@/lib/api/contas";
-import { toMapValues, toRanking, toSeries } from "@/lib/contas/adapt";
+import { toMapValues, toSeries } from "@/lib/contas/adapt";
 import { periodLabel } from "@/lib/contas/format";
 import { availablePeriods, defaultPeriod, findState, panelHref, readContasState } from "@/lib/contas/state";
 import type { ContasMeta } from "@/lib/contas/types";
@@ -33,7 +33,7 @@ function LoadedDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () => v
   const router = useRouter();
   const path = usePathname();
   const state = readContasState(new URLSearchParams(search), meta);
-  const { geography, period, area, page, grain } = state;
+  const { geography, period, area, page, grain, order } = state;
   const [hover, setHover] = useState<{ key: string; name: string; x: number; y: number } | null>(null);
   const change = (values: Record<string, string | number | null>) => {
     const next = new URLSearchParams(search);
@@ -58,12 +58,12 @@ function LoadedDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () => v
       contasApi.areas(geography, [period]),
       contasApi.table({ geography_key: geography, periods: [period], group_by: "transfer_type", filter: area ? [`function:${area}`] : [] }),
       contasApi.series({ geography_key: geography, periods: [period], grain, ...filters }),
-      contasApi.table({ geography_key: geography, periods: [period], group_by: "recipient", filter: area ? [`function:${area}`] : [], page }),
+      contasApi.table({ geography_key: geography, periods: [period], group_by: "recipient", filter: area ? [`function:${area}`] : [], page, sort: order }),
     ]);
     // Se um release trocar durante as chamadas, recarrega o bloco inteiro antes de exibir.
     if ([map, composition, byType, series, ranking].some((r) => r.provenance.release_id !== meta.release_id)) throw new Error("release_changed");
-    return { scope: state, selected, parent, within, map, collection, context, states, composition, byType, series, ranking: toRanking(ranking, Number(period.slice(0, 4))), total: byType.value_total };
-  }, [geography, period, area, page, grain, meta.release_id], 0, true);
+    return { scope: state, selected, parent, within, map, collection, context, states, composition, byType, series, ranking, total: byType.value_total };
+  }, [geography, period, area, page, grain, order, meta.release_id], 0, true);
 
   const data = loaded.data;
   // Mantém o contexto dos valores anteriores durante a atualização dos filtros.
@@ -85,34 +85,79 @@ function LoadedDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () => v
     return `/contas/favorecidos/${encodeURIComponent(id)}?${query}`;
   };
   return (
-    <main className="contas-dashboard">
+    <div className="dashboard contas-dashboard">
       <ContasSidebar trail={trail} territories={territories} period={period} periods={availablePeriods(meta).map((code) => ({ code, label: periodLabel(code) }))} areas={areaOptions} area={area}
-        onTerritory={(key) => change({ geography: key || "brasil:1", page: 1 })} onPeriod={(code) => change({ period: code, page: 1 })} onArea={(code) => change({ area: code || null, page: 1 })} onClear={() => router.push(path, { scroll: false })} canClear={geography !== "brasil:1" || period !== defaultPeriod(meta) || area !== null || page !== 1 || grain !== "mes"} />
-      {loaded.loading && !data ? <p className="page" role="status">{t("loading")}</p> : !data ? <div className="page"><ContasUnavailable onRetry={onRetry} /><button type="button" className="btn-outline" onClick={() => router.replace(path)}>{t("resetFilters")}</button></div> : (
-        <div className="contas-content" aria-busy={loaded.loading}>
+        onTerritory={(key) => change({ geography: key || "brasil:1", page: 1 })} onPeriod={(code) => change({ period: code, page: 1 })} onArea={(code) => change({ area: code || null, page: 1 })} onClear={() => router.push(path, { scroll: false })} canClear={geography !== "brasil:1" || period !== defaultPeriod(meta) || area !== null || page !== 1 || grain !== "mes" || order !== "value"} />
+      <main className="main contas-content" aria-busy={loaded.loading}>
+      {loaded.loading && !data ? <p role="status">{t("loading")}</p> : !data ? <div><ContasUnavailable onRetry={onRetry} /><button type="button" className="btn-outline" onClick={() => router.replace(path)}>{t("resetFilters")}</button></div> : (
+        <>
         <p className="contas-update" role="status">{loaded.loading ? t("updating") : ""}</p>
-        <ContasPanel crumb={t("lensName")} title={t("scope", { territory: name, period: periodLabel(displayed.period) })}
+        <ContasPanel crumb={`${t("blockName")} · ${t("lensName")}`} title={t("scope", { territory: name, period: periodLabel(displayed.period) })}
           status={<PeriodStatusList provenance={data.series.provenance} />}
           highlights={<ContasHighlights total={data.total} byType={data.byType} />}
           map={<>
-            <nav className="contas-trail" aria-label={t("territoryTrail")}>{trail.map((item) => <button key={item.key} type="button" aria-current={item.key === geography ? "location" : undefined} onClick={() => change({ geography: item.key, page: 1 })}>{item.label}</button>)}</nav>
-            {displayed.area ? <p className="contas-hint">{t("filteredArea", { area: selectedArea ?? "" })}</p> : null}
             <div className="contas-map-wrap">
-              <MapView compactLayout groupedControls collection={data.collection} context={data.context} values={toMapValues(data.map)} selected={displayed.geography} focus={data.within ?? null} fitRequest={{ key: data.within ?? null, n: 0 }} canUp={displayed.geography !== "brasil:1"} loading={loaded.loading}
+              <MapView groupedControls collection={data.collection} context={data.context} values={toMapValues(data.map)} selected={displayed.geography} focus={data.within ?? null} fitRequest={{ key: data.within ?? null, n: 0 }} canUp={displayed.geography !== "brasil:1"} loading={loaded.loading}
                 onHover={(key, label, event) => setHover(key ? { key, name: label, x: event.clientX, y: event.clientY } : null)}
                 onSelect={(key) => change({ geography: key, page: 1 })} onDrill={(key) => { change({ geography: key, page: 1 }); return true; }} onUp={up} onReset={() => change({ geography: "brasil:1", page: 1 })}
-                label={t("map.title")} legendTitle={t("map.legend")} />
+                label={t("map.title")} legendTitle={t("map.legend")}>
+                {/* Trilha do recorte dentro do mapa, como no Painel das Estatísticas. */}
+                <nav className="map-trail" aria-label={t("territoryTrail")}>
+                  <ol>
+                    {trail.map((item, i) => (
+                      <li key={item.key ?? i}>
+                        {i < trail.length - 1 ? <button type="button" onClick={() => change({ geography: item.key, page: 1 })}>{item.label}</button> : <span aria-current="location">{item.label}</span>}
+                      </li>
+                    ))}
+                  </ol>
+                </nav>
+              </MapView>
             </div>
             {hover && hovered ? <div className="contas-tooltip-position" style={{ left: Math.max(8, Math.min(hover.x + 12, (typeof window === "undefined" ? 1024 : window.innerWidth) - 320)), top: Math.max(8, Math.min(hover.y + 12, (typeof window === "undefined" ? 768 : window.innerHeight) - 240)) }}><ContasTooltip name={hover.name} value={hovered.value} period={periodLabel(displayed.period)} inline /></div> : null}
             {!data.map.rows.length && data.total === 0 ? <ContasEmpty /> : null}
-            <p className="contas-hint" role="note">{t("map.note")}</p>
           </>}
-          how={<>{displayed.area ? <p className="contas-hint">{t("typeAreaContext", { area: selectedArea ?? "" })}</p> : null}<ContasComposition byType={data.byType} composition={data.composition} area={displayed.area} onArea={(code) => change({ area: code === area ? null : code, page: 1 })} /></>}
+          how={<><ContasComposition byType={data.byType} composition={data.composition} area={displayed.area} onArea={(code) => change({ area: code === area ? null : code, page: 1 })} /></>}
           when={<><label className="field">{t("grain")}<select value={grain} onChange={(e) => change({ grain: e.target.value })}><option value="mes">{t("when.monthly")}</option><option value="ano">{t("when.yearly")}</option></select></label><div className="contas-series-wrap"><SeriesChart data={toSeries(data.series, name, displayed.area)} /></div></>}
-          who={<><p className="contas-hint" role="note">{t("rankingFilteredScope", { period: periodLabel(displayed.period), area: selectedArea ?? t("allAreas") })}</p><ContasRankingTable ranking={data.ranking} onPage={(n) => change({ page: n })} hrefOf={profileHref} /></>}
-          foot={<><h2 className="contas-section-title">{t("sourcesTitle")}</h2><p>{t("source")}</p>{hasTesouro ? <p>{t("tesouro")}</p> : null}<p>{t("release")}: <code>{data.series.provenance.release_id}</code></p><ContasReferences /><details><summary>{t("notes")}</summary><p>{t("mapTotalNote")}</p>{periodNotes.filter((n) => n.note).map((n) => <p key={n.period}>{periodLabel(n.period)}: {n.note}</p>)}{data.ranking.notes.map((note) => <p key={note}>{note}</p>)}{meta.lenses.find((l) => l.lens === "A")?.notes.map((note) => <p key={note}>{note}</p>)}{data.series.provenance.tables.map((table) => <p key={table.table_id}>{table.table_id}: {table.delta_version}</p>)}</details></>} />
-        </div>
+          who={<ContasRankingTable table={data.ranking} territory={name} scope={`${name} · ${periodLabel(displayed.period)} · ${selectedArea ?? t("allAreas")}`} order={displayed.order} onOrder={(o) => change({ order: o === "value" ? null : o, page: 1 })} onPage={(n) => change({ page: n })} hrefOf={profileHref} />}
+          scope={displayed.area ? selectedArea : null}
+          info={{
+            map: <>
+              <p>{t("map.note")}</p>
+              <p>{t("mapTotalNote")}</p>
+              {displayed.area ? <p>{t("filteredArea", { area: selectedArea ?? "" })}</p> : null}
+            </>,
+            how: <>
+              <p>{displayed.area ? t("typeAreaContext", { area: selectedArea ?? "" }) : t("allAreasContext")}</p>
+              <p>{t("how.areaHint")}</p>
+            </>,
+            when: <>
+              <p>{t("whenNote")}</p>
+              {periodNotes.filter((n) => n.note).map((n) => <p key={n.period}><strong>{periodLabel(n.period)}:</strong> {n.note}</p>)}
+            </>,
+          }}
+          foot={<section className="card meta" aria-labelledby="contas-meta-title">
+            <h2 id="contas-meta-title" className="sr-only">{t("sourcesTitle")}</h2>
+            <p className="meta-source">
+              <strong>{t("sourceLabel")}:</strong> {t("sourceBody")}{hasTesouro ? ` · ${t("tesouroShort")}` : ""} · {t("release")} <code>{data.series.provenance.release_id.slice(0, 8)}</code>
+            </p>
+            <details className="meta-more">
+              <summary>{t("notes")}</summary>
+              <div className="meta-body">
+                <p>{t("map.note")}</p>
+                <p>{t("mapTotalNote")}</p>
+                {hasTesouro ? <p>{t("tesouro")}</p> : null}
+                {periodNotes.filter((n) => n.note).map((n) => <p key={n.period}>{periodLabel(n.period)}: {n.note}</p>)}
+                {data.ranking.notes.map((note) => <p key={note}>{note}</p>)}
+                {meta.lenses.find((l) => l.lens === "A")?.notes.map((note) => <p key={note}>{note}</p>)}
+                <p>{t("release")}: <code>{data.series.provenance.release_id}</code></p>
+                <ul className="small">{data.series.provenance.tables.map((table) => <li key={table.table_id}>{table.table_id}: {table.delta_version}</li>)}</ul>
+                <ContasReferences />
+              </div>
+            </details>
+          </section>} />
+        </>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

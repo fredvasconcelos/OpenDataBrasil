@@ -4,13 +4,14 @@
 // do período e estados. Tudo é apresentação: os números vêm prontos da API.
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import type { CSSProperties, ReactNode } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 
 import { FaIcon } from "@/components/FaIcon";
+import { ContasInfo } from "@/components/contas/ContasInfo";
 import { periodAlerts } from "@/lib/contas/adapt";
-import { brl, brlShort, periodLabel, seat, share } from "@/lib/contas/format";
-import type { ContasProvenance, ContasRanking, ContasTable } from "@/lib/contas/types";
-import { classIcon, functionVisual } from "@/lib/contas/visual";
+import { brl, brlShort, periodLabel, share } from "@/lib/contas/format";
+import type { ContasProvenance, ContasTable } from "@/lib/contas/types";
+import { functionVisual } from "@/lib/contas/visual";
 import { FA } from "@/lib/faIcons";
 import { themeStyle } from "@/lib/themes";
 
@@ -43,9 +44,10 @@ export function ContasHighlights({ total, byType }: {
         </li>;
       })}
       {["applied", "appliedShare"].map((key) => <li key={key} className="contas-kpi is-unavailable">
-        <span className="contas-kpi-label">{t(key)}</span>
+        <ContasInfo className="chart-head contas-kpi-head" label={t("whyUnavailable")} title={<span className="contas-kpi-label">{t(key)}</span>}>
+          <p>{t("applicationNote")}</p>
+        </ContasInfo>
         <span className="contas-kpi-status">{t("unavailable")}</span>
-        <details className="contas-method-note"><summary>{t("whyUnavailable")}</summary><p>{t("applicationNote")}</p></details>
       </li>)}
     </ul>
   );
@@ -127,55 +129,94 @@ export function ContasComposition({ byType, composition, area, onArea }: {
             );
           })}
         </ul>
-        {onArea ? <p className="contas-hint">{t("areaHint")}</p> : null}
       </section>
     </div>
   );
 }
 
-/** Quem mais recebeu: ranking da lente A. Na lista, só nome, sede, classe e valor. */
-export function ContasRankingTable({ ranking, hrefOf, onPage }: { ranking: ContasRanking; hrefOf?: (id: string) => string; onPage?: (page: number) => void }) {
+/** Quem mais recebeu: a mesma tabela do Painel das Estatísticas (% por, ordenação pelo
+ *  cabeçalho, subtotal e total). Valores e % vêm da API (share sobre o total do recorte);
+ *  a ordenação é feita no servidor e vale para todas as páginas. */
+export function ContasRankingTable({ table, territory, scope, order, onOrder, hrefOf, onPage }: {
+  table: ContasTable;
+  territory: string;
+  scope: string;
+  order: "value" | "name";
+  onOrder: (order: "value" | "name") => void;
+  hrefOf?: (id: string) => string;
+  onPage?: (page: number) => void;
+}) {
   const t = useTranslations("contas.who");
+  const [withShare, setWithShare] = useState(true);
+  const pct = (value: number) => (withShare && table.value_total > 0 ? <span className="share"> ({share(value / table.value_total)})</span> : null);
+  const shown = table.rows.length ? (table.page - 1) * table.page_size : 0;
   return (
     <div className="contas-ranking">
-      <table className="contas-table">
-        <thead>
-          <tr>
-            <th scope="col" className="num">{t("rank")}</th>
-            <th scope="col">{t("name")}</th>
-            <th scope="col">{t("class")}</th>
-            <th scope="col" className="num">{t("value")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {ranking.rows.map((r) => (
-            <tr key={r.recipient.recipient_id}>
-              <td className="num rank" data-l={t("rank")}>{r.rank}º</td>
-              <td data-l={t("name")}>
-                {hrefOf ? <Link href={hrefOf(r.recipient.recipient_id)}>{r.recipient.name ?? "—"}</Link> : r.recipient.name ?? "—"}
-                <span className="contas-seat"><span className="sr-only">{t("seat")} · </span>{seat(r.recipient.seat_municipality, r.recipient.seat_uf)}</span>
-              </td>
-              <td data-l={t("class")}>
-                <span className="contas-class">
-                  <FaIcon icon={classIcon(r.recipient.recipient_class)} size={13} />
-                  {r.recipient.class_label}
-                </span>
-              </td>
-              <td className="num" data-l={t("value")}>{brl(r.value)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="contas-ranking-foot">
-        <span>{t("count", { count: ranking.total_recipients.toLocaleString("pt-BR") })}</span>
+      <div className="share-base contas-ranking-bar">
+        <label>
+          {t("shareOf")}
+          <select value={withShare ? "total" : "none"} onChange={(e) => setWithShare(e.target.value === "total")}>
+            <option value="none">{t("shareNone")}</option>
+            <option value="total">{t("shareTotal", { name: territory })}</option>
+          </select>
+        </label>
+        <span className="pivot-unit">{t("unit")}</span>
         <span className="contas-pager">
-          <button type="button" disabled={!onPage || ranking.page <= 1} aria-label={t("previous")} onClick={() => onPage?.(ranking.page - 1)}>‹</button>
-          {t("page", { page: ranking.page, pages: ranking.pages })}
-          <button type="button" disabled={!onPage || ranking.page >= ranking.pages} aria-label={t("next")} onClick={() => onPage?.(ranking.page + 1)}>›</button>
+          <button type="button" disabled={!onPage || table.page <= 1} aria-label={t("previous")} onClick={() => onPage?.(table.page - 1)}>‹</button>
+          {t("page", { page: table.page, pages: Math.max(table.pages, 1) })}
+          <button type="button" disabled={!onPage || table.page >= table.pages} aria-label={t("next")} onClick={() => onPage?.(table.page + 1)}>›</button>
         </span>
+        <ContasInfo className="contas-info-inline" label={t("about")}>
+          <p><strong>{scope}.</strong> {t("count", { count: table.rows_total })}</p>
+          <p>{t("note")}</p>
+          <p>{t("aboutShare", { name: territory })}</p>
+          <p>{t("aboutTotal", { name: territory })}</p>
+          <p>{t("aboutOrder")}</p>
+          {table.rows_total > table.pages * table.page_size ? <p>{t("limit", { count: (table.pages * table.page_size).toLocaleString("pt-BR") })}</p> : null}
+        </ContasInfo>
       </div>
-      <p className="contas-hint">{t("note")}</p>
-      {ranking.total_recipients > ranking.pages * ranking.page_size ? <p className="contas-hint">{t("limit", { count: (ranking.pages * ranking.page_size).toLocaleString("pt-BR") })}</p> : null}
+      <div className="table-wrap contas-table-wrap">
+        <table className="data-table contas-table">
+          <caption className="sr-only">{t("caption", { scope })}</caption>
+          <thead>
+            <tr>
+              <th scope="col" className="num" aria-sort={order === "value" ? "descending" : undefined}>
+                <button type="button" onClick={() => onOrder("value")} aria-label={t("rank")}><span className="th-long">{t("rank")}</span><span className="th-short" aria-hidden="true">{t("rankShort")}</span></button>
+              </th>
+              <th scope="col" aria-sort={order === "name" ? "ascending" : undefined}>
+                <button type="button" onClick={() => onOrder("name")} aria-label={t("sortByName")}>{t("name")}{order === "name" ? " ↑" : ""}</button>
+              </th>
+              <th scope="col" className="num" aria-sort={order === "value" ? "descending" : undefined}>
+                <button type="button" onClick={() => onOrder("value")} aria-label={t("sortByValue")}>{t("value")}{order === "value" ? " ↓" : ""}</button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {table.rows.map((r, index) => (
+              <tr key={r.key}>
+                {/* Posição só existe na ordem por valor; em ordem alfabética, fica em branco. */}
+                <td className="num rank" data-l={t("rank")}>{order === "value" ? `${shown + index + 1}º` : "—"}</td>
+                <th scope="row" data-l={t("name")}>
+                  {hrefOf && r.recipient ? <Link href={hrefOf(r.recipient.recipient_id)}>{r.recipient.name ?? r.label}</Link> : r.recipient?.name ?? r.label}
+                </th>
+                <td className="num" data-l={t("value")}>
+                  <span className="cell-value">{brl(r.value)}</span>{pct(r.value)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row" colSpan={2}>{t("pageSubtotal")}</th>
+              <td className="num"><span className="cell-value">{brl(table.page_value)}</span>{pct(table.page_value)}</td>
+            </tr>
+            <tr>
+              <th scope="row" colSpan={2}>{t("footer", { name: territory })}</th>
+              <td className="num"><span className="cell-value">{brl(table.value_total)}</span>{pct(table.value_total)}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
     </div>
   );
 }

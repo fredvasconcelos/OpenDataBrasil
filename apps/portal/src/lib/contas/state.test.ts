@@ -40,7 +40,7 @@ describe("estado das contas", () => {
     expect(state.geography).toBe("brasil:1");
   });
   it("preserva território, área, grão e página para recarregar o link", () => {
-    expect(readContasState(new URLSearchParams("geography=uf:25&area=10&period=2026M01&grain=ano&page=2"), meta)).toEqual({ geography: "uf:25", area: "10", period: "2026M01", grain: "ano", page: 2 });
+    expect(readContasState(new URLSearchParams("geography=uf:25&area=10&period=2026M01&grain=ano&page=2&order=name"), meta)).toEqual({ geography: "uf:25", area: "10", period: "2026M01", grain: "ano", page: 2, order: "name" });
   });
   it("cliente envia períodos e categorias como parâmetros repetidos", () => {
     const params = new URLSearchParams(contasQuery({ periods: ["2025M01", "2025M02"], categories: ["10", "12"], within: null }));
