@@ -10,7 +10,7 @@ vale para a data do registro: **Em teste** ainda não significa disponível na b
 
 - Fontes oficiais municipais e estaduais identificadas, com documentação dos campos e limites de cobertura.
 - Amostra de Guarabira conferida com a tabela de origem; recorte estadual conferido quanto a período, valores e paginação.
-- Preparação da execução própria dos entes; o vínculo entre repasses e aplicação efetiva ainda depende de prova específica.
+- Planejamento dos futuros indicadores de orçamento municipal por origem federal, estadual e própria, destinação por área e aplicação; a rastreabilidade ainda depende de prova e contratos.
 
 ## 27/11/2026 — Localização orçamentária e execução dos entes
 
