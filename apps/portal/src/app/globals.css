@@ -1701,7 +1701,8 @@ select {
   border-radius: var(--odbr-radius-pill); background: var(--odbr-primary); color: var(--odbr-on-primary);
   font-weight: 800; text-decoration: none;
 }
-.block-card-link:hover { background: var(--odbr-primary-hover); }
+.block-card-link:hover:not(:disabled) { background: var(--odbr-primary-hover); }
+.block-card-link:active:not(:disabled) { background: var(--odbr-primary-pressed); }
 @media (max-width: 991px) { .block-cards ul { grid-template-columns: minmax(0, 1fr); } .block-card { padding: 1.25rem; } }
 
 /* ---------- Painel das contas ---------- */
