@@ -5,6 +5,11 @@ orçamentário da CGU; preparar a integração posterior da execução própria 
 Este plano complementa [aplicação pelo recebedor](plano-aplicacao-pelo-recebedor.md).
 Não anuncia cobertura estadual/municipal já implementada.
 
+Diretriz ampliada pelo mantenedor em 27/11/2026: quando houver rastreabilidade
+suficiente, mostrar a composição do orçamento municipal por origem federal,
+estadual e própria municipal, a destinação de cada bloco por área e a aplicação
+pelo município. Essa visão orienta os futuros contratos, KPIs e cartões.
+
 ## Objetivo e medidas distintas
 
 1. Execução federal: seis fases da União, com localização orçamentária quando publicada.
@@ -15,6 +20,89 @@ Essas medidas não se somam nem se substituem. Empenhado, liquidado, pago, resto
 pagar, dotação inicial e atualizada são campos independentes. O localizador da CGU
 não mede execução local. A existência de um portal também não comprova acesso
 automatizado, completude histórica, licença ou identificação de cada repasse.
+
+## Visão futura — origem, destinação e aplicação do orçamento municipal
+
+**Requisito funcional definido pelo mantenedor; método detalhado e implementação
+pendentes.** O resultado esperado é responder, para cada município e exercício:
+
+1. Qual é o total do orçamento e quanto corresponde a recursos federais, estaduais
+   e próprios municipais, em valor e participação percentual?
+2. A quais áreas se destina cada bloco de origem, com o detalhamento oficial
+   admissível por função/subfunção, programa/ação e órgão/fundo executor?
+3. Como o município executa esses recursos: quanto foi destinado, empenhado,
+   liquidado e pago, em qual período e para qual objeto/documento quando rastreável?
+
+A composição desejada é **federal + estadual + próprio municipal**, com parcelas
+mutuamente exclusivas dentro do mesmo universo, exercício e base de valor. O total
+deve reconciliar com a referência municipal oficial. Não obter esse total somando
+os portais federal, estadual e municipal: eles podem registrar etapas diferentes
+do mesmo dinheiro. A decomposição por origem usará o orçamento/receita municipal
+reconciliado; as fontes externas fornecerão prova da cadeia de transferências.
+
+### Bases e consolidação necessárias
+
+- **Previsão, arrecadação e despesa:** separar receita prevista, receita efetivamente
+  arrecadada/recebida, dotação inicial/atualizada e fases da execução. A composição
+  usa uma base declarada por vez; recebido não se adiciona à dotação para formar
+  um total. Os percentuais das origens usam o total dessa mesma base e recorte.
+- **Origem e intermediário:** preservar a origem do recurso e o ente que o repassou
+  imediatamente. Em uma cadeia União → estado → município, o mesmo valor conta
+  uma vez na composição municipal; a passagem pelo estado não cria verba estadual
+  adicional. O enquadramento da origem depende de evidência e contrato próprio.
+- **Receitas próprias e outras parcelas:** classificar por códigos e definições
+  oficiais, sem obter verba própria apenas por subtração. Outras origens,
+  financiamento ou montantes ainda não classificados devem permanecer explícitos
+  na reconciliação; não forçar toda diferença para uma das três origens.
+- **Perímetro:** definir Executivo, Legislativo, fundos e demais entidades incluídas.
+  Transferências internas ao perímetro não criam receita adicional no total
+  consolidado. No futuro, uma consolidação de vários entes também precisará eliminar
+  repasses entre os entes abrangidos; não somar totais sem tratar essas duplicações.
+- **Tempo e ajustes:** tratar saldos de exercícios anteriores, créditos, retenções,
+  contrapartida, rendimentos, devoluções, anulações e revisões de modo documentado.
+  Saldo anterior não se torna automaticamente receita nova do exercício; diferenças
+  de competência/data de pagamento ficam diagnosticadas, sem igualdade forçada.
+- **Vínculo com a execução:** cruzar origem × área × fase somente quando esses
+  atributos coexistirem nos registros ou houver ligação oficial comprovada. Não
+  distribuir despesas entre origens por proporção nem cruzar apenas totais marginais.
+  Distinguir execução por fonte/grupo da rastreabilidade de um repasse individual.
+
+### Famílias de KPIs e cartões a preparar
+
+Nomes abaixo são requisitos de conteúdo, sem IDs novos nem alteração visual agora.
+Cada KPI deverá ter ficha com fonte, fórmula, base, universo, chaves, período,
+cobertura, revisão, unidade e critérios de reconciliação antes da habilitação.
+
+| Pergunta | Futuro KPI/cartão | Condição para mostrar valor ou percentual |
+|---|---|---|
+| Qual o total? | Orçamento municipal total, com base inicial/atualizada identificada; receitas previstas/arrecadadas em medidas próprias | Perímetro definido e total reconciliado com a referência oficial da respectiva base |
+| Quanto vem de cada origem? | Valores e participações federal, estadual e própria municipal | Partes sem sobreposição, classificadas por regra oficial e denominador da mesma base; lacunas/outras parcelas explícitas |
+| Para onde vai cada bloco? | Destinação por origem × área; valor e participação da área no bloco selecionado | Cruzamento sustentado pela fonte, com denominador restrito ao mesmo bloco/base/período |
+| Como o município aplica? | Destinado, empenhado, liquidado e pago por origem × área, com evolução e detalhamento disponível | Fases separadas e vínculo da execução documentado; não somar fases como parcelas |
+| Quanto do recurso recebido foi aplicado? | Valor e percentual de aplicação no universo rastreável, acompanhado de sua cobertura | Numerador/denominador compatíveis, saldos e ajustes tratados e método aceito; sem dividir execução parcial pelo total geral |
+| Quanto conseguimos explicar? | Cobertura das origens e da ligação com a execução; valores sem classificação/vínculo | Distinguir cobertura da origem, da área e do repasse individual; base de cada percentual explícita |
+
+O desenho dos cartões deverá conservar essa estrutura lógica: **total → origem →
+destinação → execução**, com o usuário podendo percorrer a origem e a área sem
+mudar silenciosamente o universo do total. Os filtros e as futuras exportações
+precisarão preservar essas dimensões, a fase, a base temporal e a cobertura.
+O total municipal desta visão terá definição própria, preservando os significados
+das lentes federais já existentes.
+
+### Critério de avanço
+
+O piloto Guarabira/Paraíba passa a buscar também receita e despesa compatíveis,
+códigos oficiais de origem/destinação e ligações com os repasses federais/estaduais.
+Sua próxima proposta de contrato deve trazer uma matriz **origem × área × fase ×
+período**, os ajustes de consolidação, os valores não classificados e exemplos de
+cadeia direta e intermediada quando disponíveis. Cobertura parcial permite apenas
+medidas explicitamente limitadas ao subconjunto comprovado; não autoriza anunciar
+o orçamento integralmente explicado ou aplicação zero nas lacunas.
+
+A diretriz autoriza o planejamento dessa evolução. Método estatístico/contábil,
+contratos e criação efetiva dos KPIs/cartões continuam sujeitos aos aceites próprios
+do plano; a interface futura exige leitura do guia DS e revisão visual. O piloto
+atual não ganhou novos indicadores ou cobertura por esta alteração documental.
 
 ## Fontes oficiais iniciais e alcance comprovado
 
@@ -34,9 +122,9 @@ exercício, sem pressupor que todos os links e arquivos estejam disponíveis.
 | E0 — Inventário | Matriz ente × poder × exercício × fonte; URLs oficiais, descritor, licença, formato, calendário, revisões e limites | Cada registro tem evidência; indisponíveis e não pesquisados são distintos | Fontes Guarabira/Elmar e PB selecionadas; matriz inicial documentada em 27/11 |
 | E1 — Base nacional | Avaliação dos relatórios e MSC/Siconfi, dicionários e contas por edição | Universo, nível de detalhe e cobertura de declarações medidos por ente/período | Contrato semântico antes de modelagem |
 | E2 — Piloto local | Guarabira/Elmar e Paraíba escolhidos pelo mantenedor em 27/11; depois portes e fornecedores distintos | Captura pequena e reprodutível, com conferência na consulta oficial; amostras iniciais conferidas, cobertura/metodologia pendentes | Mantenedor aceita o contrato e o resultado do piloto |
-| E3 — Contratos e conectores | Identidade do ente, órgão/fundo/UG, exercício, documento/item/evento, fontes/destinações, fases, retificações e linhagem | Sem chave inventada, sobreposição de snapshots ou associação por nome semelhante | ADR e contrato por família de fonte |
+| E3 — Contratos e conectores | Identidade do ente, órgão/fundo/UG, exercício, documento/item/evento, fontes/destinações, fases, retificações e linhagem; origem última e repassador imediato | Sem chave inventada, sobreposição de snapshots ou associação por nome semelhante | ADR e contrato por família de fonte |
 | E4 — Gold candidata | Execução própria do ente em Delta, separada das lentes federais | Reconciliação exata, saldos e sinais; cobertura e limitações explícitas | Aceite técnico sem ativação |
-| E5 — Ligação com repasses | Piloto instrumento/receita → execução usando chaves oficiais | Mesmo universo e janela; saldos anteriores, contrapartida, rendimentos, devoluções e intermediários tratados | Método concreto aprovado |
+| E5 — Ligação com repasses | Piloto instrumento/receita → execução usando chaves oficiais | Mesmo universo e janela; saldos, ajustes e intermediários tratados; origem × área × fase sustentadas e total municipal reconciliado | Método concreto aprovado |
 | E6 — Exposição gradual | API, exportações e catálogo com disponibilidade por ente/período | Testes de contrato, privacidade, acessibilidade e comparação com a fonte | Revisão local; publicação por pedido próprio |
 
 ## Inventário e captura
@@ -87,6 +175,7 @@ de julho ainda não tem conferência visual. Paraíba: 334 agregados no recorte
 julho/2026 × grupo da despesa × Até o mês, sem extrapolação de cobertura.
 
 Próximo passo: esclarecer licenças, grão, semântica temporal, órgãos/fundos,
-retificações e códigos; ampliar a prova limitada antes de propor contrato E3.
+retificações e códigos; ampliar a prova limitada, incluindo receita municipal e
+origem/destinação, antes de propor contrato E3 conforme a visão futura acima.
 A ligação com repasses ainda não foi demonstrada. A beta, as ativações e a coleta
 massiva continuam fora desta entrega.
