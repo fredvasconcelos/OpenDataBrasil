@@ -4,6 +4,14 @@ A evolução do portal, dos primeiros passos às novidades mais recentes.
 Cada entrada destaca o que muda para quem consulta os dados. A situação indicada
 vale para a data do registro: **Em teste** ainda não significa disponível na beta.
 
+## 27/11/2026 — Candidata à beta em validação
+
+**Situação: Candidata validada localmente; publicação na beta pendente.**
+
+- Candidata reúne os 241 indicadores do N2, as três lentes federais das contas e as exportações com documentação.
+- Botões de entrada dos blocos preservam as cores do Design System ao passar o mouse e pressionar, nos temas claro e escuro.
+- Indicadores de expansão e piloto de execução própria dos entes continuam fora desta publicação.
+
 ## 27/11/2026 — Piloto de despesas de Guarabira e da Paraíba
 
 **Situação: Amostras em avaliação, sem indicadores disponíveis no portal.**

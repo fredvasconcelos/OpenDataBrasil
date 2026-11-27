@@ -166,3 +166,33 @@ test("catálogo das lentes segue as cores, busca e âncoras do guia DS", async (
   await page.getByRole("link", { name: "Buscar um favorecido (empresas e entidades)", exact: true }).click();
   await expect(page.locator("#federal-busca")).toBeInViewport();
 });
+
+for (const theme of ["light", "dark"]) {
+  test(`Início: botões dos blocos preservam as cores do DS ao apontar e pressionar, tema ${theme}`, async ({ page }) => {
+    await page.addInitScript(value => localStorage.setItem("odbr-theme", value), theme);
+    await page.goto("/");
+    for (const block of ["Estatísticas oficiais", "Contas públicas"]) {
+      const button = page.getByRole("button", { name: `Ver indicadores: ${block}`, exact: true });
+      const colors = await button.evaluate(el => {
+        const probe = document.createElement("span");
+        el.append(probe);
+        const resolve = (token: string) => {
+          probe.style.backgroundColor = `var(${token})`;
+          return getComputedStyle(probe).backgroundColor;
+        };
+        const result = { hover: resolve("--odbr-primary-hover"), pressed: resolve("--odbr-primary-pressed") };
+        probe.remove();
+        return result;
+      });
+      await button.hover();
+      await expect(button).toHaveCSS("background-color", colors.hover);
+      await page.mouse.down();
+      try {
+        await expect(button).toHaveCSS("background-color", colors.pressed);
+      } finally {
+        await page.mouse.up();
+      }
+      await page.mouse.move(0, 0);
+    }
+  });
+}
