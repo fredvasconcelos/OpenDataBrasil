@@ -36,12 +36,33 @@ from odb_common.logging import log_context
 from odb_common.storage import LakehouseLayout, Layer, uri_to_local_path
 from odb_ingestion.bronze import sha256_file
 from odb_ingestion.config import ConfigError, DatasetConfig, SourceCatalog
+from odb_ingestion.connectors.http_periodic import CsvContract, HttpPeriodicConnector
 from odb_ingestion.connectors.sidra import SidraConnector, SidraParams, shared_table_partition
 from odb_lakehouse import DeltaReader, DeltaWriter
+from odb_processing import contas
+from odb_processing.contas_layout import (
+    CNAE_COLUMNS,
+    EXECUTION_COLUMNS,
+    EXECUTION_VALUES,
+    LEGAL_ENTITY_COLUMNS,
+    NATURE_COLUMNS,
+    PAYMENT_COLUMNS,
+    SIOP_ACTION_COLUMNS,
+    SIOP_PLAN_COLUMNS,
+    TRANSFER_COLUMNS,
+)
 from odb_processing.contracts import (
+    CGU_BUDGET_EXECUTION,
+    CGU_LEGAL_ENTITY,
+    CGU_RECIPIENT_PAYMENT,
+    CGU_TRANSFER,
     DTB_MUNICIPALITY,
+    SIAFI_MUNICIPALITY,
     SIDRA_OBSERVATION,
+    SIOP_BUDGET_ACTION,
+    SIOP_BUDGET_PLAN,
     TERRITORIAL_MESH,
+    TESOURO_FPM_MUNICIPALITY,
     Contract,
     SchemaChange,
     compare_schema,
@@ -57,6 +78,7 @@ from odb_processing.datasus import (
 from odb_processing.parsers import (
     Lineage,
     MeshSpec,
+    ParseError,
     extract_member,
     parse_dtb_municipalities,
     parse_sidra,
@@ -66,6 +88,7 @@ from odb_processing.quality import (
     CheckResult,
     CheckStatus,
     blocking,
+    contas_checks,
     dtb_checks,
     mesh_checks,
     sidra_checks,
@@ -150,7 +173,31 @@ CONTRACT_BY_TRANSFORMER = {
     "sinesp_vde": SIDRA_OBSERVATION,
     "dtb_municipality": DTB_MUNICIPALITY,
     "territorial_mesh": TERRITORIAL_MESH,
+    # Contas públicas (ADR-0030 a 0035): três lentes mensais e os cadastros de apoio.
+    "cgu_transfer": CGU_TRANSFER,
+    "cgu_recipient_payment": CGU_RECIPIENT_PAYMENT,
+    "cgu_budget_execution": CGU_BUDGET_EXECUTION,
+    "siafi_municipality": SIAFI_MUNICIPALITY,
+    "cgu_legal_entity": CGU_LEGAL_ENTITY,
+    "siop_budget_action": SIOP_BUDGET_ACTION,
+    "siop_budget_plan": SIOP_BUDGET_PLAN,
+    # Segunda fonte da lente A: FPM por município do Tesouro (ADR-0038).
+    "tesouro_fpm_municipality": TESOURO_FPM_MUNICIPALITY,
 }
+
+# Lentes mensais: colunas da fonte, formato do período no arquivo e colunas de valor.
+_MONTHLY: dict[str, tuple[tuple[tuple[str, str], ...], str, tuple[str, ...]]] = {
+    "cgu_transfer": (TRANSFER_COLUMNS, "aaaamm", ("value",)),
+    "cgu_recipient_payment": (PAYMENT_COLUMNS, "mm/aaaa", ("value",)),
+    "cgu_budget_execution": (
+        EXECUTION_COLUMNS,
+        "aaaa/mm",
+        tuple(name for _, name in EXECUTION_VALUES),
+    ),
+}
+_CONTAS_TABLES = frozenset(
+    {"siafi_municipality", "cgu_legal_entity", "siop_budget_action", "siop_budget_plan"}
+)
 
 
 class SilverBuildError(RuntimeError):
@@ -286,9 +333,27 @@ class SilverBuilder:
         return self._layout.table_uri(Layer.SILVER, institution, self.contract_for(dataset).name)
 
     def build_order(self, dataset_ids: Sequence[str]) -> list[str]:
-        """Referências territoriais (DTB) antes das tabelas que dependem delas."""
-        datasets = [self._catalog.dataset(d) for d in dataset_ids]
-        return [d.id for d in sorted(datasets, key=lambda d: "territorial_reference" in d.silver)]
+        """Referências antes das tabelas que dependem delas (chaves ``*_reference``).
+
+        Em camadas: primeiro o que não depende de nenhum dataset pedido; dentro da camada,
+        quem não declara referência vem antes (a ordem anterior, só com a DTB).
+        """
+        requested = list(dict.fromkeys(dataset_ids))
+        refs = {d: self._references(self._catalog.dataset(d)) for d in requested}
+        pending = {d: set(refs[d].values()) & set(requested) for d in requested}
+        order: list[str] = []
+        while len(order) < len(requested):
+            ready = [d for d in requested if d not in order and pending[d] <= set(order)]
+            if not ready:
+                msg = f"dependências circulares na Silver: {sorted(set(requested) - set(order))}"
+                raise SilverBuildError(msg)
+            order.extend(sorted(ready, key=lambda d: bool(refs[d])))
+        return order
+
+    @staticmethod
+    def _references(dataset: DatasetConfig) -> dict[str, str]:
+        """Datasets referenciados na configuração Silver (``territorial_reference`` etc.)."""
+        return {k: str(v) for k, v in dataset.silver.items() if k.endswith("_reference")}
 
     # ------------------------------------------------------------- execução
 
@@ -366,6 +431,12 @@ class SilverBuilder:
         # O limite também precisa invalidar o resultado, não apenas a lista de inputs.
         if dataset.params.get("period_start") is not None:
             payload["period_start"] = dataset.params["period_start"]
+        if self.transformer(dataset) in _MONTHLY:
+            # Território e classe dependem das referências: uma versão nova refaz a Silver.
+            payload["references"] = self._reference_versions(dataset)
+            payload["recipient_class"] = contas.RECIPIENT_CLASS_VERSION
+        elif self.transformer(dataset) == "tesouro_fpm_municipality":
+            payload["references"] = self._reference_versions(dataset)
         return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
     def _execute(
@@ -400,11 +471,48 @@ class SilverBuilder:
 
         processed_at = datetime.now(UTC)
         transformer = self.transformer(dataset)
-        partition: Mapping[str, str | tuple[str, ...]]
-        if transformer == "sidra_observation" and _bronze_bytes(inputs) > BATCH_BYTES:
-            # Bronze grande (detalhe municipal): em lotes de períodos, com memória limitada.
-            self._sidra_in_batches(dataset, contract, inputs, run, processed_at)
+        if transformer in _MONTHLY or (
+            transformer == "sidra_observation" and _bronze_bytes(inputs) > BATCH_BYTES
+        ):
+            # Em lotes, com memória limitada: meses das contas públicas; Bronze SIDRA grande
+            # (detalhe municipal).
+            if transformer in _MONTHLY:
+                self._contas_monthly(dataset, contract, inputs, run, processed_at, force=force)
+            else:
+                self._sidra_in_batches(dataset, contract, inputs, run, processed_at)
             return
+        frame, partition = self._transform(dataset, contract, inputs, run, processed_at)
+        run.rows = frame.height
+
+        failures = blocking(run.checks)
+        if failures:
+            msg = "verificações bloqueantes falharam: " + ", ".join(c.check_id for c in failures)
+            raise SilverBuildError(msg)
+
+        evolve = self._schema_evolution(run.target_uri, contract)
+        result = self._writer.write(
+            run.target_uri,
+            frame,
+            run_id=run.run_id,
+            mode="overwrite",
+            partition_by=list(contract.partition_by),
+            replace_where=partition,
+            evolve_schema=evolve,
+        )
+        run.delta_version = result.version
+        run.status = "succeeded"
+
+    def _transform(
+        self,
+        dataset: DatasetConfig,
+        contract: Contract,
+        inputs: Sequence[SilverInput],
+        run: SilverRun,
+        processed_at: datetime,
+    ) -> tuple[pl.DataFrame, Mapping[str, str | tuple[str, ...]]]:
+        """Quadro Silver e verificações de um build sem lotes (preenche ``run.checks``)."""
+        transformer = self.transformer(dataset)
+        partition: Mapping[str, str | tuple[str, ...]]
         if transformer == "sidra_observation":
             frame, partition = self._sidra_frame(dataset, inputs, run, processed_at)
             run.checks = sidra_checks(
@@ -431,6 +539,19 @@ class SilverBuilder:
                 *sidra_checks(frame, contract, {}, reference_ids, reference_label),
                 *sinesp_checks(report),
             ]
+        elif transformer in _CONTAS_TABLES:
+            frame, partition, records = self._contas_table(dataset, inputs, run, processed_at)
+            run.checks = contas_checks(frame, contract, records=records)
+        elif transformer == "tesouro_fpm_municipality":
+            frame, records = self._fpm_frame(dataset, inputs, run, processed_at)
+            partition = {"dataset_id": dataset.id}
+            run.checks = contas_checks(
+                frame,
+                contract,
+                records=records,
+                value_columns=("value",),
+                max_unresolved_territory=0,
+            )
         elif transformer == "territorial_mesh":
             frame, partition = self._mesh_frame(dataset, inputs, run, processed_at)
             reference_ids, reference_label = self._reference(dataset)
@@ -445,25 +566,7 @@ class SilverBuilder:
         else:
             frame, partition = self._dtb_frame(dataset, inputs, run, processed_at)
             run.checks = dtb_checks(frame, contract)
-        run.rows = frame.height
-
-        failures = blocking(run.checks)
-        if failures:
-            msg = "verificações bloqueantes falharam: " + ", ".join(c.check_id for c in failures)
-            raise SilverBuildError(msg)
-
-        evolve = self._schema_evolution(run.target_uri, contract)
-        result = self._writer.write(
-            run.target_uri,
-            frame,
-            run_id=run.run_id,
-            mode="overwrite",
-            partition_by=list(contract.partition_by),
-            replace_where=partition,
-            evolve_schema=evolve,
-        )
-        run.delta_version = result.version
-        run.status = "succeeded"
+        return frame, partition
 
     def _sidra_in_batches(
         self,
@@ -842,6 +945,384 @@ class SilverBuilder:
             lineage=self._lineage(item, run, processed_at),
         )
         return frame, {"dataset_id": dataset.id}
+
+    # ------------------------------------------------------------- contas públicas
+
+    def _reference_versions(self, dataset: DatasetConfig) -> dict[str, int | None]:
+        """Versão Delta vigente de cada referência declarada (``None`` se ainda não há)."""
+        out: dict[str, int | None] = {}
+        for ref_id in self._references(dataset).values():
+            previous = self._registry.last_success(ref_id)
+            out[ref_id] = None if previous is None else previous.delta_version
+        return out
+
+    def _reference_scan(self, dataset: DatasetConfig, key: str) -> tuple[pl.LazyFrame, str]:
+        """Silver vigente da referência ``key``, com o rótulo ``id@vN`` da versão lida."""
+        ref_id = self._references(dataset).get(key)
+        if ref_id is None:
+            msg = f"{dataset.id}: configuração Silver sem {key}"
+            raise SilverBuildError(msg)
+        ref = self._catalog.dataset(ref_id)
+        previous = self._registry.last_success(ref.id)
+        if previous is None or previous.delta_version is None:
+            msg = f"{dataset.id}: construa antes a Silver de {ref.id} ({key})"
+            raise SilverBuildError(msg)
+        scan = self._reader.scan(self.target_uri(ref), previous.delta_version)
+        return scan, f"{ref.id}@v{previous.delta_version}"
+
+    def _territory_refs(
+        self, dataset: DatasetConfig
+    ) -> tuple[pl.DataFrame, pl.DataFrame, list[str]]:
+        """DTB (ano mais recente) e TABMUN vigentes, com os rótulos ``id@vN`` lidos."""
+        dtb_scan, dtb_label = self._reference_scan(dataset, "territorial_reference")
+        dtb = (
+            dtb_scan.select("reference_year", "municipality_id", "municipality_name", "uf_id")
+            .filter(pl.col("reference_year") == pl.col("reference_year").max())
+            .collect()
+        )
+        tab_scan, tab_label = self._reference_scan(dataset, "siafi_reference")
+        return dtb, tab_scan.collect(), [dtb_label, tab_label]
+
+    def _fpm_frame(
+        self,
+        dataset: DatasetConfig,
+        inputs: Sequence[SilverInput],
+        run: SilverRun,
+        processed_at: datetime,
+    ) -> tuple[pl.DataFrame, int]:
+        """FPM do Tesouro (ADR-0038): o artefato vigente inteiro, com o município IBGE."""
+        if len(inputs) != 1:
+            msg = f"{dataset.id}: esperado um artefato vigente, há {len(inputs)}"
+            raise SilverBuildError(msg)
+        item = inputs[0]
+        dtb, tabmun, labels = self._territory_refs(dataset)
+        refs = contas.ContasRefs(
+            tabmun=tabmun,
+            names=contas.municipality_names(dtb, tabmun),
+            legal_entities=pl.DataFrame(),
+            label=";".join(labels),
+        )
+        content = Path(uri_to_local_path(item.storage_uri)).read_bytes()
+        try:
+            table = contas.parse_fpm_municipality(content, name=dataset.id)
+            frame = contas.fpm_frame(
+                table,
+                refs=refs,
+                dataset_id=dataset.id,
+                lineage=self._lineage(item, run, processed_at),
+                schema=self.contract_for(dataset).frame_schema(),
+            )
+        except ParseError as exc:
+            msg = f"{dataset.id}: {exc}"
+            raise SilverBuildError(msg) from exc
+        return frame, table.records
+
+    def _contas_refs(self, dataset: DatasetConfig) -> contas.ContasRefs:
+        """DTB, TABMUN e cadastro PJ vigentes, para território e classe do favorecido."""
+        dtb, tabmun, (dtb_label, tab_label) = self._territory_refs(dataset)
+        pj_scan, pj_label = self._reference_scan(dataset, "legal_entity_reference")
+        entities = (
+            pj_scan.select("snapshot", "recipient_code", "legal_nature_code", "cnae_code")
+            .filter(pl.col("snapshot") == pl.col("snapshot").max())
+            .drop("snapshot")
+            .collect()
+        )
+        entries = dataset.silver.get("territory_corrections", [])
+        if entries and self.transformer(dataset) != "cgu_transfer":
+            # Só a lente A resolve por SIAFI; em outra lente a lista seria ignorada.
+            msg = f"{dataset.id}: territory_corrections só vale para cgu_transfer"
+            raise SilverBuildError(msg)
+        try:
+            corrections = contas.territory_corrections(
+                entries, dtb.get_column("municipality_id").to_list()
+            )
+        except ParseError as exc:
+            msg = f"{dataset.id}: {exc}"
+            raise SilverBuildError(msg) from exc
+        labels = [
+            dtb_label,
+            tab_label,
+            pj_label,
+            # A versão da regra de classe entra no estado: mudar a regra refaz os meses.
+            f"recipient_class@{contas.RECIPIENT_CLASS_VERSION}",
+        ]
+        if entries:
+            # Idem para as correções aprovadas de território (ADR-0032).
+            digest = hashlib.sha256(
+                json.dumps(entries, sort_keys=True, ensure_ascii=False).encode()
+            ).hexdigest()[:12]
+            labels.append(f"territory_corrections@{digest}")
+        return contas.ContasRefs(
+            tabmun=tabmun,
+            names=contas.municipality_names(dtb, tabmun),
+            legal_entities=entities,
+            label=";".join(labels),
+            corrections=corrections,
+        )
+
+    @staticmethod
+    def _csv_contract(dataset: DatasetConfig, member_suffix: str = "") -> CsvContract:
+        """Contrato de cabeçalho declarado na ingestão (membro, codificação, separador)."""
+        params = HttpPeriodicConnector.params(dataset)
+        found = [c for c in params.csv if c.member.endswith(member_suffix)]
+        if len(found) != 1:
+            msg = f"{dataset.id}: contrato csv {member_suffix!r} ausente ou ambíguo"
+            raise SilverBuildError(msg)
+        return found[0]
+
+    @staticmethod
+    def _read_source(
+        item: SilverInput,
+        csv_contract: CsvContract,
+        columns: Sequence[tuple[str, str]],
+    ) -> contas.SourceTable:
+        """CSV do artefato Bronze (membro do ZIP ou o próprio arquivo), sem transformar."""
+        path = Path(uri_to_local_path(item.storage_uri))
+        if csv_contract.member:
+            name, content = extract_member(
+                path, csv_contract.member.replace("{period}", item.partition_key)
+            )
+        else:
+            name, content = path.name, path.read_bytes()
+        return contas.read_source_csv(
+            content,
+            columns,
+            encoding=csv_contract.encoding,
+            delimiter=csv_contract.delimiter,
+            name=name,
+        )
+
+    def _contas_table(
+        self,
+        dataset: DatasetConfig,
+        inputs: Sequence[SilverInput],
+        run: SilverRun,
+        processed_at: datetime,
+    ) -> tuple[pl.DataFrame, Mapping[str, str | tuple[str, ...]], int]:
+        """Cadastros de apoio: TABMUN, cadastro PJ e cadastros do SIOP."""
+        transformer = self.transformer(dataset)
+        schema = self.contract_for(dataset).frame_schema()
+        frames: list[pl.DataFrame] = []
+        records = 0
+        for item in inputs:
+            lineage = self._lineage(item, run, processed_at)
+            if transformer == "siafi_municipality":
+                content = Path(uri_to_local_path(item.storage_uri)).read_bytes()
+                table = contas.parse_tabmun(content, lineage, dataset.id)
+                frames.append(contas.tabmun_frame(table, schema=schema))
+            elif transformer == "cgu_legal_entity":
+                entities = self._read_source(
+                    item, self._csv_contract(dataset, "_CNPJ.csv"), LEGAL_ENTITY_COLUMNS
+                )
+                cnae = self._read_source(
+                    item, self._csv_contract(dataset, "_CNAE.csv"), CNAE_COLUMNS
+                )
+                natures = self._read_source(
+                    item, self._csv_contract(dataset, "_NaturezaJuridica.csv"), NATURE_COLUMNS
+                )
+                frames.append(
+                    contas.legal_entity_frame(
+                        entities,
+                        cnae,
+                        natures,
+                        snapshot=item.partition_key,
+                        lineage=lineage,
+                        schema=schema,
+                    )
+                )
+                table = entities
+            else:
+                columns = (
+                    SIOP_ACTION_COLUMNS
+                    if transformer == "siop_budget_action"
+                    else SIOP_PLAN_COLUMNS
+                )
+                table = self._read_source(item, self._csv_contract(dataset), columns)
+                years = set(table.frame["fiscal_year"].unique().to_list())
+                if years != {item.partition_key}:
+                    msg = (
+                        f"{dataset.id}: exercício {sorted(years)} "
+                        f"no arquivo de {item.partition_key}"
+                    )
+                    raise SilverBuildError(msg)
+                frames.append(contas.siop_frame(table, columns, lineage=lineage, schema=schema))
+            records += table.records
+        frame = pl.concat(frames)
+        keys = tuple(i.partition_key for i in inputs)
+        partition: dict[str, str | tuple[str, ...]]
+        if transformer == "siafi_municipality":
+            partition = {"dataset_id": dataset.id}
+        elif transformer == "cgu_legal_entity":
+            partition = {"snapshot": keys}
+        else:
+            partition = {"fiscal_year": keys}
+        return frame, partition, records
+
+    def _monthly_state(self, target_uri: str) -> dict[str, tuple[str, str]]:
+        """Mês → (checksum Bronze, referências) já gravados na Silver; vazio sem tabela."""
+        if not DeltaTable.is_deltatable(target_uri):
+            return {}
+        scan = pl.scan_delta(target_uri)
+        has_refs = "derivation_refs" in scan.collect_schema()
+        refs = pl.col("derivation_refs") if has_refs else pl.lit("")
+        state = (
+            scan.select("period", "bronze_checksum_sha256", refs.fill_null("").alias("refs"))
+            .unique()
+            .collect()
+        )
+        out: dict[str, tuple[str, str]] = {}
+        for period, checksum, label in state.iter_rows():
+            # Dois estados no mesmo mês (não esperado) forçam a reescrita.
+            out[period] = ("", "") if period in out else (checksum, label)
+        return out
+
+    def _contas_monthly(
+        self,
+        dataset: DatasetConfig,
+        contract: Contract,
+        inputs: Sequence[SilverInput],
+        run: SilverRun,
+        processed_at: datetime,
+        *,
+        force: bool,
+    ) -> None:
+        """Lentes mensais: só os meses com Bronze ou referência nova são relidos (ADR-0030).
+
+        A CGU regera o mês corrente todos os dias. Reescrever o histórico inteiro a cada
+        atualização seria desnecessário: o estado gravado (checksum Bronze + versões das
+        referências) decide quais meses mudam. Como em ``_sidra_in_batches``, cada mês é
+        verificado e guardado em Parquet temporário; só com tudo aprovado os meses
+        substituem os anteriores (``replace_where`` por mês). Meses fora da configuração
+        saem da Silver.
+        """
+        refs = (
+            None
+            if self.transformer(dataset) == "cgu_budget_execution"
+            else self._contas_refs(dataset)
+        )
+        state = self._monthly_state(run.target_uri)
+        label = refs.label if refs is not None else ""
+        todo = [
+            i for i in inputs if force or state.get(i.partition_key) != (i.checksum_sha256, label)
+        ]
+        scratch = Path(uri_to_local_path(self._layout.root_uri)) / "tmp" / "silver" / run.run_id
+        scratch.mkdir(parents=True, exist_ok=True)
+        try:
+            checks: list[CheckResult] = []
+            sums: dict[str, dict[str, str]] = {}
+            for item in todo:
+                month_checks, sums[item.partition_key] = self._contas_month(
+                    dataset,
+                    item,
+                    contract=contract,
+                    refs=refs,
+                    run=run,
+                    processed_at=processed_at,
+                    scratch=scratch,
+                )
+                checks.extend(month_checks)
+            run.checks = merge_checks(checks)
+            run.checks.append(
+                CheckResult(
+                    "incremental.months",
+                    CheckStatus.PASS,
+                    f"{len(todo)} de {len(inputs)} meses relidos",
+                    observed=len(todo),
+                    details={"meses": [i.partition_key for i in todo], "somas": sums},
+                )
+            )
+            failures = blocking(run.checks)
+            if failures:
+                msg = "verificações bloqueantes falharam: " + ", ".join(
+                    c.check_id for c in failures
+                )
+                raise SilverBuildError(msg)
+            self._replace_months(contract, todo, inputs, run, scratch)
+            run.status = "succeeded"
+        finally:
+            for part in scratch.glob("*.parquet"):
+                part.unlink()
+            scratch.rmdir()
+
+    def _contas_month(
+        self,
+        dataset: DatasetConfig,
+        item: SilverInput,
+        *,
+        contract: Contract,
+        refs: contas.ContasRefs | None,
+        run: SilverRun,
+        processed_at: datetime,
+        scratch: Path,
+    ) -> tuple[list[CheckResult], dict[str, str]]:
+        """Lê, deriva e verifica um mês; grava em Parquet temporário. Devolve checks e somas."""
+        transformer = self.transformer(dataset)
+        columns, period_kind, value_columns = _MONTHLY[transformer]
+        period = item.partition_key
+        schema = contract.frame_schema()
+        table = self._read_source(item, self._csv_contract(dataset), columns)
+        lineage = self._lineage(item, run, processed_at)
+        if refs is None:
+            frame = contas.execution_frame(table, period=period, lineage=lineage, schema=schema)
+        elif transformer == "cgu_transfer":
+            frame = contas.transfer_frame(
+                table, period=period, refs=refs, lineage=lineage, schema=schema
+            )
+        else:
+            frame = contas.payment_frame(
+                table, period=period, refs=refs, lineage=lineage, schema=schema
+            )
+        checks = contas_checks(
+            frame,
+            contract,
+            records=table.records,
+            value_columns=value_columns,
+            period=period,
+            period_expr=contas.period_from_raw("period_raw", period_kind),
+            source_columns=[name for _, name in columns],
+            max_unresolved_territory=int(dataset.silver.get("max_unresolved_territory", 0)),
+        )
+        sums = {c: str(frame.select(pl.col(c).sum()).item()) for c in value_columns}
+        run.rows += frame.height
+        frame.write_parquet(scratch / f"{period}.parquet")
+        logger.info("silver month checked", extra={"period": period, "rows": frame.height})
+        return checks, sums
+
+    def _replace_months(
+        self,
+        contract: Contract,
+        todo: Sequence[SilverInput],
+        inputs: Sequence[SilverInput],
+        run: SilverRun,
+        scratch: Path,
+    ) -> None:
+        """Substitui cada mês aprovado e tira da Silver os meses fora da configuração."""
+        evolve = self._schema_evolution(run.target_uri, contract)
+        result = None
+        for item in todo:
+            frame = pl.read_parquet(scratch / f"{item.partition_key}.parquet")
+            result = self._writer.write(
+                run.target_uri,
+                frame,
+                run_id=run.run_id,
+                mode="overwrite",
+                partition_by=list(contract.partition_by),
+                replace_where={"period": item.partition_key},
+                evolve_schema=evolve,
+            )
+            evolve = False
+            del frame
+        if DeltaTable.is_deltatable(run.target_uri):
+            cleaned = self._writer.delete_where(
+                run.target_uri,
+                keep={},
+                drop_outside=("period", "IN", [i.partition_key for i in inputs]),
+                run_id=run.run_id,
+            )
+            result = cleaned or result
+        run.delta_version = (
+            result.version if result is not None else self._reader.current_version(run.target_uri)
+        )
 
     def _reference(self, dataset: DatasetConfig) -> tuple[set[str] | None, str]:
         """Códigos de município da referência territorial, na versão Silver vigente."""

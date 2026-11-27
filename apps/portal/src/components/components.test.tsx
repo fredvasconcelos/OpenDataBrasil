@@ -257,6 +257,17 @@ describe("percentuais recebidos na série", () => {
 });
 
 describe("SeasonChart (Isolar período)", () => {
+  it("compara anos anuais sem acrescentar um sufixo ao código do período", async () => {
+    const { seasonBars } = await import("./SeasonChart");
+    const data = { series: [{ label: "Total", depth: 0, points: [
+      { period: "2024", value: 100, status: "valid" },
+      { period: "2025", value: 110, status: "valid" },
+    ] }] } as Series;
+    expect(seasonBars(data).bars).toEqual([
+      { part: "ano", values: [100, 110], statuses: ["valid", "valid"] },
+    ]);
+  });
+
   it("uma barra por ano marcado em cada parte, sem somar entre anos (ADR-0026)", async () => {
     const { seasonBars, partOf } = await import("./SeasonChart");
     expect(partOf("2025M08")).toBe("M08");
@@ -1088,7 +1099,7 @@ describe("Tabela dinâmica (DS 2.9): % por, linha de totais e aviso no botão i"
   });
 
   it("fica vermelho e abre o aviso quando o detalhe veio só com o Total", async () => {
-    const { PivotTable, emptyDetails } = await import("./PivotTable");
+    const { PivotTable } = await import("./PivotTable");
     const data = {
       ...base,
       col_fields: [{ id: "c664", label: "Estado civil" }],
@@ -1096,7 +1107,8 @@ describe("Tabela dinâmica (DS 2.9): % por, linha de totais e aviso no botão i"
       columns: [{ keys: ["c664:0"], labels: ["Total"] }],
       cells: [[{ value: 27, status: "valid" }]],
     } as unknown as Pivot;
-    expect(emptyDetails(data, { c664: "c664:0" })).toEqual(["Estado civil"]);
+    data.alerts = [{ severity: "danger", code: "V2", params: { level: "municipio", dimension: "c664" } },
+      { severity: "danger", code: "V1", params: { level: "municipio", dimension: "c2", available_levels: ["brasil"] } }];
     wrap(
       <PivotTable
         data={data}
@@ -1104,15 +1116,35 @@ describe("Tabela dinâmica (DS 2.9): % por, linha de totais e aviso no botão i"
         shares
         selected={null}
         onSelect={vi.fn()}
-        alerts={["Sexo: a fonte não publica este detalhe por Município. Há detalhe em: Brasil."]}
       />,
     );
-    const button = screen.getByRole("button", { name: "Aviso sobre esta tabela" });
-    expect(button.className).toContain("is-alert");
+    const button = screen.getByRole("button", { name: "Aviso: detalhe indisponível nesta tabela" });
+    expect(button.className).toContain("is-danger");
     expect(button.getAttribute("aria-expanded")).toBe("true");
     const alert = screen.getByRole("alert");
     expect(alert.textContent).toContain("Estado civil: a fonte não traz este detalhe");
-    expect(alert.textContent).toContain("Sexo: a fonte não publica este detalhe por Município");
+    expect(alert.textContent).toContain("c2: a fonte não publica este detalhe por Município");
+  });
+
+  it("amarelo mantém o i, abre só no clique e usa a classificação da API", async () => {
+    const { PivotTable } = await import("./PivotTable");
+    const data = { ...base, col_fields: [{ id: "periodo", label: "Período" }], rows: [{ keys: ["uf:29"], labels: ["Bahia"] }], columns: [{ keys: ["2008"], labels: ["2008"] }], cells: [[{ value: 1, status: "valid" }]], alerts: [{ severity: "warning", code: "A1", params: { level: "municipio", available_periods: ["2008"] } }] } as unknown as Pivot;
+    wrap(<PivotTable data={data} totals={{}} shares={false} selected={null} onSelect={vi.fn()} />);
+    const button = screen.getByRole("button", { name: "Aviso: dados parciais nesta tabela" });
+    expect(button.className).toContain("is-warning");
+    expect(button.getAttribute("aria-expanded")).toBe("false");
+    fireEvent.click(button);
+    expect(screen.getByRole("status").textContent).toContain("somente em: 2008");
+    fireEvent.click(button);
+    expect(button.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("só Total sem alerta da API não faz o navegador inventar um diagnóstico", async () => {
+    const { PivotTable } = await import("./PivotTable");
+    const data = { ...base, rows: [{ keys: ["uf:29"], labels: ["Bahia"] }], cells: [[{ value: 1, status: "valid" }]], col_fields: [{ id: "c1", label: "Situação" }], columns: [{ keys: ["c1:0"], labels: ["Total"] }], alerts: [] } as unknown as Pivot;
+    wrap(<PivotTable data={data} totals={{ c1: "c1:0" }} shares={false} selected={null} onSelect={vi.fn()} />);
+    expect(screen.getByRole("button", { name: "Sobre esta tabela" }).className).not.toContain("is-danger");
+    expect(screen.queryByRole("alert")).toBeNull();
   });
 
   it("sem aviso, o botão i fica normal e fechado", async () => {
@@ -1126,7 +1158,7 @@ describe("Tabela dinâmica (DS 2.9): % por, linha de totais e aviso no botão i"
     } as unknown as Pivot;
     wrap(<PivotTable data={data} totals={{}} shares={false} selected={null} onSelect={vi.fn()} />);
     const button = screen.getByRole("button", { name: "Sobre esta tabela" });
-    expect(button.className).not.toContain("is-alert");
+    expect(button.className).not.toContain("is-danger");
     expect(button.getAttribute("aria-expanded")).toBe("false");
     expect(screen.queryByRole("combobox", { name: "Calcular % por" })).toBeNull();
   });

@@ -6,6 +6,7 @@ import { openCatalog, openPeriods } from "./helpers";
 // território e período, ver gráfico e mapa, identificar a fonte e exportar.
 test("pesquisa, painel, recorte por duplo clique, tooltip, seleção, limpeza e exportação", async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "Ver indicadores: Estatísticas oficiais", exact: true }).click();
   // Início (DS v2.3): a busca ignora acentos; o indicador abre a prévia e dela vai ao painel.
   await page.getByLabel("Buscar indicador").fill("populacao residente");
   await page.getByRole("button", { name: "População residente (Censo)" }).first().click();
@@ -49,7 +50,7 @@ test("pesquisa, painel, recorte por duplo clique, tooltip, seleção, limpeza e 
   expect(await fill("uf:29")).not.toBe(await fill("regiao:3"));
   await expect(page.getByText("Fora do recorte")).toBeVisible();
   // Legenda com título e grupos redondos: "Até …" na primeira ponta, "Mais de …" na última.
-  const legend = map.locator("xpath=..").getByRole("group", { name: /Legenda: Pessoas/ });
+  const legend = page.locator(".area-map .map-panel").getByRole("group", { name: /Legenda: Pessoas/ });
   await expect(legend.getByText("Pessoas", { exact: true })).toBeVisible();
   await expect(legend.locator("li").first()).toHaveText(/^Até /);
   await expect(legend.locator("li").nth(-2)).toHaveText(/^Mais de /);
@@ -103,12 +104,12 @@ test("pesquisa, painel, recorte por duplo clique, tooltip, seleção, limpeza e 
   await expect(inside).toHaveCount(9);
 
   // Limpar filtros: Brasil inteiro nas regiões, sem recorte, dimensões, período ou território.
-  await page.getByRole("button", { name: "Limpar filtros" }).click();
+  await page.locator(".sidebar").getByRole("button", { name: "Limpar todos os filtros", exact: true }).click();
   await expect(page).toHaveURL(/nivel=regiao$/);
   await expect(inside).toHaveCount(5);
   await expect(outside).toHaveCount(0);
   await expect(page.getByRole("checkbox", { name: "Cor ou raça", exact: true })).not.toBeChecked();
-  await expect(page.getByRole("button", { name: "Limpar filtros" })).toBeDisabled();
+  await expect(page.locator(".sidebar").getByRole("button", { name: "Limpar todos os filtros", exact: true })).toBeDisabled();
 
   // Fonte visível no rodapé.
   await expect(page.getByText(/Tabela SIDRA 9606/)).toBeVisible();
@@ -216,6 +217,7 @@ test("sobre os dados mostra fontes, versão publicada e licença", async ({ page
 
 test("apoie: página acessível pelo cabeçalho, sem rolagem horizontal no conteúdo", async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "Ver indicadores: Estatísticas oficiais", exact: true }).click();
   await page.getByRole("link", { name: "Apoie o projeto" }).first().click();
   await expect(page).toHaveURL(/\/apoie$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Ajude a manter");
@@ -296,6 +298,7 @@ test("POF 6715 completa: classes de rendimento e despesas de consumo", async ({ 
 
 test("cabeçalho e rodapé (DS 2.10): Contato no menu, Apoie, redes, rodapé marinho e faixa fina no Painel", async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "Ver indicadores: Estatísticas oficiais", exact: true }).click();
   const header = page.getByRole("banner");
   const footer = page.locator("footer.footer");
   await expect(footer).toBeVisible();
@@ -365,9 +368,9 @@ test("mapa em % de uma categoria (ADR-0010, decisão 16): municípios com Plano 
 
 test("Início e Sobre (DS v2.3): etiquetas de tema, itens em preparação e filtro de situação", async ({ page }) => {
   await page.goto("/");
-  const stats = page.locator(".home-stats");
-  await expect(stats).toContainText("indicadores publicados");
-  await expect(stats).toContainText("em preparação");
+  await page.getByRole("button", { name: "Ver indicadores: Estatísticas oficiais", exact: true }).click();
+  await expect(page.locator(".home-stats")).toHaveCount(0);
+  await expect(page.getByRole("searchbox", { name: "Buscar indicador", exact: true })).toBeVisible();
   // Etiqueta de tema filtra a lista; os itens em preparação aparecem sem ação.
   await page.locator(".theme-chip", { hasText: "Serviços" }).click();
   const chip = page.locator(".theme-chip", { hasText: "Serviços" });
@@ -399,6 +402,7 @@ test("Início e Sobre (DS v2.3): etiquetas de tema, itens em preparação e filt
   // Tema escuro: as famílias de cor dos temas têm variante dark (tokens v2.3).
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/");
+  await page.getByRole("button", { name: "Ver indicadores: Estatísticas oficiais", exact: true }).click();
   await expect(page.locator(".theme-grid")).toBeVisible();
   await page.screenshot({ path: "test-results/inicio-escuro.png", fullPage: false });
 });
@@ -436,7 +440,7 @@ test("barra lateral B: filtros rolam por dentro e o catálogo cabe na janela", a
     await page.setViewportSize({ width, height });
     await page.goto("/dashboard?kpi=casamentos&nivel=uf&dim=c664,c665,c666,c667");
     // "Limpar filtros" fixo no rodapé da barra, sempre à vista; os filtros rolam por dentro.
-    const clear = page.getByRole("button", { name: "Limpar filtros" });
+    const clear = page.locator(".sidebar").getByRole("button", { name: "Limpar todos os filtros", exact: true });
     const clearBox = await clear.boundingBox();
     expect(clearBox && clearBox.y + clearBox.height <= height).toBe(true);
     const body = page.locator(".filters-body");
@@ -521,10 +525,14 @@ test("grão de tempo (ADR-0013): Sinesp por ano soma os meses; ano incompleto pa
   await page.screenshot({ path: "test-results/sinesp-grao-mes.png", fullPage: false });
 });
 
-test("grão de tempo: KPI de estoque ou anual não oferece o seletor", async ({ page }) => {
+test("grão de tempo: população anual permite comparar sem inventar grãos ou soma", async ({ page }) => {
   await page.goto("/dashboard?kpi=populacao_estimada");
   await expect(page.getByRole("group", { name: "Período", exact: true })).toBeVisible();
-  await expect(page.getByRole("group", { name: "Período por" })).toHaveCount(0);
+  const temporal = page.getByRole("group", { name: "Período por", exact: true });
+  await expect(temporal.getByRole("radio")).toHaveCount(1);
+  await expect(temporal.getByRole("radio", { name: "Ano", exact: true })).toBeChecked();
+  await expect(temporal.getByRole("checkbox", { name: "Isolar período", exact: true })).toBeEnabled();
+  await expect(temporal.getByRole("checkbox", { name: "Acumular", exact: true })).toBeDisabled();
 });
 
 test("População por sexo e idade (9606): detalhe por idade em grupos quinquenais", async ({ page }) => {

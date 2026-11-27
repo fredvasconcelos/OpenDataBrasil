@@ -97,6 +97,7 @@ class GoldGateway:
         self._meta = _Lru(16)
         self._geometry = _Lru(geometry_cache_size)
         self._geometry_build_lock = threading.Lock()
+        self._coverage_meta = _Lru(64)
 
     # ------------------------------------------------------------- execução
 
@@ -251,7 +252,7 @@ class GoldGateway:
                 "breakdown_key FROM {{obs}}), "
                 "p AS (SELECT indicator_id, source_table_id, level_id, period, "
                 "unnest(string_split(breakdown_key, '|')) AS part FROM k) "
-                "SELECT p.indicator_id, p.source_table_id, c.classification_id, "
+                "SELECT p.indicator_id, p.source_table_id, c.classification_id, p.level_id, "
                 "list(DISTINCT p.level_id ORDER BY p.level_id) AS levels, "
                 "list(DISTINCT p.period ORDER BY p.period) AS periods "
                 "FROM p LEFT JOIN {{cat}} AS c ON c.category_key = p.part AND NOT c.is_total "
@@ -266,7 +267,12 @@ class GoldGateway:
             for row in rows(result):
                 table = out.setdefault(row["indicator_id"], {}).setdefault(
                     str(row["source_table_id"]),
-                    {"levels": set(), "periods": set(), "classifications": {}},
+                    {
+                        "levels": set(),
+                        "periods": set(),
+                        "classifications": {},
+                        "detail_periods": {},
+                    },
                 )
                 table["levels"].update(row["levels"])
                 table["periods"].update(row["periods"])
@@ -274,9 +280,38 @@ class GoldGateway:
                     table["classifications"].setdefault(row["classification_id"], set()).update(
                         row["levels"]
                     )
+                    table["detail_periods"].setdefault(row["classification_id"], {}).setdefault(
+                        row["level_id"], set()
+                    ).update(row["periods"])
             return out
 
         return self._meta.get((ctx.release_id, "coverage"), build)
+
+    def reference_counts(
+        self, ctx: ReleaseContext, level: str, within: str | None
+    ) -> list[dict[str, Any]]:
+        """Conta só territórios da referência fixada; o chamador verifica o ano.
+
+        A dimensão atual não tem validade histórica por unidade. Esta contagem não
+        pode ser usada para outro ano nem para os recortes especiais do SIDRA.
+        """
+
+        def build() -> list[dict[str, Any]]:
+            result = self.execute(
+                ctx,
+                "SELECT g.reference, count(*) AS territories FROM {{geo}} g "
+                "WHERE g.in_reference AND g.level_id = $level AND "
+                "($within IS NULL OR g.geography_key = $within OR g.geography_key IN "
+                "(SELECT geography_key FROM {{anc}} WHERE ancestor_key = $within)) "
+                "GROUP BY g.reference ORDER BY g.reference",
+                {"geo": DIM_GEOGRAPHY, "anc": BRIDGE},
+                {"level": level, "within": within},
+            )
+            if result.truncated:
+                raise RuntimeError("Referência territorial truncada; rever o limite de metadados")
+            return rows(result)
+
+        return self._coverage_meta.get((ctx.release_id, "reference", level, within or ""), build)
 
     def partitions(self, ctx: ReleaseContext) -> dict[str, list[str]]:
         """Partições publicadas por classificação."""
@@ -296,6 +331,28 @@ class GoldGateway:
             for c in self.categories(ctx).values()
             if c["classification_id"] == classification_id and c["partition_id"] == partition_id
         ]
+
+    def observed_category_keys(
+        self, ctx: ReleaseContext, indicator_id: str, classification_id: str
+    ) -> set[str]:
+        """Categorias presentes no indicador; não certifica completude por recorte."""
+
+        def build() -> set[str]:
+            result = self.execute(
+                ctx,
+                "SELECT DISTINCT part AS category_key FROM "
+                "(SELECT unnest(string_split(breakdown_key, '|')) AS part "
+                "FROM {{obs}} WHERE indicator_id = $indicator) "
+                "WHERE split_part(part, ':', 1) = $classification",
+                {"obs": "indicator_observation"},
+                {"indicator": indicator_id, "classification": classification_id},
+                max_rows=10_000,
+            )
+            if result.truncated:
+                raise RuntimeError("categorias observadas excederam o limite de metadados")
+            return {str(row["category_key"]) for row in rows(result)}
+
+        return self._meta.get((ctx.release_id, f"native:{indicator_id}:{classification_id}"), build)
 
     def total_category(self, ctx: ReleaseContext, classification_id: str) -> dict[str, Any]:
         """Categoria Total de uma classificação."""

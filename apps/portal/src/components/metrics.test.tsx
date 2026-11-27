@@ -96,17 +96,17 @@ describe("TopDatasets", () => {
   it("troca a ordem e leva o indicador ao Painel", () => {
     const onSort = vi.fn();
     wrap(<TopDatasets items={exemplo} sort="views" onSort={onSort} period="1 de nov. de 2026 – 16 de nov. de 2026" />);
-    expect(screen.getByRole("button", { name: "Mais visualizados" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "Mais abertos" }).getAttribute("aria-pressed")).toBe("true");
     fireEvent.click(screen.getByRole("button", { name: "Mais baixados" }));
     expect(onSort).toHaveBeenCalledWith("downloads");
-    expect(screen.getByRole("link", { name: "População estimada" }).getAttribute("href")).toBe("/dashboard?kpi=populacao_estimada");
-    expect(screen.getByRole("columnheader", { name: "Visualizações" }).getAttribute("aria-sort")).toBe("descending");
+    expect(screen.getByRole("link", { name: "População estimada" }).getAttribute("href")).toBe("/estatisticas/painel?kpi=populacao_estimada");
+    expect(screen.getByRole("columnheader", { name: "Aberturas" }).getAttribute("aria-sort")).toBe("descending");
     expect(screen.getByText("4.120")).toBeTruthy();
   });
 
   it("sem indicadores acima do limiar, diz isso em vez de mostrar zeros", () => {
     wrap(<TopDatasets items={[]} sort="views" onSort={() => undefined} period="" />);
-    expect(screen.getByText("Nenhum indicador com 5 ou mais acessos no período.")).toBeTruthy();
+    expect(screen.getByText("Nenhum indicador com 5 ou mais aberturas no período.")).toBeTruthy();
   });
 });
 

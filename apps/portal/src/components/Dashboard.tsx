@@ -11,6 +11,7 @@ import { CollapseIcon, ExpandIcon, FilterIcon, ListIcon } from "@/components/ico
 import { KpiInfo } from "@/components/KpiInfo";
 import { MapView, type FitRequest } from "@/components/MapView";
 import { SeasonChart } from "@/components/SeasonChart";
+import { SeasonalChart } from "@/components/SeasonalChart";
 import { SeriesChart } from "@/components/SeriesChart";
 import { Sidebar } from "@/components/Sidebar";
 import { api, ApiRequestError } from "@/lib/api";
@@ -25,6 +26,8 @@ import {
   selectablePeriods,
   writeState,
   yearsOf,
+  canAccumulate,
+  timeGrains,
   type DashboardState,
 } from "@/lib/state";
 import type {
@@ -247,8 +250,15 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
     [kpiId, focusLevel, pqKey, state.dimensions.join(), state.categories.join(), state.correction], retry,
   );
   const batchDetails = useMemo(() => new Map([...(batch.data ?? []), ...(contextBatch.data ?? [])].map((detail) => [detail.geography.geography_key, detail])), [batch.data, contextBatch.data]);
+  const seasonalMode = state.isolate && state.accumulate;
+  const seasonalYears = pq.series.periods;
+  const seasonal = useAsync(seasonalMode && seasonalYears.length ? () => api.seasonal(kpiId, {
+    geography: state.geography, dimensions: state.dimensions, categories: state.categories,
+    grain: state.grain, correction: state.correction,
+    year_from: Number(seasonalYears[0]), year_to: Number(seasonalYears.at(-1)),
+  }) : null, [kpiId, state.geography, state.dimensions.join(), state.categories.join(), state.grain, state.correction, pqKey], retry);
   const series = useAsync(
-    kpiId
+    kpiId && !seasonalMode
       ? () =>
           api.series(kpiId, {
             geography: state.geography,
@@ -265,7 +275,8 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
   );
   // Detalhes ativos que existem no nível (os demais viram aviso no botão i da tabela).
   const levelDims = (kpi?.dimensions ?? []).filter((d) => !d.levels?.length || d.levels.includes(state.level));
-  const tableDims = state.dimensions.filter((id) => levelDims.some((d) => d.classification_id === id));
+  // O detalhe pedido segue para a API mesmo indisponível: ela emite V1/V2.
+  const tableDims = state.dimensions;
   // Períodos da tabela: os escolhidos (ou as partes dos anos, com Isolar); sem escolha, o
   // padrão do mapa (o último completo). Nunca acumulada (ADR-0026).
   const tablePeriods = (() => {
@@ -284,7 +295,7 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
       fields={[
         { id: "territorio", label: t("table.territory") },
         { id: "periodo", label: t("table.period") },
-        ...levelDims.map((d) => ({ id: d.classification_id, label: d.label })),
+        ...(kpi?.dimensions ?? []).filter((d) => levelDims.includes(d) || state.dimensions.includes(d.classification_id)).map((d) => ({ id: d.classification_id, label: d.label })),
       ]}
       rows={pivotLayout.rows}
       cols={pivotLayout.cols}
@@ -431,7 +442,9 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
   const first = selection[0] ?? period;
   const last = selection.at(-1) ?? period;
   const range = first === last ? formatPeriod(last) : t("dashboard.periodRange", { from: formatPeriod(first), to: formatPeriod(last) });
-  const periodLabel = state.isolate
+  const periodLabel = seasonalMode || (state.isolate && !timeGrains(kpi).some((g) => g.grain === "ano"))
+    ? formatPeriod(pq.map.period ?? period)
+    : state.isolate
     ? `${selection.map(formatPeriod).join(", ")}${state.accumulate ? ` (${t("dashboard.accumulated")})` : ""}`
     : state.accumulate
       ? `${range} (${t("dashboard.accumulated")})`
@@ -441,16 +454,6 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
   const levelLabel = t(`levels.${state.level}`);
   // Tabela: os períodos dela, sem acumular (ADR-0026).
   const tableLabel = selection.length > 1 || state.isolate ? range : formatPeriod(period);
-  // Detalhe ativo que a fonte não publica neste nível: aviso no botão i da tabela.
-  const levelAlerts = kpi.dimensions
-    .filter((d) => state.dimensions.includes(d.classification_id) && d.levels?.length && !d.levels.includes(state.level))
-    .map((d) =>
-      t("pivot.alertLevel", {
-        dimension: d.label,
-        level: levelLabel,
-        levels: (d.levels ?? []).map((l) => t(`levels.${l}`)).join(", "),
-      }),
-    );
   const crumb =
     nav.themes
       .flatMap((th) =>
@@ -468,6 +471,7 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
           ?.name ??
         shown?.context?.features.find((f) => f.id === state.geography)
           ?.properties.name ??
+        seasonal.data?.geography.name ??
         series.data?.geography.name ??
         state.geography);
   const defaults = readState(new URLSearchParams({ kpi: kpi.kpi_id }), nav, kpi);
@@ -517,6 +521,21 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
   // que exportam (imagem → cabeçalho do mapa; dados → "Gráfico e tabela"). Layout
   // por CSS (.dash-grid): empilhado até 1599 px; tela cheia sem rolagem a partir de
   // 1600 px (mapa à esquerda, gráfico e tabela à direita, fonte no rodapé).
+  const chartHeading = (
+    <h2 id="series-title">
+      {t("dashboard.seriesTitle")} · {selectedName}
+      {state.accumulate ? ` (${t("dashboard.accumulated")})` : ""}{" "}
+      {state.geography !== home ? (
+        <button
+          type="button"
+          className="small"
+          onClick={() => update({ geography: home })}
+        >
+          {t("dashboard.resetSelection")}
+        </button>
+      ) : null}
+    </h2>
+  );
   const sheetOpen = mobile && sheet !== null;
   return (
     <div className="dashboard">
@@ -554,12 +573,13 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
         level={state.level}
         selection={selection}
         grain={state.grain}
-        onGrain={(grain) => update({ grain, period: null, periods: [], isolate: grain === "ano" ? false : state.isolate })}
+        onGrain={(grain) => update({ grain, period: null, periods: [] })}
         isolate={state.isolate}
         onIsolate={(isolate) => {
           // Isolar: a seleção vira o ano do período atual; sem Isolar, volta ao padrão.
           const years = isolate ? yearsOf([period]) : [];
-          update({ isolate, periods: years, period: years.at(-1) ?? null });
+          update({ isolate, periods: years, period: years.at(-1) ?? null,
+            accumulate: canAccumulate(kpi, isolate) && state.accumulate });
         }}
         accumulate={state.accumulate}
         onAccumulate={(accumulate) => update({ accumulate })}
@@ -726,21 +746,11 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
             />
           </div>
 
-          <section className="card area-chart" aria-labelledby="series-title">
-            <h2 id="series-title">
-              {t("dashboard.seriesTitle")} · {selectedName}
-              {state.accumulate ? ` (${t("dashboard.accumulated")})` : ""}{" "}
-              {state.geography !== home ? (
-                <button
-                  type="button"
-                  className="small"
-                  onClick={() => update({ geography: home })}
-                >
-                  {t("dashboard.resetSelection")}
-                </button>
-              ) : null}
-            </h2>
-            {series.error ? (
+          <section className={`card area-chart${seasonalMode ? " is-seasonal" : ""}`} aria-labelledby="series-title">
+            {!seasonalMode || !seasonal.data || seasonal.error ? chartHeading : null}
+            {seasonalMode ? (seasonal.error ? <Failure error={seasonal.error} onRetry={() => setRetry((r) => r + 1)} />
+              : seasonal.data ? <SeasonalChart data={seasonal.data} heading={chartHeading} />
+              : <p className="muted">{t("dashboard.loading")}</p>) : series.error ? (
               <Failure
                 error={series.error}
                 onRetry={() => setRetry((r) => r + 1)}
@@ -789,7 +799,7 @@ function LoadedDashboard({ nav, kpi, onPreload }: { nav: PortalIndex; kpi: Kpi; 
                   dimensionOrder={kpi.dimensions.map((d) => d.classification_id)}
                   selected={state.geography}
                   onSelect={(key) => update({ geography: key })}
-                  alerts={levelAlerts}
+                  sources={kpi.source.tables}
                   notes={state.accumulate ? [t("pivot.accumulateNote")] : []}
                   controls={pivotControls}
                 />

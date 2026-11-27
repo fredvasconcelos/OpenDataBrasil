@@ -244,6 +244,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/dictionaries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Dicionários e apoios
+         * @description Inventário documental; candidatas continuam separadas dos KPIs publicados.
+         */
+        get: operations["dictionary_index_api_v1_dictionaries_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dictionaries/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ficha, códigos, fontes e métodos do indicador
+         * @description Documentação obtida, com origem, versão e lacunas de cada variável/edição.
+         */
+        get: operations["dictionary_entry_api_v1_dictionaries__entry_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/kpis/{kpi_id}": {
         parameters: {
             query?: never;
@@ -336,6 +376,26 @@ export interface paths {
          * @description Todos os períodos publicados de um território (ou somados no grão pedido).
          */
         get: operations["kpi_series_api_v1_kpis__kpi_id__series_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kpis/{kpi_id}/seasonal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Soma da mesma parte do ano entre anos
+         * @description Uma barra por parte e categoria, com cobertura do intervalo (ADR-0041).
+         */
+        get: operations["kpi_seasonal_api_v1_kpis__kpi_id__seasonal_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -530,6 +590,189 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/contas/meta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lentes, dimensões e meses
+         * @description O que o release oferece e a situação de cada mês (aberto, incompleto, fechado).
+         */
+        get: operations["meta_api_v1_contas_meta_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contas/map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mapa: total por território
+         * @description Só o montante por território (ADR-0034, decisão 1); com ``dimension`` e
+         *     ``categories``, a soma das categorias escolhidas.
+         */
+        get: operations["contas_map_api_v1_contas_map_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contas/composition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Composição do território
+         * @description As maiores categorias do território e "demais" (tooltip e gráfico de barras).
+         */
+        get: operations["composition_api_v1_contas_composition_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contas/series": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Série mensal ou anual
+         * @description Total, ou até 10 categorias + "demais", no território (ADR-0034, decisão 2).
+         */
+        get: operations["series_api_v1_contas_series_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contas/ranking": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Maiores destinatários
+         * @description Os maiores do território no ano, todos os municípios dele incluídos (ADR-0034, 4).
+         */
+        get: operations["ranking_api_v1_contas_ranking_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contas/table": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Tabela paginada
+         * @description Desdobra em todos os níveis, 10 linhas por página (ADR-0034, decisão 3).
+         */
+        get: operations["table_api_v1_contas_table_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contas/favorecidos/{recipient_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ficha do favorecido
+         * @description O que o favorecido recebeu, por lente, ano, mês e órgão.
+         *
+         *     Fichas de pessoa física não são indexadas por buscadores (ADR-0031, 5.6).
+         */
+        get: operations["recipient_api_v1_contas_favorecidos__recipient_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contas/busca": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Busca
+         * @description Favorecidos PJ, órgãos, programas e ações (pessoas físicas ficam fora).
+         */
+        get: operations["search_api_v1_contas_busca_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contas/execucao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Execução da despesa
+         * @description Empenhado, liquidado, pago e restos a pagar por categoria (lente C).
+         */
+        get: operations["execution_api_v1_contas_execucao_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -569,6 +812,13 @@ export interface components {
             category_id: string;
             /** Name */
             name: string;
+            /** Parent Category Key */
+            parent_category_key?: string | null;
+            /**
+             * Depth
+             * @default 0
+             */
+            depth: number;
             /**
              * Full Name
              * @description Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11).
@@ -621,6 +871,248 @@ export interface components {
             period?: string | null;
         };
         /**
+         * CompositionRowOut
+         * @description Categoria do "detalhar por" num território.
+         */
+        CompositionRowOut: {
+            /** Category Code */
+            category_code: string;
+            /** Label */
+            label: string;
+            /** Value */
+            value: number;
+            /** Share */
+            share: number | null;
+        };
+        /**
+         * ContasCompositionOut
+         * @description Composição do território: as maiores categorias e "demais".
+         */
+        ContasCompositionOut: {
+            /**
+             * Lens
+             * @enum {string}
+             */
+            lens: "A" | "B";
+            /** Geography Key */
+            geography_key: string;
+            /** Dimension */
+            dimension: string;
+            /** Total */
+            total: number;
+            /** Rows */
+            rows: components["schemas"]["CompositionRowOut"][];
+            provenance: components["schemas"]["ContasProvenance"];
+        };
+        /**
+         * ContasDimensionOut
+         * @description Dimensão do "detalhar por" ou do agrupamento da tabela.
+         */
+        ContasDimensionOut: {
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+        };
+        /**
+         * ContasExecutionOut
+         * @description Execução da despesa (lente C), sem território (ADR-0032, decisão 6).
+         */
+        ContasExecutionOut: {
+            /** Dimension */
+            dimension: string;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Pages */
+            pages: number;
+            /** Rows Total */
+            rows_total: number;
+            total: components["schemas"]["ExecutionRowOut"];
+            /** Rows */
+            rows: components["schemas"]["ExecutionRowOut"][];
+            provenance: components["schemas"]["ContasProvenance"];
+        };
+        /**
+         * ContasMapOut
+         * @description Mapa: só o total por território (ADR-0034, decisão 1).
+         */
+        ContasMapOut: {
+            /**
+             * Lens
+             * @enum {string}
+             */
+            lens: "A" | "B";
+            /** Level */
+            level: string;
+            /** Within */
+            within: string | null;
+            /** Dimension */
+            dimension: string | null;
+            /** Categories */
+            categories: string[];
+            /**
+             * Unit
+             * @default R$ (valores nominais)
+             */
+            unit: string;
+            /** Total */
+            total: number;
+            /** Rows */
+            rows: components["schemas"]["MapRowOut"][];
+            provenance: components["schemas"]["ContasProvenance"];
+        };
+        /**
+         * ContasMetaOut
+         * @description Lentes, dimensões, meses e classes de favorecido do release.
+         */
+        ContasMetaOut: {
+            /** Release Id */
+            release_id: string;
+            /** Lenses */
+            lenses: components["schemas"]["LensOut"][];
+            /** Recipient Classes */
+            recipient_classes: {
+                [key: string]: string;
+            };
+            /** Notes */
+            notes: string[];
+        };
+        /**
+         * ContasProvenance
+         * @description Release, tabelas e meses usados; ``partial`` quando algum mês não está fechado.
+         */
+        ContasProvenance: {
+            /** Release Id */
+            release_id: string;
+            /** Tables */
+            tables: components["schemas"]["TableVersionOut"][];
+            /** Periods */
+            periods: string[];
+            /** Partial */
+            partial: boolean;
+            /** Period Notes */
+            period_notes?: components["schemas"]["PeriodStatusOut"][];
+        };
+        /**
+         * ContasRankingOut
+         * @description Maiores destinatários do território no ano (ADR-0034, decisão 4).
+         */
+        ContasRankingOut: {
+            /**
+             * Lens
+             * @enum {string}
+             */
+            lens: "A" | "B";
+            /** Geography Key */
+            geography_key: string;
+            /** Year */
+            year: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Pages */
+            pages: number;
+            /** Total Recipients */
+            total_recipients: number;
+            /** Rows */
+            rows: components["schemas"]["RankingRowOut"][];
+            /** Notes */
+            notes: string[];
+            provenance: components["schemas"]["ContasProvenance"];
+        };
+        /**
+         * ContasSearchOut
+         * @description Busca por favorecido PJ, órgão, programa e ação (plano, seção 9).
+         */
+        ContasSearchOut: {
+            /** Q */
+            q: string;
+            /** Hits */
+            hits: components["schemas"]["SearchHitOut"][];
+            /** Release Id */
+            release_id: string;
+        };
+        /**
+         * ContasSeriesOut
+         * @description Série mensal ou anual (ADR-0034, decisão 2).
+         */
+        ContasSeriesOut: {
+            /**
+             * Lens
+             * @enum {string}
+             */
+            lens: "A" | "B";
+            /** Geography Key */
+            geography_key: string;
+            /**
+             * Grain
+             * @enum {string}
+             */
+            grain: "mes" | "ano";
+            /** Dimension */
+            dimension: string | null;
+            /** Lines */
+            lines: components["schemas"]["SeriesLineOut"][];
+            provenance: components["schemas"]["ContasProvenance"];
+        };
+        /**
+         * ContasTableOut
+         * @description Tabela paginada no servidor, 10 linhas por página (ADR-0034, decisão 3).
+         */
+        ContasTableOut: {
+            /**
+             * Lens
+             * @enum {string}
+             */
+            lens: "A" | "B";
+            /** Geography Key */
+            geography_key: string;
+            /** Group By */
+            group_by: string;
+            /** Filters */
+            filters: string[];
+            /**
+             * Sort
+             * @enum {string}
+             */
+            sort: "value" | "name";
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Pages */
+            pages: number;
+            /** Rows Total */
+            rows_total: number;
+            /** Value Total */
+            value_total: number;
+            /** Page Value */
+            page_value: number;
+            /** Rows */
+            rows: components["schemas"]["ContasTableRowOut"][];
+            /** Notes */
+            notes: string[];
+            provenance: components["schemas"]["ContasProvenance"];
+        };
+        /**
+         * ContasTableRowOut
+         * @description Linha da tabela: um grupo (território, categoria ou favorecido).
+         */
+        ContasTableRowOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Value */
+            value: number;
+            /** Share */
+            share: number | null;
+            recipient?: components["schemas"]["RecipientRefOut"] | null;
+        };
+        /**
          * CorrectionOut
          * @description Correção disponível para o KPI ("Corrigir por", ADR-0020).
          */
@@ -631,6 +1123,49 @@ export interface components {
             label: string;
             /** Note */
             note: string;
+        };
+        /**
+         * CoverageAlertOut
+         * @description Alerta calculado pela API para a tabela dinâmica (ADR-0040).
+         */
+        CoverageAlertOut: {
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "warning" | "danger";
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "A1" | "A2" | "A3" | "A4" | "V1" | "V2" | "V3" | "V4";
+            params: components["schemas"]["CoverageAlertParams"];
+        };
+        /**
+         * CoverageAlertParams
+         * @description Parâmetros do diagnóstico, sem textos traduzidos ou URLs inventadas.
+         */
+        CoverageAlertParams: {
+            /** Level */
+            level: string;
+            /** Dimension */
+            dimension?: string | null;
+            /** Dimensions */
+            dimensions?: string[];
+            /** Tables */
+            tables?: string[];
+            /** Periods */
+            periods?: string[];
+            /** Available Periods */
+            available_periods?: string[];
+            /** Available Levels */
+            available_levels?: string[];
+            /** Observed */
+            observed?: number | null;
+            /** Expected */
+            expected?: number | null;
+            /** Reference */
+            reference?: string | null;
         };
         /**
          * DatasetOut
@@ -724,6 +1259,84 @@ export interface components {
             provenance: components["schemas"]["Provenance"];
         };
         /**
+         * DictionaryEntryOut
+         * @description Ficha, referências e códigos obtidos; lacunas permanecem explícitas.
+         */
+        DictionaryEntryOut: {
+            /** Entry Id */
+            entry_id: string;
+            /** Indicator Id */
+            indicator_id: string;
+            /** Version */
+            version: string;
+            /**
+             * Documentary Status
+             * @default revisao_parcial
+             */
+            documentary_status: string;
+            /** Document */
+            document: {
+                [key: string]: unknown;
+            };
+            /** Links */
+            links?: {
+                [key: string]: unknown;
+            }[];
+            /** Methods */
+            methods?: {
+                [key: string]: unknown;
+            }[];
+            /** Fields */
+            fields?: {
+                [key: string]: string;
+            }[];
+            /** Codes */
+            codes?: {
+                [key: string]: string;
+            }[];
+            /** Context */
+            context?: {
+                [key: string]: unknown;
+            } | null;
+            /** Expansion */
+            expansion?: {
+                [key: string]: string;
+            } | null;
+            /** Preparation */
+            preparation?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /**
+         * DictionaryIndexOut
+         * @description Inventário documental, incluindo apoios e candidatas sem ativação.
+         */
+        DictionaryIndexOut: {
+            /** Version */
+            version: string;
+            /**
+             * Status
+             * @default documentacao_parcial_nao_certifica_disponibilidade
+             */
+            status: string;
+            /** Entries */
+            entries: {
+                [key: string]: string | null;
+            }[];
+            /** Expansions */
+            expansions: {
+                [key: string]: string;
+            }[];
+            /** Artifacts */
+            artifacts: {
+                [key: string]: string;
+            };
+            /** Preparation */
+            preparation?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /**
          * DimensionOut
          * @description Dimensão exposta de um KPI.
          */
@@ -754,6 +1367,11 @@ export interface components {
             /** Categories */
             categories: components["schemas"]["CategoryOut"][];
             /**
+             * Explorable Categories
+             * @description Categorias observadas no indicador, sem certificar todos os recortes. O filtro aceita seleções sem sobreposição de pai e filhos.
+             */
+            explorable_categories?: components["schemas"]["CategoryOut"][];
+            /**
              * Levels
              * @default []
              */
@@ -780,6 +1398,28 @@ export interface components {
          */
         ErrorOut: {
             error: components["schemas"]["ErrorBody"];
+        };
+        /**
+         * ExecutionRowOut
+         * @description Fases da despesa de uma categoria (nunca somadas entre si).
+         */
+        ExecutionRowOut: {
+            /** Category Code */
+            category_code: string;
+            /** Label */
+            label: string;
+            /** Committed */
+            committed: number;
+            /** Liquidated */
+            liquidated: number;
+            /** Paid */
+            paid: number;
+            /** Payables Registered */
+            payables_registered: number;
+            /** Payables Cancelled */
+            payables_cancelled: number;
+            /** Payables Paid */
+            payables_paid: number;
         };
         /**
          * ExportIn
@@ -1078,6 +1718,7 @@ export interface components {
             time_grains: components["schemas"]["TimeGrainOut"][];
             /** Time Aggregation */
             time_aggregation?: ("sum" | "mean" | "last" | "compound") | null;
+            temporal?: components["schemas"]["TemporalCapabilitiesOut"];
             source: components["schemas"]["KpiSourceOut"];
         };
         /**
@@ -1106,6 +1747,63 @@ export interface components {
              * @default []
              */
             tables: components["schemas"]["SourceTableOut"][];
+        };
+        /**
+         * LensOut
+         * @description Lente de dados e o que ela oferece.
+         */
+        LensOut: {
+            /**
+             * Lens
+             * @enum {string}
+             */
+            lens: "A" | "B" | "C";
+            /** Label */
+            label: string;
+            /** Description */
+            description: string;
+            /** Notes */
+            notes: string[];
+            /** Dimensions */
+            dimensions: components["schemas"]["ContasDimensionOut"][];
+            /** Group By */
+            group_by: components["schemas"]["ContasDimensionOut"][];
+            /** Periods */
+            periods: string[];
+            /** Latest Period */
+            latest_period: string | null;
+            /** Statuses */
+            statuses: components["schemas"]["PeriodStatusOut"][];
+        };
+        /**
+         * LensPointOut
+         * @description Valor mensal de uma lente.
+         */
+        LensPointOut: {
+            /**
+             * Lens
+             * @enum {string}
+             */
+            lens: "A" | "B";
+            /** Period */
+            period: string;
+            /** Value */
+            value: number;
+        };
+        /**
+         * LensTotalOut
+         * @description Total de uma lente num ano.
+         */
+        LensTotalOut: {
+            /**
+             * Lens
+             * @enum {string}
+             */
+            lens: "A" | "B";
+            /** Year */
+            year: number;
+            /** Value */
+            value: number;
         };
         /**
          * LicenseOut
@@ -1163,6 +1861,18 @@ export interface components {
             /** Values */
             values: components["schemas"]["MapValueOut"][];
             provenance: components["schemas"]["Provenance"];
+        };
+        /**
+         * MapRowOut
+         * @description Total de um território.
+         */
+        MapRowOut: {
+            /** Geography Key */
+            geography_key: string;
+            /** Name */
+            name: string;
+            /** Value */
+            value: number;
         };
         /**
          * MapValueOut
@@ -1306,6 +2016,40 @@ export interface components {
             themes: components["schemas"]["ThemeOut"][];
         };
         /**
+         * OrganTotalOut
+         * @description Órgão pagador ou concedente.
+         */
+        OrganTotalOut: {
+            /**
+             * Lens
+             * @enum {string}
+             */
+            lens: "A" | "B";
+            /** Organ */
+            organ: string | null;
+            /** Value */
+            value: number;
+        };
+        /**
+         * PeriodStatusOut
+         * @description Situação de um mês numa lente (ADR-0036, decisão 3).
+         */
+        PeriodStatusOut: {
+            /** Period */
+            period: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "aberto" | "incompleto" | "fechado";
+            /** Note */
+            note: string;
+            /** Shortfall Share */
+            shortfall_share?: number | null;
+            /** Missing Actions */
+            missing_actions?: string[];
+        };
+        /**
          * PivotFieldOut
          * @description Campo da tabela dinâmica: território, período ou uma dimensão.
          */
@@ -1353,6 +2097,8 @@ export interface components {
             cells: (components["schemas"]["CellOut"] | null)[][];
             /** Share Bases */
             share_bases?: components["schemas"]["PivotShareBaseOut"][];
+            /** Alerts */
+            alerts?: components["schemas"]["CoverageAlertOut"][];
             footer?: components["schemas"]["PivotHeaderOut"] | null;
             /**
              * Footer Cells
@@ -1536,6 +2282,59 @@ export interface components {
             unit: string;
         };
         /**
+         * RankingRowOut
+         * @description Posição no ranking.
+         */
+        RankingRowOut: {
+            /** Rank */
+            rank: number;
+            recipient: components["schemas"]["RecipientRefOut"];
+            /** Value */
+            value: number;
+        };
+        /**
+         * RecipientProfileOut
+         * @description Ficha do favorecido (ADR-0031: aviso de homônimo e ``noindex`` para PF).
+         */
+        RecipientProfileOut: {
+            recipient: components["schemas"]["RecipientRefOut"];
+            /** Legal Nature */
+            legal_nature: string | null;
+            /** Economic Activity */
+            economic_activity: string | null;
+            /** Economic Section */
+            economic_section: string | null;
+            /** Totals */
+            totals: components["schemas"]["LensTotalOut"][];
+            /** Organs */
+            organs: components["schemas"]["OrganTotalOut"][];
+            /** Series */
+            series: components["schemas"]["LensPointOut"][];
+            /** Notes */
+            notes: string[];
+            provenance: components["schemas"]["ContasProvenance"];
+        };
+        /**
+         * RecipientRefOut
+         * @description Favorecido como aparece na tela: nome, sede e classe (sem código).
+         */
+        RecipientRefOut: {
+            /** Recipient Id */
+            recipient_id: string;
+            /** Name */
+            name: string | null;
+            /** Seat Municipality */
+            seat_municipality: string | null;
+            /** Seat Uf */
+            seat_uf: string | null;
+            /** Recipient Class */
+            recipient_class: string;
+            /** Class Label */
+            class_label: string;
+            /** Is Natural Person */
+            is_natural_person: boolean;
+        };
+        /**
          * ReleaseOut
          * @description Release ativo.
          */
@@ -1550,6 +2349,97 @@ export interface components {
             code_version: string;
             /** Tables */
             tables: components["schemas"]["TableVersionOut"][];
+        };
+        /**
+         * SearchHitOut
+         * @description Resultado da busca.
+         */
+        SearchHitOut: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "favorecido" | "orgao" | "programa" | "acao";
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+            /** Detail */
+            detail?: string | null;
+        };
+        /**
+         * SeasonalOut
+         * @description Resultado derivado do acumulado entre anos (ADR-0041).
+         */
+        SeasonalOut: {
+            /** Kpi Id */
+            kpi_id: string;
+            geography: components["schemas"]["GeographyRefOut"];
+            /** Unit */
+            unit: string;
+            /**
+             * Grain
+             * @enum {string}
+             */
+            grain: "mes" | "trimestre" | "semestre" | "ano";
+            /**
+             * Native Grain
+             * @enum {string}
+             */
+            native_grain: "mes" | "trimestre" | "semestre" | "ano";
+            /** Year From */
+            year_from: number;
+            /** Year To */
+            year_to: number;
+            /** Series */
+            series: components["schemas"]["SeasonalSeriesOut"][];
+            /** Notes */
+            notes: string[];
+            provenance: components["schemas"]["Provenance"];
+        };
+        /**
+         * SeasonalPointOut
+         * @description Subtotal por parte e intervalo, com parcelas explícitas.
+         */
+        SeasonalPointOut: {
+            /** Part */
+            part: string;
+            /** Value */
+            value: number | null;
+            /** Status */
+            status: string;
+            /** Severity */
+            severity: ("warning" | "danger") | null;
+            /** Expected */
+            expected: number;
+            /** Present */
+            present: number;
+            /** Missing */
+            missing: string[];
+            /** Blocked */
+            blocked: string[];
+            /** Contributors */
+            contributors: string[];
+            /** Input Partial */
+            input_partial: string[];
+        };
+        /**
+         * SeasonalSeriesOut
+         * @description Uma série acumulada por parte, sem misturar combinações de categorias.
+         */
+        SeasonalSeriesOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Categories */
+            categories: {
+                [key: string]: string;
+            };
+            /** Depth */
+            depth: number;
+            /** Points */
+            points: components["schemas"]["SeasonalPointOut"][];
         };
         /**
          * SeriesItemOut
@@ -1580,6 +2470,18 @@ export interface components {
             points: components["schemas"]["PointOut"][];
         };
         /**
+         * SeriesLineOut
+         * @description Série de uma categoria (ou do total).
+         */
+        SeriesLineOut: {
+            /** Category Code */
+            category_code: string;
+            /** Label */
+            label: string;
+            /** Points */
+            points: components["schemas"]["SeriesPointOut"][];
+        };
+        /**
          * SeriesOut
          * @description Evolução temporal de um território.
          */
@@ -1603,6 +2505,16 @@ export interface components {
             /** Share Methods */
             share_methods?: ("published_total" | "published_group" | "displayed_sum" | "none")[];
             provenance: components["schemas"]["Provenance"];
+        };
+        /**
+         * SeriesPointOut
+         * @description Valor de um período.
+         */
+        SeriesPointOut: {
+            /** Period */
+            period: string;
+            /** Value */
+            value: number;
         };
         /**
          * SourceOut
@@ -1744,6 +2656,29 @@ export interface components {
             table_id: string;
             /** Delta Version */
             delta_version: number;
+        };
+        /**
+         * TemporalCapabilitiesOut
+         * @description Operações temporais independentes, calculadas na API (ADR-0041).
+         */
+        TemporalCapabilitiesOut: {
+            /**
+             * Isolate
+             * @default false
+             */
+            isolate: boolean;
+            /**
+             * Accumulate
+             * @default false
+             */
+            accumulate: boolean;
+            /**
+             * Seasonal Sum
+             * @default false
+             */
+            seasonal_sum: boolean;
+            /** Accumulation Rule */
+            accumulation_rule?: ("sum" | "compound") | null;
         };
         /**
          * ThemeIndexOut
@@ -2620,6 +3555,138 @@ export interface operations {
             };
         };
     };
+    dictionary_index_api_v1_dictionaries_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DictionaryIndexOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    dictionary_entry_api_v1_dictionaries__entry_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DictionaryEntryOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
     kpi_api_v1_kpis__kpi_id__get: {
         parameters: {
             query?: never;
@@ -2974,6 +4041,86 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SeriesOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    kpi_seasonal_api_v1_kpis__kpi_id__seasonal_get: {
+        parameters: {
+            query: {
+                /** @description Território, ex.: uf:29. */
+                geography: string;
+                year_from: number;
+                year_to: number;
+                /** @description Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos). */
+                grain?: ("mes" | "trimestre" | "semestre" | "ano") | null;
+                /** @description Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo. */
+                correction?: string | null;
+                /** @description Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2. */
+                dimensions?: string[] | null;
+                /** @description Filtro de categorias das dimensões detalhadas (repetível ou separadas por vírgula), ex.: c79:2670,c79:2681. Sem filtro numa dimensão: todas. Em indicadores somáveis, o Total vira a soma das categorias escolhidas. */
+                categories?: string[] | null;
+            };
+            header?: never;
+            path: {
+                kpi_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonalOut"];
                 };
             };
             /** @description Recurso inexistente no release */
@@ -3671,6 +4818,660 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MetricsDatasetsOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    meta_api_v1_contas_meta_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContasMetaOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    contas_map_api_v1_contas_map_get: {
+        parameters: {
+            query?: {
+                /** @description A: transferências; B: favorecidos. */
+                lens?: "A" | "B";
+                level?: "regiao" | "uf" | "municipio";
+                within?: string | null;
+                /** @description Dimensão do detalhar por. */
+                dimension?: string | null;
+                /** @description Categorias da dimensão (soma das escolhidas). */
+                categories?: string[] | null;
+                /** @description Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026). */
+                periods?: string[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContasMapOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    composition_api_v1_contas_composition_get: {
+        parameters: {
+            query: {
+                /** @description Território, ex.: uf:25. */
+                geography_key: string;
+                dimension: string;
+                /** @description A: transferências; B: favorecidos. */
+                lens?: "A" | "B";
+                limit?: number;
+                /** @description Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026). */
+                periods?: string[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContasCompositionOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    series_api_v1_contas_series_get: {
+        parameters: {
+            query?: {
+                /** @description Território, ex.: uf:25. */
+                geography_key?: string;
+                /** @description A: transferências; B: favorecidos. */
+                lens?: "A" | "B";
+                grain?: "mes" | "ano";
+                /** @description Dimensão do detalhar por. */
+                dimension?: string | null;
+                categories?: string[] | null;
+                /** @description Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026). */
+                periods?: string[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContasSeriesOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    ranking_api_v1_contas_ranking_get: {
+        parameters: {
+            query?: {
+                /** @description Território, ex.: uf:25. */
+                geography_key?: string;
+                /** @description A: transferências; B: favorecidos. */
+                lens?: "A" | "B";
+                year?: number | null;
+                /** @description Página de 10 linhas (até 100). */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContasRankingOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    table_api_v1_contas_table_get: {
+        parameters: {
+            query?: {
+                /** @description Território, ex.: uf:25. */
+                geography_key?: string;
+                /** @description A: transferências; B: favorecidos. */
+                lens?: "A" | "B";
+                /** @description territory, recipient ou dimensão. */
+                group_by?: string;
+                /** @description dimensão:código (repetível), ex.: function:10. Até 10. */
+                filter?: string[] | null;
+                sort?: "value" | "name";
+                /** @description Página de 10 linhas (até 100). */
+                page?: number;
+                include_intermediaries?: boolean;
+                /** @description Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026). */
+                periods?: string[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContasTableOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    recipient_api_v1_contas_favorecidos__recipient_id__get: {
+        parameters: {
+            query?: {
+                /** @description Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026). */
+                periods?: string[] | null;
+            };
+            header?: never;
+            path: {
+                recipient_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecipientProfileOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    search_api_v1_contas_busca_get: {
+        parameters: {
+            query: {
+                q: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContasSearchOut"];
+                };
+            };
+            /** @description Recurso inexistente no release */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Regra semântica ou parâmetro inválido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Limite de requisições */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Sem release ativo ou motor ocupado */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+            /** @description Tempo de consulta excedido */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    execution_api_v1_contas_execucao_get: {
+        parameters: {
+            query?: {
+                dimension?: string;
+                filter?: string[] | null;
+                /** @description Página de 10 linhas (até 100). */
+                page?: number;
+                /** @description Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026). */
+                periods?: string[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContasExecutionOut"];
                 };
             };
             /** @description Recurso inexistente no release */

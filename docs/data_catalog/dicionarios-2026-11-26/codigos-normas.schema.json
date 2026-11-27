@@ -1,0 +1,354 @@
+{
+  "$defs": {
+    "Binding": {
+      "additionalProperties": false,
+      "properties": {
+        "entry_id": {
+          "title": "Entry Id",
+          "type": "string"
+        },
+        "norm_id": {
+          "title": "Norm Id",
+          "type": "string"
+        },
+        "relation": {
+          "const": "cited_by_register",
+          "title": "Relation",
+          "type": "string"
+        },
+        "source_url": {
+          "title": "Source Url",
+          "type": "string"
+        },
+        "section": {
+          "title": "Section",
+          "type": "string"
+        },
+        "exercise": {
+          "title": "Exercise",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entry_id",
+        "norm_id",
+        "relation",
+        "source_url",
+        "section",
+        "exercise"
+      ],
+      "title": "Binding",
+      "type": "object"
+    },
+    "Code": {
+      "additionalProperties": false,
+      "properties": {
+        "entry_id": {
+          "title": "Entry Id",
+          "type": "string"
+        },
+        "system": {
+          "title": "System",
+          "type": "string"
+        },
+        "domain": {
+          "title": "Domain",
+          "type": "string"
+        },
+        "code": {
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "exercise": {
+          "title": "Exercise",
+          "type": "string"
+        },
+        "context": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Context",
+          "type": "object"
+        },
+        "official_label": {
+          "title": "Official Label",
+          "type": "string"
+        },
+        "source_url": {
+          "title": "Source Url",
+          "type": "string"
+        },
+        "section": {
+          "title": "Section",
+          "type": "string"
+        },
+        "edition": {
+          "title": "Edition",
+          "type": "string"
+        },
+        "consulted_at": {
+          "title": "Consulted At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entry_id",
+        "system",
+        "domain",
+        "code",
+        "exercise",
+        "context",
+        "official_label",
+        "source_url",
+        "section",
+        "edition",
+        "consulted_at"
+      ],
+      "title": "Code",
+      "type": "object"
+    },
+    "Generation": {
+      "additionalProperties": false,
+      "properties": {
+        "generator_name": {
+          "const": "Open Data Brasil",
+          "title": "Generator Name",
+          "type": "string"
+        },
+        "generator_url": {
+          "const": "https://opendatabrasil.org",
+          "title": "Generator Url",
+          "type": "string"
+        },
+        "generator_role": {
+          "const": "geracao_do_arquivo",
+          "title": "Generator Role",
+          "type": "string"
+        },
+        "generator_version": {
+          "title": "Generator Version",
+          "type": "string"
+        },
+        "generated_at": {
+          "format": "date-time",
+          "title": "Generated At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "generator_name",
+        "generator_url",
+        "generator_role",
+        "generator_version",
+        "generated_at"
+      ],
+      "title": "Generation",
+      "type": "object"
+    },
+    "Norm": {
+      "additionalProperties": false,
+      "properties": {
+        "norm_id": {
+          "title": "Norm Id",
+          "type": "string"
+        },
+        "identifier": {
+          "title": "Identifier",
+          "type": "string"
+        },
+        "provision": {
+          "title": "Provision",
+          "type": "string"
+        },
+        "official_url": {
+          "title": "Official Url",
+          "type": "string"
+        },
+        "consulted_at": {
+          "title": "Consulted At",
+          "type": "string"
+        },
+        "direct_text_access": {
+          "title": "Direct Text Access",
+          "type": "boolean"
+        },
+        "applicable_wording": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Applicable Wording"
+        },
+        "validity_status": {
+          "enum": [
+            "cited_only",
+            "period_application_pending",
+            "verified_for_period"
+          ],
+          "title": "Validity Status",
+          "type": "string"
+        },
+        "gap": {
+          "title": "Gap",
+          "type": "string"
+        }
+      },
+      "required": [
+        "norm_id",
+        "identifier",
+        "provision",
+        "official_url",
+        "consulted_at",
+        "direct_text_access",
+        "applicable_wording",
+        "validity_status",
+        "gap"
+      ],
+      "title": "Norm",
+      "type": "object"
+    },
+    "RowLink": {
+      "additionalProperties": false,
+      "properties": {
+        "row_id": {
+          "title": "Row Id",
+          "type": "string"
+        },
+        "sheet_id": {
+          "title": "Sheet Id",
+          "type": "string"
+        },
+        "column_id": {
+          "title": "Column Id",
+          "type": "string"
+        },
+        "raw_code": {
+          "title": "Raw Code",
+          "type": "string"
+        },
+        "exercise": {
+          "title": "Exercise",
+          "type": "string"
+        },
+        "entry_id": {
+          "title": "Entry Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "row_id",
+        "sheet_id",
+        "column_id",
+        "raw_code",
+        "exercise",
+        "entry_id"
+      ],
+      "title": "RowLink",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1.1-proposta-codigos",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "generation": {
+      "$ref": "#/$defs/Generation"
+    },
+    "artifact_type": {
+      "const": "demonstracao_documental_sem_dados_financeiros",
+      "title": "Artifact Type",
+      "type": "string"
+    },
+    "release_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Release Id"
+    },
+    "data_rows": {
+      "items": {
+        "additionalProperties": {
+          "type": "string"
+        },
+        "type": "object"
+      },
+      "title": "Data Rows",
+      "type": "array"
+    },
+    "code_entries": {
+      "items": {
+        "$ref": "#/$defs/Code"
+      },
+      "title": "Code Entries",
+      "type": "array"
+    },
+    "legal_references": {
+      "items": {
+        "$ref": "#/$defs/Norm"
+      },
+      "title": "Legal References",
+      "type": "array"
+    },
+    "code_legal_links": {
+      "items": {
+        "$ref": "#/$defs/Binding"
+      },
+      "title": "Code Legal Links",
+      "type": "array"
+    },
+    "row_code_links": {
+      "items": {
+        "$ref": "#/$defs/RowLink"
+      },
+      "title": "Row Code Links",
+      "type": "array"
+    },
+    "unverified_input": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "title": "Unverified Input",
+      "type": "object"
+    },
+    "warning": {
+      "title": "Warning",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "generation",
+    "artifact_type",
+    "release_id",
+    "data_rows",
+    "code_entries",
+    "legal_references",
+    "code_legal_links",
+    "row_code_links",
+    "unverified_input",
+    "warning"
+  ],
+  "title": "LegalExample",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

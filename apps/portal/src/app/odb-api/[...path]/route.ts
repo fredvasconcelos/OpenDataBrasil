@@ -9,10 +9,12 @@ const ALLOWED = new Set([
   "geographies",
   "indicators",
   "datasets",
+  "dictionaries",
   "sources",
   "release",
   "exports",
   "metrics",
+  "contas",
 ]);
 // x-odb-kpi e x-odb-format: o log do Caddy lê da resposta da exportação para contar downloads (ADR-0027).
 const PASS_HEADERS = [
@@ -26,6 +28,7 @@ const PASS_HEADERS = [
   "x-odb-format",
   "allow",
   "retry-after",
+  "x-robots-tag",
 ];
 
 function target(path: string[], search: string): string | null {

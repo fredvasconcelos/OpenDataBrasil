@@ -16,6 +16,15 @@ Identificadores seguem o padrão em inglês do código existente. A especificaç
 [CLAUDE.md](CLAUDE.md). Não altere granularidade, agregações ou metodologia sem decisão
 explícita e documentação. Não edite arquivos gerados à mão.
 
+## Registro das novidades
+
+Ao acrescentar indicadores ou mudar uma função do portal, atualize o
+[Dev Log](DEVLOG.md). Inclua a entrada mais recente no topo, com data, título,
+situação e até três pontos sobre o benefício para quem consulta os dados.
+Use linguagem simples e registre somente mudanças comprovadas. Identifique o
+que está em teste; indique disponibilidade na beta após a publicação confirmada.
+Detalhes de implementação, infraestrutura e operação ficam na documentação própria.
+
 ## Guarda da distribuição pública
 
 Instale o gancho antes de criar commits:

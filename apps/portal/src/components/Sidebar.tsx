@@ -8,7 +8,7 @@ import { formatPeriod } from "@/lib/format";
 import { flatten, flattenPlanned, highlight, matchKpi, matchPlanned, snippet, sourceTable } from "@/lib/catalog";
 import type { Geography, Kpi, KpiIndex, Navigation, PortalIndex } from "@/lib/types";
 import { PeriodFilter } from "@/components/PeriodFilter";
-import { canAccumulate, canCross, grainPeriods, timeGrains, yearsOf } from "@/lib/state";
+import { canAccumulate, canIsolate, canCross, grainPeriods, timeGrains, yearsOf } from "@/lib/state";
 
 interface Props {
   nav: Navigation | PortalIndex;
@@ -178,7 +178,7 @@ export function Sidebar({
               <button type="button" className="text-btn" onClick={onMunicipalNation}>{t("dashboard.focus.nationalMunicipalities")}</button>
             </div>
           ) : null}
-          {timeGrains(kpi).length > 1 ? (
+          {timeGrains(kpi).length > 1 || canIsolate(kpi, grain) || canAccumulate(kpi) ? (
             <fieldset className="grains">
               <legend>{t("dashboard.grain")}</legend>
               {timeGrains(kpi).map((g, i) => (
@@ -199,7 +199,7 @@ export function Sidebar({
                     <input
                       type="checkbox"
                       checked={isolate}
-                      disabled={(grain ?? timeGrains(kpi)[0]?.grain) === "ano"}
+                      disabled={!canIsolate(kpi, grain)}
                       onChange={(e) => onIsolate(e.target.checked)}
                     />
                     {t("dashboard.isolate")}
@@ -207,12 +207,12 @@ export function Sidebar({
                   {onAccumulate ? (
                     <label
                       className="check accumulate"
-                      title={canAccumulate(kpi) ? t("dashboard.accumulateHint") : t("dashboard.accumulateOff")}
+                      title={canAccumulate(kpi, isolate) ? t("dashboard.accumulateHint") : t(isolate ? "dashboard.accumulateSeasonalOff" : "dashboard.accumulateOff")}
                     >
                       <input
                         type="checkbox"
                         checked={accumulate}
-                        disabled={!canAccumulate(kpi)}
+                        disabled={!canAccumulate(kpi, isolate)}
                         onChange={(e) => onAccumulate(e.target.checked)}
                       />
                       {t("dashboard.accumulate")}
@@ -220,6 +220,7 @@ export function Sidebar({
                   ) : null}
                 </div>
               ) : null}
+              {isolate && !canAccumulate(kpi, true) ? <p className="grain-note">{t("dashboard.accumulateSeasonalOff")}</p> : null}
             </fieldset>
           ) : null}
           {kpi.corrections?.length ? (

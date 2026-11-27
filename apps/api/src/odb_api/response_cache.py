@@ -18,9 +18,22 @@ from fastapi import Request, Response
 CACHEABLE = re.compile(
     r"^/api/v1/(kpis/[a-z0-9_]+/(map|series|detail|details|table|pivot|history)|geographies(/[^/]+)?)$"
 )
+# Bloco de contas (ADR-0037): chave com o release do escopo ``contas``.
+CONTAS_CACHEABLE = re.compile(
+    r"^/api/v1/contas/(meta|map|composition|series|ranking|table|busca|execucao"
+    r"|favorecidos/[0-9a-f]{16})$"
+)
 _OK = 200
 _PIVOT_REFUSAL = 422
-_KEEP_HEADERS = ("content-type", "x-odb-release", "etag", "cache-control", "content-disposition")
+# x-robots-tag: as fichas de pessoa física não são indexadas (ADR-0031, 5.6).
+_KEEP_HEADERS = (
+    "content-type",
+    "x-odb-release",
+    "etag",
+    "cache-control",
+    "content-disposition",
+    "x-robots-tag",
+)
 
 Key = tuple[str, str, str]
 Entry = tuple[bytes, dict[str, str], int]
@@ -70,18 +83,29 @@ class ResponseCache:
 
 
 def make_cache_middleware(
-    cache: ResponseCache, current_release: Callable[[], str | None]
+    cache: ResponseCache,
+    current_release: Callable[[], str | None],
+    *,
+    contas_release: Callable[[], str | None] | None = None,
 ) -> Callable[[Request, Callable[[Request], Awaitable[Response]]], Awaitable[Response]]:
-    """Middleware: serve do cache os GET cacheáveis do release ativo."""
+    """Middleware: serve do cache os GET cacheáveis do release ativo.
+
+    As rotas das contas usam o release do próprio escopo (``contas_release``).
+    """
 
     async def middleware(
         request: Request, call_next: Callable[[Request], Awaitable[Response]]
     ) -> Response:
         path = request.url.path
-        if not cache.enabled or request.method != "GET" or not CACHEABLE.match(path):
+        resolve = current_release
+        if contas_release is not None and CONTAS_CACHEABLE.match(path):
+            resolve = contas_release
+        elif not CACHEABLE.match(path):
+            return await call_next(request)
+        if not cache.enabled or request.method != "GET":
             return await call_next(request)
         try:
-            release = current_release()
+            release = resolve()
         except Exception:  # sem release, a própria rota responde o erro adequado
             release = None
         if release is None:

@@ -198,6 +198,18 @@ def _get(stack: dict[str, Any], path: str, status: int = 200) -> Any:
     return response.json()
 
 
+def test_acumulado_sazonal_recusa_populacao_sem_alterar_a_serie(stack: dict[str, Any]) -> None:
+    body = _get(
+        stack,
+        "/api/v1/kpis/populacao_estimada/seasonal?geography=brasil:1&year_from=2023&year_to=2025",
+        422,
+    )
+    assert body["error"]["code"] == "semantic_rule"
+    meta = _get(stack, "/api/v1/kpis/populacao_estimada")
+    assert not meta["temporal"]["seasonal_sum"]
+    assert meta["temporal"]["isolate"]
+
+
 def test_catalog_down_is_503_and_recovers(stack: dict[str, Any]) -> None:
     # Ex.: o PostgreSQL não voltou depois de um reinício do Docker. Sem traceback
     # (500): 503 com nova tentativa, e a API volta sozinha quando o banco volta.
@@ -698,6 +710,46 @@ def test_query_endpoint_applies_semantic_rules(stack: dict[str, Any]) -> None:
     assert sql.status_code == 422
 
 
+def test_dicionarios_expoem_fichas_apoios_e_candidatas_sem_ativacao(stack: dict[str, Any]) -> None:
+    index = _get(stack, "/api/v1/dictionaries")
+    assert len(index["entries"]) == 335
+    assert len(index["expansions"]) == 50
+    assert index["preparation"]["total"] == 50
+    entry = _get(stack, "/api/v1/dictionaries/nascidos_vivos")
+    assert entry["document"]["lacunas"]
+    assert entry["methods"][0]["id"] == "M04"
+    assert entry["documentary_status"] == "revisao_parcial"
+    _get(stack, "/api/v1/dictionaries/inexistente", 404)
+
+
+def test_exportacao_de_marginais_conserva_todos_os_filtros_e_blocos(
+    stack: dict[str, Any],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    deps = stack["client"].app.state.deps
+    cfg = deps.kpis.kpi(deps.resolver.current(), "populacao_residente")
+    monkeypatch.setattr(
+        deps.kpis, "kpi", lambda *_args: cfg.model_copy(update={"exclusive_dimensions": True})
+    )
+    response = stack["client"].post(
+        "/api/v1/exports",
+        json={
+            "kpi_id": "populacao_residente",
+            "level": "uf",
+            "format": "json",
+            "dimensions": ["c86", "c2"],
+            "categories": ["c86:2779"],
+        },
+    )
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["metadata"]["filtros"]["dimensions"] == ["c86", "c2"]
+    assert payload["metadata"]["filtros"]["categories"] == ["c86:2779"]
+    assert len(payload["metadata"]["blocos"]) == 2
+    assert {row["block_id"] for row in payload["rows"]} == {"bloco-1", "bloco-2"}
+    assert len({row["row_id"] for row in payload["rows"]}) == len(payload["rows"])
+
+
 def test_exports_carry_metadata(stack: dict[str, Any]) -> None:
     client = stack["client"]
     payload = {"kpi_id": "populacao_residente", "level": "uf", "dimensions": ["c86", "c2"]}
@@ -707,7 +759,11 @@ def test_exports_carry_metadata(stack: dict[str, Any]) -> None:
     with zipfile.ZipFile(io.BytesIO(csv.content)) as archive:
         rows = archive.read("dados.csv").decode("utf-8-sig").splitlines()
         meta = json.loads(archive.read("metadados.json"))
-    assert rows[0] == "geography_key,territorio,uf,periodo,Cor ou raça,Sexo,valor,status,unidade"
+    assert rows[0].startswith(
+        "row_id,geography_key,territorio,uf,periodo,Cor ou raça,Sexo,valor,status,unidade,"
+    )
+    assert "value_exact" in rows[0]
+    assert "c86_code" in rows[0]
     # 27 UFs x 2 censos x (Total + 5 cores ou raças) x (Total + 2 sexos)
     assert len(rows) - 1 == meta["linhas"] == 27 * 2 * 6 * 3
     assert meta["release"]["release_id"] == "rel-1"
@@ -1173,7 +1229,9 @@ def test_provenance_from_source_configuration() -> None:
     assert out["datasus-sim-cid10-dores"] == ("MS", None)
 
 
-def test_exclusive_dimensions_and_absent_categories(tmp_path: Path, stack: dict[str, Any]) -> None:
+def test_exclusive_dimensions_and_absent_categories(
+    tmp_path: Path, stack: dict[str, Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
     """ADR-0016: dimensões marginais vão uma por vez; categoria sem dado não aparece."""
     text = (PORTAL_DIR / "demografia.toml").read_text(encoding="utf-8")
     marker = 'indicator = "censo_populacao_cor_raca_sexo"\n'
@@ -1187,6 +1245,33 @@ def test_exclusive_dimensions_and_absent_categories(tmp_path: Path, stack: dict[
         service.series(ctx, "populacao_residente", geography="brasil:1", dimensions=["c86", "c2"])
     one = service.series(ctx, "populacao_residente", geography="brasil:1", dimensions=["c2"])
     assert len(one.series) == 3  # Total, Homens e Mulheres
+    # A tabela devolve o diagnóstico V4, sem executar o cruzamento recusado.
+    with monkeypatch.context() as guarded:
+
+        def reject_query(*args: Any, **kwargs: Any) -> None:
+            raise AssertionError("Cruzamento inválido não pode consultar observações")
+
+        guarded.setattr(stack["gold"], "run_plan", reject_query)
+        pivot = service.pivot(
+            ctx,
+            "populacao_residente",
+            level="uf",
+            within=None,
+            rows=["territorio"],
+            cols=["c86", "c2"],
+        )
+        assert pivot.cells == []
+        assert [a.code for a in pivot.alerts] == ["V4"]
+    with pytest.raises(SemanticError, match="não tem o período"):
+        service.pivot(
+            ctx,
+            "populacao_residente",
+            level="uf",
+            within=None,
+            rows=["territorio"],
+            cols=["periodo"],
+            periods=["2999"],
+        )
     # As fixtures da 9606 só têm o Total de idade: os grupos quinquenais não aparecem.
     detail = service.detail(
         ctx, "populacao_residente", geography="brasil:1", period="2022", dimensions=["c287"]

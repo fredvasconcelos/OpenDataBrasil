@@ -10,14 +10,15 @@ import type { Series } from "@/lib/types";
 
 // "Isolar período" (ADR-0026, DS 2.6): as partes (mês, trimestre ou semestre) dos anos
 // marcados no filtro Período, uma barra por ano em cada parte, para comparar a mesma
-// época entre anos. Com "Acumular", cada barra é o acumulado no ano até aquela parte
-// (a API devolve a série já acumulada). Nada é somado entre anos.
+// época entre anos. A soma entre anos usa SeasonalChart e o endpoint sazonal;
+// este componente apenas organiza os valores recebidos na comparação.
 
 const M = { top: 12, right: 12, bottom: 28 };
 const MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
 /** Parte do ano de um código de período da Gold: "2025M08" → "M08"; "2025T3" → "T3". */
 export function partOf(period: string): string | null {
+  if (/^\d{4}$/.test(period)) return "ano";
   const m = /^\d{4}([MTS]\d{1,2})$/.exec(period);
   return m ? (m[1] as string) : null;
 }
@@ -31,6 +32,7 @@ export interface SeasonBar {
   part: string;
   values: (number | null)[]; // uma por (ano, série), na ordem de ``labels``
   statuses: string[];
+  coverage?: { present: number; expected: number }[];
 }
 
 /** Barras por parte do ano: uma por ano marcado (e por série, com detalhe). */
@@ -46,7 +48,9 @@ export function seasonBars(data: Series): { bars: SeasonBar[]; labels: string[];
     years.length > 1 && shown.length > 1 ? `${y} · ${s.label}` : years.length > 1 ? y : s.label,
   );
   const bars = parts.map((part) => {
-    const found = combos.map(({ y, s }) => s.points.find((p) => p.period === `${y}${part}`));
+    const found = combos.map(({ y, s }) =>
+      s.points.find((p) => p.period === (part === "ano" ? y : `${y}${part}`)),
+    );
     return {
       part,
       values: found.map((p) => (p?.value ?? null) as number | null),
@@ -58,6 +62,16 @@ export function seasonBars(data: Series): { bars: SeasonBar[]; labels: string[];
 
 export function SeasonChart({ data, accumulated = false }: { data: Series; accumulated?: boolean }) {
   const t = useTranslations("dashboard");
+  const { bars, labels, years } = seasonBars(data);
+  const how = t(accumulated ? "isolateAccumulated" : "isolateParts", { years: years.join(", ") });
+  return <SeasonPlot bars={bars} labels={labels} how={how} unit={data.unit} />;
+}
+
+/** Desenha valores já calculados pela API, sem somar parcelas no navegador. */
+export function SeasonPlot({ bars, labels, how, unit, showMethod = true }: {
+  bars: SeasonBar[]; labels: string[]; how: string; unit: string; showMethod?: boolean;
+}) {
+  const t = useTranslations("dashboard");
   const box = useRef<HTMLDivElement>(null);
   const [{ W, H }, setSize] = useState({ W: 560, H: 260 });
   const [active, setActive] = useState<number | null>(null);
@@ -66,15 +80,14 @@ export function SeasonChart({ data, accumulated = false }: { data: Series; accum
     if (!el || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(([entry]) => {
       if (!entry) return;
-      setSize({ W: Math.max(280, entry.contentRect.width), H: Math.max(200, entry.contentRect.height) });
+      setSize({ W: Math.max(280, entry.contentRect.width), H: Math.max(80, entry.contentRect.height) });
     });
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
-  const { bars, labels, years } = seasonBars(data);
   const all = bars.flatMap((b) => b.values).filter((v): v is number => v !== null);
-  const y = scaleLinear().domain([0, Math.max(...all, 1)]).nice().range([H - M.bottom, M.top]);
+  const y = scaleLinear().domain([Math.min(0, ...all), Math.max(...all, 1)]).nice().range([H - M.bottom, M.top]);
   const left = 48;
   const x = scaleBand<string>().domain(bars.map((b) => b.part)).range([left, W - M.right]).padding(0.2);
   const inner = scaleBand<number>()
@@ -82,7 +95,6 @@ export function SeasonChart({ data, accumulated = false }: { data: Series; accum
     .range([0, x.bandwidth()])
     .padding(0.08);
   const color = (i: number) => SERIES[i % SERIES.length] as string;
-  const how = t(accumulated ? "isolateAccumulated" : "isolateParts", { years: years.join(", ") });
   const current = active === null ? null : bars[active];
 
   return (
@@ -113,37 +125,38 @@ export function SeasonChart({ data, accumulated = false }: { data: Series; accum
                     key={j}
                     className="season-bar"
                     x={(x(b.part) ?? 0) + (inner(j) ?? 0)}
-                    y={y(v)}
+                    y={Math.min(y(v), y(0))}
                     width={inner.bandwidth()}
-                    height={Math.max(0, y(0) - y(v))}
+                    height={Math.abs(y(0) - y(v))}
                     rx={2}
                     style={{ fill: color(j), opacity: active === null || active === i ? 1 : 0.45 }}
                   />
                 ),
               )}
               <text x={(x(b.part) ?? 0) + x.bandwidth() / 2} y={H - 8} textAnchor="middle" fontSize="12" fontWeight="700" style={{ fill: CHART.label }}>
-                {partLabel(b.part)}
+                {b.part === "ano" ? t("seasonalYear") : partLabel(b.part)}
               </text>
             </g>
           ))}
         </svg>
         {current ? (
           <div className="series-tip" role="tooltip" style={{ left: Math.min((x(current.part) ?? 0) + x.bandwidth() + 8, W - 200), top: 8, visibility: "visible" }}>
-            <div className="series-tip-head">{partLabel(current.part)}</div>
+            <div className="series-tip-head">{current.part === "ano" ? t("seasonalYear") : partLabel(current.part)}</div>
             <ul>
               {current.values.map((v, j) => (
                 <li key={labels[j]}>
                   <span className="series-tip-dot" style={{ background: color(j) }} aria-hidden="true" />
                   {labels.length > 1 ? <span className="series-tip-label">{labels[j]}</span> : null}
                   <span className="series-tip-value">{formatValue(v, current.statuses[j])}</span>
+                  {current.coverage?.[j] ? <span>{t("seasonalCoverage", current.coverage[j])}</span> : null}
                 </li>
               ))}
             </ul>
-            <div className="series-tip-unit">{unitSuffix(data.unit)}</div>
+            <div className="series-tip-unit">{unitSuffix(unit)}</div>
           </div>
         ) : null}
       </div>
-      <figcaption className="small">
+      {labels.length > 1 || showMethod ? <figcaption className="small">
         {labels.length > 1 ? (
           <ul className="series-legend">
             {labels.map((l, j) => (
@@ -154,8 +167,8 @@ export function SeasonChart({ data, accumulated = false }: { data: Series; accum
             ))}
           </ul>
         ) : null}
-        <p className="muted">{how}</p>
-      </figcaption>
+        {showMethod ? <p className="muted">{how}</p> : null}
+      </figcaption> : null}
     </figure>
   );
 }

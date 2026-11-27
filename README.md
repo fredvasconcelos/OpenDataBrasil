@@ -4,6 +4,9 @@ Plataforma para reunir, preservar e consultar dados oficiais do Brasil. O portal
 em desenvolvimento; a abertura do código não representa aprovação de todos os dados
 para publicação. As limitações conhecidas estão em [docs/known-issues.md](docs/known-issues.md).
 
+**Novidades:** acompanhe o [Dev Log](DEVLOG.md), com novos indicadores, funções e
+melhorias do portal, em linguagem simples e com a situação de cada entrega.
+
 **Fonte → Bronze → Silver → Gold → consulta → API → portal.** A Gold oficial existe
 somente no lakehouse. DuckDB consulta versões Delta fixadas por um release;
 PostgreSQL armazena metadados e o estado da publicação.
@@ -55,6 +58,7 @@ Com um release ativo, o perfil `web` atende o portal em `localhost:3000` e a API
 - [Instalação no Windows/WSL2](docs/development/setup-windows-wsl2.md)
 - [Decisões arquiteturais](docs/adr/)
 - [Catálogo IBGE](docs/data_catalog/ibge.md)
+- [Contas públicas: dicionários e fontes oficiais](docs/data_catalog/contas-publicas.md)
 - [Ingestão](docs/runbooks/ingestao.md), [Silver](docs/runbooks/silver.md),
   [Gold](docs/runbooks/gold.md), [exportação](docs/runbooks/exportacao.md)
 - [API](docs/runbooks/api.md), [portal](docs/runbooks/portal.md),

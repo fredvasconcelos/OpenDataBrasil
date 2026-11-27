@@ -567,3 +567,120 @@ def sinesp_checks(report: Any) -> list[CheckResult]:
             details={"events": dict(report.events)},
         ),
     ]
+
+
+# ------------------------------------------------------------------ contas públicas
+
+
+def contas_checks(
+    frame: pl.DataFrame,
+    contract: Contract,
+    *,
+    records: int,
+    value_columns: Sequence[str] = (),
+    period: str | None = None,
+    period_expr: pl.Expr | None = None,
+    source_columns: Sequence[str] = (),
+    max_unresolved_territory: int = 0,
+) -> list[CheckResult]:
+    """Verificações da Silver das contas públicas (ADR-0030 a 0035), lote a lote.
+
+    Bloqueiam (``fail``): contrato, nulos obrigatórios, chave, registros lidos diferentes
+    dos contados na fonte, valor fora do formato, período diferente do arquivo e município
+    não resolvido acima de ``max_unresolved_territory`` linhas no lote. Até esse teto, o
+    caso é ``warn`` e a linha fica na UF, sem município, nunca atribuída por semelhança de
+    nome (caso real: "CACHOEIRA DO PAJEU"/MG, SIAFI 4196, fora da TABMUN, 2025-03/04).
+    Informam (``pass``/``warn``): linhas idênticas preservadas, classe do favorecido não
+    determinada e a soma de cada valor (insumo da reconciliação da Gold).
+    """
+    contract_check = check_contract(frame, contract)
+    if contract_check.status is CheckStatus.FAIL:
+        return [contract_check]
+    results = [contract_check, check_required(frame, contract), check_unique(frame, contract)]
+    results.append(
+        CheckResult(
+            "rows.source_records",
+            CheckStatus.PASS if frame.height == records else CheckStatus.FAIL,
+            f"{frame.height} linhas lidas, {records} registros na fonte",
+            observed=frame.height,
+            expected=records,
+        )
+    )
+    for column in value_columns:
+        raw = f"{column}_raw"
+        bad = frame.filter(pl.col(raw).is_not_null() & pl.col(column).is_null())
+        totals = frame.select(pl.col(column).sum()).item()
+        results.append(
+            CheckResult(
+                f"value.format.{column}",
+                CheckStatus.FAIL if bad.height else CheckStatus.PASS,
+                f"{bad.height} valores fora do formato; soma {totals}",
+                observed=bad.height,
+                expected=0,
+                details={"sum": str(totals), "sample": bad[raw].head(5).to_list()},
+            )
+        )
+    if period is not None and period_expr is not None:
+        wrong = frame.filter(period_expr != period)
+        results.append(
+            CheckResult(
+                "period.matches_file",
+                CheckStatus.FAIL if wrong.height else CheckStatus.PASS,
+                f"{wrong.height} linhas com período diferente de {period}",
+                observed=wrong.height,
+                expected=0,
+            )
+        )
+    if "territory_status" in frame.columns:
+        unresolved = frame.filter(pl.col("territory_status") == "nao_resolvido")
+        sample = (
+            unresolved.select("uf", "municipality_name_source").unique().head(10).rows()
+            if unresolved.height
+            else []
+        )
+        if not unresolved.height:
+            status = CheckStatus.PASS
+        elif unresolved.height <= max_unresolved_territory:
+            status = CheckStatus.WARN
+        else:
+            status = CheckStatus.FAIL
+        results.append(
+            CheckResult(
+                "territory.resolved",
+                status,
+                f"{unresolved.height} linhas sem município IBGE",
+                observed=unresolved.height,
+                expected=0,
+                details={
+                    "max_unresolved_territory": max_unresolved_territory,
+                    "sample": sample,
+                    "status": dict(frame["territory_status"].value_counts().rows()),
+                    "method": {
+                        str(k): v for k, v in frame["territory_method"].value_counts().rows()
+                    },
+                },
+            )
+        )
+    if "recipient_class" in frame.columns:
+        unclassified = frame.filter(pl.col("recipient_class") == "nao_classificado").height
+        results.append(
+            CheckResult(
+                "recipient_class.classified",
+                CheckStatus.WARN if unclassified else CheckStatus.PASS,
+                f"{unclassified} linhas sem classe de favorecido",
+                observed=unclassified,
+                details={"classes": dict(frame["recipient_class"].value_counts().rows())},
+            )
+        )
+    if source_columns:
+        # Cópias além da primeira: duas linhas iguais contam 1.
+        identical = frame.height - frame.select(source_columns).unique().height
+        results.append(
+            CheckResult(
+                "rows.identical_preserved",
+                CheckStatus.PASS,
+                f"{identical} repetições de linhas idênticas na fonte, preservadas (§9.2)",
+                observed=identical,
+            )
+        )
+    return results

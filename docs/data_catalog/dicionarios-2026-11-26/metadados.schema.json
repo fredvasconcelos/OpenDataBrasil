@@ -1,0 +1,980 @@
+{
+  "$defs": {
+    "Artifact": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "demonstracao_sintetica",
+          "title": "Kind",
+          "type": "string"
+        },
+        "generator_name": {
+          "const": "Open Data Brasil",
+          "title": "Generator Name",
+          "type": "string"
+        },
+        "generator_url": {
+          "const": "https://opendatabrasil.org",
+          "title": "Generator Url",
+          "type": "string"
+        },
+        "generator_role": {
+          "const": "geracao_do_arquivo",
+          "title": "Generator Role",
+          "type": "string"
+        },
+        "generated_at": {
+          "format": "date-time",
+          "title": "Generated At",
+          "type": "string"
+        },
+        "generator_version": {
+          "title": "Generator Version",
+          "type": "string"
+        },
+        "disclaimer": {
+          "title": "Disclaimer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "generator_name",
+        "generator_url",
+        "generator_role",
+        "generated_at",
+        "generator_version",
+        "disclaimer"
+      ],
+      "title": "Artifact",
+      "type": "object"
+    },
+    "Coverage": {
+      "additionalProperties": false,
+      "properties": {
+        "expected": {
+          "minimum": 0,
+          "title": "Expected",
+          "type": "integer"
+        },
+        "present": {
+          "minimum": 0,
+          "title": "Present",
+          "type": "integer"
+        },
+        "contributors": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Contributors",
+          "type": "array"
+        },
+        "missing": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing",
+          "type": "array"
+        },
+        "blocked": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Blocked",
+          "type": "array"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "expected",
+        "present",
+        "contributors",
+        "missing",
+        "blocked",
+        "warnings"
+      ],
+      "title": "Coverage",
+      "type": "object"
+    },
+    "DataSelection": {
+      "additionalProperties": false,
+      "properties": {
+        "indicator_id": {
+          "title": "Indicator Id",
+          "type": "string"
+        },
+        "levels": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Levels",
+          "type": "array"
+        },
+        "within": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Within"
+        },
+        "periods": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Periods",
+          "type": "array"
+        },
+        "dimensions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Dimensions",
+          "type": "array"
+        },
+        "categories": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Categories",
+          "type": "array"
+        },
+        "correction": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Correction"
+        }
+      },
+      "required": [
+        "indicator_id",
+        "levels",
+        "within",
+        "periods",
+        "dimensions",
+        "categories",
+        "correction"
+      ],
+      "title": "DataSelection",
+      "type": "object"
+    },
+    "DataSheet": {
+      "additionalProperties": false,
+      "properties": {
+        "sheet_id": {
+          "title": "Sheet Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "published",
+            "derived"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/$defs/Row"
+          },
+          "title": "Rows",
+          "type": "array"
+        }
+      },
+      "required": [
+        "sheet_id",
+        "kind",
+        "rows"
+      ],
+      "title": "DataSheet",
+      "type": "object"
+    },
+    "DictionaryEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "sheet_id": {
+          "title": "Sheet Id",
+          "type": "string"
+        },
+        "column_id": {
+          "title": "Column Id",
+          "type": "string"
+        },
+        "entry_type": {
+          "enum": [
+            "column",
+            "code"
+          ],
+          "title": "Entry Type",
+          "type": "string"
+        },
+        "code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Code"
+        },
+        "definition": {
+          "title": "Definition",
+          "type": "string"
+        },
+        "data_type": {
+          "title": "Data Type",
+          "type": "string"
+        },
+        "domain": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Domain"
+        },
+        "parent_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Parent Code"
+        },
+        "valid_from": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Valid From"
+        },
+        "valid_to": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Valid To"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "missing_definition_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Missing Definition Reason"
+        }
+      },
+      "required": [
+        "sheet_id",
+        "column_id",
+        "entry_type",
+        "code",
+        "definition",
+        "data_type",
+        "domain",
+        "parent_code",
+        "valid_from",
+        "valid_to",
+        "source_id",
+        "missing_definition_reason"
+      ],
+      "title": "DictionaryEntry",
+      "type": "object"
+    },
+    "Method": {
+      "additionalProperties": false,
+      "properties": {
+        "method_id": {
+          "title": "Method Id",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        },
+        "author_role": {
+          "enum": [
+            "producer",
+            "portal",
+            "synthetic_fixture"
+          ],
+          "title": "Author Role",
+          "type": "string"
+        },
+        "definition": {
+          "title": "Definition",
+          "type": "string"
+        },
+        "formula": {
+          "title": "Formula",
+          "type": "string"
+        },
+        "source_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Ids",
+          "type": "array"
+        },
+        "restrictions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Restrictions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "method_id",
+        "version",
+        "author_role",
+        "definition",
+        "formula",
+        "source_ids",
+        "restrictions"
+      ],
+      "title": "Method",
+      "type": "object"
+    },
+    "Operation": {
+      "additionalProperties": false,
+      "properties": {
+        "operation_id": {
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "method_id": {
+          "title": "Method Id",
+          "type": "string"
+        },
+        "method_version": {
+          "title": "Method Version",
+          "type": "string"
+        },
+        "scope": {
+          "enum": [
+            "data",
+            "view",
+            "source"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "applied_to_export": {
+          "title": "Applied To Export",
+          "type": "boolean"
+        },
+        "inputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Inputs",
+          "type": "array"
+        },
+        "outputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Outputs",
+          "type": "array"
+        },
+        "parameters": {
+          "additionalProperties": true,
+          "title": "Parameters",
+          "type": "object"
+        },
+        "coverage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Coverage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "operation_id",
+        "sequence",
+        "method_id",
+        "method_version",
+        "scope",
+        "applied_to_export",
+        "inputs",
+        "outputs",
+        "parameters",
+        "coverage",
+        "note"
+      ],
+      "title": "Operation",
+      "type": "object"
+    },
+    "Release": {
+      "additionalProperties": false,
+      "properties": {
+        "release_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Release Id"
+        },
+        "tables": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Tables",
+          "type": "array"
+        },
+        "missing_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Missing Reason"
+        }
+      },
+      "required": [
+        "release_id",
+        "tables",
+        "missing_reason"
+      ],
+      "title": "Release",
+      "type": "object"
+    },
+    "Row": {
+      "additionalProperties": false,
+      "properties": {
+        "row_id": {
+          "title": "Row Id",
+          "type": "string"
+        },
+        "indicator_id": {
+          "title": "Indicator Id",
+          "type": "string"
+        },
+        "kpi_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Kpi Id"
+        },
+        "dataset_id": {
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "source_table_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Table Id"
+        },
+        "source_variable_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Variable Id"
+        },
+        "geography_key": {
+          "title": "Geography Key",
+          "type": "string"
+        },
+        "territory_code": {
+          "title": "Territory Code",
+          "type": "string"
+        },
+        "territory_type": {
+          "title": "Territory Type",
+          "type": "string"
+        },
+        "period": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Period"
+        },
+        "period_role": {
+          "title": "Period Role",
+          "type": "string"
+        },
+        "interval_from": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Interval From"
+        },
+        "interval_to": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Interval To"
+        },
+        "part": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Part"
+        },
+        "category_code": {
+          "title": "Category Code",
+          "type": "string"
+        },
+        "category_label": {
+          "title": "Category Label",
+          "type": "string"
+        },
+        "value_exact": {
+          "anyOf": [
+            {
+              "pattern": "^-?\\d+(\\.\\d+)?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value Exact"
+        },
+        "source_value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Value"
+        },
+        "status": {
+          "enum": [
+            "valid",
+            "true_zero",
+            "suppressed",
+            "not_available",
+            "partial_sum",
+            "derived_sum"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "unit": {
+          "title": "Unit",
+          "type": "string"
+        },
+        "multiplier": {
+          "title": "Multiplier",
+          "type": "string"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "method_id": {
+          "title": "Method Id",
+          "type": "string"
+        },
+        "release_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Release Id"
+        }
+      },
+      "required": [
+        "row_id",
+        "indicator_id",
+        "kpi_id",
+        "dataset_id",
+        "source_table_id",
+        "source_variable_id",
+        "geography_key",
+        "territory_code",
+        "territory_type",
+        "period",
+        "period_role",
+        "interval_from",
+        "interval_to",
+        "part",
+        "category_code",
+        "category_label",
+        "value_exact",
+        "source_value",
+        "status",
+        "unit",
+        "multiplier",
+        "source_id",
+        "method_id",
+        "release_id"
+      ],
+      "title": "Row",
+      "type": "object"
+    },
+    "Selection": {
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "$ref": "#/$defs/DataSelection"
+        },
+        "view": {
+          "$ref": "#/$defs/ViewSelection"
+        }
+      },
+      "required": [
+        "data",
+        "view"
+      ],
+      "title": "Selection",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "producer": {
+          "title": "Producer",
+          "type": "string"
+        },
+        "system": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "System"
+        },
+        "official_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Official Id"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Url"
+        },
+        "section": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Section"
+        },
+        "edition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Edition"
+        },
+        "consulted_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Consulted At"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Retrieved At"
+        },
+        "published_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Published At"
+        },
+        "license": {
+          "title": "License",
+          "type": "string"
+        },
+        "citation": {
+          "title": "Citation",
+          "type": "string"
+        },
+        "assertion": {
+          "title": "Assertion",
+          "type": "string"
+        },
+        "missing_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Missing Reason"
+        }
+      },
+      "required": [
+        "source_id",
+        "producer",
+        "system",
+        "official_id",
+        "url",
+        "section",
+        "edition",
+        "consulted_at",
+        "retrieved_at",
+        "published_at",
+        "license",
+        "citation",
+        "assertion",
+        "missing_reason"
+      ],
+      "title": "Source",
+      "type": "object"
+    },
+    "ViewSelection": {
+      "additionalProperties": false,
+      "properties": {
+        "isolate": {
+          "title": "Isolate",
+          "type": "boolean"
+        },
+        "accumulate": {
+          "title": "Accumulate",
+          "type": "boolean"
+        },
+        "years": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Years",
+          "type": "array"
+        },
+        "parts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parts",
+          "type": "array"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "isolate",
+        "accumulate",
+        "years",
+        "parts",
+        "note"
+      ],
+      "title": "ViewSelection",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1.1-proposta",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "artifact": {
+      "$ref": "#/$defs/Artifact"
+    },
+    "release": {
+      "$ref": "#/$defs/Release"
+    },
+    "selection": {
+      "$ref": "#/$defs/Selection"
+    },
+    "data_sheets": {
+      "items": {
+        "$ref": "#/$defs/DataSheet"
+      },
+      "minItems": 1,
+      "title": "Data Sheets",
+      "type": "array"
+    },
+    "dictionary": {
+      "items": {
+        "$ref": "#/$defs/DictionaryEntry"
+      },
+      "minItems": 1,
+      "title": "Dictionary",
+      "type": "array"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/Source"
+      },
+      "minItems": 1,
+      "title": "Sources",
+      "type": "array"
+    },
+    "methods": {
+      "items": {
+        "$ref": "#/$defs/Method"
+      },
+      "minItems": 1,
+      "title": "Methods",
+      "type": "array"
+    },
+    "operations": {
+      "items": {
+        "$ref": "#/$defs/Operation"
+      },
+      "minItems": 1,
+      "title": "Operations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "artifact",
+    "release",
+    "selection",
+    "data_sheets",
+    "dictionary",
+    "sources",
+    "methods",
+    "operations"
+  ],
+  "title": "Metadados de exportação ODB — proposta documental, não contrato de API",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

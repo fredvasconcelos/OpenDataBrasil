@@ -117,6 +117,42 @@ def test_dashboard_document_with_kpi_counts_view_and_open() -> None:
     ]
 
 
+def test_novo_painel_conta_visualizacao_e_abertura() -> None:
+    assert events(line("/estatisticas/painel?kpi=populacao_estimada")) == [
+        ("page_view", "/estatisticas/painel", ""),
+        ("kpi_open", "/estatisticas/painel", "populacao_estimada"),
+    ]
+
+
+def test_alias_do_painel_nao_duplica_abertura_ao_trocar_filtro() -> None:
+    assert (
+        events(
+            line(
+                "/estatisticas/painel?kpi=pib&nivel=uf",
+                rsc="1",
+                referer=f"{SITE}/dashboard?kpi=pib",
+            )
+        )
+        == []
+    )
+
+
+def test_novo_painel_conta_troca_de_indicador_sem_nova_pagina() -> None:
+    assert events(
+        line(
+            "/estatisticas/painel?kpi=pib",
+            rsc="1",
+            referer=f"{SITE}/estatisticas/painel?kpi=populacao_estimada",
+        )
+    ) == [("kpi_open", "/estatisticas/painel", "pib")]
+
+
+def test_ficha_nao_guarda_identificador_do_favorecido_nas_metricas() -> None:
+    assert events(line("/contas/favorecidos/0123456789abcdef?year=2025")) == [
+        ("page_view", "/contas/favorecidos", ""),
+    ]
+
+
 def test_switching_kpi_in_the_dashboard_counts_an_open_only() -> None:
     entry = line(
         "/dashboard?kpi=pib&_rsc=1",

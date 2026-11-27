@@ -82,6 +82,7 @@ class DimensionConfig(_Strict):
     share_base_category: str | None = None
     # Níveis em que a fonte publica esta classificação (vazio: todos os do KPI).
     levels: tuple[str, ...] = ()
+    native_categories: bool = False
 
     @model_validator(mode="after")
     def _share_base(self) -> DimensionConfig:
@@ -204,12 +205,22 @@ class ThemeConfig(_Strict):
     subthemes: tuple[SubthemeConfig, ...] = Field(min_length=1)
 
 
+class TemporalSumPolicy(_Strict):
+    """Soma temporal curada por tabela/variável, comprovada na fonte (ADR-0041)."""
+
+    kpi: str = Field(pattern=_ID)
+    table: str = Field(pattern=r"^\d+$")
+    variable: str = Field(pattern=r"^\d+$")
+    note: str = Field(min_length=1)
+
+
 class PortalConfig(_Strict):
     """Configuração de um escopo."""
 
     config_version: str
     scope: str = Field(pattern=_ID)
     dimension_order: tuple[str, ...] = ()
+    temporal_sums: tuple[TemporalSumPolicy, ...] = ()
     themes: tuple[ThemeConfig, ...] = Field(min_length=1)
 
     @model_validator(mode="after")
@@ -226,6 +237,9 @@ class PortalConfig(_Strict):
             # lista as conhecidas e ordena a URL.
             if unknown:
                 problems.append(f"{kpi.id}: dimensões fora de dimension_order: {unknown}")
+        policies = [p.kpi for p in self.temporal_sums]
+        if len(set(policies)) != len(policies) or set(policies) - set(kpis):
+            problems.append("Política de soma temporal repetida ou ligada a KPI desconhecido")
         if problems:
             raise ValueError("; ".join(problems))
         return self
@@ -273,7 +287,10 @@ def load_portal(config_dir: str | Path, scope: str) -> PortalConfig:
         data = tomllib.loads(path.read_text(encoding="utf-8"))
         for fragment in sorted((Path(config_dir) / scope).glob("*.toml")):
             extra = tomllib.loads(fragment.read_text(encoding="utf-8"))
-            unknown = sorted(set(extra) - {"config_version", "scope", "themes", "dimension_order"})
+            unknown = sorted(
+                set(extra)
+                - {"config_version", "scope", "themes", "dimension_order", "temporal_sums"}
+            )
             if extra.get("scope") != scope or unknown:
                 msg = f"{fragment}: fragmento do portal inválido (escopo ou chaves {unknown})"
                 raise PortalConfigError(msg)
@@ -282,6 +299,10 @@ def load_portal(config_dir: str | Path, scope: str) -> PortalConfig:
             order = list(data.get("dimension_order", []))
             order += [c for c in extra.get("dimension_order", []) if c not in order]
             data["dimension_order"] = order
+            data["temporal_sums"] = [
+                *data.get("temporal_sums", []),
+                *extra.get("temporal_sums", []),
+            ]
         config = PortalConfig.model_validate(data)
     except (OSError, tomllib.TOMLDecodeError, ValidationError) as exc:
         msg = f"{path}: configuração do portal inválida: {exc}"

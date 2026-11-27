@@ -22,6 +22,10 @@ export interface FitRequest {
 }
 
 interface Props {
+  /** Reserva espaço para a legenda e as instruções em cartões menores. */
+  compactLayout?: boolean;
+  /** Expõe controles territoriais como grupo acessível, sem imagem envolvendo botões. */
+  groupedControls?: boolean;
   /** Territórios coloridos: o nível exibido, dentro do recorte quando houver. */
   collection: GeoCollection;
   /** Nível do recorte no país inteiro (desenhado em cinza fora do recorte); null sem recorte. */
@@ -70,6 +74,8 @@ interface Shape {
 // funciona em atributos de apresentação do SVG); estados no globals.css.
 export const MapView = forwardRef<SVGSVGElement | null, Props>(function MapView(
   {
+    compactLayout = false,
+    groupedControls = false,
     collection,
     context,
     values,
@@ -247,7 +253,7 @@ export const MapView = forwardRef<SVGSVGElement | null, Props>(function MapView(
   // Só depois de medir o painel; uma mudança de tamanho refaz o último enquadramento.
   const fitted = useRef("");
   useEffect(() => {
-    const id = fitRequest ? `${fitRequest.n}|${size.width}x${size.height}` : "";
+    const id = fitRequest ? `${fitRequest.key ?? "brasil"}|${fitRequest.n}|${size.width}x${size.height}` : "";
     if (!fitRequest || !size.measured || id === fitted.current) return;
     if (fitRequest.key === null) {
       fitted.current = id;
@@ -299,11 +305,12 @@ export const MapView = forwardRef<SVGSVGElement | null, Props>(function MapView(
   });
 
   return (
-    <div ref={box} className={`map-panel card${dense ? " dense" : ""}`} aria-busy={loading}>
+    <div className={`map-panel card${dense ? " dense" : ""}${compactLayout ? " map-compact" : ""}`} aria-busy={loading}>
+      <div ref={box} className="map-viewport">
       <svg
         ref={svgEl}
         viewBox={`0 0 ${size.width} ${size.height}`}
-        role="img"
+        role={groupedControls ? "group" : "img"}
         aria-label={label}
         xmlns="http://www.w3.org/2000/svg"
         onMouseMove={(e) => {
@@ -383,6 +390,7 @@ export const MapView = forwardRef<SVGSVGElement | null, Props>(function MapView(
           {t("loading")}
         </p>
       ) : null}
+      </div>
       {scale.breaks.length ? (
         <div className="legend" role="group" aria-label={`${t("legend.label")}: ${legendTitle}`}>
           <p className="legend-title">{legendTitle}</p>

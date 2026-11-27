@@ -29,7 +29,9 @@
     "preferences": "Preferências",
     "language": "Idioma",
     "languageCurrent": "Idioma: {language}",
-    "languageSoon": "em breve"
+    "languageSoon": "em breve",
+    "chooseBlock": "Escolha o painel",
+    "main": "Principal"
   },
   "theme": {
     "toDark": "Ativar tema escuro",
@@ -77,7 +79,7 @@
     "categoriesOf": "Categorias: {dimension}",
     "hideCategories": "Ocultar categorias",
     "emptyChildren": "+ {count, plural, one {# item} other {# itens}} com zero ou sem dado (veja a tabela)",
-    "clearFilters": "Limpar filtros",
+    "clearFilters": "Limpar todos os filtros",
     "zoom": {
       "group": "Zoom do mapa",
       "in": "Aproximar",
@@ -164,7 +166,7 @@
     },
     "touchHint": "Toque seleciona o território. Use a pinça ou o botão Aproximar para ver o recorte por dentro.",
     "accumulate": "Acumular",
-    "accumulateHint": "Soma os períodos marcados (variações %: composição). Com Isolar período, o acumulado no ano.",
+    "accumulateHint": "Soma os períodos marcados (variações %: composição). Com Isolar período, soma a mesma parte entre os anos do intervalo.",
     "accumulateOff": "Este indicador não acumula: taxas, médias e números-índice não se somam no tempo.",
     "periodShow": "Mostrar as partes de {period}",
     "periodHide": "Esconder as partes de {period}",
@@ -173,6 +175,30 @@
     "periodRange": "{from} a {to}",
     "isolateParts": "Cada barra é uma parte do ano, uma cor por ano marcado ({years}).",
     "isolateAccumulated": "Cada barra é o acumulado no ano até aquela parte ({years}).",
+    "chartInfo": {
+      "title": "Como ler este gráfico",
+      "button": {
+        "normal": "Sobre o método do gráfico",
+        "warning": "Sobre o método do gráfico: dados parciais",
+        "danger": "Sobre o método do gráfico: dados indisponíveis"
+      }
+    },
+    "seasonalYear": "Ano",
+    "seasonalSum": "Cada barra soma a mesma parte do ano entre {from, number, ::group-off} e {to, number, ::group-off}, incluindo os anos intermediários.",
+    "seasonalCoverage": "{present, number} de {expected, number} períodos com valor.",
+    "seasonalEmpty": "Sem valor disponível.",
+    "seasonalBlocked": "Soma indisponível: há sigilo, erro ou dados não aplicáveis neste recorte.",
+    "seasonalMissing": "Sem valor disponível para: {periods}.",
+    "seasonalBlockedParts": "Períodos com restrição: {periods}.",
+    "seasonalInputPartial": "Há dados parciais nos períodos ou territórios incluídos.",
+    "seasonalScope": "O acumulado entre anos está no gráfico. O mapa mostra o último período indicado, e a tabela e as exportações preservam os períodos separados. Barras com coberturas distintas têm bases diferentes.",
+    "seasonalNotes": "Fonte e método do acumulado",
+    "seasonalValues": "Valores e cobertura das barras",
+    "accumulateSeasonalOff": "A soma entre anos só está disponível para fluxos com método compatível. Taxas, índices, médias, estoques e estimativas revisadas não são somados neste modo.",
+    "seasonalRisk": {
+      "warning": "Aviso: acumulado com dados parciais",
+      "danger": "Aviso: parte do acumulado está indisponível"
+    },
     "periodOnly": "Só {period}",
     "compositionBase": "Base dos valores exibidos: {value}",
     "compositionNote": "Composição calculada pelo portal sobre os valores exibidos em cada grupo. Não representa participação oficial ponderada. Os valores e Totais oficiais são preservados.",
@@ -332,7 +358,9 @@
     "reviewStatus": {
       "requires_review": "algumas em revisão",
       "approved": "todas aprovadas"
-    }
+    },
+    "iconsCredit": "Ícones Font Awesome Free 6.7.2, da Fonticons, sob CC BY 4.0 (ícones) e MIT (código).",
+    "iconsLicense": "Licenças e atribuição dos ícones."
   },
   "unavailable": {
     "title": "Dados temporariamente indisponíveis",
@@ -510,11 +538,27 @@
     },
     "sortByLabel": "Ordenar por {field}",
     "sortByColumn": "Ordenar por {column}",
-    "aboutAlert": "Aviso sobre esta tabela",
-    "alertTitle": "Sem este nível de detalhe",
-    "alertEmpty": "{dimension}: a fonte não traz este detalhe para o recorte escolhido; a tabela mostra só o Total.",
-    "alertLevel": "{dimension}: a fonte não publica este detalhe por {level}. Há detalhe em: {levels}.",
-    "accumulateNote": "A tabela mostra cada período separado; o acumulado aparece no mapa e no gráfico."
+    "accumulateNote": "A tabela mostra cada período separado; o acumulado aparece no mapa e no gráfico.",
+    "coverage": {
+      "button": {
+        "warning": "Aviso: dados parciais nesta tabela",
+        "danger": "Aviso: detalhe indisponível nesta tabela"
+      },
+      "title": {
+        "warning": "Cobertura parcial",
+        "danger": "Dados ou detalhes indisponíveis"
+      },
+      "A1": "No nível {level}, a série tem dados somente em: {available}.",
+      "A2": "Em {periods}, há registros para {observed, number} de {expected, number} territórios do nível {level}, segundo a referência territorial do período.",
+      "A3": "{dimension}: neste nível, há categorias somente em: {available}.",
+      "A3Territories": "{dimension}: em {periods}, pelo menos uma categoria aparece em {observed, number} dos {expected, number} territórios com Total publicado no recorte.",
+      "A4": "Em {periods}, há soma regional parcial: faltam dados na fonte. O valor exibido preserva esse status.",
+      "V1": "{dimension}: a fonte não publica este detalhe por {level}. Há detalhe em: {levels}.",
+      "V2": "{dimension}: a fonte não traz este detalhe para o recorte escolhido; a tabela mostra só o Total.",
+      "V3": "Não há dados disponíveis para o nível e os períodos selecionados neste recorte. Sigilo não é classificado como ausência.",
+      "V4": "A fonte não publica o cruzamento entre {dimensions} no nível {level}. Escolha um detalhe por vez.",
+      "sources": "Tabelas de origem:"
+    }
   },
   "metrics": {
     "title": "Métricas do portal",
@@ -593,14 +637,15 @@
     "datasets": {
       "title": "Conjuntos de dados mais acessados",
       "sort": "Ordenar por",
-      "byViews": "Mais visualizados",
+      "byViews": "Mais abertos",
       "byDownloads": "Mais baixados",
       "rank": "Posição",
       "name": "Indicador",
       "theme": "Tema",
-      "views": "Visualizações",
+      "views": "Aberturas",
       "downloads": "Downloads",
-      "empty": "Nenhum indicador com 5 ou mais acessos no período."
+      "empty": "Nenhum indicador com 5 ou mais aberturas no período.",
+      "suppressionNote": "Indicadores com menos de 5 aberturas não aparecem."
     },
     "table": {
       "caption": "Acessos por {level}",
@@ -616,6 +661,281 @@
     "how": {
       "title": "Como contamos",
       "text": "Sem cookies e sem guardar IP: cada acesso soma uma visualização por dia, página e local aproximado (país e estado, nunca a cidade). Lugares e indicadores com menos de 5 acessos aparecem como \"menos de 5\". O estado vem da localização aproximada do endereço de internet: em redes móveis e com VPN, o acesso pode aparecer no estado da sede da operadora ou como \"Estado não identificado\"."
+    }
+  },
+  "blocks": {
+    "title": "O que você quer consultar?",
+    "current": "Você está aqui",
+    "open": "Ver indicadores",
+    "estatisticas": {
+      "name": "Estatísticas oficiais",
+      "short": "Indicadores de fontes oficiais, com mapa, série e tabela",
+      "description": "Os indicadores oficiais do Brasil, das regiões, dos estados e dos municípios: população, saúde, educação, trabalho, economia e outros temas, com mapa, série e tabela."
+    },
+    "contas": {
+      "name": "Contas públicas",
+      "short": "Quanto a União envia a estados e municípios",
+      "description": "Quanto o governo federal envia para estados e municípios: por tipo de transferência e por área, mês a mês. Dados do Portal da Transparência (CGU)."
+    }
+  },
+  "contas": {
+    "blockName": "Contas públicas",
+    "question": "Quanto o governo federal envia para estados e municípios?",
+    "lead": "Recursos transferidos pela União: como, para onde e quando.",
+    "filters": "Filtros",
+    "territory": "Território",
+    "period": "Período",
+    "area": "Área",
+    "allAreas": "Todas as áreas",
+    "brasil": "Brasil",
+    "year": "Ano {year}",
+    "lensName": "Recursos transferidos",
+    "highlights": {
+      "total": "Total enviado",
+      "constitutional": "Constitucionais e royalties",
+      "legal": "Legais, voluntárias e específicas",
+      "topArea": "Maior área",
+      "ofTotal": "{share} do total",
+      "applied": "Valor aplicado pelo recebedor",
+      "appliedShare": "Percentual aplicado do enviado",
+      "unavailable": "Indisponível",
+      "whyUnavailable": "Entenda este dado",
+      "applicationNote": "Ainda não integramos uma fonte que ligue o recurso recebido às despesas realizadas pelo estado ou município. A ausência desta informação não significa que o recurso não foi aplicado.",
+      "noRecords": "Sem registros neste recorte"
+    },
+    "map": {
+      "title": "Destino dos recursos",
+      "subtitle": "Valor recebido por município, {period}",
+      "legend": "Valor recebido (R$)",
+      "stateLevel": "Sem município (favorecidos estaduais): {value}",
+      "note": "O mapa identifica quem recebeu o recurso. A aplicação pelo recebedor ainda é desconhecida."
+    },
+    "how": {
+      "title": "Distribuição dos recursos",
+      "byType": "Por tipo de transferência",
+      "byArea": "Por área",
+      "areaHint": "Selecione uma área para filtrar os cartões, o mapa, a evolução e os recebedores. Selecione de novo para limpar. A lista de áreas mantém o total do território, para permitir trocar o filtro."
+    },
+    "when": {
+      "title": "Evolução dos repasses",
+      "monthly": "Mensal",
+      "yearly": "Anual"
+    },
+    "who": {
+      "title": "Quem mais recebeu",
+      "rank": "Posição",
+      "name": "Favorecido",
+      "seat": "Sede",
+      "class": "Classe",
+      "value": "Valor",
+      "page": "Página {page} de {pages}",
+      "count": "{count, plural, one {# favorecido} other {# favorecidos}} no recorte.",
+      "note": "Bancos pagadores, lançamentos agregados, valores sigilosos e sem informação não entram no ranking, mas entram nos totais.",
+      "previous": "Página anterior",
+      "next": "Próxima página",
+      "limit": "A consulta permite navegar pelos {count} primeiros recebedores deste recorte.",
+      "shareOf": "Calcular % por",
+      "shareNone": "Sem %",
+      "shareTotal": "Total: {name}",
+      "unit": "Valores em R$",
+      "about": "Sobre esta tabela",
+      "caption": "Favorecidos por valor recebido · {scope}",
+      "sortByName": "Ordenar por nome do favorecido",
+      "sortByValue": "Ordenar por valor recebido",
+      "pageSubtotal": "Subtotal desta página",
+      "footer": "Total: {name}",
+      "aboutShare": "Entre parênteses: % do total recebido por {name} no recorte, calculado pela API.",
+      "aboutTotal": "A última linha (Total: {name}) é o total do recorte e inclui o que não entra no ranking; por isso é maior que a soma das linhas.",
+      "aboutOrder": "Clique em Favorecido para ordenar por nome ou em Valor para voltar ao ranking. A ordem vale para todas as páginas; em ordem alfabética, a posição fica em branco.",
+      "rankShort": "Nº"
+    },
+    "status": {
+      "closed": "Período fechado",
+      "open": "Mês aberto",
+      "incomplete": "Mês incompleto",
+      "openText": "Último mês publicado: a fonte ainda acrescenta lançamentos.",
+      "incompleteText": "Faltam ações na fonte neste mês."
+    },
+    "source": "Fonte: CGU, Portal da Transparência. Valores nominais, sem correção pela inflação.",
+    "sourceLabel": "Fonte",
+    "sourceBody": "CGU, Portal da Transparência · Valores nominais, sem correção pela inflação",
+    "tesouroShort": "Tesouro Nacional (Tesouro Transparente), licença ODbL",
+    "release": "Versão dos dados",
+    "lensesNote": "As lentes não se somam: cada uma responde uma pergunta diferente.",
+    "unavailable": {
+      "title": "Contas públicas temporariamente indisponíveis",
+      "text": "Os dados das contas não responderam agora. As Estatísticas oficiais continuam funcionando.",
+      "retry": "Tentar de novo",
+      "goStats": "Ir para Estatísticas oficiais"
+    },
+    "empty": {
+      "title": "Nenhum valor neste recorte",
+      "text": "Não há transferências para este território no período escolhido. Escolha outro período ou território."
+    },
+    "profile": {
+      "back": "Voltar ao painel",
+      "nature": "Natureza jurídica",
+      "activity": "Atividade econômica",
+      "byLens": "Total por lente, {year}",
+      "lensA": "Recursos transferidos",
+      "lensB": "Recebimento por favorecido",
+      "lensANote": "Pagamentos da União ao ente ou entidade.",
+      "lensBNote": "Tudo o que o favorecido recebeu, de qualquer órgão.",
+      "notSummed": "Os valores das duas lentes não se somam.",
+      "series": "Mês a mês, {year}",
+      "organs": "Órgãos que mais pagaram",
+      "official": "Ver no Portal da Transparência",
+      "homonym": "O CPF mascarado não distingue pessoas: pode haver homônimos. Confira a página oficial no Portal da Transparência.",
+      "fictional": "Exemplo fictício para o desenho da variante pessoa física.",
+      "officialUnavailable": "Consulte o Portal da Transparência; a API ainda não fornece um link específico do favorecido."
+    },
+    "loading": "Carregando contas públicas…",
+    "up": "Voltar ao Brasil",
+    "allStates": "Todos os estados",
+    "scope": "{territory} · {period}",
+    "seriesPeriod": "Série no período selecionado",
+    "filteredArea": "Área selecionada: {area}",
+    "rankingScope": "Ranking de {year}, em todas as áreas e meses do ano. Os filtros de mês e área não se aplicam a esta seção.",
+    "previous": "Página anterior",
+    "next": "Próxima página",
+    "tesouro": "Fonte complementar: Tesouro Nacional (Tesouro Transparente), licença ODbL.",
+    "notes": "Notas e proveniência",
+    "notFound": "Favorecido não encontrado neste release.",
+    "totalUnavailable": "Total indisponível neste recorte.",
+    "mapTotalNote": "O mapa mostra apenas valores atribuídos aos territórios desenhados; os destaques incluem o total do território.",
+    "territoryTrail": "Território das contas",
+    "officialUnavailable": "Consulte o Portal da Transparência; a API ainda não fornece um link específico do favorecido.",
+    "grain": "Série por",
+    "filterError": "Filtro indisponível neste release. Escolha outro período ou território.",
+    "resetFilters": "Limpar todos os filtros",
+    "references": {
+      "title": "Dicionários e glossário oficiais",
+      "lead": "Consulte as definições dos campos no Portal da Transparência:",
+      "transfers": "Recursos transferidos",
+      "receipts": "Recebimento de recursos por favorecido",
+      "entities": "Cadastro de favorecidos pessoa jurídica",
+      "execution": "Execução da despesa",
+      "glossary": "Glossário da CGU",
+      "history": "Transferências — pagamentos (histórico)",
+      "historyNote": "Referência histórica; não substitui os dicionários das bases atuais.",
+      "panelNote": "Recursos transferidos, pagamentos a favorecidos e execução federal são perspectivas distintas. Consulte a lente indicada na tela; seus valores não se somam.",
+      "recipientNote": "A ficha separa recursos transferidos de recebimentos por favorecido. O cadastro PJ explica a natureza jurídica e a atividade econômica.",
+      "newTab": "(abre em nova aba)"
+    },
+    "updating": "Atualizando os dados… O recorte anterior permanece visível até a consulta terminar.",
+    "catalog": {
+      "search": "Buscar indicador de contas públicas",
+      "placeholder": "Ex.: saúde, FPM, municípios, recebedores",
+      "hint": "Busca por transferências, pagamentos a favorecidos e fases da execução federal · ignora acentos",
+      "groupsTitle": "Grupos",
+      "filterByGroup": "Filtrar por grupo",
+      "seeGroup": "Ver o grupo →",
+      "empty": "Nenhum indicador de contas públicas encontrado. A busca ignora acentos e maiúsculas.",
+      "groups": {
+        "visao": {
+          "name": "Visão geral",
+          "note": "Recursos transferidos pela União",
+          "terms": "transferências federais repasses recursos união governo federal"
+        },
+        "tipos": {
+          "name": "Por tipo de transferência",
+          "note": "Abre a distribuição por tipo no painel",
+          "terms": "transferências"
+        },
+        "areas": {
+          "name": "Por área de governo",
+          "note": "Funções de governo, da maior para a menor em {year}",
+          "terms": "função funções"
+        },
+        "recebimentos": {
+          "name": "Recebimento por favorecido",
+          "note": "Pagamentos por sede cadastral; os links abrem total, mapa, evolução e busca na lente B.",
+          "terms": "pagamentos recebimentos favorecido sede empresas entidades"
+        },
+        "execucao": {
+          "name": "Execução da despesa",
+          "note": "Fases independentes da execução federal; cada item abre seu valor ou detalhamento.",
+          "terms": "execução orçamento despesa federal união"
+        }
+      },
+      "items": {
+        "total": "Total enviado pela União",
+        "onde": "Destino dos recursos por município",
+        "ondeTerms": "mapa estados municípios território",
+        "quando": "Evolução dos repasses mês a mês",
+        "quem": "Quem mais recebeu",
+        "quemTerms": "favorecidos recebedores ranking",
+        "constitutionalTerms": "FPM FPE fundo de participação royalties",
+        "legalTerms": "convênios",
+        "receivedTotal": "Total recebido pelos favorecidos",
+        "receivedSeat": "Recebimentos por sede, no mapa",
+        "receivedSeries": "Evolução mês a mês",
+        "receivedSearch": "Buscar um favorecido (empresas e entidades)"
+      },
+      "indicators": "Indicadores das contas"
+    },
+    "typeAreaContext": "Tipos de transferência em {area}. A lista abaixo inclui todas as áreas.",
+    "sourcesTitle": "Fontes e informações sobre os dados",
+    "info": {
+      "map": "Sobre o mapa",
+      "how": "Sobre a distribuição",
+      "when": "Sobre a evolução"
+    },
+    "whenNote": "Valores nominais por mês de pagamento, sem correção pela inflação. Meses abertos ou incompletos podem mudar nas próximas atualizações da fonte.",
+    "allAreasContext": "Tipos de transferência e áreas do território no período.",
+    "federal": {
+      "lenses": "Perspectiva dos dados",
+      "A": "Recursos transferidos",
+      "B": "Pagamentos a favorecidos",
+      "C": "Execução orçamentária federal",
+      "group": "Detalhar por",
+      "territory": "Sede cadastral do favorecido",
+      "total": "Total dos pagamentos no recorte",
+      "amount": "Valor pago",
+      "category": "Categoria",
+      "noGeography": "A execução é da União. UF e município do localizador indicam a classificação do plano de trabalho da CGU; não medem a despesa executada pelo próprio estado/município. Valores nacionais ou sem localização individualizada não são distribuídos entre localidades.",
+      "noSum": "As seis fases são valores independentes. Não some fases nem lentes. Valores nominais em reais; estornos e ajustes negativos são preservados.",
+      "receiptsNote": "O território indica a sede cadastral do favorecido, não o local da prestação do serviço ou da aplicação. O total inclui registros contábeis, unidades internas, bancos e favorecidos não identificados; não representa apenas beneficiários finais.",
+      "filters": "Recortes ativos",
+      "remove": "Remover filtro {label}",
+      "filterHint": "Selecione uma categoria na tabela para restringir o recorte. Depois, escolha outro detalhamento para explorar o cruzamento disponível. São permitidos até dez recortes simultâneos.",
+      "page": "Página {page} de {pages}",
+      "previous": "Página anterior",
+      "next": "Próxima página",
+      "count": "{count} categorias no recorte.",
+      "limit": "A consulta permite até 100 páginas de 10 registros. Refine os filtros para alcançar outras categorias.",
+      "empty": "Nenhum registro para este recorte.",
+      "table": "Valores por categoria",
+      "totalRow": "Total do recorte (todas as páginas)",
+      "ordered": "Ordenação pelo valor pago, do maior para o menor. O total considera todas as categorias do recorte.",
+      "search": "Buscar favorecido pessoa jurídica",
+      "searchButton": "Buscar",
+      "searchHint": "Digite de 3 a 80 caracteres. A busca é nacional e não usa os filtros da tabela; as fichas exibem o ano selecionado. Pessoas físicas não entram na busca.",
+      "noSearch": "Nenhum favorecido pessoa jurídica encontrado.",
+      "searchError": "Não foi possível concluir a busca. Tente novamente.",
+      "series": "Evolução dos pagamentos no período",
+      "release": "Release dos dados",
+      "source": "Fonte: CGU, Portal da Transparência",
+      "clear": "Limpar recortes",
+      "phases": {
+        "committed": "Empenhado",
+        "liquidated": "Liquidado",
+        "paid": "Pago",
+        "payables_registered": "Restos a pagar inscritos",
+        "payables_cancelled": "Restos a pagar cancelados",
+        "payables_paid": "Restos a pagar pagos"
+      },
+      "municipality": "Município da sede",
+      "allMunicipalities": "Todos os municípios da UF",
+      "seatMap": "Pagamentos por sede do favorecido",
+      "territoryScope": "Mapa e evolução usam o território e o período selecionados, sem os recortes de categoria da tabela.",
+      "searching": "Buscando favorecidos…",
+      "emptyPage": "Esta página não tem registros. Use a página anterior ou limpe os recortes; os totais acima continuam sendo os do recorte inteiro.",
+      "tableProfileHint": "Escolha Favorecido para abrir as fichas. Para restringir uma categoria, selecione outro detalhamento nos filtros.",
+      "aboutLens": "Sobre esta perspectiva das contas",
+      "aboutSection": "Sobre {label}",
+      "searchCount": "{count, plural, one {# favorecido encontrado} other {# favorecidos encontrados}}",
+      "filterLimit": "Limite de dez recortes. Remova um filtro para incluir outra dimensão."
     }
   }
 }

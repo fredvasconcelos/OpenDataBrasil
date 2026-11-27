@@ -5,6 +5,7 @@ from pathlib import Path
 
 import polars as pl
 import pytest
+from deltalake import DeltaTable
 
 from odb_common.storage import LakehouseLayout, Layer
 from odb_lakehouse.disk import DiskCapacityError
@@ -63,6 +64,21 @@ def test_partitioning_fixed_at_creation(writer: DeltaWriter, uri: str) -> None:
     writer.write(uri, make_frame([2]), run_id="r", partition_by=["uf"])
     with pytest.raises(TableWriteError, match="particionamento"):
         writer.write(uri, make_frame([3]), run_id="r", partition_by=["obs_id"])
+
+
+def test_partitioning_changes_only_with_explicit_schema_reset(
+    writer: DeltaWriter, uri: str
+) -> None:
+    writer.write(uri, make_frame([1, 2]), run_id="r", partition_by=["uf"])
+    with pytest.raises(TableWriteError, match="particionamento"):
+        writer.write(uri, make_frame([3]), run_id="r", mode="overwrite", partition_by=["obs_id"])
+    result = writer.write(
+        uri, make_frame([3]), run_id="r", mode="overwrite", partition_by=["obs_id"],
+        overwrite_schema=True,
+    )  # fmt: skip
+    assert list(DeltaTable(uri).metadata().partition_columns) == ["obs_id"]
+    assert reader.scan(uri, result.version).select(pl.len()).collect().item() == 1
+    assert reader.scan(uri, 0).select(pl.len()).collect().item() == 2  # versão antiga legível
 
 
 def test_schema_evolution_opt_in(writer: DeltaWriter, uri: str) -> None:

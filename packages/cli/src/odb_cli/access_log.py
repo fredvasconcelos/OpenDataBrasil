@@ -16,7 +16,7 @@ Regras de contagem:
 - **Visualização** (``page_view``): ``GET`` de página com status 200, sem *prefetch*.
   Uma requisição RSC (navegação do Next.js sem recarregar) só conta quando muda de rota:
   trocar filtros no painel faz ``router.replace`` na mesma rota e não é nova página.
-- **Abertura de indicador** (``kpi_open``): ``/dashboard`` com ``?kpi=`` diferente do
+- **Abertura de indicador** (``kpi_open``): painel de Estatísticas com ``?kpi=`` diferente do
   ``kpi`` da página anterior (ou vindo de outra página).
 - **Download**: ``POST /odb-api/exports`` com status 200; indicador e formato vêm dos
   cabeçalhos ``X-ODB-KPI`` e ``X-ODB-Format`` que a API devolve.
@@ -39,6 +39,7 @@ from odb_catalog.access_metrics import UF_CODES, UNKNOWN_COUNTRY, UNKNOWN_UF, Ac
 TZ = ZoneInfo("America/Sao_Paulo")
 EXPORT_PATH = "/odb-api/exports"
 DASHBOARD = "/dashboard"
+_DASHBOARDS = frozenset({DASHBOARD, "/estatisticas/painel"})
 FORMATS = frozenset({"csv", "xlsx", "parquet", "json"})
 _OK = 200
 _MAX_ROUTE = 200
@@ -85,6 +86,9 @@ def day_of(ts: float) -> date:
 
 def _route(path: str) -> str:
     route = path.rstrip("/") or "/"
+    # A métrica conta a página, não o favorecido visitado (CP5, ADR-0039).
+    if route.startswith("/contas/favorecidos/"):
+        return "/contas/favorecidos"
     return route[:_MAX_ROUTE]
 
 
@@ -160,12 +164,13 @@ def classify(entry: dict[str, object]) -> list[AccessKey]:
     rsc = bool(text.get("rsc"))
 
     out: list[AccessKey] = []
-    if not rsc or ref_route != route:
+    same_page = ref_route == route or (ref_route in _DASHBOARDS and route in _DASHBOARDS)
+    if not rsc or not same_page:
         origin = "" if same_site else ref_host
         out.append(AccessKey(day, "page_view", country, uf, route=route, referrer_domain=origin))
-    if route == DASHBOARD:
+    if route in _DASHBOARDS:
         kpi = _kpi_of(uri.query)
-        previous = _kpi_of(ref.query) if ref and ref_route == DASHBOARD else ""
+        previous = _kpi_of(ref.query) if ref and ref_route in _DASHBOARDS else ""
         if kpi and (not rsc or kpi != previous):
             out.append(AccessKey(day, "kpi_open", country, uf, route=route, kpi_id=kpi))
     return out

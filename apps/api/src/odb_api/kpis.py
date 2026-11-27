@@ -15,12 +15,16 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import threading
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, replace
 from decimal import Decimal
-from typing import Any
+from math import prod
+from pathlib import Path
+from typing import Any, Literal, cast
 
+from odb_api.coverage_alerts import CoverageCell, coverage_alerts, historical_expected
 from odb_api.gold import GoldGateway, NotFoundError
 from odb_api.release import ReleaseContext
 from odb_api.schemas import (
@@ -28,11 +32,13 @@ from odb_api.schemas import (
     CellOut,
     ColumnOut,
     CorrectionOut,
+    CoverageAlertOut,
     DetailNodeOut,
     DetailOut,
     DimensionOut,
     FilterOut,
     GeographyRefOut,
+    Grain,
     HistoryOut,
     HistoryRowOut,
     KpiIndexOut,
@@ -49,6 +55,9 @@ from odb_api.schemas import (
     PointOut,
     PortalIndexOut,
     Provenance,
+    SeasonalOut,
+    SeasonalPointOut,
+    SeasonalSeriesOut,
     SeriesItemOut,
     SeriesOut,
     SourceTableOut,
@@ -57,6 +66,7 @@ from odb_api.schemas import (
     TableOut,
     TableRowOut,
     TableVersionOut,
+    TemporalCapabilitiesOut,
     ThemeIndexOut,
     ThemeOut,
     TimeGrainOut,
@@ -97,6 +107,7 @@ from odb_semantics.portal import (
     dimension_share_basis,
     release_problems,
 )
+from odb_semantics.seasonal import SeasonalInput, seasonal_groups, seasonal_sum
 
 logger = logging.getLogger(__name__)
 
@@ -239,6 +250,7 @@ class KpiService:
         provenance: Mapping[str, tuple[str, str | None]] | None = None,
         labels: ShortLabels | None = None,
         table_links: Mapping[str, str] | None = None,
+        descriptors: Path | None = None,
     ) -> None:
         """Recebe o acesso à Gold, a configuração do portal e, opcionalmente, o panorama.
 
@@ -255,6 +267,7 @@ class KpiService:
         self._short = labels or ShortLabels()
         self._panorama = panorama
         self._page_max = page_max
+        self._descriptors = descriptors
         # dataset → (sigla da instituição, sistema), das fontes configuradas.
         self._provenance = dict(provenance or {})
         # tabela de origem → link oficial (``reference_url`` das fontes configuradas).
@@ -348,6 +361,7 @@ class KpiService:
         out = []
         for dim in kpi.dimensions:
             cats = self._gold.partition_categories(ctx, dim.classification, dim.partition)
+            native = self._native_categories(ctx, kpi, dim) if dim.native_categories else []
             tables = sorted(
                 t for t, v in coverage.items() if dim.classification in v["classifications"]
             )
@@ -378,12 +392,26 @@ class KpiService:
                         str(meta["unit"]), str(meta["additivity"]), dim
                     ),
                     share_base_category_key=dim.share_base_category,
+                    explorable_categories=[
+                        CategoryOut(
+                            category_key=c["category_key"],
+                            category_id=c["category_id"],
+                            name=self._name(ctx, c["category_key"]),
+                            full_name=c["name"],
+                            parent_category_key=c.get("parent_category_key"),
+                            depth=c.get("depth", 0),
+                        )
+                        for c in native
+                        if c["category_key"] not in {p["category_key"] for p in cats}
+                    ],
                     categories=[
                         CategoryOut(
                             category_key=c["category_key"],
                             category_id=c["category_id"],
                             name=self._name(ctx, c["category_key"]),
                             full_name=c["name"],
+                            parent_category_key=c.get("parent_category_key"),
+                            depth=c.get("depth", 0),
                         )
                         for c in cats
                     ],
@@ -396,6 +424,8 @@ class KpiService:
         meta = self._gold.indicators(ctx)[kpi.indicator]
         geometry = set(self._gold.geometry_levels(ctx))
         levels = list(meta["available_levels"] or ())
+        temporal = self._temporal(ctx, kpi)
+        policy = next((p for p in self._portal.temporal_sums if p.kpi == kpi.id), None)
         return KpiOut(
             kpi_id=kpi.id,
             label=kpi.label,
@@ -423,11 +453,15 @@ class KpiService:
                 CorrectionOut(correction_id=c.id, label=c.label, note=c.note)
                 for c in kpi.corrections
             ],
-            caveats=list(meta["caveats"] or ()),
+            caveats=[
+                *list(meta["caveats"] or ()),
+                *([policy.note] if policy and temporal.seasonal_sum else []),
+            ],
             time_grains=self._time_grains(kpi, meta),
             time_aggregation=(
                 meta.get("time_aggregation") if len(meta.get("time_grains") or ()) > 1 else None
             ),
+            temporal=temporal,
             source=KpiSourceOut(
                 dataset_id=meta["dataset_id"],
                 source_table_id=meta["source_table_id"],
@@ -672,10 +706,45 @@ class KpiService:
 
     # ------------------------------------------------- vários períodos e acumulado (ADR-0026)
 
+    def _accumulation_rule(
+        self,
+        ctx: ReleaseContext,
+        kpi: KpiConfig,
+    ) -> Literal["sum", "compound"] | None:
+        """Regra declarada ou política curada cuja linhagem coincide (ADR-0041)."""
+        meta = self._gold.indicators(ctx)[kpi.indicator]
+        if kpi.map_share is not None:
+            return None
+        policy = next((p for p in self._portal.temporal_sums if p.kpi == kpi.id), None)
+        if policy and (
+            meta["source_variable_id"] == policy.variable
+            and set(self._gold.coverage(ctx).get(kpi.indicator, {})) == {policy.table}
+        ):
+            return "sum"
+        rule = meta.get("time_aggregation")
+        if len(meta.get("time_grains") or ()) > 1:
+            if rule == "sum":
+                return "sum"
+            if rule == "compound":
+                return "compound"
+        return None
+
+    def _temporal(self, ctx: ReleaseContext, kpi: KpiConfig) -> TemporalCapabilitiesOut:
+        """Capacidades independentes, inclusive grão único anual/trimestral."""
+        meta = self._gold.indicators(ctx)[kpi.indicator]
+        grains = meta.get("time_grains") or ()
+        rule = self._accumulation_rule(ctx, kpi)
+        years = {p[:4] for p in meta["periods"] or ()}
+        return TemporalCapabilitiesOut(
+            isolate=bool(grains and (grains[0] != "ano" or len(years) > 1)),
+            accumulate=rule is not None,
+            seasonal_sum=rule == "sum",
+            accumulation_rule=rule,
+        )
+
     def _rule(self, ctx: ReleaseContext, kpi: KpiConfig) -> str:
         """Regra para acumular períodos: soma (fluxos) ou composição (variações %)."""
-        meta = self._gold.indicators(ctx)[kpi.indicator]
-        rule = meta.get("time_aggregation") if len(meta.get("time_grains") or ()) > 1 else None
+        rule = self._accumulation_rule(ctx, kpi)
         if rule not in ACCUMULABLE or kpi.map_share is not None:
             msg = (
                 f"{kpi.id}: acumular períodos só vale para fluxos (soma) e variações % "
@@ -739,6 +808,17 @@ class KpiService:
             )
         return out
 
+    def _native_categories(
+        self, ctx: ReleaseContext, kpi: KpiConfig, dim: DimensionConfig
+    ) -> list[dict[str, Any]]:
+        """Usa a evidência do indicador, sem confundir catálogo global com observações."""
+        present = self._gold.observed_category_keys(ctx, kpi.indicator, dim.classification)
+        return [
+            c
+            for key, c in self._gold.categories(ctx).items()
+            if key in present and c["classification_id"] == dim.classification and not c["is_total"]
+        ]
+
     def _selection(
         self, ctx: ReleaseContext, kpi: KpiConfig, categories: Sequence[str]
     ) -> dict[str, frozenset[str]]:
@@ -748,16 +828,38 @@ class KpiService:
             return {}
         chosen: dict[str, set[str]] = {}
         every: dict[str, set[str]] = {}
+        allowed: dict[str, set[str]] = {}
         for key in categories:
             dim = key.split(":", 1)[0]
             cfg = next((d for d in kpi.dimensions if d.classification == dim), None)
             if cfg is not None and dim not in every:
                 cats = self._gold.partition_categories(ctx, dim, cfg.partition)
                 every[dim] = {c["category_key"] for c in cats}
-            if key not in every.get(dim, set()):
+                allowed[dim] = every[dim] | (
+                    {c["category_key"] for c in self._native_categories(ctx, kpi, cfg)}
+                    if cfg.native_categories
+                    else set()
+                )
+            if key not in allowed.get(dim, set()):
                 msg = f"{kpi.id}: categoria {key} fora das dimensões expostas do KPI"
                 raise SemanticError(msg)
             chosen.setdefault(dim, set()).add(key)
+        # O Total publicado não é refeito pela soma de grupos e idades sobrepostos.
+        catalog = self._gold.categories(ctx)
+        for keys in chosen.values():
+            for key in keys:
+                parent = catalog.get(key, {}).get("parent_category_key")
+                seen = {key}
+                while parent:
+                    if parent in keys:
+                        raise SemanticError(
+                            f"{kpi.id}: pai e filho não podem compor o mesmo filtro de soma; "
+                            "escolha categorias sem sobreposição"
+                        )
+                    if parent in seen:
+                        raise SemanticError(f"{kpi.id}: ciclo na hierarquia de categorias")
+                    seen.add(parent)
+                    parent = catalog.get(parent, {}).get("parent_category_key")
         return {dim: frozenset(keys) for dim, keys in chosen.items() if keys != every[dim]}
 
     def _partition(
@@ -766,6 +868,8 @@ class KpiService:
         """Categorias da partição exposta, só as escolhidas quando há filtro."""
         cats = self._gold.partition_categories(ctx, dim.classification, dim.partition)
         chosen = (selected or {}).get(dim.classification)
+        if chosen and dim.native_categories:
+            return [c for key, c in self._gold.categories(ctx).items() if key in chosen]
         return [c for c in cats if c["category_key"] in chosen] if chosen else list(cats)
 
     def _breakdown(
@@ -1609,6 +1713,111 @@ class KpiService:
             provenance=prov,
         )
 
+    def seasonal(
+        self,
+        ctx: ReleaseContext,
+        kpi_id: str,
+        *,
+        geography: str,
+        year_from: int,
+        year_to: int,
+        dimensions: Sequence[str],
+        grain: str | None = None,
+        categories: Sequence[str] = (),
+        correction: str | None = None,
+    ) -> SeasonalOut:
+        """Soma a mesma parte entre anos com parcelas nativas e risco (ADR-0041)."""
+        kpi = self.kpi(ctx, kpi_id)
+        if not self._temporal(ctx, kpi).seasonal_sum:
+            raise SemanticError(f"{kpi_id}: soma da mesma parte entre anos não autorizada")
+        meta = self._gold.indicators(ctx)[kpi.indicator]
+        native = str(meta["time_grains"][0])
+        target = grain or native
+        self._grain(ctx, kpi, target)
+        try:
+            groups = seasonal_groups(native, target, year_from, year_to)
+        except PeriodError as exc:
+            raise SemanticError(str(exc)) from exc
+        ref = self._ref(ctx, geography)
+        dims = self._dims(kpi, dimensions, ref.level_id)
+        selected = self._selection(ctx, kpi, categories)
+        periods = sorted(p for values in groups.values() for p in values)
+        count = prod(len(ids) for ids in self._breakdown(ctx, kpi, dims, selected).values())
+        if count * len(periods) > PIVOT_MAX_CELLS:
+            raise SemanticError("Acumulado entre anos grande demais: reduza detalhes ou anos")
+        obs, prov = self._observations(
+            ctx,
+            kpi,
+            level=ref.level_id,
+            within=geography,
+            periods=periods,
+            dims=dims,
+            max_rows=PIVOT_MAX_CELLS + 1,
+            selected=selected,
+            correction=correction,
+        )
+        if prov.truncated:
+            raise SemanticError("Acumulado entre anos truncado: reduza detalhes ou anos")
+        by_combo: dict[Combo, list[SeasonalInput]] = {}
+        for observation in obs:
+            if observation.geography_key == geography:
+                by_combo.setdefault(observation.combo, []).append(
+                    SeasonalInput(observation.period, observation.value, observation.status)
+                )
+        totals = [self._gold.total_category(ctx, d)["category_key"] for d in dims]
+        series = []
+        for combo in self._combos(ctx, kpi, dims, selected=selected):
+            try:
+                values = seasonal_sum(
+                    by_combo.get(combo, []),
+                    native=native,
+                    target=target,
+                    start=year_from,
+                    end=year_to,
+                )
+            except PeriodError as exc:
+                raise SemanticError(str(exc)) from exc
+            series.append(
+                SeasonalSeriesOut(
+                    key="|".join(combo) or "total",
+                    label=self._label(ctx, combo, dims),
+                    categories=dict(zip(dims, combo, strict=True)),
+                    depth=sum(c != t for c, t in zip(combo, totals, strict=True)),
+                    points=[
+                        SeasonalPointOut(
+                            part=v.part,
+                            value=to_float(v.value),
+                            status=v.status,
+                            severity="danger"
+                            if v.value is None
+                            else "warning"
+                            if v.missing or v.input_partial
+                            else None,
+                            expected=v.expected,
+                            present=v.present,
+                            missing=list(v.missing),
+                            blocked=list(v.blocked),
+                            contributors=list(v.contributors),
+                            input_partial=list(v.input_partial),
+                        )
+                        for v in values
+                    ],
+                )
+            )
+        policy = next((p for p in self._portal.temporal_sums if p.kpi == kpi.id), None)
+        return SeasonalOut(
+            kpi_id=kpi.id,
+            geography=ref,
+            unit=meta["unit"],
+            grain=cast(Grain, target),
+            native_grain=cast(Grain, native),
+            year_from=year_from,
+            year_to=year_to,
+            series=series,
+            notes=[*list(meta["caveats"] or ()), *([policy.note] if policy else [])],
+            provenance=prov.model_copy(update={"derived": True}),
+        )
+
     def _series_shares(
         self,
         ctx: ReleaseContext,
@@ -1872,10 +2081,16 @@ class KpiService:
         if bad or len(set(fields)) != len(fields) or not rows or not cols:
             msg = f"{kpi.id}: campos da tabela dinâmica inválidos {bad or fields}"
             raise SemanticError(msg)
-        dims = self._dims(kpi, [f for f in fields if f in exposed], level)
+        requested = [f for f in exposed if f in fields]
+        invalid_cross = (
+            kpi.exclusive_dimensions and len(requested) > 1 and not kpi.can_cross(requested, level)
+        )
+        dims = requested if invalid_cross else self._dims(kpi, requested, level)
         sel = self._selection(ctx, kpi, categories)
         grain = self._grain(ctx, kpi, grain)
-        window = tuple(self._window(ctx, kpi, periods, grain, level)) if periods else ()
+        # Período conhecido na série, mas ausente neste nível, gera V3 na tabela.
+        # Períodos inventados e os demais endpoints continuam sendo recusados.
+        window = tuple(self._window(ctx, kpi, periods, grain, None)) if periods else ()
         obs, prov, base_keys = self._pivot_observations(
             ctx,
             kpi,
@@ -1886,6 +2101,7 @@ class KpiService:
             grain=grain,
             correction=correction,
             selected=sel,
+            invalid_cross=invalid_cross,
         )
         index = {d: i for i, d in enumerate(dims)}
         order: dict[str, dict[str, int]] = {}
@@ -1957,7 +2173,7 @@ class KpiService:
                 key_of=lambda o: tuple(value_of(o, f)[0] for f in cols),
                 col_keys=col_keys,
             )
-            if list(rows) == ["territorio"]
+            if list(rows) == ["territorio"] and not invalid_cross
             else (None, [])
         )
 
@@ -1976,7 +2192,74 @@ class KpiService:
             share_bases=share_bases,
             footer=footer,
             footer_cells=footer_cells,
+            alerts=self._coverage_alerts(
+                ctx,
+                kpi,
+                level=level,
+                within=within,
+                dims=dims,
+                grain=grain,
+                obs=[o for o in obs if not base_keys.intersection(o.combo)],
+                selected_periods=window,
+                invalid_cross=invalid_cross,
+            ),
             provenance=prov,
+        )
+
+    def _coverage_alerts(
+        self,
+        ctx: ReleaseContext,
+        kpi: KpiConfig,
+        *,
+        level: str,
+        within: str | None,
+        dims: Sequence[str],
+        grain: str | None,
+        obs: Sequence[Observation],
+        invalid_cross: bool,
+        selected_periods: Sequence[str],
+    ) -> list[CoverageAlertOut]:
+        """Diagnostica o mesmo recorte da tabela, com referências verificáveis."""
+        meta = self._gold.indicators(ctx)[kpi.indicator]
+        levels = list(meta["available_levels"] or ())
+        base = list(meta["periods"] or ())
+        level_base = self._gold.periods_by_level(ctx).get(kpi.indicator, {}).get(level, base)
+
+        def convert(ps: Iterable[str]) -> list[str]:
+            return periods_at(sorted(ps), grain) if grain else sorted(ps)
+
+        detail: dict[str, set[str]] = {d: set() for d in dims}
+        for table in self._gold.coverage(ctx).get(kpi.indicator, {}).values():
+            for dim in dims:
+                detail[dim].update(table.get("detail_periods", {}).get(dim, {}).get(level, ()))
+        expected: dict[tuple[str, str], tuple[int, str]] = {}
+        references = self._gold.reference_counts(ctx, level, within)
+        for source, period in sorted({(o.source, o.period) for o in obs if o.source}):
+            reference = None
+            if len(references) == 1 and re.search(
+                rf"\b{re.escape(period[:4])}\b", references[0]["reference"]
+            ):
+                reference = (int(references[0]["territories"]), references[0]["reference"])
+            elif self._descriptors and within in (None, "brasil:1"):
+                reference = historical_expected(self._descriptors, source, level, period)
+            if reference:
+                expected[(source, period)] = reference
+        return coverage_alerts(
+            level=level,
+            periods=convert(base),
+            level_periods=convert(level_base),
+            dimensions=self._dimension_out(ctx, kpi, levels),
+            active=dims,
+            detail_periods={d: convert(ps) for d, ps in detail.items()},
+            cells=[
+                CoverageCell(
+                    o.geography_key, o.period, o.combo, o.status, o.value is not None, o.source
+                )
+                for o in obs
+            ],
+            expected=expected,
+            invalid_cross=invalid_cross,
+            selected_periods=selected_periods,
         )
 
     def _pivot_observations(
@@ -1991,8 +2274,24 @@ class KpiService:
         grain: str | None,
         correction: str | None,
         selected: Selection,
+        invalid_cross: bool = False,
     ) -> tuple[list[Observation], Provenance, set[str]]:
         """Confere o teto visível e lê subtotais de referência na mesma consulta."""
+        if invalid_cross:
+            if correction:
+                self._correction(kpi, correction)
+            # Valida nível e recorte sem consultar nem combinar marginais proibidas.
+            self._observation_plan(
+                ctx,
+                kpi,
+                level=level,
+                within=within,
+                periods=periods,
+                dims=(),
+                grain=grain,
+                selected=selected,
+            )
+            return [], provenance(ctx, ()), set()
         exposed = {d.classification: d for d in kpi.dimensions}
         window = tuple(periods)
         sel = selected

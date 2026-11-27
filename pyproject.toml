@@ -39,6 +39,8 @@ ignore = [
 "packages/semantics/src/odb_semantics/query.py" = ["S608"]
 # Mesma regra: fragmentos fixos e $parâmetros. Rotas FastAPI recebem parâmetros nomeados.
 "apps/api/src/odb_api/gold.py" = ["S608"]
+# Contas (ADR-0037): fragmentos fixos, meses conferidos contra o release e $parâmetros.
+"apps/api/src/odb_api/contas.py" = ["S608"]
 "apps/api/src/odb_api/routes/*.py" = ["PLR0917"]
 # FTP anônimo, só leitura, é o protocolo oficial de transferência de arquivos do DATASUS (§7.3).
 "packages/ingestion/src/odb_ingestion/connectors/ftp_file.py" = ["S321"]

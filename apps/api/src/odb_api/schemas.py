@@ -156,6 +156,8 @@ class CategoryOut(_Out):
     category_key: str
     category_id: str
     name: str
+    parent_category_key: str | None = None
+    depth: int = 0
     full_name: str = Field(
         "", description="Nome oficial completo (o rótulo pode ser o curto, DS 2.3.11)."
     )
@@ -183,6 +185,11 @@ class DimensionOut(_Out):
     )
     share_base_category_key: str | None = None
     categories: list[CategoryOut]
+    explorable_categories: list[CategoryOut] = Field(
+        default_factory=list,
+        description="Categorias observadas no indicador, sem certificar todos os recortes. "
+        "O filtro aceita seleções sem sobreposição de pai e filhos.",
+    )
     # Níveis com o detalhe; vazio: todos os do KPI (ex.: situação na PNS, só Brasil).
     # Também restrito quando o release não traz as categorias num nível (DS 2.9).
     levels: list[str] = []
@@ -229,6 +236,15 @@ class TimeGrainOut(_Out):
     complete_periods: list[str]
 
 
+class TemporalCapabilitiesOut(_Out):
+    """Operações temporais independentes, calculadas na API (ADR-0041)."""
+
+    isolate: bool = False
+    accumulate: bool = False
+    seasonal_sum: bool = False
+    accumulation_rule: Literal["sum", "compound"] | None = None
+
+
 class KpiOut(_Out):
     """KPI do portal com os metadados do indicador no release."""
 
@@ -261,6 +277,7 @@ class KpiOut(_Out):
     time_grains: list[TimeGrainOut] = []
     # Como os grãos maiores saem do publicado: "sum", "mean" ou "last" (ADR-0017).
     time_aggregation: Literal["sum", "mean", "last", "compound"] | None = None
+    temporal: TemporalCapabilitiesOut = Field(default_factory=TemporalCapabilitiesOut)
     source: KpiSourceOut
 
 
@@ -495,6 +512,46 @@ class SeriesOut(_Out):
     provenance: Provenance
 
 
+class SeasonalPointOut(_Out):
+    """Subtotal por parte e intervalo, com parcelas explícitas."""
+
+    part: str
+    value: float | None
+    status: str
+    severity: Literal["warning", "danger"] | None
+    expected: int
+    present: int
+    missing: list[str]
+    blocked: list[str]
+    contributors: list[str]
+    input_partial: list[str]
+
+
+class SeasonalSeriesOut(_Out):
+    """Uma série acumulada por parte, sem misturar combinações de categorias."""
+
+    key: str
+    label: str
+    categories: dict[str, str]
+    depth: int
+    points: list[SeasonalPointOut]
+
+
+class SeasonalOut(_Out):
+    """Resultado derivado do acumulado entre anos (ADR-0041)."""
+
+    kpi_id: str
+    geography: GeographyRefOut
+    unit: str
+    grain: Grain
+    native_grain: Grain
+    year_from: int
+    year_to: int
+    series: list[SeasonalSeriesOut]
+    notes: list[str]
+    provenance: Provenance
+
+
 class ColumnOut(_Out):
     """Coluna da tabela (uma combinação de categorias)."""
 
@@ -696,6 +753,29 @@ class PivotShareBaseOut(_Out):
     status: str
 
 
+class CoverageAlertParams(_Out):
+    """Parâmetros do diagnóstico, sem textos traduzidos ou URLs inventadas."""
+
+    level: str
+    dimension: str | None = None
+    dimensions: list[str] = Field(default_factory=list)
+    tables: list[str] = Field(default_factory=list)
+    periods: list[str] = Field(default_factory=list)
+    available_periods: list[str] = Field(default_factory=list)
+    available_levels: list[str] = Field(default_factory=list)
+    observed: int | None = None
+    expected: int | None = None
+    reference: str | None = None
+
+
+class CoverageAlertOut(_Out):
+    """Alerta calculado pela API para a tabela dinâmica (ADR-0040)."""
+
+    severity: Literal["warning", "danger"]
+    code: Literal["A1", "A2", "A3", "A4", "V1", "V2", "V3", "V4"]
+    params: CoverageAlertParams
+
+
 class PivotOut(_Out):
     """Tabela dinâmica (B6): linhas e colunas escolhidas; os campos fora dela ficam no
     Total publicado (sem somas novas); nunca acumulada (ADR-0026)."""
@@ -711,6 +791,7 @@ class PivotOut(_Out):
     columns: list[PivotHeaderOut]
     cells: list[list[CellOut | None]]
     share_bases: list[PivotShareBaseOut] = Field(default_factory=list)
+    alerts: list[CoverageAlertOut] = Field(default_factory=list)
     # Linha de totais (território do recorte, ou Brasil), só com Território nas linhas.
     footer: PivotHeaderOut | None = None
     footer_cells: list[CellOut | None] = []

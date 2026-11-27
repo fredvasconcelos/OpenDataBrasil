@@ -1041,6 +1041,162 @@
         }
       }
     },
+    "/api/v1/dictionaries": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Dicionários e apoios",
+        "description": "Inventário documental; candidatas continuam separadas dos KPIs publicados.",
+        "operationId": "dictionary_index_api_v1_dictionaries_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DictionaryIndexOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dictionaries/{entry_id}": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Ficha, códigos, fontes e métodos do indicador",
+        "description": "Documentação obtida, com origem, versão e lacunas de cada variável/edição.",
+        "operationId": "dictionary_entry_api_v1_dictionaries__entry_id__get",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]{0,95}$",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DictionaryEntryOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/kpis/{kpi_id}": {
       "get": {
         "tags": [
@@ -2012,6 +2168,209 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SeriesOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/kpis/{kpi_id}/seasonal": {
+      "get": {
+        "tags": [
+          "portal"
+        ],
+        "summary": "Soma da mesma parte do ano entre anos",
+        "description": "Uma barra por parte e categoria, com cobertura do intervalo (ADR-0041).",
+        "operationId": "kpi_seasonal_api_v1_kpis__kpi_id__seasonal_get",
+        "parameters": [
+          {
+            "name": "kpi_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "title": "Kpi Id"
+            }
+          },
+          {
+            "name": "geography",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$",
+              "description": "Território, ex.: uf:29.",
+              "title": "Geography"
+            },
+            "description": "Território, ex.: uf:29."
+          },
+          {
+            "name": "year_from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 9999,
+              "minimum": 1,
+              "title": "Year From"
+            }
+          },
+          {
+            "name": "year_to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 9999,
+              "minimum": 1,
+              "title": "Year To"
+            }
+          },
+          {
+            "name": "grain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "mes",
+                    "trimestre",
+                    "semestre",
+                    "ano"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos).",
+              "title": "Grain"
+            },
+            "description": "Grão de tempo: soma os meses em trimestre, semestre ou ano (só fluxos)."
+          },
+          {
+            "name": "correction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,31}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo.",
+              "title": "Correction"
+            },
+            "description": "Correção por índice de preços (ADR-0020), ex.: ipca, ipca_grupo."
+          },
+          {
+            "name": "dimensions",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2.",
+              "title": "Dimensions"
+            },
+            "description": "Dimensões do KPI (repetível ou separadas por vírgula), ex.: c86,c2."
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtro de categorias das dimensões detalhadas (repetível ou separadas por vírgula), ex.: c79:2670,c79:2681. Sem filtro numa dimensão: todas. Em indicadores somáveis, o Total vira a soma das categorias escolhidas.",
+              "title": "Categories"
+            },
+            "description": "Filtro de categorias das dimensões detalhadas (repetível ou separadas por vírgula), ex.: c79:2670,c79:2681. Sem filtro numa dimensão: todas. Em indicadores somáveis, o Total vira a soma das categorias escolhidas."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonalOut"
                 }
               }
             }
@@ -3534,6 +3893,1254 @@
         }
       }
     },
+    "/api/v1/contas/meta": {
+      "get": {
+        "tags": [
+          "contas públicas"
+        ],
+        "summary": "Lentes, dimensões e meses",
+        "description": "O que o release oferece e a situação de cada mês (aberto, incompleto, fechado).",
+        "operationId": "meta_api_v1_contas_meta_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContasMetaOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contas/map": {
+      "get": {
+        "tags": [
+          "contas públicas"
+        ],
+        "summary": "Mapa: total por território",
+        "description": "Só o montante por território (ADR-0034, decisão 1); com ``dimension`` e\n``categories``, a soma das categorias escolhidas.",
+        "operationId": "contas_map_api_v1_contas_map_get",
+        "parameters": [
+          {
+            "name": "lens",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "A",
+                "B"
+              ],
+              "type": "string",
+              "description": "A: transferências; B: favorecidos.",
+              "default": "A",
+              "title": "Lens"
+            },
+            "description": "A: transferências; B: favorecidos."
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "regiao",
+                "uf",
+                "municipio"
+              ],
+              "type": "string",
+              "default": "uf",
+              "title": "Level"
+            }
+          },
+          {
+            "name": "within",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Within"
+            }
+          },
+          {
+            "name": "dimension",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,63}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Dimensão do detalhar por.",
+              "title": "Dimension"
+            },
+            "description": "Dimensão do detalhar por."
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Categorias da dimensão (soma das escolhidas).",
+              "title": "Categories"
+            },
+            "description": "Categorias da dimensão (soma das escolhidas)."
+          },
+          {
+            "name": "periods",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026).",
+              "title": "Periods"
+            },
+            "description": "Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContasMapOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contas/composition": {
+      "get": {
+        "tags": [
+          "contas públicas"
+        ],
+        "summary": "Composição do território",
+        "description": "As maiores categorias do território e \"demais\" (tooltip e gráfico de barras).",
+        "operationId": "composition_api_v1_contas_composition_get",
+        "parameters": [
+          {
+            "name": "geography_key",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$",
+              "description": "Território, ex.: uf:25.",
+              "title": "Geography Key"
+            },
+            "description": "Território, ex.: uf:25."
+          },
+          {
+            "name": "dimension",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "title": "Dimension"
+            }
+          },
+          {
+            "name": "lens",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "A",
+                "B"
+              ],
+              "type": "string",
+              "description": "A: transferências; B: favorecidos.",
+              "default": "A",
+              "title": "Lens"
+            },
+            "description": "A: transferências; B: favorecidos."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "periods",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026).",
+              "title": "Periods"
+            },
+            "description": "Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContasCompositionOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contas/series": {
+      "get": {
+        "tags": [
+          "contas públicas"
+        ],
+        "summary": "Série mensal ou anual",
+        "description": "Total, ou até 10 categorias + \"demais\", no território (ADR-0034, decisão 2).",
+        "operationId": "series_api_v1_contas_series_get",
+        "parameters": [
+          {
+            "name": "geography_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$",
+              "description": "Território, ex.: uf:25.",
+              "default": "brasil:1",
+              "title": "Geography Key"
+            },
+            "description": "Território, ex.: uf:25."
+          },
+          {
+            "name": "lens",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "A",
+                "B"
+              ],
+              "type": "string",
+              "description": "A: transferências; B: favorecidos.",
+              "default": "A",
+              "title": "Lens"
+            },
+            "description": "A: transferências; B: favorecidos."
+          },
+          {
+            "name": "grain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "mes",
+                "ano"
+              ],
+              "type": "string",
+              "default": "mes",
+              "title": "Grain"
+            }
+          },
+          {
+            "name": "dimension",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,63}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Dimensão do detalhar por.",
+              "title": "Dimension"
+            },
+            "description": "Dimensão do detalhar por."
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Categories"
+            }
+          },
+          {
+            "name": "periods",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026).",
+              "title": "Periods"
+            },
+            "description": "Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContasSeriesOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contas/ranking": {
+      "get": {
+        "tags": [
+          "contas públicas"
+        ],
+        "summary": "Maiores destinatários",
+        "description": "Os maiores do território no ano, todos os municípios dele incluídos (ADR-0034, 4).",
+        "operationId": "ranking_api_v1_contas_ranking_get",
+        "parameters": [
+          {
+            "name": "geography_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$",
+              "description": "Território, ex.: uf:25.",
+              "default": "brasil:1",
+              "title": "Geography Key"
+            },
+            "description": "Território, ex.: uf:25."
+          },
+          {
+            "name": "lens",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "A",
+                "B"
+              ],
+              "type": "string",
+              "description": "A: transferências; B: favorecidos.",
+              "default": "B",
+              "title": "Lens"
+            },
+            "description": "A: transferências; B: favorecidos."
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 2100,
+                  "minimum": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Year"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Página de 10 linhas (até 100).",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Página de 10 linhas (até 100)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContasRankingOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contas/table": {
+      "get": {
+        "tags": [
+          "contas públicas"
+        ],
+        "summary": "Tabela paginada",
+        "description": "Desdobra em todos os níveis, 10 linhas por página (ADR-0034, decisão 3).",
+        "operationId": "table_api_v1_contas_table_get",
+        "parameters": [
+          {
+            "name": "geography_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z_]{2,32}:[0-9A-Za-z]{1,16}$",
+              "description": "Território, ex.: uf:25.",
+              "default": "brasil:1",
+              "title": "Geography Key"
+            },
+            "description": "Território, ex.: uf:25."
+          },
+          {
+            "name": "lens",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "A",
+                "B"
+              ],
+              "type": "string",
+              "description": "A: transferências; B: favorecidos.",
+              "default": "A",
+              "title": "Lens"
+            },
+            "description": "A: transferências; B: favorecidos."
+          },
+          {
+            "name": "group_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "description": "territory, recipient ou dimensão.",
+              "default": "territory",
+              "title": "Group By"
+            },
+            "description": "territory, recipient ou dimensão."
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "dimensão:código (repetível), ex.: function:10. Até 10.",
+              "title": "Filter"
+            },
+            "description": "dimensão:código (repetível), ex.: function:10. Até 10."
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "value",
+                "name"
+              ],
+              "type": "string",
+              "default": "value",
+              "title": "Sort"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Página de 10 linhas (até 100).",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Página de 10 linhas (até 100)."
+          },
+          {
+            "name": "include_intermediaries",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Include Intermediaries"
+            }
+          },
+          {
+            "name": "periods",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026).",
+              "title": "Periods"
+            },
+            "description": "Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContasTableOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contas/favorecidos/{recipient_id}": {
+      "get": {
+        "tags": [
+          "contas públicas"
+        ],
+        "summary": "Ficha do favorecido",
+        "description": "O que o favorecido recebeu, por lente, ano, mês e órgão.\n\nFichas de pessoa física não são indexadas por buscadores (ADR-0031, 5.6).",
+        "operationId": "recipient_api_v1_contas_favorecidos__recipient_id__get",
+        "parameters": [
+          {
+            "name": "recipient_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{16}$",
+              "title": "Recipient Id"
+            }
+          },
+          {
+            "name": "periods",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026).",
+              "title": "Periods"
+            },
+            "description": "Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipientProfileOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contas/busca": {
+      "get": {
+        "tags": [
+          "contas públicas"
+        ],
+        "summary": "Busca",
+        "description": "Favorecidos PJ, órgãos, programas e ações (pessoas físicas ficam fora).",
+        "operationId": "search_api_v1_contas_busca_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 80,
+              "title": "Q"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContasSearchOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contas/execucao": {
+      "get": {
+        "tags": [
+          "contas públicas"
+        ],
+        "summary": "Execução da despesa",
+        "description": "Empenhado, liquidado, pago e restos a pagar por categoria (lente C).",
+        "operationId": "execution_api_v1_contas_execucao_get",
+        "parameters": [
+          {
+            "name": "dimension",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "default": "function",
+              "title": "Dimension"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Filter"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Página de 10 linhas (até 100).",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Página de 10 linhas (até 100)."
+          },
+          {
+            "name": "periods",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026).",
+              "title": "Periods"
+            },
+            "description": "Vários períodos (repetível ou separados por vírgula), ex.: 2025T1,2025T2. Na tabela, um grupo de colunas por período; com accumulate, o acumulado (ADR-0026)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContasExecutionOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso inexistente no release",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Regra semântica ou parâmetro inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisições",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sem release ativo ou motor ocupado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Tempo de consulta excedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "tags": [
@@ -3572,6 +5179,22 @@
           "name": {
             "type": "string",
             "title": "Name"
+          },
+          "parent_category_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Category Key"
+          },
+          "depth": {
+            "type": "integer",
+            "title": "Depth",
+            "default": 0
           },
           "full_name": {
             "type": "string",
@@ -3675,6 +5298,605 @@
         "title": "ColumnOut",
         "description": "Coluna da tabela (uma combinação de categorias)."
       },
+      "CompositionRowOut": {
+        "properties": {
+          "category_code": {
+            "type": "string",
+            "title": "Category Code"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "share": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Share"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category_code",
+          "label",
+          "value",
+          "share"
+        ],
+        "title": "CompositionRowOut",
+        "description": "Categoria do \"detalhar por\" num território."
+      },
+      "ContasCompositionOut": {
+        "properties": {
+          "lens": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B"
+            ],
+            "title": "Lens"
+          },
+          "geography_key": {
+            "type": "string",
+            "title": "Geography Key"
+          },
+          "dimension": {
+            "type": "string",
+            "title": "Dimension"
+          },
+          "total": {
+            "type": "number",
+            "title": "Total"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/CompositionRowOut"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/ContasProvenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lens",
+          "geography_key",
+          "dimension",
+          "total",
+          "rows",
+          "provenance"
+        ],
+        "title": "ContasCompositionOut",
+        "description": "Composição do território: as maiores categorias e \"demais\"."
+      },
+      "ContasDimensionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label"
+        ],
+        "title": "ContasDimensionOut",
+        "description": "Dimensão do \"detalhar por\" ou do agrupamento da tabela."
+      },
+      "ContasExecutionOut": {
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "title": "Dimension"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "pages": {
+            "type": "integer",
+            "title": "Pages"
+          },
+          "rows_total": {
+            "type": "integer",
+            "title": "Rows Total"
+          },
+          "total": {
+            "$ref": "#/components/schemas/ExecutionRowOut"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/ExecutionRowOut"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/ContasProvenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dimension",
+          "page",
+          "page_size",
+          "pages",
+          "rows_total",
+          "total",
+          "rows",
+          "provenance"
+        ],
+        "title": "ContasExecutionOut",
+        "description": "Execução da despesa (lente C), sem território (ADR-0032, decisão 6)."
+      },
+      "ContasMapOut": {
+        "properties": {
+          "lens": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B"
+            ],
+            "title": "Lens"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "within": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Within"
+          },
+          "dimension": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dimension"
+          },
+          "categories": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Categories"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit",
+            "default": "R$ (valores nominais)"
+          },
+          "total": {
+            "type": "number",
+            "title": "Total"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/MapRowOut"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/ContasProvenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lens",
+          "level",
+          "within",
+          "dimension",
+          "categories",
+          "total",
+          "rows",
+          "provenance"
+        ],
+        "title": "ContasMapOut",
+        "description": "Mapa: só o total por território (ADR-0034, decisão 1)."
+      },
+      "ContasMetaOut": {
+        "properties": {
+          "release_id": {
+            "type": "string",
+            "title": "Release Id"
+          },
+          "lenses": {
+            "items": {
+              "$ref": "#/components/schemas/LensOut"
+            },
+            "type": "array",
+            "title": "Lenses"
+          },
+          "recipient_classes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Recipient Classes"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "release_id",
+          "lenses",
+          "recipient_classes",
+          "notes"
+        ],
+        "title": "ContasMetaOut",
+        "description": "Lentes, dimensões, meses e classes de favorecido do release."
+      },
+      "ContasProvenance": {
+        "properties": {
+          "release_id": {
+            "type": "string",
+            "title": "Release Id"
+          },
+          "tables": {
+            "items": {
+              "$ref": "#/components/schemas/TableVersionOut"
+            },
+            "type": "array",
+            "title": "Tables"
+          },
+          "periods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Periods"
+          },
+          "partial": {
+            "type": "boolean",
+            "title": "Partial"
+          },
+          "period_notes": {
+            "items": {
+              "$ref": "#/components/schemas/PeriodStatusOut"
+            },
+            "type": "array",
+            "title": "Period Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "release_id",
+          "tables",
+          "periods",
+          "partial"
+        ],
+        "title": "ContasProvenance",
+        "description": "Release, tabelas e meses usados; ``partial`` quando algum mês não está fechado."
+      },
+      "ContasRankingOut": {
+        "properties": {
+          "lens": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B"
+            ],
+            "title": "Lens"
+          },
+          "geography_key": {
+            "type": "string",
+            "title": "Geography Key"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "pages": {
+            "type": "integer",
+            "title": "Pages"
+          },
+          "total_recipients": {
+            "type": "integer",
+            "title": "Total Recipients"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/RankingRowOut"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/ContasProvenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lens",
+          "geography_key",
+          "year",
+          "page",
+          "page_size",
+          "pages",
+          "total_recipients",
+          "rows",
+          "notes",
+          "provenance"
+        ],
+        "title": "ContasRankingOut",
+        "description": "Maiores destinatários do território no ano (ADR-0034, decisão 4)."
+      },
+      "ContasSearchOut": {
+        "properties": {
+          "q": {
+            "type": "string",
+            "title": "Q"
+          },
+          "hits": {
+            "items": {
+              "$ref": "#/components/schemas/SearchHitOut"
+            },
+            "type": "array",
+            "title": "Hits"
+          },
+          "release_id": {
+            "type": "string",
+            "title": "Release Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "q",
+          "hits",
+          "release_id"
+        ],
+        "title": "ContasSearchOut",
+        "description": "Busca por favorecido PJ, órgão, programa e ação (plano, seção 9)."
+      },
+      "ContasSeriesOut": {
+        "properties": {
+          "lens": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B"
+            ],
+            "title": "Lens"
+          },
+          "geography_key": {
+            "type": "string",
+            "title": "Geography Key"
+          },
+          "grain": {
+            "type": "string",
+            "enum": [
+              "mes",
+              "ano"
+            ],
+            "title": "Grain"
+          },
+          "dimension": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dimension"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/SeriesLineOut"
+            },
+            "type": "array",
+            "title": "Lines"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/ContasProvenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lens",
+          "geography_key",
+          "grain",
+          "dimension",
+          "lines",
+          "provenance"
+        ],
+        "title": "ContasSeriesOut",
+        "description": "Série mensal ou anual (ADR-0034, decisão 2)."
+      },
+      "ContasTableOut": {
+        "properties": {
+          "lens": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B"
+            ],
+            "title": "Lens"
+          },
+          "geography_key": {
+            "type": "string",
+            "title": "Geography Key"
+          },
+          "group_by": {
+            "type": "string",
+            "title": "Group By"
+          },
+          "filters": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Filters"
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "value",
+              "name"
+            ],
+            "title": "Sort"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "pages": {
+            "type": "integer",
+            "title": "Pages"
+          },
+          "rows_total": {
+            "type": "integer",
+            "title": "Rows Total"
+          },
+          "value_total": {
+            "type": "number",
+            "title": "Value Total"
+          },
+          "page_value": {
+            "type": "number",
+            "title": "Page Value"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/ContasTableRowOut"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/ContasProvenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lens",
+          "geography_key",
+          "group_by",
+          "filters",
+          "sort",
+          "page",
+          "page_size",
+          "pages",
+          "rows_total",
+          "value_total",
+          "page_value",
+          "rows",
+          "notes",
+          "provenance"
+        ],
+        "title": "ContasTableOut",
+        "description": "Tabela paginada no servidor, 10 linhas por página (ADR-0034, decisão 3)."
+      },
+      "ContasTableRowOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "share": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Share"
+          },
+          "recipient": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RecipientRefOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "value",
+          "share"
+        ],
+        "title": "ContasTableRowOut",
+        "description": "Linha da tabela: um grupo (território, categoria ou favorecido)."
+      },
       "CorrectionOut": {
         "properties": {
           "correction_id": {
@@ -3698,6 +5920,136 @@
         ],
         "title": "CorrectionOut",
         "description": "Correção disponível para o KPI (\"Corrigir por\", ADR-0020)."
+      },
+      "CoverageAlertOut": {
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": [
+              "warning",
+              "danger"
+            ],
+            "title": "Severity"
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "V1",
+              "V2",
+              "V3",
+              "V4"
+            ],
+            "title": "Code"
+          },
+          "params": {
+            "$ref": "#/components/schemas/CoverageAlertParams"
+          }
+        },
+        "type": "object",
+        "required": [
+          "severity",
+          "code",
+          "params"
+        ],
+        "title": "CoverageAlertOut",
+        "description": "Alerta calculado pela API para a tabela dinâmica (ADR-0040)."
+      },
+      "CoverageAlertParams": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "dimension": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dimension"
+          },
+          "dimensions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Dimensions"
+          },
+          "tables": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tables"
+          },
+          "periods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Periods"
+          },
+          "available_periods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Available Periods"
+          },
+          "available_levels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Available Levels"
+          },
+          "observed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observed"
+          },
+          "expected": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level"
+        ],
+        "title": "CoverageAlertParams",
+        "description": "Parâmetros do diagnóstico, sem textos traduzidos ou URLs inventadas."
       },
       "DatasetOut": {
         "properties": {
@@ -3961,6 +6313,183 @@
         "title": "DetailOut",
         "description": "Detalhe de um território (tooltip): sub-KPIs aninhados."
       },
+      "DictionaryEntryOut": {
+        "properties": {
+          "entry_id": {
+            "type": "string",
+            "title": "Entry Id"
+          },
+          "indicator_id": {
+            "type": "string",
+            "title": "Indicator Id"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "documentary_status": {
+            "type": "string",
+            "title": "Documentary Status",
+            "default": "revisao_parcial"
+          },
+          "document": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Document"
+          },
+          "links": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Links"
+          },
+          "methods": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Methods"
+          },
+          "fields": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Fields"
+          },
+          "codes": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Codes"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context"
+          },
+          "expansion": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expansion"
+          },
+          "preparation": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preparation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entry_id",
+          "indicator_id",
+          "version",
+          "document"
+        ],
+        "title": "DictionaryEntryOut",
+        "description": "Ficha, referências e códigos obtidos; lacunas permanecem explícitas."
+      },
+      "DictionaryIndexOut": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "documentacao_parcial_nao_certifica_disponibilidade"
+          },
+          "entries": {
+            "items": {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Entries"
+          },
+          "expansions": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Expansions"
+          },
+          "artifacts": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Artifacts"
+          },
+          "preparation": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preparation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "entries",
+          "expansions",
+          "artifacts"
+        ],
+        "title": "DictionaryIndexOut",
+        "description": "Inventário documental, incluindo apoios e candidatas sem ativação."
+      },
       "DimensionOut": {
         "properties": {
           "classification_id": {
@@ -4032,6 +6561,14 @@
             "type": "array",
             "title": "Categories"
           },
+          "explorable_categories": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryOut"
+            },
+            "type": "array",
+            "title": "Explorable Categories",
+            "description": "Categorias observadas no indicador, sem certificar todos os recortes. O filtro aceita seleções sem sobreposição de pai e filhos."
+          },
           "levels": {
             "items": {
               "type": "string"
@@ -4091,6 +6628,55 @@
         ],
         "title": "ErrorOut",
         "description": "Resposta de erro."
+      },
+      "ExecutionRowOut": {
+        "properties": {
+          "category_code": {
+            "type": "string",
+            "title": "Category Code"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "committed": {
+            "type": "number",
+            "title": "Committed"
+          },
+          "liquidated": {
+            "type": "number",
+            "title": "Liquidated"
+          },
+          "paid": {
+            "type": "number",
+            "title": "Paid"
+          },
+          "payables_registered": {
+            "type": "number",
+            "title": "Payables Registered"
+          },
+          "payables_cancelled": {
+            "type": "number",
+            "title": "Payables Cancelled"
+          },
+          "payables_paid": {
+            "type": "number",
+            "title": "Payables Paid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category_code",
+          "label",
+          "committed",
+          "liquidated",
+          "paid",
+          "payables_registered",
+          "payables_cancelled",
+          "payables_paid"
+        ],
+        "title": "ExecutionRowOut",
+        "description": "Fases da despesa de uma categoria (nunca somadas entre si)."
       },
       "ExportIn": {
         "properties": {
@@ -4828,6 +7414,9 @@
             ],
             "title": "Time Aggregation"
           },
+          "temporal": {
+            "$ref": "#/components/schemas/TemporalCapabilitiesOut"
+          },
           "source": {
             "$ref": "#/components/schemas/KpiSourceOut"
           }
@@ -4942,6 +7531,143 @@
         ],
         "title": "KpiSourceOut",
         "description": "Fonte oficial do KPI."
+      },
+      "LensOut": {
+        "properties": {
+          "lens": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C"
+            ],
+            "title": "Lens"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "dimensions": {
+            "items": {
+              "$ref": "#/components/schemas/ContasDimensionOut"
+            },
+            "type": "array",
+            "title": "Dimensions"
+          },
+          "group_by": {
+            "items": {
+              "$ref": "#/components/schemas/ContasDimensionOut"
+            },
+            "type": "array",
+            "title": "Group By"
+          },
+          "periods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Periods"
+          },
+          "latest_period": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Period"
+          },
+          "statuses": {
+            "items": {
+              "$ref": "#/components/schemas/PeriodStatusOut"
+            },
+            "type": "array",
+            "title": "Statuses"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lens",
+          "label",
+          "description",
+          "notes",
+          "dimensions",
+          "group_by",
+          "periods",
+          "latest_period",
+          "statuses"
+        ],
+        "title": "LensOut",
+        "description": "Lente de dados e o que ela oferece."
+      },
+      "LensPointOut": {
+        "properties": {
+          "lens": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B"
+            ],
+            "title": "Lens"
+          },
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lens",
+          "period",
+          "value"
+        ],
+        "title": "LensPointOut",
+        "description": "Valor mensal de uma lente."
+      },
+      "LensTotalOut": {
+        "properties": {
+          "lens": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B"
+            ],
+            "title": "Lens"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lens",
+          "year",
+          "value"
+        ],
+        "title": "LensTotalOut",
+        "description": "Total de uma lente num ano."
       },
       "LicenseOut": {
         "properties": {
@@ -5085,6 +7811,30 @@
         ],
         "title": "MapOut",
         "description": "Valores do KPI por território (Total), para colorir o mapa."
+      },
+      "MapRowOut": {
+        "properties": {
+          "geography_key": {
+            "type": "string",
+            "title": "Geography Key"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "geography_key",
+          "name",
+          "value"
+        ],
+        "title": "MapRowOut",
+        "description": "Total de um território."
       },
       "MapValueOut": {
         "properties": {
@@ -5415,6 +8165,88 @@
         "title": "NavigationOut",
         "description": "Navegação do portal no release ativo."
       },
+      "OrganTotalOut": {
+        "properties": {
+          "lens": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B"
+            ],
+            "title": "Lens"
+          },
+          "organ": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Organ"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lens",
+          "organ",
+          "value"
+        ],
+        "title": "OrganTotalOut",
+        "description": "Órgão pagador ou concedente."
+      },
+      "PeriodStatusOut": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "aberto",
+              "incompleto",
+              "fechado"
+            ],
+            "title": "Status"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "shortfall_share": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shortfall Share"
+          },
+          "missing_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Actions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "status",
+          "note"
+        ],
+        "title": "PeriodStatusOut",
+        "description": "Situação de um mês numa lente (ADR-0036, decisão 3)."
+      },
       "PivotFieldOut": {
         "properties": {
           "id": {
@@ -5539,6 +8371,13 @@
             },
             "type": "array",
             "title": "Share Bases"
+          },
+          "alerts": {
+            "items": {
+              "$ref": "#/components/schemas/CoverageAlertOut"
+            },
+            "type": "array",
+            "title": "Alerts"
           },
           "footer": {
             "anyOf": [
@@ -6046,6 +8885,179 @@
         "title": "QueryRowOut",
         "description": "Linha do resultado de ``/query``."
       },
+      "RankingRowOut": {
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "recipient": {
+            "$ref": "#/components/schemas/RecipientRefOut"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rank",
+          "recipient",
+          "value"
+        ],
+        "title": "RankingRowOut",
+        "description": "Posição no ranking."
+      },
+      "RecipientProfileOut": {
+        "properties": {
+          "recipient": {
+            "$ref": "#/components/schemas/RecipientRefOut"
+          },
+          "legal_nature": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Nature"
+          },
+          "economic_activity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Economic Activity"
+          },
+          "economic_section": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Economic Section"
+          },
+          "totals": {
+            "items": {
+              "$ref": "#/components/schemas/LensTotalOut"
+            },
+            "type": "array",
+            "title": "Totals"
+          },
+          "organs": {
+            "items": {
+              "$ref": "#/components/schemas/OrganTotalOut"
+            },
+            "type": "array",
+            "title": "Organs"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/LensPointOut"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/ContasProvenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recipient",
+          "legal_nature",
+          "economic_activity",
+          "economic_section",
+          "totals",
+          "organs",
+          "series",
+          "notes",
+          "provenance"
+        ],
+        "title": "RecipientProfileOut",
+        "description": "Ficha do favorecido (ADR-0031: aviso de homônimo e ``noindex`` para PF)."
+      },
+      "RecipientRefOut": {
+        "properties": {
+          "recipient_id": {
+            "type": "string",
+            "title": "Recipient Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "seat_municipality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seat Municipality"
+          },
+          "seat_uf": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seat Uf"
+          },
+          "recipient_class": {
+            "type": "string",
+            "title": "Recipient Class"
+          },
+          "class_label": {
+            "type": "string",
+            "title": "Class Label"
+          },
+          "is_natural_person": {
+            "type": "boolean",
+            "title": "Is Natural Person"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recipient_id",
+          "name",
+          "seat_municipality",
+          "seat_uf",
+          "recipient_class",
+          "class_label",
+          "is_natural_person"
+        ],
+        "title": "RecipientRefOut",
+        "description": "Favorecido como aparece na tela: nome, sede e classe (sem código)."
+      },
       "ReleaseOut": {
         "properties": {
           "release_id": {
@@ -6089,6 +9101,251 @@
         ],
         "title": "ReleaseOut",
         "description": "Release ativo."
+      },
+      "SearchHitOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "favorecido",
+              "orgao",
+              "programa",
+              "acao"
+            ],
+            "title": "Kind"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "id",
+          "label"
+        ],
+        "title": "SearchHitOut",
+        "description": "Resultado da busca."
+      },
+      "SeasonalOut": {
+        "properties": {
+          "kpi_id": {
+            "type": "string",
+            "title": "Kpi Id"
+          },
+          "geography": {
+            "$ref": "#/components/schemas/GeographyRefOut"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "grain": {
+            "type": "string",
+            "enum": [
+              "mes",
+              "trimestre",
+              "semestre",
+              "ano"
+            ],
+            "title": "Grain"
+          },
+          "native_grain": {
+            "type": "string",
+            "enum": [
+              "mes",
+              "trimestre",
+              "semestre",
+              "ano"
+            ],
+            "title": "Native Grain"
+          },
+          "year_from": {
+            "type": "integer",
+            "title": "Year From"
+          },
+          "year_to": {
+            "type": "integer",
+            "title": "Year To"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/SeasonalSeriesOut"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kpi_id",
+          "geography",
+          "unit",
+          "grain",
+          "native_grain",
+          "year_from",
+          "year_to",
+          "series",
+          "notes",
+          "provenance"
+        ],
+        "title": "SeasonalOut",
+        "description": "Resultado derivado do acumulado entre anos (ADR-0041)."
+      },
+      "SeasonalPointOut": {
+        "properties": {
+          "part": {
+            "type": "string",
+            "title": "Part"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "warning",
+                  "danger"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity"
+          },
+          "expected": {
+            "type": "integer",
+            "title": "Expected"
+          },
+          "present": {
+            "type": "integer",
+            "title": "Present"
+          },
+          "missing": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing"
+          },
+          "blocked": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Blocked"
+          },
+          "contributors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Contributors"
+          },
+          "input_partial": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Input Partial"
+          }
+        },
+        "type": "object",
+        "required": [
+          "part",
+          "value",
+          "status",
+          "severity",
+          "expected",
+          "present",
+          "missing",
+          "blocked",
+          "contributors",
+          "input_partial"
+        ],
+        "title": "SeasonalPointOut",
+        "description": "Subtotal por parte e intervalo, com parcelas explícitas."
+      },
+      "SeasonalSeriesOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "categories": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Categories"
+          },
+          "depth": {
+            "type": "integer",
+            "title": "Depth"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/SeasonalPointOut"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "categories",
+          "depth",
+          "points"
+        ],
+        "title": "SeasonalSeriesOut",
+        "description": "Uma série acumulada por parte, sem misturar combinações de categorias."
       },
       "SeriesItemOut": {
         "properties": {
@@ -6136,6 +9393,33 @@
         ],
         "title": "SeriesItemOut",
         "description": "Série de uma combinação de categorias."
+      },
+      "SeriesLineOut": {
+        "properties": {
+          "category_code": {
+            "type": "string",
+            "title": "Category Code"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/SeriesPointOut"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category_code",
+          "label",
+          "points"
+        ],
+        "title": "SeriesLineOut",
+        "description": "Série de uma categoria (ou do total)."
       },
       "SeriesOut": {
         "properties": {
@@ -6212,6 +9496,25 @@
         ],
         "title": "SeriesOut",
         "description": "Evolução temporal de um território."
+      },
+      "SeriesPointOut": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "value"
+        ],
+        "title": "SeriesPointOut",
+        "description": "Valor de um período."
       },
       "SourceOut": {
         "properties": {
@@ -6571,6 +9874,43 @@
         ],
         "title": "TableVersionOut",
         "description": "Tabela Gold e versão Delta usadas na resposta."
+      },
+      "TemporalCapabilitiesOut": {
+        "properties": {
+          "isolate": {
+            "type": "boolean",
+            "title": "Isolate",
+            "default": false
+          },
+          "accumulate": {
+            "type": "boolean",
+            "title": "Accumulate",
+            "default": false
+          },
+          "seasonal_sum": {
+            "type": "boolean",
+            "title": "Seasonal Sum",
+            "default": false
+          },
+          "accumulation_rule": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "sum",
+                  "compound"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accumulation Rule"
+          }
+        },
+        "type": "object",
+        "title": "TemporalCapabilitiesOut",
+        "description": "Operações temporais independentes, calculadas na API (ADR-0041)."
       },
       "ThemeIndexOut": {
         "properties": {

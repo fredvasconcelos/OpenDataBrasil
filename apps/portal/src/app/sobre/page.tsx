@@ -33,6 +33,7 @@ export default async function About() {
       </section>
       <SourceList institutions={groupInstitutions(sources, datasets)} />
       <AboutCatalog nav={nav} releaseId={release.release_id} activated={activated} licenseReview={reviews.length ? reviews.join(", ") : null} />
+      <p className="contas-hint">{t("iconsCredit")} <a href="/licencas/font-awesome.txt">{t("iconsLicense")}</a></p>
     </main>
   );
 }

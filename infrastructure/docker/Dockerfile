@@ -51,6 +51,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 RUN python -c "import duckdb; c = duckdb.connect(config={'extension_directory': '/opt/duckdb/extensions'}); c.execute('INSTALL delta'); c.execute('LOAD delta'); print(c.execute(\"select extension_version from duckdb_extensions() where extension_name='delta'\").fetchone())" \
  && chmod -R a+rX /opt/duckdb
 COPY configs configs
+COPY docs/data_catalog/dicionarios-2026-11-26 docs/data_catalog/dicionarios-2026-11-26
 ARG ODB_CODE_VERSION=unknown
 ENV ODB_CODE_VERSION=${ODB_CODE_VERSION} \
     ODB_DUCKDB_EXTENSION_DIRECTORY=/opt/duckdb/extensions
@@ -66,6 +67,10 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 COPY tests tests
 # Os testes do coordenador do host precisam ler os scripts, sem incluí-los no runtime.
 COPY infrastructure/scripts/carga_agro_sequencial.py infrastructure/scripts/carga_agro_silver.py infrastructure/scripts/carga_lote_sequencial.py infrastructure/scripts/public_boundary.py infrastructure/scripts/
+COPY infrastructure/scripts/revisao_detalhamento_kpis.py infrastructure/scripts/
+COPY infrastructure/scripts/validacao_acumulado_sazonal.py infrastructure/scripts/
+COPY infrastructure/scripts/preparar_indicadores.py infrastructure/scripts/
+COPY infrastructure/scripts/diagnosticar_execucao_entes.py infrastructure/scripts/
 RUN chown -R odb:odb /app
 USER odb
 CMD ["pytest"]

@@ -1,0 +1,109 @@
+# SIOP (Ministério do Planejamento e Orçamento): cadastro de ações orçamentárias.
+#
+# Fonte do texto oficial do dicionário de contas públicas (ADR-0035). O cadastro de cada
+# exercício traz título, tipo, descrição, base legal, beneficiário e detalhamento da
+# implementação (ex.: ação 0045, FPM, CF art. 159 e LC 62/1989). O plano orçamentário traz
+# título e caracterização. Verificado em 2026-11-22: CSV latin-1 com ";" (o servidor declara
+# `text/csv;charset=UTF-8`, mas o conteúdo é latin-1), cabeçalhos iguais em 2024 e 2025.
+# ETag e Last-Modified presentes; aceita Range.
+
+config_version = "1.0.0"
+
+[institution]
+id = "mpo"
+name = "Ministério do Planejamento e Orçamento"
+acronym = "MPO"
+url = "https://www.gov.br/planejamento"
+
+[[licenses]]
+id = "siop-dados-abertos"
+name = "Dados abertos do SIOP (Política de Dados Abertos do Poder Executivo Federal)"
+url = "https://orcamento.dados.gov.br/siopdoc/doku.php/acesso_publico:dados_abertos"
+conditions = "Uso, reúso e redistribuição livres; crédito obrigatório 'Fonte: SIOP/Ministério do Planejamento e Orçamento'. Textos oficiais reproduzidos sem edição e identificados como tal (ADR-0035)."
+review_status = "approved"
+notes = "Aprovada pelo mantenedor em 2026-11-22 (decisão D8, ADR-0030), com a mesma base de cgu-dados-abertos (Decreto nº 8.777/2016)."
+
+[[sources]]
+id = "siop-dados-abertos"
+name = "SIOP: dados abertos do orçamento federal"
+connector = "http_periodic"
+base_url = "https://orcamento.dados.gov.br/siopdoc/"
+documentation_url = "https://orcamento.dados.gov.br/siopdoc/doku.php/acesso_publico:dados_abertos_cadastro_acoes"
+
+[sources.http]
+min_interval_s = 3.0
+timeout_s = 180.0
+
+[[datasets]]
+id = "siop-cadastro-acoes"
+source = "siop-dados-abertos"
+official_id = "cadastroacao-acoes"
+title = "Cadastro de ações orçamentárias (por exercício)"
+description = "Atributos cadastrais de cada ação orçamentária do exercício: título, tipo, descrição, base legal, beneficiário, produto e forma de implementação."
+license = "siop-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "anual (com revisões)"
+reference_url = "https://orcamento.dados.gov.br/siopdoc/doku.php/acesso_publico:dados_abertos"
+
+[datasets.params]
+url_template = "https://orcamento.dados.gov.br/siopdoc/lib/exe/fetch.php/dados_abertos:cadastroacao:{period}:dados_acao{period}.csv"
+artifact_template = "acoes-{period}.csv"
+grain = "year"
+start = "2024"
+end = "2025"
+format = "csv"
+min_bytes = 1000000
+max_bytes = 104857600
+healthcheck_url = "https://orcamento.dados.gov.br/siopdoc/lib/exe/fetch.php/dados_abertos:cadastroacao:2025:dados_acao2025.csv"
+
+[[datasets.params.csv]]
+encoding = "cp1252"
+delimiter = ";"
+columns = [
+  "Exercício", "Esfera", "UO", "Função", "Subfunção", "Programa", "Ação", "Título", "Tipo",
+  "Subtipo", "Origem", "Descrição", "Base Legal", "Ação de Insumo Estratégico", "Produto",
+  "Especificação do Produto", "Unidade de Medida", "Beneficiário", "Unidade Responsável",
+  "Direta", "Descentralizada", "Linha de Crédito", "Transferência Obrigatória",
+  "Outras Transferências", "Detalhamento da Implementação", "Início", "Término",
+  "Total Físico", "Custo OFSS/OI", "Custo Demais Fontes", "Participação Social",
+  "Tipos de Participação Social", "Detalhamento da Participação Social",
+  "Tipo de Padronização", "Novo",
+]
+
+[datasets.silver]
+transformer = "siop_budget_action"
+
+[[datasets]]
+id = "siop-planos-orcamentarios"
+source = "siop-dados-abertos"
+official_id = "cadastroacao-planos-orcamentarios"
+title = "Cadastro de planos orçamentários (por exercício)"
+description = "Planos orçamentários de cada ação do exercício: título, caracterização, produto intermediário e unidade responsável."
+license = "siop-dados-abertos"
+access_classification = "public_authorized"
+periodicity = "anual (com revisões)"
+reference_url = "https://orcamento.dados.gov.br/siopdoc/doku.php/acesso_publico:dados_abertos"
+
+[datasets.params]
+url_template = "https://orcamento.dados.gov.br/siopdoc/lib/exe/fetch.php/dados_abertos:cadastroacao:{period}:dados_plano_orcamentario{period}.csv"
+artifact_template = "planos-orcamentarios-{period}.csv"
+grain = "year"
+start = "2024"
+end = "2025"
+format = "csv"
+min_bytes = 100000
+max_bytes = 104857600
+healthcheck_url = "https://orcamento.dados.gov.br/siopdoc/lib/exe/fetch.php/dados_abertos:cadastroacao:2025:dados_acao2025.csv"
+
+[[datasets.params.csv]]
+encoding = "cp1252"
+delimiter = ";"
+columns = [
+  "Exercício", "Esfera", "UO", "Função", "Subfunção", "Programa", "Ação",
+  "Plano Orçamentário", "Título", "Caracterização", "Produto Intermediário",
+  "Unidade de Medida", "Unidade Responsável", "Novo",
+]
+
+[datasets.silver]
+transformer = "siop_budget_plan"
+

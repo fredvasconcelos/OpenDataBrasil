@@ -6,6 +6,8 @@ import { type CSSProperties, useMemo, useState } from "react";
 import { KpiPreview } from "@/components/KpiPreview";
 import { ThemeIcon } from "@/components/ThemeIcon";
 import { type CatalogKpi, flatten, flattenPlanned, matchKpi, matchPlanned } from "@/lib/catalog";
+import { FaIcon } from "@/components/FaIcon";
+import type { FaDef } from "@/lib/faIcons";
 import { THEME_ICONS, themeStyle, themeVisual } from "@/lib/themes";
 import type { Navigation, Theme } from "@/lib/types";
 
@@ -19,10 +21,12 @@ export function HomeCatalog({
   nav,
   releaseId,
   institutions = [],
+  compact = false,
 }: {
   nav: Navigation;
   releaseId: string | null;
   institutions?: string[];
+  compact?: boolean;
 }) {
   const t = useTranslations();
   const [q, setQ] = useState("");
@@ -50,7 +54,7 @@ export function HomeCatalog({
   return (
     <>
       <section className="home-hero">
-        <h1>{t("home.title")}</h1>
+        {!compact ? <><h1>{t("home.title")}</h1>
         <p className="lead">{t("home.lead")}</p>
         <ul className="home-stats">
           <li>
@@ -72,7 +76,7 @@ export function HomeCatalog({
               </a>
             </li>
           ) : null}
-        </ul>
+        </ul></> : null}
         <div role="search" className="home-search">
           <label htmlFor="home-busca">{t("home.searchLabel")}</label>
           <SearchGlyph />
@@ -208,16 +212,14 @@ function Chip({
   on: boolean;
   label: string;
   count: number;
-  icon?: string;
+  icon?: FaDef;
   style?: CSSProperties;
   onClick: () => void;
 }) {
   return (
     <button type="button" className="theme-chip" aria-pressed={on} onClick={onClick} style={style}>
       <span className="theme-chip-icon" aria-hidden="true">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d={icon} />
-        </svg>
+        <FaIcon icon={icon} size={14} />
       </span>
       {label}
       <span className="theme-chip-count">{count}</span>

@@ -1,0 +1,51 @@
+{
+  "natureza": "contexto parcial e conflitos de edição; não são métodos integralmente homologados",
+  "consulta": "2026-11-26",
+  "fichas": {
+    "apoio--censo_percentual_quilombolas_territorios": {
+      "fonte": "https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html?edicao=37415&t=resultados",
+      "secao": "Quilombolas — Primeiros Resultados, segunda apuração; Territórios quilombolas",
+      "edicao": "Censo 2022, tabelas atualizadas em 22/12/2023",
+      "consulta": "2026-11-26",
+      "evidencia": "web34",
+      "afirmacao": "A publicação distingue população quilombola, residentes em territórios oficialmente delimitados e status fundiário; segunda apuração revisa a anterior.",
+      "lacuna": "Contexto conceitual localizado; descritor 9723 e vínculo de cada variável/categoria/denominador não recuperados. Não confundir população quilombola com toda população residente nos territórios."
+    },
+    "apoio--censo_quilombolas_em_territorios": {
+      "fonte": "https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html?edicao=37415&t=resultados",
+      "secao": "Quilombolas — Primeiros Resultados, segunda apuração; Territórios quilombolas",
+      "edicao": "Censo 2022, tabelas atualizadas em 22/12/2023",
+      "consulta": "2026-11-26",
+      "evidencia": "web34",
+      "afirmacao": "A publicação distingue população quilombola, residentes em territórios oficialmente delimitados e status fundiário; segunda apuração revisa a anterior.",
+      "lacuna": "Contexto conceitual localizado; descritor 9723 e vínculo de cada variável/categoria/denominador não recuperados. Não confundir população quilombola com toda população residente nos territórios."
+    },
+    "apoio--censo_residentes_territorios_quilombolas": {
+      "fonte": "https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html?edicao=37415&t=resultados",
+      "secao": "Quilombolas — Primeiros Resultados, segunda apuração; Territórios quilombolas",
+      "edicao": "Censo 2022, tabelas atualizadas em 22/12/2023",
+      "consulta": "2026-11-26",
+      "evidencia": "web34",
+      "afirmacao": "A publicação distingue população quilombola, residentes em territórios oficialmente delimitados e status fundiário; segunda apuração revisa a anterior.",
+      "lacuna": "Contexto conceitual localizado; descritor 9723 e vínculo de cada variável/categoria/denominador não recuperados. Não confundir população quilombola com toda população residente nos territórios."
+    },
+    "apoio--censo_pessoas_indigenas_idade": {
+      "fonte": "https://www.ibge.gov.br/biblioteca/visualizacao/livros/liv102155.pdf",
+      "secao": "Análise demográfica, p. 146, gráfico 4 e contexto de comparação 2010/2022",
+      "edicao": "Censo 2022 — Indígenas: Principais características das pessoas e dos domicílios, por situação urbana ou rural",
+      "consulta": "2026-11-26",
+      "evidencia": "web36",
+      "afirmacao": "Idade, sexo e situação urbana/rural são recortes distintos; o gráfico apresenta distribuições relativas por grupos de idade.",
+      "lacuna": "A publicação não comprova os códigos/medida da tabela 9970. Sem descritor, não ligar percentuais desse gráfico a contagens por idade no apoio nem homologar todas as terras/geografias."
+    },
+    "pobreza_linha_nacional": {
+      "fonte": "https://www.ibge.gov.br/biblioteca/visualizacao/livros/liv102100.pdf",
+      "secao": "Caderno Desigualdades, Indicador 1.2.1, p. 16, Notas 1–4",
+      "edicao": "Criando Sinergias entre a Agenda 2030 e o G20; dados PNAD Contínua 2012/2022",
+      "consulta": "2026-11-26",
+      "evidencia": "web35",
+      "afirmacao": "O material histórico usa linha de US$ 6,85/dia PPC-2017, corrigida pela inflação, e rendimento domiciliar per capita com exclusões de condições domiciliares.",
+      "lacuna": "O descritor preservado 5845/5877 desta revisão cita US$ 8,30/dia PPC-2021 e fator R$ 2,44983620. São versões diferentes. Não transportar limiar, série ou pesos do caderno antigo à série atual; memória independente específica da revisão atual continua pendente."
+    }
+  }
+}

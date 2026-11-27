@@ -11,6 +11,10 @@ const config: NextConfig = {
   async headers() {
     return [
       {
+        source: "/contas/favorecidos/:id",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+      {
         source: "/:path*",
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },

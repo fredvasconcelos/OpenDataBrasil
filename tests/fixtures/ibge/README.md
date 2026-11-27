@@ -37,3 +37,14 @@ Dados **sintéticos** usados nos testes, gerados em código e identificados como
 - ZIP da DTB: arquivo com os mesmos nomes de membros do `DTB_2025.zip` real
   e conteúdo fictício. O arquivo real (1,6 MB, SHA-256 `d077a0e4…dad27`) não é
   versionado.
+
+## Piloto mês × sexo da tabela 2654
+
+`sidra/t2654_n1_p2024_v343_c244_c2.json` preserva a resposta oficial obtida em
+25/11/2026 às 15:16:19 UTC: 56 células de Brasil/2024, variável 343, 14 categorias
+de mês (Total, janeiro a dezembro e ignorado) × quatro de sexo. Não comprova outros
+períodos, níveis ou cruzamentos. A projeção mensal usa as 48 células dos 12 meses;
+Total e mês ignorado permanecem no original, sem redistribuição.
+
+Consulta: `https://apisidra.ibge.gov.br/values/t/2654/n1/all/v/343/p/2024/c244/0,5586,5587,5588,5589,5590,5591,5592,5593,5594,5595,5596,5597,102885/c2/0,4,5,104539/c1836/0/c260/0/c257/0`.
+SHA-256: `53973f8c1601c5f0a0f81f80493064450b00cbd51e920eadceab49d0739683c6`.

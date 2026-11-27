@@ -491,12 +491,12 @@ describe("periodQuery (ADR-0026)", () => {
     expect(acc.series).toEqual({ periods: sel.periods, accumulate: "running" });
   });
 
-  it("Isolar: o mapa mostra o ano; tabela e gráfico, as partes do ano (acumulado no ano)", () => {
+  it("Isolar: preserva parcelas e não usa o antigo acumulado no ano", () => {
     const iso = { ...base, grain: "trimestre", isolate: true, period: "2025", periods: ["2025"], accumulate: true };
     const q = periodQuery(flow, iso);
     expect(q.map).toEqual({ period: "2025", grain: "ano", periods: [], accumulate: false });
-    expect(q.table).toMatchObject({ grain: "trimestre", periods: ["2025T1"], accumulate: "year" });
-    expect(q.series).toEqual({ periods: ["2025"], accumulate: "year" });
+    expect(q.table).toMatchObject({ grain: "trimestre", periods: ["2025T1"], accumulate: null });
+    expect(q.series).toEqual({ periods: ["2025"], accumulate: null });
   });
 
   it("lê e escreve vários períodos e o acumulado na URL", () => {

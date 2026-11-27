@@ -1,0 +1,1315 @@
+[
+  {
+    "id": "M01",
+    "titulo": "Censo Demográfico",
+    "pesquisas": [
+      "Censo Demográfico"
+    ],
+    "tabelas": [],
+    "conceito": "Enumeração de residentes habituais e características de pessoas e domicílios; serve à descrição territorial e ao planejamento.",
+    "universo": "População residente; o universo de cada variável e a distinção entre resultados do universo e da amostra precisam seguir a edição.",
+    "metodo": "O conceito de residência habitual determina onde a população é contada. As categorias étnico-raciais são declarações, não classificações biológicas.",
+    "limites": "Não somar anos censitários. Mudanças territoriais e perguntas de pertencimento indígena exigem comparabilidade própria.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/todos-os-produtos-estatisticas/22827-censo-demografico-2022.html?edicao=38698",
+        "secao": "Conceitos e métodos — População por cor ou raça / Resultados do universo",
+        "edicao": "Censo 2022",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web02",
+        "afirmacao_sustentada": "Enumeração de residentes habituais e características de pessoas e domicílios; serve à descrição territorial e ao planejamento. População residente; o universo de cada variável e a distinção entre resultados do universo e da amostra precisam seguir a edição. O conceito de residência habitual determina onde a população é contada. As categorias étnico-raciais são declarações, não classificações biológicas."
+      }
+    ],
+    "lacunas": "Verificar os manuais de cada edição histórica e os universos/denominadores de cada razão, mediana e taxa; a fonte geral não resolve essas fórmulas por variável.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M02",
+    "titulo": "Estimativas de população",
+    "pesquisas": [
+      "Estimativas de População"
+    ],
+    "tabelas": [],
+    "conceito": "Estimativa anual do total de residentes para fins demográficos e de repartição de recursos.",
+    "universo": "Municípios e UFs, com referência em 1º de julho do ano.",
+    "metodo": "A estimativa das áreas menores é subordinada à estimativa previamente conhecida da área maior.",
+    "limites": "É estoque em uma data; não somar anos. Respeitar a nota da 6579 sobre municípios com instalação prevista e totais oficiais.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/sociais/populacao/9103-estimativas-de-populacao",
+        "secao": "O que é / método",
+        "edicao": "página da operação; edição corrente 2026",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web14",
+        "afirmacao_sustentada": "Estimativa anual do total de residentes para fins demográficos e de repartição de recursos. Municípios e UFs, com referência em 1º de julho do ano. A estimativa das áreas menores é subordinada à estimativa previamente conhecida da área maior."
+      }
+    ],
+    "lacunas": "Parâmetros e coeficientes de cada edição não foram recuperados; decisões judiciais não substituem a série estatística por inferência.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M03",
+    "titulo": "Projeções demográficas",
+    "pesquisas": [
+      "Projeção da População"
+    ],
+    "tabelas": [
+      "3727"
+    ],
+    "conceito": "Estimativas prospectivas/retrospectivas de população e indicadores demográficos.",
+    "universo": "Brasil e UFs; a revisão 2024 usa componentes demográficos e população de partida ajustada.",
+    "metodo": "Método das componentes: fecundidade, mortalidade e migração; revisão altera o ponto de partida e as hipóteses.",
+    "limites": "Projeção não é contagem observada. A 3727 cita revisão 2013, que não deve ser rotulada revisão 2024.",
+    "fontes": [
+      {
+        "url": "https://agenciadenoticias.ibge.gov.br/media/com_mediaibge/arquivos/8383bdedce5a6d972e60dd32671e533a.pdf",
+        "secao": "Metodologia / revisão 2024",
+        "edicao": "revisão 2024",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web18",
+        "afirmacao_sustentada": "Estimativas prospectivas/retrospectivas de população e indicadores demográficos. Brasil e UFs; a revisão 2024 usa componentes demográficos e população de partida ajustada. Método das componentes: fecundidade, mortalidade e migração; revisão altera o ponto de partida e as hipóteses."
+      }
+    ],
+    "lacunas": "Recuperar tábuas, hipóteses e fórmulas de esperança de vida/fecundidade na revisão efetivamente usada em cada tabela.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M04",
+    "titulo": "Registro Civil",
+    "pesquisas": [
+      "Pesquisa Estatísticas do Registro Civil"
+    ],
+    "tabelas": [],
+    "conceito": "Estatística de registros administrativos de nascimentos, óbitos, casamentos e divórcios.",
+    "universo": "Registros dos cartórios, tabelionatos e varas de família; uniões estáveis não integram a pesquisa citada.",
+    "metodo": "Coleta administrativa, seguida de crítica e revisão. Distinguir data de registro, ocorrência e residência em cada variável.",
+    "limites": "2609: período de registro e classificação ano de nascimento são eixos distintos. SIM não é a mesma base.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/sociais/populacao/9110-estatisticas-do-registro-civil.html",
+        "secao": "Conceitos e métodos / coleta",
+        "edicao": "página da operação; notas por edição nas fichas",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web02",
+        "afirmacao_sustentada": "Estatística de registros administrativos de nascimentos, óbitos, casamentos e divórcios. Registros dos cartórios, tabelionatos e varas de família; uniões estáveis não integram a pesquisa citada. Coleta administrativa, seguida de crítica e revisão. Distinguir data de registro, ocorrência e residência em cada variável."
+      }
+    ],
+    "lacunas": "Fechar regras de inclusão de registros tardios e janelas por edição/tabela, inclusive fronteiras da série; não generalizar a variável 343 a todas as contagens.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M05",
+    "titulo": "PNAD Contínua",
+    "pesquisas": [
+      "Pesquisa Nacional por Amostra de Domicílios Contínua anual",
+      "Pesquisa Nacional por Amostra de Domicílios Contínua trimestral"
+    ],
+    "tabelas": [],
+    "conceito": "Estatísticas domiciliares de trabalho, rendimento, educação, moradia e outros módulos; os universos variam.",
+    "universo": "Amostra probabilística domiciliar; periodicidade anual e trimestral não representam observações equivalentes.",
+    "metodo": "Rotação da amostra 1-2(5); indicadores dependem dos fatores de expansão. Há reponderação da série histórica em 2025.",
+    "limites": "Pessoas ocupadas e domicílios são estoques/estimativas, não eventos novos a somar. Módulos têm idades e períodos próprios.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/sociais/populacao/9171pesquisa-nacional-por-amostra-de-domicilios-continua-mensal.html",
+        "secao": "Metodologia / esquema de rotação; Informações técnicas",
+        "edicao": "página corrente; notas de 2021/2025",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web02 e web19",
+        "afirmacao_sustentada": "Estatísticas domiciliares de trabalho, rendimento, educação, moradia e outros módulos; os universos variam. Amostra probabilística domiciliar; periodicidade anual e trimestral não representam observações equivalentes. Rotação da amostra 1-2(5); indicadores dependem dos fatores de expansão. Há reponderação da série histórica em 2025."
+      }
+    ],
+    "lacunas": "Faltam memória de ponderação/calibração por edição e fórmulas específicas de Gini, informalidade, frequência líquida e rendimentos; registrar IC/CV existentes sem recomputá-los.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M06",
+    "titulo": "PNS",
+    "pesquisas": [
+      "Pesquisa Nacional de Saúde"
+    ],
+    "tabelas": [],
+    "conceito": "Saúde, acesso a serviços, doenças declaradas e fatores de risco da população domiciliar.",
+    "universo": "Domicílios particulares urbanos/rurais; módulos para domicílio, moradores e morador selecionado têm populações diferentes.",
+    "metodo": "Amostra probabilística; em 2019 a entrevista individual sorteia um morador de 15 anos ou mais. Variáveis podem restringir a 18 anos ou a grupos específicos.",
+    "limites": "Diagnóstico referido não é exame clínico universal. Limites IC95 são incerteza, não prevalências adicionais.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/biblioteca/visualizacao/livros/liv101748.pdf",
+        "secao": "Coleta de dados, p. 22",
+        "edicao": "PNS 2019 — Domicílios, acesso e utilização",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web02",
+        "afirmacao_sustentada": "Saúde, acesso a serviços, doenças declaradas e fatores de risco da população domiciliar. Domicílios particulares urbanos/rurais; módulos para domicílio, moradores e morador selecionado têm populações diferentes. Amostra probabilística; em 2019 a entrevista individual sorteia um morador de 15 anos ou mais. Variáveis podem restringir a 18 anos ou a grupos específicos."
+      }
+    ],
+    "lacunas": "A leitura integral dos módulos, ponderadores e alterações 2013/2019 permanece pendente; o universo da tabela/variável prevalece sobre a descrição geral.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M07",
+    "titulo": "PeNSE",
+    "pesquisas": [
+      "Pesquisa Nacional de Saúde do Escolar"
+    ],
+    "tabelas": [],
+    "conceito": "Fatores de risco e proteção à saúde dos escolares.",
+    "universo": "Em 2019, escolares de 13 a 17 anos, das redes pública e privada, do 7º ano fundamental à 3ª série do ensino médio.",
+    "metodo": "Amostra probabilística selecionada do cadastro de escolas do INEP.",
+    "limites": "Não representa todos os adolescentes fora da escola. As amostras de 9º ano e 13–17 anos de edições anteriores não são intercambiáveis.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/sociais/educacao/9134-pesquisa-nacional-de-saude-do-escolar.html?edicao=31442",
+        "secao": "Conceitos e métodos / população-alvo",
+        "edicao": "PeNSE 2019",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web09",
+        "afirmacao_sustentada": "Fatores de risco e proteção à saúde dos escolares. Em 2019, escolares de 13 a 17 anos, das redes pública e privada, do 7º ano fundamental à 3ª série do ensino médio. Amostra probabilística selecionada do cadastro de escolas do INEP."
+      }
+    ],
+    "lacunas": "Rever questionário e desenho de cada edição vinculada às três variáveis; não transferir universo de 2019 para tabelas de 2015.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M08",
+    "titulo": "POF",
+    "pesquisas": [
+      "Pesquisa de Orçamentos Familiares"
+    ],
+    "tabelas": [],
+    "conceito": "Estrutura dos gastos, recebimentos e consumo das unidades de consumo; apoia estudos de orçamento e ponderação de preços.",
+    "universo": "POF 2017–2018: domicílios particulares permanentes ocupados e moradores, urbanos/rurais; edições antigas têm cobertura própria.",
+    "metodo": "Amostra por conglomerados em dois estágios, estratificada; POF 2017–2018 usa setores da Amostra Mestra e domicílios no segundo estágio.",
+    "limites": "Médias e distribuições não se somam entre famílias/territórios/edições. Aquisição domiciliar não equivale à ingestão individual.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/sociais/populacao/24786-pesquisa-de-orcamentos-familiares-2.html?edicao=25578&t=resultados",
+        "secao": "Conceitos e métodos / População-alvo e Procedimento de amostragem",
+        "edicao": "Primeiros resultados 2017–2018",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web01 e web19",
+        "afirmacao_sustentada": "Estrutura dos gastos, recebimentos e consumo das unidades de consumo; apoia estudos de orçamento e ponderação de preços. POF 2017–2018: domicílios particulares permanentes ocupados e moradores, urbanos/rurais; edições antigas têm cobertura própria. Amostra por conglomerados em dois estágios, estratificada; POF 2017–2018 usa setores da Amostra Mestra e domicílios no segundo estágio."
+      }
+    ],
+    "lacunas": "Manuais completos e pesos/calibração por edição continuam pendentes; ver análise específica ipca-pof.md, incluindo unidades, faixas e amostras antigas.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M09",
+    "titulo": "PAM",
+    "pesquisas": [
+      "Produção Agrícola Municipal"
+    ],
+    "tabelas": [],
+    "conceito": "Área, quantidade, rendimento médio e valor da produção das lavouras; permite acompanhar a atividade agrícola.",
+    "universo": "Produto agrícola por município e ano; a unidade pode mudar por produto.",
+    "metodo": "Rendimento médio relaciona produção obtida e área colhida no ano de referência.",
+    "limites": "Não somar rendimentos médios nem misturar toneladas, frutos e hectares. Área de safras sucessivas não é área única de terra.",
+    "fontes": [
+      {
+        "url": "https://anuario.ibge.gov.br/2024/glossario-2024.html",
+        "secao": "Verbete rendimento médio",
+        "edicao": "Anuário Estatístico 2024",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web03",
+        "afirmacao_sustentada": "Área, quantidade, rendimento médio e valor da produção das lavouras; permite acompanhar a atividade agrícola. Produto agrícola por município e ano; a unidade pode mudar por produto. Rendimento médio relaciona produção obtida e área colhida no ano de referência."
+      }
+    ],
+    "lacunas": "Falta leitura do manual completo da PAM e tratamento histórico das mudanças de unidade por produto; descritores e regras curadas preservados.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M10",
+    "titulo": "LSPA",
+    "pesquisas": [
+      "Levantamento Sistemático da Produção Agrícola"
+    ],
+    "tabelas": [],
+    "conceito": "Previsão e acompanhamento mensal da safra agrícola do ano civil.",
+    "universo": "Principais produtos acompanhados em Brasil, regiões e UFs.",
+    "metodo": "A informação mensal estima o que será colhido no ano inteiro; pode ser revista a cada mês.",
+    "limites": "Não somar meses: são revisões da mesma safra. Quantidade, área e rendimento têm unidades próprias por produto.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas-novoportal/economicas/agricultura-e-pecuaria/9201-levantamento-sistematico-da-producao-agricola.html?=&t=series-historicas",
+        "secao": "Séries históricas / Informações técnicas",
+        "edicao": "página da operação; relatório metodológico v.6, 3ª ed. 2018 localizado",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web03",
+        "afirmacao_sustentada": "Previsão e acompanhamento mensal da safra agrícola do ano civil. Principais produtos acompanhados em Brasil, regiões e UFs. A informação mensal estima o que será colhido no ano inteiro; pode ser revista a cada mês."
+      }
+    ],
+    "lacunas": "Notas/reconciliações LSPA e limites de exportação completa ainda exigem aceite na candidata N4; nenhum bloqueio foi removido.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M11",
+    "titulo": "PPM",
+    "pesquisas": [
+      "Pesquisa da Pecuária Municipal"
+    ],
+    "tabelas": [],
+    "conceito": "Efetivos de rebanhos e produção animal/aquícola para acompanhamento municipal.",
+    "universo": "Município, por espécie/produto. Efetivo tem data de referência em 31 de dezembro.",
+    "metodo": "Levantamento considera peculiaridades regionais, órgãos do setor e aspectos zootécnicos; produção refere-se ao ano.",
+    "limites": "Efetivo em uma data difere de produção durante o ano. Vaca ordenhada e rebanho não se tornam fluxo anual por rótulo.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas-novoportal/economicas/agricultura-e-pecuaria/9107-producao-da-pecuaria-municipal.html?=&t=series-historicas",
+        "secao": "Conceitos e métodos / Metodologia",
+        "edicao": "edição corrente 2025; verificar edição histórica",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web03",
+        "afirmacao_sustentada": "Efetivos de rebanhos e produção animal/aquícola para acompanhamento municipal. Município, por espécie/produto. Efetivo tem data de referência em 31 de dezembro. Levantamento considera peculiaridades regionais, órgãos do setor e aspectos zootécnicos; produção refere-se ao ano."
+      }
+    ],
+    "lacunas": "Os pareceres temporais pendentes de quantidades e valores não foram liberados; faltam regras específicas por variável/universo.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M12",
+    "titulo": "Abate",
+    "pesquisas": [
+      "Pesquisa Trimestral do Abate de Animais"
+    ],
+    "tabelas": [],
+    "conceito": "Quantidade de animais abatidos e peso das carcaças por espécie.",
+    "universo": "Estabelecimentos sob inspeção sanitária federal, estadual ou municipal.",
+    "metodo": "Levantamento do painel de estabelecimentos inspecionados, com divulgação trimestral e primeiros resultados provisórios.",
+    "limites": "Não representa abate não inspecionado. Quantidade de informantes é medida distinta do fluxo abatido.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/agricultura-e-pecuaria/9209-pesquisa-trimestral-do-abate-de-animais.html",
+        "secao": "O que é / Conceitos e métodos",
+        "edicao": "página da operação",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web03",
+        "afirmacao_sustentada": "Quantidade de animais abatidos e peso das carcaças por espécie. Estabelecimentos sob inspeção sanitária federal, estadual ou municipal. Levantamento do painel de estabelecimentos inspecionados, com divulgação trimestral e primeiros resultados provisórios."
+      }
+    ],
+    "lacunas": "Rever sigilo por estabelecimento e mudança de painel em cada edição; número de informantes não recebe soma temporal.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M13",
+    "titulo": "Leite",
+    "pesquisas": [
+      "Pesquisa Trimestral do Leite"
+    ],
+    "tabelas": [],
+    "conceito": "Aquisição e industrialização de leite cru/resfriado.",
+    "universo": "Estabelecimentos sob inspeção sanitária federal, estadual ou municipal.",
+    "metodo": "Painel de informantes inspecionados; divulgação trimestral.",
+    "limites": "Leite adquirido, industrializado, preço e número de informantes não são a mesma variável.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/agricultura-e-pecuaria/9209-pesquisa-trimestral-do-leite.html?=&t=o-que-e",
+        "secao": "Conceitos e métodos / Metodologia",
+        "edicao": "página da operação",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web15",
+        "afirmacao_sustentada": "Aquisição e industrialização de leite cru/resfriado. Estabelecimentos sob inspeção sanitária federal, estadual ou municipal. Painel de informantes inspecionados; divulgação trimestral."
+      }
+    ],
+    "lacunas": "Identificar exercício de cada revisão do painel e notas específicas dos preços sem atribuir o preço à quantidade.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M14",
+    "titulo": "Ovos",
+    "pesquisas": [
+      "Produção de Ovos de Galinha"
+    ],
+    "tabelas": [],
+    "conceito": "Produção de ovos em estabelecimentos do painel pesquisado.",
+    "universo": "Estabelecimentos com capacidade de alojamento de pelo menos 10 mil galinhas poedeiras.",
+    "metodo": "Painel de estabelecimentos; coleta dos resultados de produção.",
+    "limites": "Universo difere do total municipal da PPM. Galinhas, ovos e informantes não se somam entre si.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/agricultura-e-pecuaria/9216-pesquisa-trimestral-da-producao-de-ovos-de-galinha.html",
+        "secao": "Conceitos e métodos / Metodologia",
+        "edicao": "página da operação",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web15",
+        "afirmacao_sustentada": "Produção de ovos em estabelecimentos do painel pesquisado. Estabelecimentos com capacidade de alojamento de pelo menos 10 mil galinhas poedeiras. Painel de estabelecimentos; coleta dos resultados de produção."
+      }
+    ],
+    "lacunas": "Fechar comparabilidade histórica do limiar de inclusão e unidades por variável antes de qualquer nova agregação.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M15",
+    "titulo": "PEVS",
+    "pesquisas": [
+      "Produção da Extração Vegetal e da Silvicultura"
+    ],
+    "tabelas": [],
+    "conceito": "Estatísticas da exploração florestal, distinguindo extração vegetal e silvicultura.",
+    "universo": "Formações florestais e produtos por município; silvicultura refere-se a formações plantadas e conduzidas pela ação humana.",
+    "metodo": "Divulgação anual; há atualização da lista de produtos em nota técnica de 2026.",
+    "limites": "Área existente é estoque; produção é conceito distinto. Não somar hectares ao longo dos anos.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/agricultura-e-pecuaria/9105-producao-da-extracaovegetal-e-da-silvicultura.html",
+        "secao": "O que é / Informações técnicas",
+        "edicao": "página corrente; nota 01/2026 localizada",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web14",
+        "afirmacao_sustentada": "Estatísticas da exploração florestal, distinguindo extração vegetal e silvicultura. Formações florestais e produtos por município; silvicultura refere-se a formações plantadas e conduzidas pela ação humana. Divulgação anual; há atualização da lista de produtos em nota técnica de 2026."
+      }
+    ],
+    "lacunas": "A nota 01/2026 não foi lida integralmente; avaliar efeito na variável e nos períodos publicados, sem adotar novos dados.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M16",
+    "titulo": "Censo Agropecuário",
+    "pesquisas": [
+      "Censo Agropecuário"
+    ],
+    "tabelas": [],
+    "conceito": "Estrutura dos estabelecimentos agropecuários, áreas e atividades.",
+    "universo": "Estabelecimentos; data 30/09/2017 para estoques/pessoal e período 01/10/2016–30/09/2017 para produção e atividade.",
+    "metodo": "Levantamento censitário; diferentes variáveis têm data ou intervalo de referência.",
+    "limites": "2006 usa ano civil e não é estritamente comparável a 1995–1996 e 2017 (ano-safra).",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/agricultura-e-pecuaria/21814-2017-censo",
+        "secao": "O que é / comparabilidade",
+        "edicao": "Censo Agropecuário 2017",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web14",
+        "afirmacao_sustentada": "Estrutura dos estabelecimentos agropecuários, áreas e atividades. Estabelecimentos; data 30/09/2017 para estoques/pessoal e período 01/10/2016–30/09/2017 para produção e atividade. Levantamento censitário; diferentes variáveis têm data ou intervalo de referência."
+      }
+    ],
+    "lacunas": "Revisar conceito e área de cada edição histórica; contagem de estabelecimentos não é fluxo aditivo entre censos.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M17",
+    "titulo": "PIM-PF",
+    "pesquisas": [
+      "Pesquisa Industrial Mensal - Produção Física"
+    ],
+    "tabelas": [],
+    "conceito": "Indicadores de curto prazo do produto real da indústria.",
+    "universo": "Painel de atividades, produtos e informantes industriais; cobertura regional própria.",
+    "metodo": "Reformulação em 2023 atualizou amostra, estrutura de ponderação e ano de referência dos índices.",
+    "limites": "Número-índice não é quantidade produzida; média, ajuste sazonal e variação são medidas distintas.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/industria/9294-pesquisa-industrial-anual.html",
+        "secao": "O que é / reformulação de 2023",
+        "edicao": "página identificada pelo título PIM-PF; slug não define a pesquisa",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web04",
+        "afirmacao_sustentada": "Indicadores de curto prazo do produto real da indústria. Painel de atividades, produtos e informantes industriais; cobertura regional própria. Reformulação em 2023 atualizou amostra, estrutura de ponderação e ano de referência dos índices."
+      }
+    ],
+    "lacunas": "Recuperar pesos, ligação e base da edição da tabela 8888/8886; o slug conflitante da página não comprova equivalência com PIA.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M18",
+    "titulo": "PIA-Empresa",
+    "pesquisas": [
+      "Pesquisa Industrial Anual - Empresa"
+    ],
+    "tabelas": [],
+    "conceito": "Estatísticas estruturais do segmento empresarial industrial.",
+    "universo": "Empresas industriais no âmbito e cadastro de seleção da edição.",
+    "metodo": "Amostra com estrato certo das maiores empresas e estratos amostrados.",
+    "limites": "Empresa e unidade local são entidades distintas; receita anual, pessoal ocupado e valor de transformação exigem conceitos próprios.",
+    "fontes": [
+      {
+        "url": "https://biblioteca.ibge.gov.br/visualizacao/periodicos/1719/pia_2021_v40_n1_empresa_notas_tecnicas.pdf",
+        "secao": "Notas técnicas / amostragem",
+        "edicao": "PIA 2021; não substitui manual 2024",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web05",
+        "afirmacao_sustentada": "Estatísticas estruturais do segmento empresarial industrial. Empresas industriais no âmbito e cadastro de seleção da edição. Amostra com estrato certo das maiores empresas e estratos amostrados."
+      }
+    ],
+    "lacunas": "Compatibilizar o método da edição 2024 da tabela 10457 com a nota consultada de 2021; fórmulas e pesos não foram integralmente recuperados.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M19",
+    "titulo": "PAIC",
+    "pesquisas": [
+      "Pesquisa Anual da Indústria da Construção"
+    ],
+    "tabelas": [],
+    "conceito": "Estrutura das empresas da construção: pessoal, receitas, custos e obras/serviços.",
+    "universo": "Empresas ativas do âmbito da seção F da CNAE 2.0, segundo cadastro da edição.",
+    "metodo": "Amostra do cadastro básico, com estratos certo e amostrado; nova série a partir de 2024.",
+    "limites": "Não unir a nova série à anterior sem avaliar a nota 01/2026. Empregos em 31/12 são estoque.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/industria/9018-pesquisa-anual-da-industriada-construcao.html",
+        "secao": "Séries históricas / Informações técnicas",
+        "edicao": "PAIC 2024, nota 01/2026 localizada",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web05",
+        "afirmacao_sustentada": "Estrutura das empresas da construção: pessoal, receitas, custos e obras/serviços. Empresas ativas do âmbito da seção F da CNAE 2.0, segundo cadastro da edição. Amostra do cadastro básico, com estratos certo e amostrado; nova série a partir de 2024."
+      }
+    ],
+    "lacunas": "Ler integralmente a mudança amostral 01/2026 e as fórmulas por medida; a página localiza a ruptura, não resolve a ligação.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M20",
+    "titulo": "PAC",
+    "pesquisas": [
+      "Pesquisa Anual de Comércio"
+    ],
+    "tabelas": [],
+    "conceito": "Estrutura do segmento empresarial comercial, receitas, custos e pessoal.",
+    "universo": "Empresa comercial formal cuja principal receita provém da atividade comercial.",
+    "metodo": "Pesquisa estrutural anual; a página informa nova série no ano-base 2024.",
+    "limites": "Receita bruta, líquida e margem comercial têm definições distintas; não tratar uma como valor adicionado.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/comercio/9075-pesquisa-anual-de-comercio.html?t=o-que-e",
+        "secao": "O que é / Informações técnicas e Séries históricas",
+        "edicao": "PAC 2024",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web05",
+        "afirmacao_sustentada": "Estrutura do segmento empresarial comercial, receitas, custos e pessoal. Empresa comercial formal cuja principal receita provém da atividade comercial. Pesquisa estrutural anual; a página informa nova série no ano-base 2024."
+      }
+    ],
+    "lacunas": "Rever manual e nota da ruptura de 2024, incluindo âmbito territorial, amostragem e variáveis da 10646.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M21",
+    "titulo": "PAS",
+    "pesquisas": [
+      "Pesquisa Anual de Serviços"
+    ],
+    "tabelas": [],
+    "conceito": "Estrutura empresarial dos serviços não financeiros.",
+    "universo": "Empresas ativas de atividades selecionadas; exclusões e geografia dependem da edição.",
+    "metodo": "A página documenta mudança de cobertura do Norte em 2024: expansão em RO, AM, PA e AP; AC, RR e TO mantêm restrição às capitais.",
+    "limites": "Não aplicar a cobertura nova retrospectivamente à 2581. Receita, salário, número de empresas e pessoal têm naturezas distintas.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/todos-os-produtos-estatisticas/9028-pesquisa-anual-de-servicos.html",
+        "secao": "Conceitos e métodos / População-alvo",
+        "edicao": "edição 2024; confrontar com anos da 2581",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web05",
+        "afirmacao_sustentada": "Estrutura empresarial dos serviços não financeiros. Empresas ativas de atividades selecionadas; exclusões e geografia dependem da edição. A página documenta mudança de cobertura do Norte em 2024: expansão em RO, AM, PA e AP; AC, RR e TO mantêm restrição às capitais."
+      }
+    ],
+    "lacunas": "Ler nota 01/2026 e memória amostral; a divulgação de 2024 não prova comparabilidade ou disponibilidade na candidata local.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M22",
+    "titulo": "PMC",
+    "pesquisas": [
+      "Pesquisa Mensal de Comércio"
+    ],
+    "tabelas": [],
+    "conceito": "Indicadores conjunturais de receita nominal e volume do comércio varejista.",
+    "universo": "Empresas formais com 20 ou mais pessoas ocupadas no cadastro da PAC, atividade predominantemente varejista.",
+    "metodo": "Amostragem probabilística em todas as UFs; receita fundamenta os indicadores mensais.",
+    "limites": "Índice de volume não é faturamento em reais. Varejo ampliado e restrito têm composições próprias.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/comercio/9227-pesquisa-mensal-de-comercio.html",
+        "secao": "Conceitos e métodos / População-alvo e Metodologia",
+        "edicao": "página corrente; manual 6ª ed. 2023 localizado",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web04",
+        "afirmacao_sustentada": "Indicadores conjunturais de receita nominal e volume do comércio varejista. Empresas formais com 20 ou mais pessoas ocupadas no cadastro da PAC, atividade predominantemente varejista. Amostragem probabilística em todas as UFs; receita fundamenta os indicadores mensais."
+      }
+    ],
+    "lacunas": "Faltam pesos/deflatores e bases específicas das tabelas 8880/8881/8757; não somar números-índice.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M23",
+    "titulo": "PMS",
+    "pesquisas": [
+      "Pesquisa Mensal de Serviços"
+    ],
+    "tabelas": [],
+    "conceito": "Receita e volume de serviços não financeiros para acompanhamento conjuntural.",
+    "universo": "Empresas formais com 20 ou mais ocupados, excluídas saúde e educação, no âmbito da pesquisa.",
+    "metodo": "Nova série em 2023 atualiza amostra, deflacionamento e janela de revisão para 12 meses.",
+    "limites": "Volume e receita nominal não são a mesma medida; atividades turísticas têm agregado próprio.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/todos-os-produtos-estatisticas/9229-pesquisa-mensal-de-servicos.html",
+        "secao": "O que é / reformulação 2023",
+        "edicao": "série iniciada em janeiro/2023",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web08",
+        "afirmacao_sustentada": "Receita e volume de serviços não financeiros para acompanhamento conjuntural. Empresas formais com 20 ou mais ocupados, excluídas saúde e educação, no âmbito da pesquisa. Nova série em 2023 atualiza amostra, deflacionamento e janela de revisão para 12 meses."
+      }
+    ],
+    "lacunas": "Recuperar tabela de deflatores, pesos e ligação por edição; nota de atualização não homologa a operação de soma.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M24",
+    "titulo": "SINAPI",
+    "pesquisas": [
+      "Sistema Nacional de Pesquisa de Custos e Índices da Construção Civil"
+    ],
+    "tabelas": [],
+    "conceito": "Custos e índices da construção, inclusive componentes de material e mão de obra.",
+    "universo": "Estabelecimentos fornecedores de materiais; pesquisa por amostragem não probabilística.",
+    "metodo": "Séries mensais; custo por metro quadrado refere-se à construção no canteiro de obras.",
+    "limites": "Reais por m² não são custo total de uma obra. Números-índice e variações não se somam.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/precos-e-custos/9270-indice-nacional-da-construcao-civil.html",
+        "secao": "Conceitos e métodos / População-alvo e Metodologia",
+        "edicao": "página corrente",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web04",
+        "afirmacao_sustentada": "Custos e índices da construção, inclusive componentes de material e mão de obra. Estabelecimentos fornecedores de materiais; pesquisa por amostragem não probabilística. Séries mensais; custo por metro quadrado refere-se à construção no canteiro de obras."
+      }
+    ],
+    "lacunas": "Recuperar base/encargos/desoneração e composição de cada variável da 2296; não completar a unidade só pelo rótulo abreviado do catálogo.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M25",
+    "titulo": "CEMPRE",
+    "pesquisas": [
+      "Cadastro Central de Empresas"
+    ],
+    "tabelas": [],
+    "conceito": "Estrutura e dinâmica de empresas, organizações e unidades locais formais ativas.",
+    "universo": "Cadastro com fontes administrativas e pesquisas empresariais.",
+    "metodo": "Mudanças de eSocial/CNPJ provocam quebra da série em 2022; o resultado não é comparável automaticamente a 2007–2021.",
+    "limites": "Empresa não é unidade local; salários totais não equivalem ao salário médio nem permitem somar o estoque de ocupados entre anos.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/biblioteca/visualizacao/livros/liv102096.pdf",
+        "secao": "Nota técnica 01/2024, p. 1",
+        "edicao": "CEMPRE 2022",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web06",
+        "afirmacao_sustentada": "Estrutura e dinâmica de empresas, organizações e unidades locais formais ativas. Cadastro com fontes administrativas e pesquisas empresariais. Mudanças de eSocial/CNPJ provocam quebra da série em 2022; o resultado não é comparável automaticamente a 2007–2021."
+      }
+    ],
+    "lacunas": "Fechar critérios de atividade, datas e cálculo do salário médio de cada edição da 9509; não retroprojetar a série atual.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M26",
+    "titulo": "MEI",
+    "pesquisas": [
+      "Estatísticas dos Cadastros de Microempreendedores Individuais"
+    ],
+    "tabelas": [],
+    "conceito": "Caracterização cadastral e trajetória dos microempreendedores individuais; estatística experimental.",
+    "universo": "Pessoas físicas e jurídicas registradas no regime; contagens, entradas, saídas e coortes têm denominadores diferentes.",
+    "metodo": "Integra CPF, CNPJ, Simei, CEMPRE, RAIS e, na edição 2022, CadÚnico.",
+    "limites": "Coorte de sobrevivência não é o estoque total; não inferir renda ou informalidade do registro cadastral.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/investigacoes-experimentais/estatisticas-experimentais/3076-np-estatisticas-dos-cadastros-de-microempreendedores-individuais/38014-estatisticas-dos-cadastros-de-microempreendedores-individuais.html",
+        "secao": "Sobre / bases e eixos temáticos",
+        "edicao": "MEI 2022; natureza experimental",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web08",
+        "afirmacao_sustentada": "Caracterização cadastral e trajetória dos microempreendedores individuais; estatística experimental. Pessoas físicas e jurídicas registradas no regime; contagens, entradas, saídas e coortes têm denominadores diferentes. Integra CPF, CNPJ, Simei, CEMPRE, RAIS e, na edição 2022, CadÚnico."
+      }
+    ],
+    "lacunas": "Recuperar integralmente regras de entrada/saída e denominadores por coorte da 9597; fluxos permanecem metodologicamente pendentes.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M27",
+    "titulo": "Demografia das Empresas",
+    "pesquisas": [
+      "Demografia das Empresas e Estatísticas de Empreendedorismo"
+    ],
+    "tabelas": [],
+    "conceito": "Nascimento, morte, sobrevivência e crescimento das empresas.",
+    "universo": "A edição 2022 passa a examinar empresas/unidades empregadoras, com pelo menos uma pessoa assalariada.",
+    "metodo": "Mudança de conceitos e escopo causa quebra de série em 2022.",
+    "limites": "Nascimento não equivale a simples inscrição de CNPJ; taxas usam população de referência própria.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/biblioteca/visualizacao/livros/liv102142.pdf",
+        "secao": "Nota técnica 01/2024, p. 1",
+        "edicao": "Demografia das Empresas 2022",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web07",
+        "afirmacao_sustentada": "Nascimento, morte, sobrevivência e crescimento das empresas. A edição 2022 passa a examinar empresas/unidades empregadoras, com pelo menos uma pessoa assalariada. Mudança de conceitos e escopo causa quebra de série em 2022."
+      }
+    ],
+    "lacunas": "Fechar algoritmos por coorte/ano da 9949 e comparabilidade das entradas/saídas; não aprovar soma dos fluxos pendentes.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M28",
+    "titulo": "PINTEC",
+    "pesquisas": [
+      "Pesquisa de Inovação"
+    ],
+    "tabelas": [],
+    "conceito": "Indicadores empresariais de inovação e atividades inovativas.",
+    "universo": "Empresas industriais, eletricidade/gás e serviços selecionados no âmbito da edição; 2017 refere-se ao triênio 2015–2017.",
+    "metodo": "Amostra selecionada do cadastro derivado do CEMPRE.",
+    "limites": "Categorias de inovação podem se sobrepor; não somar inovadoras de produto e processo para obter um total.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/todos-os-produtos-estatisticas/9141-pesquisa-de-inovacao.html?edicao=27431",
+        "secao": "Conceitos e métodos / Procedimento de amostragem",
+        "edicao": "PINTEC 2017",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web08",
+        "afirmacao_sustentada": "Indicadores empresariais de inovação e atividades inovativas. Empresas industriais, eletricidade/gás e serviços selecionados no âmbito da edição; 2017 refere-se ao triênio 2015–2017. Amostra selecionada do cadastro derivado do CEMPRE."
+      }
+    ],
+    "lacunas": "Recuperar limiares, pesos e unidades de dispêndio por variável da 5453 e diferenças para edições anteriores.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M29",
+    "titulo": "IPCA",
+    "pesquisas": [
+      "Índice Nacional de Preços ao Consumidor Amplo"
+    ],
+    "tabelas": [],
+    "conceito": "Variação do custo da cesta de consumo; distinguir nível do índice, variação e peso.",
+    "universo": "Famílias urbanas com rendimento de 1 a 40 salários mínimos nas áreas pesquisadas.",
+    "metodo": "Estrutura de pesos usa POF; cálculo emprega Laspeyres nos níveis superiores e ponderação regional.",
+    "limites": "Não somar índices ou taxas mensais; composição exige intervalo contíguo completo. Área pesquisada não equivale à UF.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/precos-e-custos/9256-indice-nacional-de-precos-ao-consumidoramplo.html",
+        "secao": "Conceitos e métodos / Metodologia",
+        "edicao": "página corrente, estrutura POF 2017–2018",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web01; abertura direta 403 em web13",
+        "afirmacao_sustentada": "Variação do custo da cesta de consumo; distinguir nível do índice, variação e peso. Famílias urbanas com rendimento de 1 a 40 salários mínimos nas áreas pesquisadas. Estrutura de pesos usa POF; cálculo emprega Laspeyres nos níveis superiores e ponderação regional."
+      }
+    ],
+    "lacunas": "Leitura integral de manual e alterações de cada estrutura pendente; quatro equivalências N5 e precisão permanecem bloqueadas. Ver ipca-pof.md.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M30",
+    "titulo": "INPC",
+    "pesquisas": [
+      "Índice Nacional de Preços ao Consumidor"
+    ],
+    "tabelas": [],
+    "conceito": "Variação de preços da cesta de consumo da população-objetivo do INPC.",
+    "universo": "Famílias urbanas de 1 a 5 salários mínimos cuja pessoa de referência é assalariada.",
+    "metodo": "População-objetivo e pesos são específicos; não substituir pelos do IPCA.",
+    "limites": "Número-índice, variação mensal e acumuladas são variáveis diferentes; série da 1736 inclui base e casas próprias.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/precos-e-custos/9258-indice-nacional-de-precos-ao-consumidor.html?t=o-que-e",
+        "secao": "População-objetivo / O que é",
+        "edicao": "estrutura POF 2017–2018",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web19",
+        "afirmacao_sustentada": "Variação de preços da cesta de consumo da população-objetivo do INPC. Famílias urbanas de 1 a 5 salários mínimos cuja pessoa de referência é assalariada. População-objetivo e pesos são específicos; não substituir pelos do IPCA."
+      }
+    ],
+    "lacunas": "Confirmar cada edição do manual e equivalência 1736/2292; recuperar precisão N5 antes de publicação, sem mudança nesta revisão.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M31",
+    "titulo": "IPCA-15",
+    "pesquisas": [
+      "Índice Nacional de Preços ao Consumidor Amplo 15"
+    ],
+    "tabelas": [],
+    "conceito": "Inflação ao consumidor com janela de coleta e cobertura próprias.",
+    "universo": "Famílias de 1 a 40 salários mínimos; coleta em geral do dia 16 do mês anterior ao dia 15 do mês de referência.",
+    "metodo": "Mesma metodologia geral do IPCA, com diferenças de janela e abrangência.",
+    "limites": "Não tratar IPCA-15 como metade do IPCA nem somar as duas séries.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/precos-e-custos/2213-np-indice-nacional-de-precos-ao-consumidor-amplo-15/9260-indice-nacional-de-precos-ao-consumidor-amplo-15.html",
+        "secao": "O que é / Conceitos e métodos",
+        "edicao": "página corrente; fascículo out/2026 localizado",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web15",
+        "afirmacao_sustentada": "Inflação ao consumidor com janela de coleta e cobertura próprias. Famílias de 1 a 40 salários mínimos; coleta em geral do dia 16 do mês anterior ao dia 15 do mês de referência. Mesma metodologia geral do IPCA, com diferenças de janela e abrangência."
+      }
+    ],
+    "lacunas": "Recuperar pesos e bases históricos; equivalência 3065/1120 continua pendente, sem aprovação por semelhança.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M32",
+    "titulo": "IPP",
+    "pesquisas": [
+      "Índice de Preços ao Produtor"
+    ],
+    "tabelas": [],
+    "conceito": "Mudança dos preços de venda recebidos por produtores domésticos das indústrias extrativas e de transformação.",
+    "universo": "Empresas industriais do painel; preços excluem impostos, tarifas e fretes.",
+    "metodo": "Pesquisa de preços no produtor, com referência e ponderação próprias.",
+    "limites": "Não é preço ao consumidor nem valor de produção. Variação e número-índice têm significados diferentes.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/precos-e-custos/9282-indice-de-precos-ao-produtor.html",
+        "secao": "O que é / Informações técnicas",
+        "edicao": "página corrente; nota 01/2011 localizada",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web15",
+        "afirmacao_sustentada": "Mudança dos preços de venda recebidos por produtores domésticos das indústrias extrativas e de transformação. Empresas industriais do painel; preços excluem impostos, tarifas e fretes. Pesquisa de preços no produtor, com referência e ponderação próprias."
+      }
+    ],
+    "lacunas": "Ler fórmula e pesos do manual vigente por edição; equivalência 6904/1394 da candidata permanece não homologada.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M33",
+    "titulo": "Contas Nacionais",
+    "pesquisas": [
+      "Contas Nacionais Anuais",
+      "Contas Nacionais Trimestrais"
+    ],
+    "tabelas": [
+      "6587",
+      "6608"
+    ],
+    "conceito": "Produção, renda, despesa, investimento e poupança macroeconômicos.",
+    "universo": "Economia nacional; atividades e produtos classificados na série de referência.",
+    "metodo": "Série referência 2010 usa SNA 2008 e CNAE 2.0; revisões/retropolação integram a construção da série.",
+    "limites": "PIB corrente, volume e deflator não são intercambiáveis. IPCA no portal mede poder de compra, não volume do PIB.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/industria/9052-sistema-de-contas-nacionaisbrasil.html",
+        "secao": "Conceitos e métodos / Histórico",
+        "edicao": "referência 2010, edição corrente",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web06",
+        "afirmacao_sustentada": "Produção, renda, despesa, investimento e poupança macroeconômicos. Economia nacional; atividades e produtos classificados na série de referência. Série referência 2010 usa SNA 2008 e CNAE 2.0; revisões/retropolação integram a construção da série."
+      }
+    ],
+    "lacunas": "Fórmulas de cada taxa e ajuste sazonal, encadeamento e pesos precisam do manual integral; manter parecer temporal de cada variável.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M34",
+    "titulo": "PIB municipal",
+    "pesquisas": [
+      "Produto Interno Bruto dos Municípios"
+    ],
+    "tabelas": [],
+    "conceito": "Estimativa municipal do PIB e componentes a preços correntes.",
+    "universo": "Municípios; método compatível com contas regionais/nacionais.",
+    "metodo": "A divulgação 2022–2023 omite a abertura tradicional de VAB por atividade durante a reformulação do sistema.",
+    "limites": "Não preencher componentes faltantes nem somar PIB per capita. Série corrente não mede crescimento real.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/comercio/9088-produto-interno-bruto-dos-municipios.html",
+        "secao": "Sobre a publicação / edição 2022–2023",
+        "edicao": "referência 2010; edição 2022–2023",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web06 e web08",
+        "afirmacao_sustentada": "Estimativa municipal do PIB e componentes a preços correntes. Municípios; método compatível com contas regionais/nacionais. A divulgação 2022–2023 omite a abertura tradicional de VAB por atividade durante a reformulação do sistema."
+      }
+    ],
+    "lacunas": "Leitura integral da distribuição municipal e denominadores por edição; a abertura setorial anterior não comprova existência em 2023.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M35",
+    "titulo": "MUNIC",
+    "pesquisas": [
+      "Pesquisa de Informações Básicas Municipais"
+    ],
+    "tabelas": [
+      "5608"
+    ],
+    "conceito": "Estrutura, funcionamento e instrumentos das instituições municipais, especialmente prefeituras.",
+    "universo": "Administrações municipais do universo investigado na edição.",
+    "metodo": "Levantamento de informações da prefeitura por temas e questionários de cada edição.",
+    "limites": "Existência de conselho/plano/legislação não comprova execução ou qualidade da política. Não somar municípios entre anos.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/economicas/industria/10586-pesquisa-de-informacoes-basicas-municipais.html",
+        "secao": "O que é / Sobre a publicação",
+        "edicao": "página corrente 2025; conferir edições das tabelas",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web09",
+        "afirmacao_sustentada": "Estrutura, funcionamento e instrumentos das instituições municipais, especialmente prefeituras. Administrações municipais do universo investigado na edição. Levantamento de informações da prefeitura por temas e questionários de cada edição."
+      }
+    ],
+    "lacunas": "Rever perguntas e universo de resposta nas edições históricas; não usar número atual de municípios como denominador histórico.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M36",
+    "titulo": "PNSB",
+    "pesquisas": [
+      "Pesquisa Nacional de Saneamento Básico"
+    ],
+    "tabelas": [],
+    "conceito": "Serviços coletivos de água e esgotamento e seus prestadores.",
+    "universo": "Entidades executoras públicas/privadas de abastecimento por rede e esgotamento por rede coletora.",
+    "metodo": "Levantamento censitário dos prestadores em 2017.",
+    "limites": "Município com serviço não equivale a todos os domicílios atendidos; difere do Censo/PNAD de moradores.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/multidominio/meio-ambiente/9073-pesquisa-nacional-de-saneamento-basico.html?lang=pt-BR",
+        "secao": "Conceitos e métodos / Metodologia",
+        "edicao": "PNSB 2017",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web14",
+        "afirmacao_sustentada": "Serviços coletivos de água e esgotamento e seus prestadores. Entidades executoras públicas/privadas de abastecimento por rede e esgotamento por rede coletora. Levantamento censitário dos prestadores em 2017."
+      }
+    ],
+    "lacunas": "Recuperar regras de agregação das entidades para município e comparabilidade dos questionários 2008/2017.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M37",
+    "titulo": "AMS",
+    "pesquisas": [
+      "Pesquisa de Assistência Médico-Sanitária"
+    ],
+    "tabelas": [],
+    "conceito": "Capacidade instalada e oferta de serviços de saúde.",
+    "universo": "Estabelecimentos de assistência individual/coletiva, públicos/privados, com ou sem fins lucrativos.",
+    "metodo": "Investiga estabelecimentos, inclusive apoio à diagnose/terapia, segundo critérios da pesquisa.",
+    "limites": "Contar estabelecimentos não mede pessoas atendidas ou qualidade; não atualizar resultados históricos com cadastro atual por inferência.",
+    "fontes": [
+      {
+        "url": "https://www.ibge.gov.br/estatisticas/todos-os-produtos-estatisticas/9067-pesquisa-de-assistencia-medico-sanitaria.html",
+        "secao": "O que é / Conceitos e métodos",
+        "edicao": "série com resultados até 2009 na página consultada",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web18",
+        "afirmacao_sustentada": "Capacidade instalada e oferta de serviços de saúde. Estabelecimentos de assistência individual/coletiva, públicos/privados, com ou sem fins lucrativos. Investiga estabelecimentos, inclusive apoio à diagnose/terapia, segundo critérios da pesquisa."
+      }
+    ],
+    "lacunas": "Rever inclusões/exclusões, unidade e alterações de cada edição da tabela 211.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M38",
+    "titulo": "SIM",
+    "pesquisas": [],
+    "tabelas": [
+      "SIM"
+    ],
+    "conceito": "Registro de mortalidade com informações da Declaração de Óbito.",
+    "universo": "Óbitos registrados no sistema; a Declaração de Óbito alimenta o SIM.",
+    "metodo": "Fluxo administrativo da DO, com responsabilidade médica e gestão sanitária.",
+    "limites": "Residência e ocorrência não são a mesma geografia; o KPI DORES usa residência. Não somar SIM com Registro Civil.",
+    "fontes": [
+      {
+        "url": "https://www.gov.br/saude/pt-br/composicao/svsa/sistemas-de-informacao/sim",
+        "secao": "Coleta e obtenção de dados",
+        "edicao": "página institucional corrente",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web09",
+        "afirmacao_sustentada": "Registro de mortalidade com informações da Declaração de Óbito. Óbitos registrados no sistema; a Declaração de Óbito alimenta o SIM. Fluxo administrativo da DO, com responsabilidade médica e gestão sanitária."
+      }
+    ],
+    "lacunas": "Falta conferir integralmente os layouts, revisões e causas por edição; indicadores ODS derivados do SIM têm correções/denominadores próprios.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M39",
+    "titulo": "Sinesp VDE",
+    "pesquisas": [],
+    "tabelas": [
+      "SINESP"
+    ],
+    "conceito": "Indicadores policiais administrativos para monitoramento de segurança pública.",
+    "universo": "Informações enviadas por Estados/DF pelos gestores de estatística; unidade pode ser vítima ou ocorrência.",
+    "metodo": "Inserção, consolidação e homologação mensal no VDE; notas estaduais documentam diferenças e ausências.",
+    "limites": "Seis eventos do catálogo têm unidades próprias. Ausência não vira zero e estatística policial não equivale a vitimização por pesquisa.",
+    "fontes": [
+      {
+        "url": "https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/estatistica",
+        "secao": "Dados Nacionais de Segurança Pública / fornecimento e indicadores",
+        "edicao": "página corrente e Resolução ConSinesp 6/2021 citada",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web09",
+        "afirmacao_sustentada": "Indicadores policiais administrativos para monitoramento de segurança pública. Informações enviadas por Estados/DF pelos gestores de estatística; unidade pode ser vítima ou ocorrência. Inserção, consolidação e homologação mensal no VDE; notas estaduais documentam diferenças e ausências."
+      }
+    ],
+    "lacunas": "Falta leitura de todas as notas estaduais por período/evento, inclusive classificação de feminicídio e revisões; não certificar comparabilidade integral.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M40",
+    "titulo": "Focos de calor",
+    "pesquisas": [],
+    "tabelas": [
+      "5805"
+    ],
+    "conceito": "Detecção de fogo em pixels de imagens de satélite para acompanhar sua distribuição.",
+    "universo": "Focos do satélite de referência; cobertura e sensor variam na série histórica.",
+    "metodo": "Um satélite de referência permite comparar tendências; todos os satélites juntos podem repetir detecções.",
+    "limites": "Foco não é incêndio individual nem hectare queimado. Respeitar mudanças de referência descritas na tabela.",
+    "fontes": [
+      {
+        "url": "https://data.inpe.br/queimadas/portal/faq/",
+        "secao": "Perguntas frequentes / satélites e interpretação dos focos",
+        "edicao": "FAQ corrente; tabela 5805 preserva histórico",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web17",
+        "afirmacao_sustentada": "Detecção de fogo em pixels de imagens de satélite para acompanhar sua distribuição. Focos do satélite de referência; cobertura e sensor variam na série histórica. Um satélite de referência permite comparar tendências; todos os satélites juntos podem repetir detecções."
+      }
+    ],
+    "lacunas": "Confirmar janelas, mudança de satélite e qualidade de cada ano; a FAQ corrente não atualiza a série publicada.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M41",
+    "titulo": "PRODES",
+    "pesquisas": [],
+    "tabelas": [
+      "896"
+    ],
+    "conceito": "Área de desflorestamento bruto monitorada por satélite na Amazônia Legal.",
+    "universo": "Recorte Amazônia Legal; não é o território inteiro do Maranhão nem o conjunto de biomas brasileiros.",
+    "metodo": "Taxa anual considera ano PRODES (agosto a julho); estimativa e consolidado são etapas distintas.",
+    "limites": "A tabela 896 tem exceção de 1994 cobrindo dois anos; não aplicar ano civil ou soma cega de acumulados.",
+    "fontes": [
+      {
+        "url": "https://data.inpe.br/wp-content/uploads/sites/3/2026/03/Uso-de-dados-Prodes-para-avaliar-conformidade-ambiental.pdf",
+        "secao": "Cálculo da taxa anual / remissão ao Anexo I de Almeida et al. 2022",
+        "edicao": "documento 2026",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web10",
+        "afirmacao_sustentada": "Área de desflorestamento bruto monitorada por satélite na Amazônia Legal. Recorte Amazônia Legal; não é o território inteiro do Maranhão nem o conjunto de biomas brasileiros. Taxa anual considera ano PRODES (agosto a julho); estimativa e consolidado são etapas distintas."
+      }
+    ],
+    "lacunas": "Rever método de cada edição histórica; os 30 fluxos pendentes incluem desflorestamento e permanecem bloqueados.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M42",
+    "titulo": "Comercialização de agrotóxicos",
+    "pesquisas": [],
+    "tabelas": [
+      "5802"
+    ],
+    "conceito": "Totais de ingredientes ativos comercializados, consolidados a partir de relatórios dos registrantes.",
+    "universo": "Relatórios empresariais por produto/ingrediente ativo, não aplicação observada no campo.",
+    "metodo": "Ibama consolida por ingrediente ativo apesar da declaração por marca comercial.",
+    "limites": "Venda não é consumo efetivo; negativos podem representar retorno à indústria/estoque e Brasil sem UF não deve desaparecer.",
+    "fontes": [
+      {
+        "url": "https://www.gov.br/ibama/pt-br/assuntos/quimicos-e-biologicos/agrotoxicos/arquivos/qualidadeambiental/relatorios/produtos_agrotoxicos_comercializados_brasil_2009.pdf",
+        "secao": "Capítulo III — Metodologia e consolidação dos dados",
+        "edicao": "boletim 2009, confrontar 2009–2014 da 5802",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web17",
+        "afirmacao_sustentada": "Totais de ingredientes ativos comercializados, consolidados a partir de relatórios dos registrantes. Relatórios empresariais por produto/ingrediente ativo, não aplicação observada no campo. Ibama consolida por ingrediente ativo apesar da declaração por marca comercial."
+      }
+    ],
+    "lacunas": "Falta conferir alterações de consolidação nos demais anos; soma temporal continua pendente na trilha autorizada.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M43",
+    "titulo": "CNUC",
+    "pesquisas": [],
+    "tabelas": [
+      "5619"
+    ],
+    "conceito": "Número e área de unidades de conservação registradas.",
+    "universo": "Cadastro mantido pelo MMA com órgãos gestores das esferas federativas.",
+    "metodo": "Registro cadastral; a tabela 5619 utiliza instantâneo de 09/08/2016 e exclui unidades/áreas marinhas.",
+    "limites": "Sobreposições de áreas impedem interpretar soma bruta como território protegido único; não somar instantâneos anuais.",
+    "fontes": [
+      {
+        "url": "https://www.gov.br/mma/pt-br/assuntos/biodiversidade-e-biomas/areas-protegidas/plataforma-cnuc-1",
+        "secao": "Plataforma CNUC / apresentação",
+        "edicao": "página corrente; data histórica vem da nota da 5619",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web17",
+        "afirmacao_sustentada": "Número e área de unidades de conservação registradas. Cadastro mantido pelo MMA com órgãos gestores das esferas federativas. Registro cadastral; a tabela 5619 utiliza instantâneo de 09/08/2016 e exclui unidades/áreas marinhas."
+      }
+    ],
+    "lacunas": "Falta metodologia histórica de tratamento de sobreposições e domínios por categoria; não transplantar instantâneo atual para 2016.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M44",
+    "titulo": "ODS água",
+    "pesquisas": [],
+    "tabelas": [
+      "7077",
+      "8916"
+    ],
+    "conceito": "Pressão de retirada de água e tratamento seguro de águas residuais são dois indicadores diferentes.",
+    "universo": "6.4.2: água doce disponível considerando necessidade ambiental; 6.3.1: volume de águas residuais.",
+    "metodo": "Fichas da ANA documentam numeradores, denominadores e fontes SNIS/PNAD/SNIRH.",
+    "limites": "Não confundir população conectada à rede com volume tratado; não somar percentuais de regiões.",
+    "fontes": [
+      {
+        "url": "https://www.snirh.gov.br/portal/centrais-de-conteudos/central-de-publicacoes/osd6-brasil-ana-indicadores-versao-web.pdf",
+        "secao": "Fichas metodológicas 6.3.1 e 6.4.2",
+        "edicao": "ODS 6 no Brasil; edição exata do PDF não confirmada",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web10 e web20",
+        "afirmacao_sustentada": "Pressão de retirada de água e tratamento seguro de águas residuais são dois indicadores diferentes. 6.4.2: água doce disponível considerando necessidade ambiental; 6.3.1: volume de águas residuais. Fichas da ANA documentam numeradores, denominadores e fontes SNIS/PNAD/SNIRH."
+      }
+    ],
+    "lacunas": "Recuperar edição exata e fórmulas completas; denominador ambiental não pode ser fixado por inferência a partir de relatório de outro exercício.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M45",
+    "titulo": "ODS energia",
+    "pesquisas": [],
+    "tabelas": [
+      "6592"
+    ],
+    "conceito": "Participação de fontes renováveis na oferta interna de energia.",
+    "universo": "Oferta de energia da matriz energética; não apenas geração ou oferta elétrica.",
+    "metodo": "O BEN distingue oferta interna de energia e de eletricidade e reúne as fontes em unidade energética comum.",
+    "limites": "Não aplicar percentual elétrico ao conjunto da energia; manter o denominador da 6592.",
+    "fontes": [
+      {
+        "url": "https://dashboard.epe.gov.br/apps/livro-ben/livro/pt/capitulo_1.html",
+        "secao": "1.2.12 Oferta Interna de Energia / tabela 1.23",
+        "edicao": "BEN 2026, ano-base 2025",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web10",
+        "afirmacao_sustentada": "Participação de fontes renováveis na oferta interna de energia. Oferta de energia da matriz energética; não apenas geração ou oferta elétrica. O BEN distingue oferta interna de energia e de eletricidade e reúne as fontes em unidade energética comum."
+      }
+    ],
+    "lacunas": "Confirmar correspondência entre edições BEN e a série SIDRA; recuperar regra das fontes renováveis e valores primários do mesmo exercício.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M46",
+    "titulo": "P&D em relação ao PIB",
+    "pesquisas": [],
+    "tabelas": [
+      "6610"
+    ],
+    "conceito": "Intensidade de dispêndio em pesquisa e desenvolvimento relativamente ao PIB.",
+    "universo": "Dispêndios de P&D, distintos de C&T total e atividades científicas/técnicas correlatas.",
+    "metodo": "A publicação MCTI apresenta agregados de dispêndio e notas de deflação pelo deflator implícito do PIB.",
+    "limites": "Valores constantes de um gráfico não substituem os numeradores/denominadores da razão publicada.",
+    "fontes": [
+      {
+        "url": "https://www.gov.br/mcti/pt-br/acompanhe-o-mcti/indicadores/paginas/publicacoes/arquivos/indicadores_cti_2025.pdf",
+        "secao": "Gráfico 1.1.1 e respectivas notas",
+        "edicao": "Indicadores CT&I 2025",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web17",
+        "afirmacao_sustentada": "Intensidade de dispêndio em pesquisa e desenvolvimento relativamente ao PIB. Dispêndios de P&D, distintos de C&T total e atividades científicas/técnicas correlatas. A publicação MCTI apresenta agregados de dispêndio e notas de deflação pelo deflator implícito do PIB."
+      }
+    ],
+    "lacunas": "Não localizada a memória completa do indicador 9.5.1 para cada ano da 6610; registrar lacuna em vez de inferir todos os dispêndios do SIAFI.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M47",
+    "titulo": "Saúde ODS / mortalidade",
+    "pesquisas": [],
+    "tabelas": [
+      "6694",
+      "6695",
+      "4277",
+      "6606"
+    ],
+    "conceito": "Razão materna, mortalidade de menores de 5, mortalidade por DCNT e homicídios exigem métodos diferentes.",
+    "universo": "SIM/SINASC e população, com correções e universos específicos declarados nas notas das tabelas.",
+    "metodo": "A documentação sanitária distingue probabilidade de morrer entre 30 e 70 anos de uma taxa bruta anual.",
+    "limites": "Não dividir indistintamente todas as mortes pela população total. Razão materna usa nascidos vivos; respeitar correções de vigilância.",
+    "fontes": [
+      {
+        "url": "https://app.wiki.saude.es.gov.br/vigilancia/sim/indicadores_ripsa_2026.pdf",
+        "secao": "Ficha de qualificação / mortalidade prematura por DCNT",
+        "edicao": "RIPSA 2026, publicação sanitária estadual; não é a memória nacional da 4277",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web16",
+        "afirmacao_sustentada": "Razão materna, mortalidade de menores de 5, mortalidade por DCNT e homicídios exigem métodos diferentes. SIM/SINASC e população, com correções e universos específicos declarados nas notas das tabelas. A documentação sanitária distingue probabilidade de morrer entre 30 e 70 anos de uma taxa bruta anual."
+      }
+    ],
+    "lacunas": "Fonte complementar, insuficiente para homologar método nacional. Recuperar fichas nacionais 3.1.1/3.2.1/3.4.1/16.1.1, códigos CID, correções e denominadores por ano.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M48",
+    "titulo": "Fertilizantes",
+    "pesquisas": [],
+    "tabelas": [
+      "770"
+    ],
+    "conceito": "Entregas de fertilizantes ao mercado, distintas da utilização efetiva no campo.",
+    "universo": "Produto entregue ao mercado; a tabela histórica distingue nutrientes e utilização por área.",
+    "metodo": "A ANDA publica entregas em toneladas de produto; esse agregado não substitui toneladas de nutrientes.",
+    "limites": "Não misturar produto, nutrientes e kg/ha nem inferir aplicação agrícola das entregas.",
+    "fontes": [
+      {
+        "url": "https://anda.org.br/wp-content/uploads/2026/01/Principais_Indicadores_2025.pdf",
+        "secao": "Fertilizantes entregues ao mercado",
+        "edicao": "Indicadores 2025; não é a edição 2014 da tabela 770",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web21",
+        "afirmacao_sustentada": "Entregas de fertilizantes ao mercado, distintas da utilização efetiva no campo. Produto entregue ao mercado; a tabela histórica distingue nutrientes e utilização por área. A ANDA publica entregas em toneladas de produto; esse agregado não substitui toneladas de nutrientes."
+      }
+    ],
+    "lacunas": "Não localizada a metodologia completa do anuário 2014 citado na tabela; fonte primária atual só sustenta a distinção de unidade, não a equivalência histórica.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M49",
+    "titulo": "Comércio exterior",
+    "pesquisas": [],
+    "tabelas": [
+      "5945"
+    ],
+    "conceito": "Exportações, importações e saldo comercial de mercadorias em valor FOB.",
+    "universo": "Operações comerciais registradas; UF de origem/destino do produto na documentação detalhada.",
+    "metodo": "MDIC publica campos de ano/mês, produto, país, UF, quantidade, peso e valor dólar FOB.",
+    "limites": "FOB não inclui frete/seguro como medida adicional do mesmo valor; UF do produto não equivale automaticamente à sede do exportador.",
+    "fontes": [
+      {
+        "url": "https://www.gov.br/mdic/pt-br/assuntos/comercio-exterior/estatisticas/base-de-dados-bruta",
+        "secao": "Base detalhada por NCM / layout",
+        "edicao": "documentação corrente; série histórica na 5945",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web21",
+        "afirmacao_sustentada": "Exportações, importações e saldo comercial de mercadorias em valor FOB. Operações comerciais registradas; UF de origem/destino do produto na documentação detalhada. MDIC publica campos de ano/mês, produto, país, UF, quantidade, peso e valor dólar FOB."
+      }
+    ],
+    "lacunas": "Conferir regra territorial e momento de registro na edição da 5945; Brasil inclui documentos sem UF, conforme nota oficial. Soma temporal permanece pendente.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  },
+  {
+    "id": "M50",
+    "titulo": "Área florestal",
+    "pesquisas": [],
+    "tabelas": [
+      "6843"
+    ],
+    "conceito": "Área de floresta como proporção da área terrestre total (ODS 15.1.1).",
+    "universo": "Definição FAO de floresta e área terrestre; não equivale a toda vegetação nativa.",
+    "metodo": "O metadado internacional define limiares de área, altura e cobertura de copa.",
+    "limites": "Parâmetros internacionais precisam corresponder à edição FRA usada; não trocar denominador por área territorial de outra edição.",
+    "fontes": [
+      {
+        "url": "https://unstats.un.org/sdgs/files/metadata-compilation/metadata-goal-15.pdf",
+        "secao": "Indicador 15.1.1 / Concepts and definitions",
+        "edicao": "compilação internacional de 2016; tabela cita FRA 2025",
+        "consultado_em": "2026-11-26",
+        "acesso": "trecho indexado de fonte oficial; não leitura integral",
+        "evidencia": "web21",
+        "afirmacao_sustentada": "Área de floresta como proporção da área terrestre total (ODS 15.1.1). Definição FAO de floresta e área terrestre; não equivale a toda vegetação nativa. O metadado internacional define limiares de área, altura e cobertura de copa."
+      }
+    ],
+    "lacunas": "Compatibilizar com FRA 2025/BRA e memória nacional. O documento histórico não homologa a edição atual da tabela.",
+    "natureza_texto": "Síntese e orientação do Open Data Brasil; não transcrição oficial",
+    "parecer": "documentação parcial; não autoriza nova operação estatística"
+  }
+]

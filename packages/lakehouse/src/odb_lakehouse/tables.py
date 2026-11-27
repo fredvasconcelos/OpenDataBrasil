@@ -140,13 +140,21 @@ class DeltaWriter:
             predicate = self._replace_predicate(frame, replace_where, mode)
         with self._lock.hold(table_uri):
             exists = DeltaTable.is_deltatable(table_uri)
+            repartition = False
             if exists:
                 current = DeltaTable(table_uri)
                 validate_table(current)
                 current_parts = list(current.metadata().partition_columns)
-                if partition_by is not None and list(partition_by) != current_parts:
+                repartition = (
+                    partition_by is not None
+                    and list(partition_by) != current_parts
+                    and overwrite_schema
+                    and mode == "overwrite"
+                )
+                changed = partition_by is not None and list(partition_by) != current_parts
+                if changed and not repartition:
                     msg = (
-                        f"particionamento {list(partition_by)} difere do existente "
+                        f"particionamento {list(partition_by or [])} difere do existente "
                         f"{current_parts} em {table_uri}"
                     )
                     raise TableWriteError(msg)
@@ -155,7 +163,10 @@ class DeltaWriter:
             options: dict[str, Any] = {
                 "commit_properties": _commit_properties(run_id, f"write:{mode}")
             }
-            if partition_by and not exists:
+            if partition_by and (not exists or repartition):
+                # Troca de particionamento só com a troca de schema pedida pelo operador
+                # (``--reset-schema``) e a tabela inteira sobrescrita; as versões
+                # anteriores continuam legíveis por versão.
                 _check_identifiers(partition_by, "colunas de partição")
                 options["partition_by"] = list(partition_by)
             if overwrite_schema:

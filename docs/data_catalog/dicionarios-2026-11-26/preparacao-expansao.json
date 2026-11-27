@@ -1,0 +1,1875 @@
+{
+  "schema_version": "odb-preparacao/1.0.0",
+  "dictionary_version": "ebda655d7a1afc4f3f4b60fbabc2adc5d08431158b15765c346b8b518837a750",
+  "natureza": "conferencia_estatica_sem_ativacao",
+  "total": 50,
+  "por_lote": {
+    "N4": 11,
+    "N5": 18,
+    "N3": 21
+  },
+  "indicadores": [
+    {
+      "kpi": "abate_bovinos_v151",
+      "indicador": "abate_bovinos_v151",
+      "lote": "N4",
+      "release": "79d4c5df-cacc-453d-9f3f-0574da802667",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "1092",
+          "variavel": "151"
+        }
+      ],
+      "metodos_documentais": [
+        "M12"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M12: Rever sigilo por estabelecimento e mudança de painel em cada edição; número de informantes não recebe soma temporal."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "abate_bovinos_v285",
+      "indicador": "abate_bovinos_v285",
+      "lote": "N4",
+      "release": "79d4c5df-cacc-453d-9f3f-0574da802667",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "1092",
+          "variavel": "285"
+        }
+      ],
+      "metodos_documentais": [
+        "M12"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M12: Rever sigilo por estabelecimento e mudança de painel em cada edição; número de informantes não recebe soma temporal."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "custo_m2_v1196",
+      "indicador": "custo_m2_v1196",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "2296",
+          "variavel": "1196"
+        }
+      ],
+      "metodos_documentais": [
+        "M24"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M24: Recuperar base/encargos/desoneração e composição de cada variável da 2296; não completar a unidade só pelo rótulo abreviado do catálogo."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "custo_m2_v1197",
+      "indicador": "custo_m2_v1197",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "2296",
+          "variavel": "1197"
+        }
+      ],
+      "metodos_documentais": [
+        "M24"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M24: Recuperar base/encargos/desoneração e composição de cada variável da 2296; não completar a unidade só pelo rótulo abreviado do catálogo."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "custo_m2_v1198",
+      "indicador": "custo_m2_v1198",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "2296",
+          "variavel": "1198"
+        }
+      ],
+      "metodos_documentais": [
+        "M24"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M24: Recuperar base/encargos/desoneração e composição de cada variável da 2296; não completar a unidade só pelo rótulo abreviado do catálogo."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "custo_m2_v2119",
+      "indicador": "custo_m2_v2119",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "2296",
+          "variavel": "2119"
+        }
+      ],
+      "metodos_documentais": [
+        "M24"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M24: Recuperar base/encargos/desoneração e composição de cada variável da 2296; não completar a unidade só pelo rótulo abreviado do catálogo."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "custo_m2_v2120",
+      "indicador": "custo_m2_v2120",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "2296",
+          "variavel": "2120"
+        }
+      ],
+      "metodos_documentais": [
+        "M24"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M24: Recuperar base/encargos/desoneração e composição de cada variável da 2296; não completar a unidade só pelo rótulo abreviado do catálogo."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "custo_m2_v49",
+      "indicador": "custo_m2_v49",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "2296",
+          "variavel": "49"
+        }
+      ],
+      "metodos_documentais": [
+        "M24"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M24: Recuperar base/encargos/desoneração e composição de cada variável da 2296; não completar a unidade só pelo rótulo abreviado do catálogo."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "empresas_comerciais_v310",
+      "indicador": "empresas_comerciais_v310",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "10646",
+          "variavel": "310"
+        }
+      ],
+      "metodos_documentais": [
+        "M20"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M20: Rever manual e nota da ruptura de 2024, incluindo âmbito territorial, amostragem e variáveis da 10646."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "empresas_comerciais_v631",
+      "indicador": "empresas_comerciais_v631",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "10646",
+          "variavel": "631"
+        }
+      ],
+      "metodos_documentais": [
+        "M20"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M20: Rever manual e nota da ruptura de 2024, incluindo âmbito territorial, amostragem e variáveis da 10646."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "empresas_comerciais_v635",
+      "indicador": "empresas_comerciais_v635",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "10646",
+          "variavel": "635"
+        }
+      ],
+      "metodos_documentais": [
+        "M20"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M20: Rever manual e nota da ruptura de 2024, incluindo âmbito territorial, amostragem e variáveis da 10646."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "empresas_construcao_v1241",
+      "indicador": "empresas_construcao_v1241",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "10442",
+          "variavel": "1241"
+        }
+      ],
+      "metodos_documentais": [
+        "M19"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M19: Ler integralmente a mudança amostral 01/2026 e as fórmulas por medida; a página localiza a ruptura, não resolve a ligação."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "empresas_construcao_v13808",
+      "indicador": "empresas_construcao_v13808",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "10442",
+          "variavel": "13808"
+        }
+      ],
+      "metodos_documentais": [
+        "M19"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M19: Ler integralmente a mudança amostral 01/2026 e as fórmulas por medida; a página localiza a ruptura, não resolve a ligação."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "empresas_construcao_v631",
+      "indicador": "empresas_construcao_v631",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "10442",
+          "variavel": "631"
+        }
+      ],
+      "metodos_documentais": [
+        "M19"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M19: Ler integralmente a mudança amostral 01/2026 e as fórmulas por medida; a página localiza a ruptura, não resolve a ligação."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "empresas_construcao_v673",
+      "indicador": "empresas_construcao_v673",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "10442",
+          "variavel": "673"
+        }
+      ],
+      "metodos_documentais": [
+        "M19"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M19: Ler integralmente a mudança amostral 01/2026 e as fórmulas por medida; a página localiza a ruptura, não resolve a ligação."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "empresas_inovadoras_v5982",
+      "indicador": "empresas_inovadoras_v5982",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "5453",
+          "variavel": "5982"
+        }
+      ],
+      "metodos_documentais": [
+        "M28"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M28: Recuperar limiares, pesos e unidades de dispêndio por variável da 5453 e diferenças para edições anteriores."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "empresas_inovadoras_v5985",
+      "indicador": "empresas_inovadoras_v5985",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "5453",
+          "variavel": "5985"
+        }
+      ],
+      "metodos_documentais": [
+        "M28"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M28: Recuperar limiares, pesos e unidades de dispêndio por variável da 5453 e diferenças para edições anteriores."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "empresas_inovadoras_v5988",
+      "indicador": "empresas_inovadoras_v5988",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "5453",
+          "variavel": "5988"
+        }
+      ],
+      "metodos_documentais": [
+        "M28"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M28: Recuperar limiares, pesos e unidades de dispêndio por variável da 5453 e diferenças para edições anteriores."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "empresas_inovadoras_v630",
+      "indicador": "empresas_inovadoras_v630",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "5453",
+          "variavel": "630"
+        }
+      ],
+      "metodos_documentais": [
+        "M28"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M28: Recuperar limiares, pesos e unidades de dispêndio por variável da 5453 e diferenças para edições anteriores."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "fertilizantes_v2398",
+      "indicador": "fertilizantes_v2398",
+      "lote": "N4",
+      "release": "79d4c5df-cacc-453d-9f3f-0574da802667",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "770",
+          "variavel": "2398"
+        }
+      ],
+      "metodos_documentais": [
+        "M48"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M48: Não localizada a metodologia completa do anuário 2014 citado na tabela; fonte primária atual só sustenta a distinção de unidade, não a equivalência histórica."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "industria_uf_v631",
+      "indicador": "industria_uf_v631",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "10457",
+          "variavel": "631"
+        }
+      ],
+      "metodos_documentais": [
+        "M18"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M18: Compatibilizar o método da edição 2024 da tabela 10457 com a nota consultada de 2021; fórmulas e pesos não foram integralmente recuperados."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "industria_uf_v673",
+      "indicador": "industria_uf_v673",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "10457",
+          "variavel": "673"
+        }
+      ],
+      "metodos_documentais": [
+        "M18"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M18: Compatibilizar o método da edição 2024 da tabela 10457 com a nota consultada de 2021; fórmulas e pesos não foram integralmente recuperados."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "industria_uf_v811",
+      "indicador": "industria_uf_v811",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "10457",
+          "variavel": "811"
+        }
+      ],
+      "metodos_documentais": [
+        "M18"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M18: Compatibilizar o método da edição 2024 da tabela 10457 com a nota consultada de 2021; fórmulas e pesos não foram integralmente recuperados."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "inpc_v2289",
+      "indicador": "inpc_v2289",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "1736",
+          "variavel": "2289"
+        }
+      ],
+      "metodos_documentais": [
+        "M30"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M30: Confirmar cada edição do manual e equivalência 1736/2292; recuperar precisão N5 antes de publicação, sem mudança nesta revisão."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "inpc_v2292",
+      "indicador": "inpc_v2292",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "1736",
+          "variavel": "2292"
+        }
+      ],
+      "metodos_documentais": [
+        "M30"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M30: Confirmar cada edição do manual e equivalência 1736/2292; recuperar precisão N5 antes de publicação, sem mudança nesta revisão."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "inpc_v68",
+      "indicador": "inpc_v68",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "1736",
+          "variavel": "68"
+        }
+      ],
+      "metodos_documentais": [
+        "M30"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M30: Confirmar cada edição do manual e equivalência 1736/2292; recuperar precisão N5 antes de publicação, sem mudança nesta revisão."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "ipca15_v1117",
+      "indicador": "ipca15_v1117",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "3065",
+          "variavel": "1117"
+        }
+      ],
+      "metodos_documentais": [
+        "M31"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M31: Recuperar pesos e bases históricos; equivalência 3065/1120 continua pendente, sem aprovação por semelhança."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "ipca15_v1120",
+      "indicador": "ipca15_v1120",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "3065",
+          "variavel": "1120"
+        }
+      ],
+      "metodos_documentais": [
+        "M31"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M31: Recuperar pesos e bases históricos; equivalência 3065/1120 continua pendente, sem aprovação por semelhança."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "ipca15_v356",
+      "indicador": "ipca15_v356",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "3065",
+          "variavel": "356"
+        }
+      ],
+      "metodos_documentais": [
+        "M31"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M31: Recuperar pesos e bases históricos; equivalência 3065/1120 continua pendente, sem aprovação por semelhança."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "ipca_v2265",
+      "indicador": "ipca_v2265",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "1737",
+          "variavel": "2265"
+        }
+      ],
+      "metodos_documentais": [
+        "M29"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M29: Leitura integral de manual e alterações de cada estrutura pendente; quatro equivalências N5 e precisão permanecem bloqueadas. Ver ipca-pof.md."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "ipca_v2266",
+      "indicador": "ipca_v2266",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "1737",
+          "variavel": "2266"
+        }
+      ],
+      "metodos_documentais": [
+        "M29"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M29: Leitura integral de manual e alterações de cada estrutura pendente; quatro equivalências N5 e precisão permanecem bloqueadas. Ver ipca-pof.md."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "ipca_v69",
+      "indicador": "ipca_v69",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "1737",
+          "variavel": "69"
+        }
+      ],
+      "metodos_documentais": [
+        "M29"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M29: Leitura integral de manual e alterações de cada estrutura pendente; quatro equivalências N5 e precisão permanecem bloqueadas. Ver ipca-pof.md."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "ipp_v10008",
+      "indicador": "ipp_v10008",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "6904",
+          "variavel": "10008"
+        }
+      ],
+      "metodos_documentais": [
+        "M32"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M32: Ler fórmula e pesos do manual vigente por edição; equivalência 6904/1394 da candidata permanece não homologada."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "ipp_v1394",
+      "indicador": "ipp_v1394",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "6904",
+          "variavel": "1394"
+        }
+      ],
+      "metodos_documentais": [
+        "M32"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M32: Ler fórmula e pesos do manual vigente por edição; equivalência 6904/1394 da candidata permanece não homologada."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "ipp_v1395",
+      "indicador": "ipp_v1395",
+      "lote": "N5",
+      "release": "1746f121-7d98-4504-98dd-0d5631984e7c",
+      "situacao": "reprovada na reconciliação/precisão; não ativada",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "6904",
+          "variavel": "1395"
+        }
+      ],
+      "metodos_documentais": [
+        "M32"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M32: Ler fórmula e pesos do manual vigente por edição; equivalência 6904/1394 da candidata permanece não homologada."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Resolver precisão e linhagem; candidata reprovada permanece bloqueada."
+    },
+    {
+      "kpi": "leite_adquirido_v151",
+      "indicador": "leite_adquirido_v151",
+      "lote": "N4",
+      "release": "79d4c5df-cacc-453d-9f3f-0574da802667",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "1086",
+          "variavel": "151"
+        }
+      ],
+      "metodos_documentais": [
+        "M13"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M13: Identificar exercício de cada revisão do painel e notas específicas dos preços sem atribuir o preço à quantidade."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "leite_adquirido_v2522",
+      "indicador": "leite_adquirido_v2522",
+      "lote": "N4",
+      "release": "79d4c5df-cacc-453d-9f3f-0574da802667",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "1086",
+          "variavel": "2522"
+        }
+      ],
+      "metodos_documentais": [
+        "M13"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M13: Identificar exercício de cada revisão do painel e notas específicas dos preços sem atribuir o preço à quantidade."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "leite_adquirido_v283",
+      "indicador": "leite_adquirido_v283",
+      "lote": "N4",
+      "release": "79d4c5df-cacc-453d-9f3f-0574da802667",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "1086",
+          "variavel": "283"
+        }
+      ],
+      "metodos_documentais": [
+        "M13"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M13: Identificar exercício de cada revisão do painel e notas específicas dos preços sem atribuir o preço à quantidade."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "nascimentos_empresas_v13235",
+      "indicador": "nascimentos_empresas_v13235",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "9949",
+          "variavel": "13235"
+        }
+      ],
+      "metodos_documentais": [
+        "M27"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M27: Fechar algoritmos por coorte/ano da 9949 e comparabilidade das entradas/saídas; não aprovar soma dos fluxos pendentes."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "nascimentos_empresas_v13236",
+      "indicador": "nascimentos_empresas_v13236",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "9949",
+          "variavel": "13236"
+        }
+      ],
+      "metodos_documentais": [
+        "M27"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M27: Fechar algoritmos por coorte/ano da 9949 e comparabilidade das entradas/saídas; não aprovar soma dos fluxos pendentes."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "nascimentos_empresas_v13237",
+      "indicador": "nascimentos_empresas_v13237",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "9949",
+          "variavel": "13237"
+        }
+      ],
+      "metodos_documentais": [
+        "M27"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M27: Fechar algoritmos por coorte/ano da 9949 e comparabilidade das entradas/saídas; não aprovar soma dos fluxos pendentes."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "ovos_produzidos_v151",
+      "indicador": "ovos_produzidos_v151",
+      "lote": "N4",
+      "release": "79d4c5df-cacc-453d-9f3f-0574da802667",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "7524",
+          "variavel": "151"
+        }
+      ],
+      "metodos_documentais": [
+        "M14"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M14: Fechar comparabilidade histórica do limiar de inclusão e unidades por variável antes de qualquer nova agregação."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "ovos_produzidos_v1988",
+      "indicador": "ovos_produzidos_v1988",
+      "lote": "N4",
+      "release": "79d4c5df-cacc-453d-9f3f-0574da802667",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "7524",
+          "variavel": "1988"
+        }
+      ],
+      "metodos_documentais": [
+        "M14"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M14: Fechar comparabilidade histórica do limiar de inclusão e unidades por variável antes de qualquer nova agregação."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "safra_area_colhida",
+      "indicador": "safra_area_colhida",
+      "lote": "N4",
+      "release": "79d4c5df-cacc-453d-9f3f-0574da802667",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "6588",
+          "variavel": "216"
+        },
+        {
+          "tabela": "6588",
+          "variavel": "216"
+        },
+        {
+          "tabela": "6588",
+          "variavel": "216"
+        },
+        {
+          "tabela": "6588",
+          "variavel": "216"
+        }
+      ],
+      "metodos_documentais": [
+        "M10"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M10: Notas/reconciliações LSPA e limites de exportação completa ainda exigem aceite na candidata N4; nenhum bloqueio foi removido."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "servicos_nao_financeiros_v630",
+      "indicador": "servicos_nao_financeiros_v630",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "2581",
+          "variavel": "630"
+        }
+      ],
+      "metodos_documentais": [
+        "M21"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M21: Ler nota 01/2026 e memória amostral; a divulgação de 2024 não prova comparabilidade ou disponibilidade na candidata local."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "servicos_nao_financeiros_v631",
+      "indicador": "servicos_nao_financeiros_v631",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "2581",
+          "variavel": "631"
+        }
+      ],
+      "metodos_documentais": [
+        "M21"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M21: Ler nota 01/2026 e memória amostral; a divulgação de 2024 não prova comparabilidade ou disponibilidade na candidata local."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "servicos_nao_financeiros_v635",
+      "indicador": "servicos_nao_financeiros_v635",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "2581",
+          "variavel": "635"
+        }
+      ],
+      "metodos_documentais": [
+        "M21"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M21: Ler nota 01/2026 e memória amostral; a divulgação de 2024 não prova comparabilidade ou disponibilidade na candidata local."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "unidades_conservacao_v6308",
+      "indicador": "unidades_conservacao_v6308",
+      "lote": "N4",
+      "release": "79d4c5df-cacc-453d-9f3f-0574da802667",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "5619",
+          "variavel": "6308"
+        }
+      ],
+      "metodos_documentais": [
+        "M43"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M43: Falta metodologia histórica de tratamento de sobreposições e domínios por categoria; não transplantar instantâneo atual para 2016."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "unidades_conservacao_v6309",
+      "indicador": "unidades_conservacao_v6309",
+      "lote": "N4",
+      "release": "79d4c5df-cacc-453d-9f3f-0574da802667",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "5619",
+          "variavel": "6309"
+        }
+      ],
+      "metodos_documentais": [
+        "M43"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M43: Falta metodologia histórica de tratamento de sobreposições e domínios por categoria; não transplantar instantâneo atual para 2016."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    },
+    {
+      "kpi": "viagens_v10392",
+      "indicador": "viagens_v10392",
+      "lote": "N3",
+      "release": "4bfc817f-4806-48ab-a93a-2ef0e9075ed6",
+      "situacao": "validada, sem ativação no registro de 18/11",
+      "evidencia": "diferença entre snapshots N2/N3/N4; demais medidas N5 conforme relatório de precisão",
+      "estado_atual": "não reconferido no banco",
+      "checks": {
+        "configuracao_indicador": true,
+        "ligacao_kpi": true,
+        "ficha": true,
+        "fontes_configuradas": true,
+        "variaveis_oficiais_identificadas": true,
+        "fato_configurado": true
+      },
+      "estado_preparacao": "configuracao_conferida",
+      "tabelas_variaveis": [
+        {
+          "tabela": "7204",
+          "variavel": "10392"
+        }
+      ],
+      "metodos_documentais": [
+        "M05"
+      ],
+      "lacunas": [
+        "LIVE: API, Docker e release ativo não reconferidos nesta execução; disponibilidade é a do snapshot identificado.",
+        "CONCEITO: fechar fórmula, universo, denominador/pesos e revisão de cada variável/edição no manual completo.",
+        "CODIGOS: nome oficial não equivale a definição conceitual; descrições vazias permanecem não localizadas.",
+        "COBERTURA: não homologados todos os territórios/períodos/interseções; não extrapolar categorias do descritor à Gold.",
+        "DADOS: KPI configurado ausente da navegação N2 no snapshot; candidato não significa publicado.",
+        "M05: Faltam memória de ponderação/calibração por edição e fórmulas específicas de Gini, informalidade, frequência líquida e rendimentos; registrar IC/CV existentes sem recomputá-los."
+      ],
+      "publicavel": false,
+      "proximo_passo": "Reconciliar a candidata exata, completar validações e obter aceite."
+    }
+  ]
+}

@@ -31,6 +31,7 @@ from odb_common.storage import LakehouseLayout, Layer
 from odb_ingestion import load_sources
 from odb_lakehouse import DeltaReader, DeltaWriter
 from odb_modeling.builder import GoldBuild, GoldBuilder
+from odb_modeling.contas_builder import CONTAS_SCOPE, ContasGoldBuilder
 from odb_modeling.contracts import DIM_CATEGORY, DIM_INDICATOR, DIM_INDICATOR_NODE
 from odb_modeling.export import ExportError, ReleaseToExport, export_release
 from odb_query_engine import DuckDBConfig, DuckDBReadEngine, PinnedTable, QueryError, ReadQuery
@@ -123,7 +124,8 @@ def gold_build(
     """
     settings = _settings()
     sources = load_sources(settings.sources_config_dir)
-    catalog = load_scope(settings.indicators_config_dir, scope)
+    # O escopo das contas públicas tem modelo próprio, sem catálogo de indicadores (ADR-0036).
+    catalog = None if scope == CONTAS_SCOPE else load_scope(settings.indicators_config_dir, scope)
     engine = make_engine(settings, pool_size=3)
     layout = LakehouseLayout(settings.lakehouse_root_uri)
     writer = DeltaWriter(
@@ -133,8 +135,12 @@ def gold_build(
         disk_block_percent=settings.disk_block_percent,
     )
     registry = PostgresGoldRegistry(engine)
-    builder = GoldBuilder(
-        sources, catalog, layout, writer, registry, code_version=settings.code_version
+    builder: GoldBuilder | ContasGoldBuilder = (
+        ContasGoldBuilder(sources, layout, writer, registry, code_version=settings.code_version)
+        if catalog is None
+        else GoldBuilder(
+            sources, catalog, layout, writer, registry, code_version=settings.code_version
+        )
     )
     PostgresIngestionRegistry(engine).sync_catalog(sources)
     publication = _publication(settings, engine)
@@ -160,13 +166,14 @@ def gold_build(
                 output["active_release"] = active.release_id if active else None
                 msg = f"construção Gold falhou: {build.error}"
                 raise GoldFailedError(msg)
-            indicators = build.tables[DIM_INDICATOR.name]
-            registry.sync_indicators(
-                scope,
-                catalog.config_version,
-                build.build_id,
-                DeltaReader().scan(indicators.storage_uri, indicators.delta_version).collect(),
-            )
+            if catalog is not None:
+                indicators = build.tables[DIM_INDICATOR.name]
+                registry.sync_indicators(
+                    scope,
+                    catalog.config_version,
+                    build.build_id,
+                    DeltaReader().scan(indicators.storage_uri, indicators.delta_version).collect(),
+                )
             output["release"] = _publish(publication, registry, build, settings, activate=activate)
             if output["release"].get("portal_problems"):
                 raise PortalCheckError
