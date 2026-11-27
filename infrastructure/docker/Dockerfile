@@ -70,6 +70,7 @@ COPY infrastructure/scripts/carga_agro_sequencial.py infrastructure/scripts/carg
 COPY infrastructure/scripts/revisao_detalhamento_kpis.py infrastructure/scripts/
 COPY infrastructure/scripts/validacao_acumulado_sazonal.py infrastructure/scripts/
 COPY infrastructure/scripts/preparar_indicadores.py infrastructure/scripts/
+COPY infrastructure/scripts/diagnosticar_execucao_entes.py infrastructure/scripts/
 RUN chown -R odb:odb /app
 USER odb
 CMD ["pytest"]
