@@ -4,6 +4,14 @@ A evolução do portal, dos primeiros passos às novidades mais recentes.
 Cada entrada destaca o que muda para quem consulta os dados. A situação indicada
 vale para a data do registro: **Em teste** ainda não significa disponível na beta.
 
+## 27/11/2026 — Piloto de despesas de Guarabira e da Paraíba
+
+**Situação: Amostras em avaliação, sem indicadores disponíveis no portal.**
+
+- Fontes oficiais municipais e estaduais identificadas, com documentação dos campos e limites de cobertura.
+- Amostra de Guarabira conferida com a tabela de origem; recorte estadual conferido quanto a período, valores e paginação.
+- Preparação da execução própria dos entes; o vínculo entre repasses e aplicação efetiva ainda depende de prova específica.
+
 ## 27/11/2026 — Localização orçamentária e execução dos entes
 
 **Situação: Em validação local, sem publicação na beta.**

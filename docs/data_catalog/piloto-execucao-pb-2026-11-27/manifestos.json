@@ -1,0 +1,186 @@
+{
+  "data_verificacao": "2026-11-27",
+  "escopo": "descritores e amostras do piloto; sem ativação/publicação dos dados",
+  "capturas": [
+    {
+      "url": "https://transparencia-api.elmartecnologia.com.br/swagger",
+      "obtido_em": "2026-11-27T08:38:11.874767+00:00",
+      "status": 200,
+      "url_final": "https://transparencia-api.elmartecnologia.com.br/swagger/ui/index",
+      "bytes": 6692,
+      "sha256": "bc81d1d29407fd52766365f1dd9059e0d354672e794f3dfcd3e7695247096c57",
+      "tipo": "text/html",
+      "captura": "elmar-api"
+    },
+    {
+      "url": "https://transparencia.elmartecnologia.com.br/DadosAbertos?ctx=201082&e=201082",
+      "obtido_em": "2026-11-27T08:38:15.281997+00:00",
+      "status": 200,
+      "url_final": "https://transparencia.elmartecnologia.com.br/DadosAbertos?ctx=201082&e=201082",
+      "bytes": 62919,
+      "sha256": "de470fdb9dde0e08473eee4fd03eaa0ffaafd6d67d7862aa01491c12e54f5766",
+      "tipo": "text/html; charset=utf-8",
+      "captura": "elmar-dados"
+    },
+    {
+      "url": "https://api.dados.pb.gov.br/swagger/",
+      "obtido_em": "2026-11-27T08:38:20.377812+00:00",
+      "status": 200,
+      "url_final": "https://api.dados.pb.gov.br/swagger/",
+      "bytes": 25879,
+      "sha256": "19df13dc3b77eedf53191a2eea3af52ffbce25774a8c9033b5170310fbcc5820",
+      "tipo": "text/html; charset=utf-8",
+      "captura": "pb-api"
+    },
+    {
+      "url": "https://dados.pb.gov.br/dataset/despesas/resource/42915dda-7d92-4449-b202-6dc4bbc51c29",
+      "obtido_em": "2026-11-27T08:38:21.705255+00:00",
+      "status": 200,
+      "url_final": "https://dados.pb.gov.br/dataset/despesas/resource/42915dda-7d92-4449-b202-6dc4bbc51c29",
+      "bytes": 42721,
+      "sha256": "6c7d163e660a3b2807be59c4843e1125d19f41c87e89c0af711efc6fed3ae827",
+      "tipo": "text/html; charset=utf-8",
+      "captura": "pb-recurso"
+    },
+    {
+      "url": "https://transparencia-api.elmartecnologia.com.br/v2/swagger",
+      "obtido_em": "2026-11-27T08:38:42.880082+00:00",
+      "status": 200,
+      "url_final": "https://transparencia-api.elmartecnologia.com.br/v2/swagger",
+      "bytes": 82265,
+      "sha256": "300971f1d06486127a77d0aab36c41750f98f83f232a93deb2133b79a7fb84aa",
+      "tipo": "application/json; charset=utf-8",
+      "captura": "elmar-spec-v2"
+    },
+    {
+      "url": "https://api.dados.pb.gov.br/downloads/dicionario/Despesas/execucao_orcamentaria.pdf",
+      "obtido_em": "2026-11-27T08:38:44.794380+00:00",
+      "status": 200,
+      "url_final": "https://api.dados.pb.gov.br/downloads/dicionario/Despesas/execucao_orcamentaria.pdf",
+      "bytes": 22763,
+      "sha256": "55270d154f1082cb751aaf9621c59c8136bc91b920bffd1090c06b1f54cd9ca3",
+      "tipo": "application/pdf",
+      "captura": "pb-dicionario"
+    },
+    {
+      "url": "https://api.dados.pb.gov.br/api/v1/despesas/execucao_orcamentaria?ano=2026&mes=07&classificacao=GRUPO%20DA%20DESPESA&acumular=At%C3%A9%20o%20m%C3%AAs&page=1&per_page=10",
+      "obtido_em": "2026-11-27T08:38:45.746730+00:00",
+      "status": 200,
+      "url_final": "https://api.dados.pb.gov.br/api/v1/despesas/execucao_orcamentaria?ano=2026&mes=07&classificacao=GRUPO%20DA%20DESPESA&acumular=At%C3%A9%20o%20m%C3%AAs&page=1&per_page=10",
+      "bytes": 4837,
+      "sha256": "3976a4c845ecc50594c1a74ced17bca06331b37e403f54732cbaccd725abdfcd",
+      "tipo": "application/json",
+      "captura": "pb-amostra"
+    },
+    {
+      "url": "https://api.dados.pb.gov.br/api/v1/swagger.json",
+      "obtido_em": "2026-11-27T08:39:03.343398+00:00",
+      "status": 200,
+      "url_final": "https://api.dados.pb.gov.br/api/v1/swagger.json",
+      "bytes": 232198,
+      "sha256": "42e014582ff31ed3264559703444f331b2af6fa367aaa8fabedf44abe77de335",
+      "tipo": "application/json",
+      "captura": "pb-spec"
+    },
+    {
+      "url": "https://transparencia.elmartecnologia.com.br/Export/DadosAbertos/?e=201082&module=DespesaFixada",
+      "obtido_em": "2026-11-27T08:39:05.301666+00:00",
+      "status": 200,
+      "url_final": "https://transparencia.elmartecnologia.com.br/Export/DadosAbertos/?e=201082&module=DespesaFixada",
+      "bytes": 62884,
+      "sha256": "ecdc59a20fe48a7e3959734c3ed8afd9440662ad962d612974429e1b66ac8487",
+      "tipo": "text/html; charset=utf-8",
+      "captura": "elmar-config-fixada"
+    },
+    {
+      "url": "https://transparencia-api.elmartecnologia.com.br/api/v2/201082/contab/despesas/fixada?competencia=07%2F2026&exercicio=2026&exibeConsolidado=false",
+      "obtido_em": "2026-11-27T08:39:39.928100+00:00",
+      "status": 200,
+      "url_final": "https://transparencia-api.elmartecnologia.com.br/api/v2/201082/contab/despesas/fixada?competencia=07%2F2026&exercicio=2026&exibeConsolidado=false",
+      "bytes": 38486,
+      "sha256": "a6d2bd218147350293380c2a766d850fd955032df70bfd71e29c8b72dc4fb5ab",
+      "tipo": "application/json; charset=utf-8",
+      "captura": "elmar-amostra"
+    },
+    {
+      "url": "https://www.guarabira.pb.gov.br/portal-da-transparencia/portal-da-transparencia-atual",
+      "obtido_em": "2026-11-27T08:40:09.546152+00:00",
+      "status": 200,
+      "url_final": "https://www.guarabira.pb.gov.br/portal-da-transparencia/portal-da-transparencia-atual",
+      "bytes": 78850,
+      "sha256": "a2471ba7d20a55e1de80bccfadd38502cadb78c7ac50cb4dee23344f087c2652",
+      "tipo": "text/html; charset=UTF-8",
+      "captura": "guarabira-institucional"
+    },
+    {
+      "url": "https://www.guarabira.pb.gov.br/pagina/dados-abertos",
+      "obtido_em": "2026-11-27T08:40:12.475535+00:00",
+      "status": 200,
+      "url_final": "https://www.guarabira.pb.gov.br/pagina/dados-abertos",
+      "bytes": 80863,
+      "sha256": "c4eb477b2d7a4bb533121da7b6b6d4251271fc4d752a19d4738db5258d1aa58e",
+      "tipo": "text/html; charset=UTF-8",
+      "captura": "guarabira-uso"
+    },
+    {
+      "url": "https://transparencia.pb.gov.br/",
+      "obtido_em": "2026-11-27T08:40:15.098704+00:00",
+      "status": 200,
+      "url_final": "https://transparencia.pb.gov.br/",
+      "bytes": 116437,
+      "sha256": "8a535bd3cd38e10eeb0258412e548bee845968bb57d1605703aaa7324f44ef9b",
+      "tipo": "text/html",
+      "captura": "pb-institucional"
+    },
+    {
+      "url": "https://transparencia.elmartecnologia.com.br/Contab/Despesas/Fixada?e=201082&ctx=201082&Tab=1&isModal=false&competencia=07%2F2026",
+      "obtido_em": "2026-11-27T08:40:17.261033+00:00",
+      "status": 200,
+      "url_final": "https://transparencia.elmartecnologia.com.br/Contab/Despesas/Fixada?e=201082&ctx=201082&Tab=1&isModal=false&competencia=07%2F2026",
+      "bytes": 200905,
+      "sha256": "549075037e4b295bf28af6018a12482b892b1fbe876db5cb12adbc96ce042e69",
+      "tipo": "text/html; charset=utf-8",
+      "captura": "elmar-consulta"
+    },
+    {
+      "url": "https://transparencia.elmartecnologia.com.br/Contab/Despesas/Fixada?ctx=201082&e=201082&Tab=1&form=Exerc_DespesaFixada&Cpt_DespesaFixada=07%2F2026&ChangeCpt_DespesaFixada=Visualizar",
+      "obtido_em": "2026-11-27T08:40:59.180451+00:00",
+      "status": 200,
+      "url_final": "https://transparencia.elmartecnologia.com.br/Contab/Despesas/Fixada?ctx=201082&e=201082&Tab=1&form=Exerc_DespesaFixada&Cpt_DespesaFixada=07%2F2026&ChangeCpt_DespesaFixada=Visualizar",
+      "bytes": 200906,
+      "sha256": "3fd69df70f963d4d9f76cf152d91838ead96e30effac74d3b3a226fe21f21f84",
+      "tipo": "text/html; charset=utf-8",
+      "captura": "elmar-consulta-julho"
+    },
+    {
+      "url": "https://api.dados.pb.gov.br/api/v1/despesas/execucao_orcamentaria?ano=2026&mes=07&classificacao=GRUPO%20DA%20DESPESA&acumular=No%20m%C3%AAs&page=1&per_page=10",
+      "obtido_em": "2026-11-27T08:41:03.960234+00:00",
+      "status": 200,
+      "url_final": "https://api.dados.pb.gov.br/api/v1/despesas/execucao_orcamentaria?ano=2026&mes=07&classificacao=GRUPO%20DA%20DESPESA&acumular=No%20m%C3%AAs&page=1&per_page=10",
+      "bytes": 4799,
+      "sha256": "9ff38156e54442bc6ca36934d429f3da978a2e6498f53b02d0bd98f27a19c7e0",
+      "tipo": "application/json",
+      "captura": "pb-amostra-mensal"
+    },
+    {
+      "url": "https://transparencia-api.elmartecnologia.com.br/api/v2/201082/contab/despesas/fixada?competencia=11%2F2026&exercicio=2026&exibeConsolidado=false",
+      "obtido_em": "2026-11-27T08:41:32.616461+00:00",
+      "status": 200,
+      "url_final": "https://transparencia-api.elmartecnologia.com.br/api/v2/201082/contab/despesas/fixada?competencia=11%2F2026&exercicio=2026&exibeConsolidado=false",
+      "bytes": 7384,
+      "sha256": "da64f8f26fc0ec6ab85b02f29e67eea1458f2929d992b812c8f290657b093598",
+      "tipo": "application/json; charset=utf-8",
+      "captura": "elmar-amostra-novembro"
+    },
+    {
+      "url": "https://api.dados.pb.gov.br/api/v1/despesas/execucao_orcamentaria?ano=2026&mes=07&classificacao=GRUPO%20DA%20DESPESA&acumular=At%C3%A9%20o%20m%C3%AAs&page=1&per_page=1000",
+      "obtido_em": "2026-11-27T08:41:33.808273+00:00",
+      "status": 200,
+      "url_final": "https://api.dados.pb.gov.br/api/v1/despesas/execucao_orcamentaria?ano=2026&mes=07&classificacao=GRUPO%20DA%20DESPESA&acumular=At%C3%A9%20o%20m%C3%AAs&page=1&per_page=1000",
+      "bytes": 152787,
+      "sha256": "e1cc6bc74bc8e0ebde72841dd5a0f971d92cb07a8d6f6edadd5ee335c9d38414",
+      "tipo": "application/json",
+      "captura": "pb-recorte-completo"
+    }
+  ]
+}
