@@ -67,6 +67,19 @@ reconciliado; as fontes externas fornecerão prova da cadeia de transferências.
   distribuir despesas entre origens por proporção nem cruzar apenas totais marginais.
   Distinguir execução por fonte/grupo da rastreabilidade de um repasse individual.
 
+### Pendência futura — revisão para a versão oficial
+
+Por determinação do mantenedor em 27/11/2026, implementar o processo de checagem
+jurídica, econômica e contábil **na preparação do lançamento da versão oficial**.
+Revisar então todas as regras e bases de consolidação, inclusive as já implementadas,
+contra o arcabouço aplicável a cada ente e exercício: PPA, LDO, LOA, anexos, alterações
+e atos de programação/execução, além das normas gerais e locais pertinentes.
+O objetivo será validar a aderência das lógicas técnicas à lei e à lógica de negócio.
+
+[Registro da pendência futura](protocolo-revisao-juridico-economica-orcamentos.md).
+Por enquanto, somente documentação: processo não implementado, sem nova checagem
+ou bloqueio para o desenvolvimento e os pilotos atuais.
+
 ### Famílias de KPIs e cartões a preparar
 
 Nomes abaixo são requisitos de conteúdo, sem IDs novos nem alteração visual agora.

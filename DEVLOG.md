@@ -10,7 +10,7 @@ vale para a data do registro: **Em teste** ainda não significa disponível na b
 
 - Fontes oficiais municipais e estaduais identificadas, com documentação dos campos e limites de cobertura.
 - Amostra de Guarabira conferida com a tabela de origem; recorte estadual conferido quanto a período, valores e paginação.
-- Planejamento dos futuros indicadores de orçamento municipal por origem federal, estadual e própria, destinação por área e aplicação; a rastreabilidade ainda depende de prova e contratos.
+- Planejamento dos futuros indicadores de orçamento municipal por origem federal, estadual e própria, destinação por área e aplicação; a rastreabilidade depende de prova e contratos, com a revisão jurídica, econômica e contábil registrada como etapa futura de preparação da versão oficial.
 
 ## 27/11/2026 — Localização orçamentária e execução dos entes
 
