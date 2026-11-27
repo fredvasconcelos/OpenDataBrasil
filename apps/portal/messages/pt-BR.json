@@ -846,6 +846,16 @@
           "name": "Por área de governo",
           "note": "Funções de governo, da maior para a menor em {year}",
           "terms": "função funções"
+        },
+        "recebimentos": {
+          "name": "Recebimento por favorecido",
+          "note": "Pagamentos por sede cadastral; os links abrem total, mapa, evolução e busca na lente B.",
+          "terms": "pagamentos recebimentos favorecido sede empresas entidades"
+        },
+        "execucao": {
+          "name": "Execução da despesa",
+          "note": "Fases independentes da execução federal; cada item abre seu valor ou detalhamento.",
+          "terms": "execução orçamento despesa federal união"
         }
       },
       "items": {
@@ -856,8 +866,13 @@
         "quem": "Quem mais recebeu",
         "quemTerms": "favorecidos recebedores ranking",
         "constitutionalTerms": "FPM FPE fundo de participação royalties",
-        "legalTerms": "convênios"
-      }
+        "legalTerms": "convênios",
+        "receivedTotal": "Total recebido pelos favorecidos",
+        "receivedSeat": "Recebimentos por sede, no mapa",
+        "receivedSeries": "Evolução mês a mês",
+        "receivedSearch": "Buscar um favorecido (empresas e entidades)"
+      },
+      "indicators": "Indicadores das contas"
     },
     "typeAreaContext": "Tipos de transferência em {area}. A lista abaixo inclui todas as áreas.",
     "sourcesTitle": "Fontes e informações sobre os dados",
@@ -878,12 +893,12 @@
       "total": "Total dos pagamentos no recorte",
       "amount": "Valor pago",
       "category": "Categoria",
-      "noGeography": "A execução é da União. A localização orçamentária não identifica onde o recebedor aplicou o recurso.",
+      "noGeography": "A execução é da União. UF e município do localizador indicam a classificação do plano de trabalho da CGU; não medem a despesa executada pelo próprio estado/município. Valores nacionais ou sem localização individualizada não são distribuídos entre localidades.",
       "noSum": "As seis fases são valores independentes. Não some fases nem lentes. Valores nominais em reais; estornos e ajustes negativos são preservados.",
       "receiptsNote": "O território indica a sede cadastral do favorecido, não o local da prestação do serviço ou da aplicação. O total inclui registros contábeis, unidades internas, bancos e favorecidos não identificados; não representa apenas beneficiários finais.",
       "filters": "Recortes ativos",
-      "remove": "Remover {label}",
-      "filterHint": "Selecione uma categoria na tabela para restringir o recorte. Depois, escolha outro detalhamento para explorar o cruzamento disponível.",
+      "remove": "Remover filtro {label}",
+      "filterHint": "Selecione uma categoria na tabela para restringir o recorte. Depois, escolha outro detalhamento para explorar o cruzamento disponível. São permitidos até dez recortes simultâneos.",
       "page": "Página {page} de {pages}",
       "previous": "Página anterior",
       "next": "Próxima página",
@@ -900,7 +915,7 @@
       "searchError": "Não foi possível concluir a busca. Tente novamente.",
       "series": "Evolução dos pagamentos no período",
       "release": "Release dos dados",
-      "source": "Fonte: Portal da Transparência / CGU — SIAFI.",
+      "source": "Fonte: CGU, Portal da Transparência",
       "clear": "Limpar recortes",
       "phases": {
         "committed": "Empenhado",
@@ -913,10 +928,14 @@
       "municipality": "Município da sede",
       "allMunicipalities": "Todos os municípios da UF",
       "seatMap": "Pagamentos por sede do favorecido",
-      "territoryScope": "Mapa e evolução mostram todos os pagamentos do território e período selecionados, sem os recortes de categoria da tabela.",
+      "territoryScope": "Mapa e evolução usam o território e o período selecionados, sem os recortes de categoria da tabela.",
       "searching": "Buscando favorecidos…",
       "emptyPage": "Esta página não tem registros. Use a página anterior ou limpe os recortes; os totais acima continuam sendo os do recorte inteiro.",
-      "tableProfileHint": "Escolha Favorecido para abrir as fichas. Para restringir uma categoria, selecione outro detalhamento nos filtros."
+      "tableProfileHint": "Escolha Favorecido para abrir as fichas. Para restringir uma categoria, selecione outro detalhamento nos filtros.",
+      "aboutLens": "Sobre esta perspectiva das contas",
+      "aboutSection": "Sobre {label}",
+      "searchCount": "{count, plural, one {# favorecido encontrado} other {# favorecidos encontrados}}",
+      "filterLimit": "Limite de dez recortes. Remova um filtro para incluir outra dimensão."
     }
   }
 }

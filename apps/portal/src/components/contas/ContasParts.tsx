@@ -296,3 +296,9 @@ export function ContasEmpty() {
     </div>
   );
 }
+
+
+/** Mantém o balão existente dentro da janela; compartilhado pelos mapas A e B. */
+export function contasTooltipPosition(point: { x: number; y: number }): CSSProperties {
+  return { left: Math.max(8, Math.min(point.x + 12, window.innerWidth - 320)), top: Math.max(8, Math.min(point.y + 12, window.innerHeight - 240)) };
+}

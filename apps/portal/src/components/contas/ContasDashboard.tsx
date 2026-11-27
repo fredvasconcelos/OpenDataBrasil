@@ -4,12 +4,12 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
-import { FederalDashboard, ContasLensNav } from "@/components/contas/FederalDashboard";
+import { FederalDashboard } from "@/components/contas/FederalDashboard";
 import { MapView } from "@/components/MapView";
 import { SeriesChart } from "@/components/SeriesChart";
 import { ContasPanel, ContasSidebar } from "@/components/contas/ContasPanel";
 import { ContasReferences } from "@/components/contas/ContasReferences";
-import { ContasComposition, ContasEmpty, ContasHighlights, ContasRankingTable, ContasTooltip, ContasUnavailable, PeriodStatusList } from "@/components/contas/ContasParts";
+import { contasTooltipPosition, ContasComposition, ContasEmpty, ContasHighlights, ContasRankingTable, ContasTooltip, ContasUnavailable, PeriodStatusList } from "@/components/contas/ContasParts";
 import { api } from "@/lib/api";
 import { contasApi } from "@/lib/api/contas";
 import { toMapValues, toSeries } from "@/lib/contas/adapt";
@@ -31,7 +31,7 @@ export function ContasDashboard() {
 function LoadedDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () => void }) {
   const search = useSearchParams();
   const lens = search.get("lens") === "B" ? "B" : search.get("lens") === "C" ? "C" : "A";
-  return <div className="contas-lenses"><ContasLensNav meta={meta} lens={lens} />{lens === "A" ? <TransfersDashboard meta={meta} onRetry={onRetry} /> : <FederalDashboard key={lens} meta={meta} lens={lens} onRetry={onRetry} />}</div>;
+  return <>{lens === "A" ? <TransfersDashboard meta={meta} onRetry={onRetry} /> : <FederalDashboard key={lens} meta={meta} lens={lens} onRetry={onRetry} />}</>;
 }
 
 function TransfersDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () => void }) {
@@ -102,7 +102,7 @@ function TransfersDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () =
   };
   return (
     <div className="dashboard contas-dashboard">
-      <ContasSidebar trail={trail} territories={territories} period={period} periods={availablePeriods(meta).map((code) => ({ code, label: periodLabel(code) }))} areas={areaOptions} area={area}
+      <ContasSidebar meta={meta} trail={trail} territories={territories} period={period} periods={availablePeriods(meta).map((code) => ({ code, label: periodLabel(code) }))} areas={areaOptions} area={area}
         onTerritory={(key) => change({ geography: key || "brasil:1", page: 1 })} onPeriod={(code) => change({ period: code, page: 1 })} onArea={(code) => change({ area: code || null, page: 1 })} onClear={() => router.push(path, { scroll: false })} canClear={geography !== "brasil:1" || period !== defaultPeriod(meta) || area !== null || page !== 1 || grain !== "mes" || order !== "value"} />
       <main className="main contas-content" aria-busy={loaded.loading}>
       {loaded.loading && !data ? <p role="status">{t("loading")}</p> : !data ? <div><ContasUnavailable onRetry={onRetry} /><button type="button" className="btn-outline" onClick={() => router.replace(path)}>{t("resetFilters")}</button></div> : (
@@ -129,7 +129,7 @@ function TransfersDashboard({ meta, onRetry }: { meta: ContasMeta; onRetry: () =
                 </nav>
               </MapView>
             </div>
-            {hover && hovered ? <div className="contas-tooltip-position" style={{ left: Math.max(8, Math.min(hover.x + 12, (typeof window === "undefined" ? 1024 : window.innerWidth) - 320)), top: Math.max(8, Math.min(hover.y + 12, (typeof window === "undefined" ? 768 : window.innerHeight) - 240)) }}><ContasTooltip name={hover.name} value={hovered.value} period={periodLabel(displayed.period)} inline /></div> : null}
+            {hover && hovered ? <div className="contas-tooltip-position" style={contasTooltipPosition(hover)}><ContasTooltip name={hover.name} value={hovered.value} period={periodLabel(displayed.period)} inline /></div> : null}
             {!data.map.rows.length && data.total === 0 ? <ContasEmpty /> : null}
           </>}
           how={<><ContasComposition byType={data.byType} composition={data.composition} area={displayed.area} onArea={(code) => change({ area: code === area ? null : code, page: 1 })} /></>}

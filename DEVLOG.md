@@ -6,7 +6,7 @@ vale para a data do registro: **Em teste** ainda não significa disponível na b
 
 ## 27/11/2026 — Localização orçamentária e execução dos entes
 
-**Situação: Em desenvolvimento e validação local.**
+**Situação: Em validação local, sem publicação na beta.**
 
 - Preparação do localizador orçamentário original da CGU, preservando UF, município, registros nacionais e campos sem informação.
 - Reconciliação das seis fases com a execução federal existente, sem atribuir aplicação efetiva ao recebedor.

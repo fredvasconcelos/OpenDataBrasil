@@ -7,6 +7,8 @@ import { useTranslations } from "next-intl";
 import { useState, type ReactNode } from "react";
 
 import { FaIcon } from "@/components/FaIcon";
+import { ContasIndicatorTree } from "@/components/contas/ContasIndicatorTree";
+import type { ContasMeta } from "@/lib/contas/types";
 import { ContasInfo } from "@/components/contas/ContasInfo";
 import { FA } from "@/lib/faIcons";
 import { MOBILE_QUERY, useMediaQuery } from "@/lib/useMediaQuery";
@@ -22,16 +24,19 @@ export interface AreaOption {
 }
 
 /** Barra lateral: só território, período e área (opcional). */
-export function ContasSidebar({ trail, territories, periods, period, areas, area, onTerritory, onPeriod, onArea, onClear, canClear }: {
-  trail: TrailItem[];
-  territories: { key: string; label: string }[];
-  periods: { code: string; label: string }[];
-  period: string;
-  areas: AreaOption[];
-  area: string | null;
-  onTerritory: (key: string) => void;
-  onPeriod: (period: string) => void;
-  onArea: (area: string) => void;
+export function ContasSidebar({ trail = [], territories = [], periods = [], period = "", areas = [], area = null, onTerritory, onPeriod, onArea, onClear, canClear, meta, lensLabel, controls }: {
+  meta?: ContasMeta;
+  lensLabel?: string;
+  controls?: ReactNode;
+  trail?: TrailItem[];
+  territories?: { key: string; label: string }[];
+  periods?: { code: string; label: string }[];
+  period?: string;
+  areas?: AreaOption[];
+  area?: string | null;
+  onTerritory?: (key: string) => void;
+  onPeriod?: (period: string) => void;
+  onArea?: (area: string) => void;
   onClear: () => void;
   canClear: boolean;
 }) {
@@ -45,38 +50,40 @@ export function ContasSidebar({ trail, territories, periods, period, areas, area
     <aside className="sidebar contas-sidebar">
       <div className="sb-current">
         <p className="sb-crumb">{t("blockName")}</p>
-        <p className="sb-kpi">{t("lensName")}</p>
+        <p className="sb-kpi">{lensLabel ?? t("lensName")}</p>
       </div>
       <section className="filters" aria-label={t("filters")}>
         {mobile ? (
-          <button type="button" className="contas-filter-toggle" aria-expanded={filtersOpen} aria-controls="contas-filtros" onClick={() => setFiltersOpen((o) => !o)}>{t("filters")}</button>
+          <button type="button" className="contas-filter-toggle" aria-label={t("filters")} aria-expanded={filtersOpen} aria-controls="contas-filtros" onClick={() => setFiltersOpen((o) => !o)}>{t("filters")}</button>
         ) : <h2>{t("filters")}</h2>}
         <div id="contas-filtros" className="contas-filters" hidden={mobile && !filtersOpen}>
         <div className="filters-body">
-          <label className="field">
+          {controls ?? <><label className="field">
             {t("territory")}
-            <select value={here?.key ?? "brasil:1"} onChange={(e) => onTerritory(e.target.value)}>
+            <select value={here?.key ?? "brasil:1"} onChange={(e) => onTerritory?.(e.target.value)}>
               <option value="brasil:1">{t("brasil")}</option>
               {territories.map((x) => <option key={x.key} value={x.key}>{x.label}</option>)}
             </select>
           </label>
           <label className="field">
             {t("period")}
-            <select value={period} onChange={(e) => onPeriod(e.target.value)}>
+            <select value={period} onChange={(e) => onPeriod?.(e.target.value)}>
               {periods.map((p) => <option key={p.code} value={p.code}>{p.label}</option>)}
             </select>
           </label>
           <label className="field">
             {t("area")}
-            <select value={area ?? ""} onChange={(e) => onArea(e.target.value)}>
+            <select value={area ?? ""} onChange={(e) => onArea?.(e.target.value)}>
               <option value="">{t("allAreas")}</option>
               {areas.map((a) => <option key={a.code} value={a.code}>{a.label}</option>)}
             </select>
           </label>
+          </>}
         </div>
         <div className="filters-foot"><button type="button" className="clear" disabled={!canClear} onClick={onClear}>{t("resetFilters")}</button></div>
         </div>
       </section>
+      {meta ? <ContasIndicatorTree meta={meta} /> : null}
     </aside>
   );
 }
@@ -106,13 +113,7 @@ export function ContasPanel({ crumb, title, status, highlights, map, how, when, 
   );
   return (
     <div className="contas-grid">
-      <header className="contas-head">
-        <div className="page-title">
-          <p className="crumb">{crumb}</p>
-          <h1>{title}</h1>
-        </div>
-        {status}
-      </header>
+      <ContasPanelHead crumb={crumb} title={title} status={status} />
       {highlights}
       <section className="contas-section card contas-where" aria-labelledby="onde">
         {head("onde", FA.municipio, t("map.title"), info.map, t("info.map"))}
@@ -133,4 +134,12 @@ export function ContasPanel({ crumb, title, status, highlights, map, how, when, 
       <div className="area-meta contas-foot">{foot}</div>
     </div>
   );
+}
+
+
+/** Cabeçalho comum: título e situação do período nas três lentes. */
+export function ContasPanelHead({ crumb, title, status, info, infoLabel }: {
+  crumb: string; title: string; status: ReactNode; info?: ReactNode; infoLabel?: string;
+}) {
+  return <header className="contas-head"><div className="page-title"><p className="crumb">{crumb}</p>{info && infoLabel ? <ContasInfo label={infoLabel} title={<h1>{title}</h1>}>{info}</ContasInfo> : <h1>{title}</h1>}</div>{status}</header>;
 }

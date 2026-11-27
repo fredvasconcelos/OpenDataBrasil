@@ -20,4 +20,4 @@ export type CompositionRow = S["CompositionRowOut"];
 export type ContasExecution = S["ContasExecutionOut"];
 export type ContasSearch = S["ContasSearchOut"];
 export type ExecutionRow = S["ExecutionRowOut"];
-export type ContasLens = "A" | "B" | "C";
+export type ContasLens = ContasMeta["lenses"][number]["lens"];

@@ -59,3 +59,12 @@ consultados na Gold identificada pela proveniência. Não houve captura ou ativa
 Testes cobrem isolamento de calendários/dimensões, URLs, cruzamentos, reconciliação dos
 seis valores com a API real, UF/município, busca/ficha, falha 503 e acessibilidade.
 O aceite visual final permanece com o mantenedor.
+
+
+## Ampliação autorizada em 27/11/2026
+
+O mantenedor escolheu o localizador orçamentário da CGU para a etapa imediata e pediu
+um plano para a execução própria dos estados e municípios. O limite territorial acima
+passa a ser tratado pela [ADR-0045](0045-localizador-orcamentario-da-execucao.md): detalhe
+original do plano de trabalho, sem mapa nem atribuição de aplicação efetiva. A interface
+segue o guia do DS, mantendo `?lens=B|C`, com troca pelo catálogo da barra lateral.

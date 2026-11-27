@@ -50,7 +50,7 @@ original. A execução usa o complemento para manter os cruzamentos existentes. 
 antiga, essas dimensões são rejeitadas e permanecem ausentes dos metadados.
 
 Os filtros são sobre os campos originais, combináveis com função, programa, ação,
-órgão, natureza e autor de emenda. Fases nunca se somam; totais e estornos são preservados.
+órgão, natureza e autor de emenda, até o limite contratual de dez filtros simultâneos. Fases nunca se somam; totais e estornos são preservados.
 A lente C continua independente de A/B e sem mapa ou conversão implícita em execução
 local. A interface segue o guia do DS e usa rotas próprias para cada painel.
 
