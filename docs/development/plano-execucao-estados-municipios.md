@@ -31,9 +31,9 @@ exercício, sem pressupor que todos os links e arquivos estejam disponíveis.
 
 | Etapa | Entrega concreta | Critério de conclusão | Aprovação |
 |---|---|---|---|
-| E0 — Inventário | Matriz ente × poder × exercício × fonte; URLs oficiais, descritor, licença, formato, calendário, revisões e limites | Cada registro tem evidência; indisponíveis e não pesquisados são distintos | Mantenedor revisa a matriz e o piloto |
+| E0 — Inventário | Matriz ente × poder × exercício × fonte; URLs oficiais, descritor, licença, formato, calendário, revisões e limites | Cada registro tem evidência; indisponíveis e não pesquisados são distintos | Fontes Guarabira/Elmar e PB selecionadas; matriz inicial documentada em 27/11 |
 | E1 — Base nacional | Avaliação dos relatórios e MSC/Siconfi, dicionários e contas por edição | Universo, nível de detalhe e cobertura de declarações medidos por ente/período | Contrato semântico antes de modelagem |
-| E2 — Piloto local | Um estado e um município, depois portes e fornecedores distintos; sugestão inicial PB/Guarabira pela continuidade das contas | Captura pequena e reprodutível, com conferência na consulta oficial; seleção ainda sujeita ao mantenedor | Mantenedor escolhe/aceita o piloto |
+| E2 — Piloto local | Guarabira/Elmar e Paraíba escolhidos pelo mantenedor em 27/11; depois portes e fornecedores distintos | Captura pequena e reprodutível, com conferência na consulta oficial; amostras iniciais conferidas, cobertura/metodologia pendentes | Mantenedor aceita o contrato e o resultado do piloto |
 | E3 — Contratos e conectores | Identidade do ente, órgão/fundo/UG, exercício, documento/item/evento, fontes/destinações, fases, retificações e linhagem | Sem chave inventada, sobreposição de snapshots ou associação por nome semelhante | ADR e contrato por família de fonte |
 | E4 — Gold candidata | Execução própria do ente em Delta, separada das lentes federais | Reconciliação exata, saldos e sinais; cobertura e limitações explícitas | Aceite técnico sem ativação |
 | E5 — Ligação com repasses | Piloto instrumento/receita → execução usando chaves oficiais | Mesmo universo e janela; saldos anteriores, contrapartida, rendimentos, devoluções e intermediários tratados | Método concreto aprovado |
@@ -77,5 +77,16 @@ matriz de cobertura; teste de reexecução idempotente; exportação com código
 edições e lacunas; proposta de atualização e retorno. O aceite de um piloto não
 comprova cobertura nacional.
 
-Próximo passo após a revisão deste plano: inventário E0 e escolha do piloto. A beta,
-as ativações e a coleta massiva continuam fora desta entrega.
+## Piloto iniciado em 27/11/2026
+
+O mantenedor escolheu Guarabira pela Elmar e indicou o portal estadual da Paraíba.
+[Inventário e resultado das amostras](../data_catalog/piloto-execucao-pb-2026-11-27/inventario.md),
+com dicionário observado, manifestos e diagnóstico offline reproduzível.
+Guarabira: oito linhas de novembro coincidem com a apresentação oficial; a amostra
+de julho ainda não tem conferência visual. Paraíba: 334 agregados no recorte
+julho/2026 × grupo da despesa × Até o mês, sem extrapolação de cobertura.
+
+Próximo passo: esclarecer licenças, grão, semântica temporal, órgãos/fundos,
+retificações e códigos; ampliar a prova limitada antes de propor contrato E3.
+A ligação com repasses ainda não foi demonstrada. A beta, as ativações e a coleta
+massiva continuam fora desta entrega.
