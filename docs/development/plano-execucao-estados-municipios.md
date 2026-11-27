@@ -67,11 +67,24 @@ reconciliado; as fontes externas fornecerão prova da cadeia de transferências.
   distribuir despesas entre origens por proporção nem cruzar apenas totais marginais.
   Distinguir execução por fonte/grupo da rastreabilidade de um repasse individual.
 
+### Revisão obrigatória das regras e bases
+
+Por determinação do mantenedor em 27/11/2026, todas as bases e regras acima,
+incluindo as lógicas já implementadas, passam por revisão jurídica, econômica e
+contábil antes de homologação normativa. O
+[protocolo de revisão](protocolo-revisao-juridico-economica-orcamentos.md)
+exige o corpus aplicável por ente/exercício: PPA, LDO, LOA, anexos, créditos e atos
+de programação/execução, normas gerais e locais, manuais e classificações vigentes.
+Cada regra deve ligar dispositivos e interpretação a campos, fórmulas, código,
+testes independentes e reconciliação. A revisão continua pendente; esta lista de
+princípios é hipótese de trabalho a validar, não parecer de conformidade já obtido.
+
 ### Famílias de KPIs e cartões a preparar
 
 Nomes abaixo são requisitos de conteúdo, sem IDs novos nem alteração visual agora.
 Cada KPI deverá ter ficha com fonte, fórmula, base, universo, chaves, período,
-cobertura, revisão, unidade e critérios de reconciliação antes da habilitação.
+cobertura, revisão, unidade e critérios de reconciliação antes da habilitação,
+vinculada ao dossiê normativo da regra e ao respectivo aceite.
 
 | Pergunta | Futuro KPI/cartão | Condição para mostrar valor ou percentual |
 |---|---|---|
@@ -122,9 +135,9 @@ exercício, sem pressupor que todos os links e arquivos estejam disponíveis.
 | E0 — Inventário | Matriz ente × poder × exercício × fonte; URLs oficiais, descritor, licença, formato, calendário, revisões e limites | Cada registro tem evidência; indisponíveis e não pesquisados são distintos | Fontes Guarabira/Elmar e PB selecionadas; matriz inicial documentada em 27/11 |
 | E1 — Base nacional | Avaliação dos relatórios e MSC/Siconfi, dicionários e contas por edição | Universo, nível de detalhe e cobertura de declarações medidos por ente/período | Contrato semântico antes de modelagem |
 | E2 — Piloto local | Guarabira/Elmar e Paraíba escolhidos pelo mantenedor em 27/11; depois portes e fornecedores distintos | Captura pequena e reprodutível, com conferência na consulta oficial; amostras iniciais conferidas, cobertura/metodologia pendentes | Mantenedor aceita o contrato e o resultado do piloto |
-| E3 — Contratos e conectores | Identidade do ente, órgão/fundo/UG, exercício, documento/item/evento, fontes/destinações, fases, retificações e linhagem; origem última e repassador imediato | Sem chave inventada, sobreposição de snapshots ou associação por nome semelhante | ADR e contrato por família de fonte |
+| E3 — Contratos e conectores | Identidade do ente, órgão/fundo/UG, exercício, documento/item/evento, fontes/destinações, fases, retificações e linhagem; origem última e repassador imediato | Sem chave inventada, sobreposição de snapshots ou associação por nome semelhante | ADR, contrato e revisão normativa por família de fonte/ente/exercício |
 | E4 — Gold candidata | Execução própria do ente em Delta, separada das lentes federais | Reconciliação exata, saldos e sinais; cobertura e limitações explícitas | Aceite técnico sem ativação |
-| E5 — Ligação com repasses | Piloto instrumento/receita → execução usando chaves oficiais | Mesmo universo e janela; saldos, ajustes e intermediários tratados; origem × área × fase sustentadas e total municipal reconciliado | Método concreto aprovado |
+| E5 — Ligação com repasses | Piloto instrumento/receita → execução usando chaves oficiais | Mesmo universo e janela; saldos, ajustes e intermediários tratados; origem × área × fase sustentadas e total municipal reconciliado | Método concreto aprovado e dossiês normativos validados no escopo |
 | E6 — Exposição gradual | API, exportações e catálogo com disponibilidade por ente/período | Testes de contrato, privacidade, acessibilidade e comparação com a fonte | Revisão local; publicação por pedido próprio |
 
 ## Inventário e captura
