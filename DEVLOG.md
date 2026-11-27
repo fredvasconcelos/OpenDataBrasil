@@ -4,6 +4,14 @@ A evolução do portal, dos primeiros passos às novidades mais recentes.
 Cada entrada destaca o que muda para quem consulta os dados. A situação indicada
 vale para a data do registro: **Em teste** ainda não significa disponível na beta.
 
+## 27/11/2026 — Mais indicadores e contas públicas na beta
+
+**Situação: Publicado na beta.**
+
+- Estatísticas reúne 241 indicadores, 23 a mais que a versão anterior, com os recortes e limites de cobertura disponíveis em cada fonte.
+- Contas públicas oferece transferências, pagamentos a favorecidos e execução federal em três lentes separadas, com filtros territoriais e localizadores identificados.
+- Exportações em CSV, JSON, Parquet e Excel trazem documentação e rastreabilidade; os indicadores de expansão e os pilotos de execução própria dos entes continuam em preparação.
+
 ## 27/11/2026 — Candidata à beta em validação
 
 **Situação: Candidata validada localmente; publicação na beta pendente.**
