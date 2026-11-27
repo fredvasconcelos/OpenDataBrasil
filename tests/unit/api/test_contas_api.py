@@ -6,6 +6,7 @@ from collections.abc import Iterator
 from datetime import UTC, datetime
 from typing import Any
 
+import polars as pl
 import pytest
 from fastapi.testclient import TestClient
 
@@ -16,7 +17,11 @@ from odb_api.deps import ApiDeps
 from odb_api.gold import GoldGateway
 from odb_api.release import ReleaseResolver
 from odb_catalog.publication import Release, TableVersion
+from odb_lakehouse import DeltaReader
+from odb_modeling import contas
+from odb_modeling.builder import GoldTable
 from odb_modeling.contas import recipient_id
+from odb_modeling.contas_locations import FACT_EXECUTION_LOCATION, execution_locations
 from odb_query_engine import DuckDBConfig, DuckDBReadEngine
 from tests.support import duckdb_extension_directory
 from tests.unit.modeling.test_contas_gold import GoldContas
@@ -31,6 +36,25 @@ def client(tmp_path_factory: pytest.TempPathFactory) -> Iterator[TestClient]:
     env = GoldContas(tmp)
     build = env.builder.build()
     assert build.status == "succeeded", build.error
+    source = env.registry.silver_success(env.builder.datasets()["execution"])
+    assert source is not None
+    assert source.delta_version is not None
+    located = execution_locations(
+        DeltaReader().scan(source.target_uri, source.delta_version),
+        contas.Dimensions(
+            recipient=pl.DataFrame(),
+            management_unit=env.table(build, "dim_management_unit"),
+            budget_action=env.table(build, "dim_budget_action"),
+            expense_nature=env.table(build, "dim_expense_nature"),
+            amendment_author=env.table(build, "dim_amendment_author"),
+        ),
+    )
+    contract = FACT_EXECUTION_LOCATION
+    uri = env.builder.table_uri(contract.name)
+    result = env.env.builder._writer.write(
+        uri, located, run_id=build.build_id, mode="error", partition_by=contract.partition_by
+    )
+    build.tables[contract.name] = GoldTable(contract.name, uri, result.version, contract.version)
     release = Release(
         release_id="contas-1",
         scope="contas",
@@ -227,3 +251,28 @@ def test_execucao_preserva_totais_em_pagina_sem_linhas(client: TestClient) -> No
     )
     assert vazio["rows_total"] == 0
     assert vazio["total"]["paid"] == 0
+
+
+def test_execucao_anuncia_localizador_quando_presente_e_reconcilia_total(
+    client: TestClient,
+) -> None:
+    meta = _get(client, "/api/v1/contas/meta")
+    c = next(lens for lens in meta["lenses"] if lens["lens"] == "C")
+    assert {"localizer", "localizer_uf", "localizer_municipality"} <= {
+        d["id"] for d in c["dimensions"]
+    }
+    base = _get(client, "/api/v1/contas/execucao?periods=2024M10&dimension=action")
+    located = _get(client, "/api/v1/contas/execucao?periods=2024M10&dimension=localizer")
+    assert located["total"] == base["total"]
+    assert "fact_federal_execution_location" in {
+        t["table_id"] for t in located["provenance"]["tables"]
+    }
+    uf = _get(client, "/api/v1/contas/execucao?periods=2024M10&dimension=localizer_uf")
+    assert uf["total"] == base["total"]
+    if uf["rows"]:
+        code = uf["rows"][0]["category_code"]
+        filtered = _get(
+            client,
+            f"/api/v1/contas/execucao?periods=2024M10&dimension=localizer_municipality&filter=localizer_uf:{code}",
+        )
+        assert filtered["total"]["paid"] == uf["rows"][0]["paid"]

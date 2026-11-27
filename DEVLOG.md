@@ -4,6 +4,14 @@ A evolução do portal, dos primeiros passos às novidades mais recentes.
 Cada entrada destaca o que muda para quem consulta os dados. A situação indicada
 vale para a data do registro: **Em teste** ainda não significa disponível na beta.
 
+## 27/11/2026 — Localização orçamentária e execução dos entes
+
+**Situação: Em desenvolvimento e validação local.**
+
+- Preparação do localizador orçamentário original da CGU, preservando UF, município, registros nacionais e campos sem informação.
+- Reconciliação das seis fases com a execução federal existente, sem atribuir aplicação efetiva ao recebedor.
+- Plano de inserção da execução própria de estados e municípios, com inventário de fontes oficiais e critérios para pilotos.
+
 ## 27/11/2026 — Pagamentos a favorecidos e execução federal
 
 **Situação: Em teste local.**
