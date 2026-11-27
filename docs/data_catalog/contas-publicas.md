@@ -17,7 +17,9 @@ incorporadas ao portal.
 As três lentes respondem perguntas diferentes e **não se somam**. Na candidata em
 **teste local de 27/11/2026**, o painel permite escolher A, B ou C; a ficha mantém A e B
 separadas. B consulta a sede cadastral por estado/município. C mostra seis fases
-independentes da execução federal e não distribui valores por local de aplicação.
+independentes da execução federal. Na candidata complementar, UF e município do
+localizador vêm do plano de trabalho da CGU, sem atribuir aplicação ao recebedor ou
+ratear valores nacionais. O contrato está na [ADR-0045](../adr/0045-localizador-orcamentario-da-execucao.md).
 O detalhamento e os limites estão na [ADR-0044](../adr/0044-lentes-federais-b-c-no-portal.md).
 Essa implementação local não significa disponibilidade na beta.
 

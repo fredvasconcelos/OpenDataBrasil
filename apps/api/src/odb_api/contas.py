@@ -76,7 +76,8 @@ LENS_DESCRIPTIONS = {
     "A": "Pagamentos da União a estados, municípios, fundos e entidades, pelo município do "
     "ente ou da entidade que recebeu.",
     "B": "Tudo o que cada favorecido recebeu da União, pelo município da sede cadastral.",
-    "C": "Empenhado, liquidado, pago e restos a pagar da União, sem território.",
+    "C": "Empenhado, liquidado, pago e restos a pagar da União. O localizador orçamentário, "
+    "quando disponível, não mede a aplicação efetiva pelo estado ou município.",
 }
 LENS_NOTES = {
     "A": [
@@ -92,7 +93,12 @@ LENS_NOTES = {
         "Lançamentos agregados, fluxos dentro da União, bancos pagadores e sigilosos entram "
         "nos totais, mas não nos rankings.",
     ],
-    "C": ["As fases nunca se somam: empenhado, liquidado e pago são etapas do mesmo gasto."],
+    "C": [
+        "As fases nunca se somam: empenhado, liquidado e pago são etapas do mesmo gasto.",
+        "UF e município do localizador são campos do plano de trabalho da CGU, sem "
+        "conversão para IBGE. Valores nacionais, multirregionais ou sem UF/município "
+        "individualizado permanecem separados; não são rateados entre localidades.",
+    ],
 }
 NOTES = [
     "As lentes não se somam: cada uma responde uma pergunta diferente.",
@@ -178,6 +184,39 @@ _EXECUTION_COLUMNS: Mapping[str, _Column] = {
     "expense_element": _Column("n.expense_element_code", "n.expense_element_name", ("n",)),
     "amendment_author": _Column("e.amendment_author_code", "e.amendment_author_name", ("e",)),
 }
+EXECUTION_LOCATION_TABLE = "fact_federal_execution_location"
+_EXECUTION_LOCATION_COLUMNS: Mapping[str, _Column] = {
+    "localizer_uf": _Column("f.location_uf", "f.location_uf"),
+    "localizer_municipality": _Column(
+        "CASE WHEN f.location_municipality_name_source IS NOT NULL THEN "
+        "concat_ws(' / ', f.location_uf, f.location_municipality_name_source) END",
+        "CASE WHEN f.location_municipality_name_source IS NOT NULL THEN "
+        "concat_ws(' / ', f.location_uf, f.location_municipality_name_source) END",
+    ),
+    "localizer": _Column(
+        "f.location_key",
+        "concat_ws(' · ', f.location_locator_code, f.location_locator_name, "
+        "f.location_uf, f.location_municipality_name_source, f.location_locator_description)",
+    ),
+}
+DIMENSION_LABELS.update(
+    {
+        "localizer_uf": "UF do localizador orçamentário",
+        "localizer_municipality": "Município do localizador orçamentário",
+        "localizer": "Localizador original da CGU",
+    }
+)
+
+
+def _execution_columns(ctx: ReleaseContext) -> Mapping[str, _Column]:
+    """Só anuncia campos presentes na versão Gold explicitamente fixada pelo release."""
+    return (
+        {**_EXECUTION_COLUMNS, **_EXECUTION_LOCATION_COLUMNS}
+        if ctx.has(EXECUTION_LOCATION_TABLE)
+        else _EXECUTION_COLUMNS
+    )
+
+
 _JOINS = {
     "a": ("a", "dim_budget_action", "a.action_key = f.action_key"),
     "u": ("u", "dim_management_unit", "u.ug_key = f.ug_key"),
@@ -373,11 +412,11 @@ class ContasService:
         lenses = []
         for lens in ("A", "B", "C"):
             items = statuses.get(lens, [])
-            dims = MAP_DIMENSIONS.get(lens, tuple(_EXECUTION_COLUMNS))
+            dims = MAP_DIMENSIONS.get(lens, tuple(_execution_columns(ctx)))
             group = (
                 ("territory", *_TABLE_COLUMNS[lens], "recipient")
                 if lens in _TABLE_COLUMNS
-                else tuple(_EXECUTION_COLUMNS)
+                else tuple(_execution_columns(ctx))
             )
             lenses.append(
                 LensOut(
@@ -1008,24 +1047,27 @@ class ContasService:
         page: int,
     ) -> ContasExecutionOut:
         """Fases da despesa por categoria, paginadas, ordenadas pelo pago."""
-        if dimension not in _EXECUTION_COLUMNS:
-            msg = f"dimensão {dimension!r} indisponível na lente C: {list(_EXECUTION_COLUMNS)}"
+        columns = _execution_columns(ctx)
+        if dimension not in columns:
+            msg = f"dimensão {dimension!r} indisponível na lente C: {list(columns)}"
             raise SemanticError(msg)
         months = self.months(ctx, "C", periods)
-        column = _EXECUTION_COLUMNS[dimension]
+        column = columns[dimension]
         joins = set(column.joins)
         params: dict[str, Any] = {"offset": (page - 1) * PAGE_SIZE}
         where = [f"f.year IN ({self._years(months)})", f"f.period IN ({self._in_list(months)})"]
         for i, item in enumerate(filters[:MAX_FILTERS]):
             dim, _, code = item.partition(":")
-            col = _EXECUTION_COLUMNS.get(dim)
+            col = columns.get(dim)
             if col is None or not code:
-                msg = f"filtro {item!r} inválido; use dimensão:código ({list(_EXECUTION_COLUMNS)})"
+                msg = f"filtro {item!r} inválido; use dimensão:código ({list(columns)})"
                 raise SemanticError(msg)
             joins.update(col.joins)
             where.append(f"coalesce({col.code}, '{MISSING_CODE}') = $f{i}")
             params[f"f{i}"] = code
-        tables = {"f": FACTS["C"]}
+        tables = {
+            "f": EXECUTION_LOCATION_TABLE if ctx.has(EXECUTION_LOCATION_TABLE) else FACTS["C"]
+        }
         join_sql = ""
         for alias in sorted(joins):
             name, table, on = _JOINS[alias]

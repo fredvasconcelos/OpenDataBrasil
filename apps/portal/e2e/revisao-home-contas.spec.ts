@@ -148,3 +148,21 @@ for (const width of [3440, 2560, 1920, 1440, 390]) {
     }
   });
 }
+
+
+test("catálogo das lentes segue as cores, busca e âncoras do guia DS", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Ver indicadores: Contas públicas", exact: true }).click();
+  await expect(page.locator(".block-catalog .theme-grid .theme-card")).toHaveCount(5);
+  const search = page.getByRole("searchbox", { name: "Buscar indicador de contas públicas", exact: true });
+  await search.fill("empenhado");
+  await expect(page.locator(".block-catalog .theme-panel")).toHaveCount(1);
+  await expect(page.locator(".block-catalog .theme-panel h2")).toHaveText("Execução da despesa");
+  await expect(page.locator(".block-catalog .theme-panel a")).toHaveCount(1);
+  await search.fill("");
+  await page.getByRole("button", { name: /^Recebimento por favorecido/ }).click();
+  await expect(page.locator(".block-catalog .theme-panel")).toHaveCount(1);
+  await expect(page.getByRole("link", { name: "Buscar um favorecido (empresas e entidades)", exact: true })).toHaveAttribute("href", "/contas/painel?lens=B#federal-busca");
+  await page.getByRole("link", { name: "Buscar um favorecido (empresas e entidades)", exact: true }).click();
+  await expect(page.locator("#federal-busca")).toBeInViewport();
+});

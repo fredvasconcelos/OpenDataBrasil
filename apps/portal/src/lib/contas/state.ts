@@ -76,7 +76,7 @@ export function readFederalState(search: URLSearchParams, meta: ContasMeta, lens
   // O contrato aceita dez dimensões; uma categoria por dimensão evita filtros contraditórios.
   const filters = [...new Map(search.getAll("filter").filter((item) => {
     const at = item.indexOf(":");
-    return at > 0 && (definition?.dimensions.map((d) => d.id) ?? []).includes(item.slice(0, at)) && /^[^:,\s]{1,100}$/.test(item.slice(at + 1));
+    return at > 0 && (definition?.dimensions.map((d) => d.id) ?? []).includes(item.slice(0, at)) && /^[^,\u0000-\u001f]{1,4096}$/.test(item.slice(at + 1));
   }).map((item) => [item.slice(0, item.indexOf(":")), item])).values()].slice(0, 10);
   return { group, period, page, filters, geography: search.get("geography") || "brasil:1" };
 }

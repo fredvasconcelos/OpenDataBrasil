@@ -1969,35 +1969,37 @@ a.kpi-link:hover { text-decoration: underline; }
 .chart-info p { margin: .5rem 0; }
 @media (min-width: 1600px) { .area-chart.is-seasonal { overflow: visible; } }
 
-/* Lentes federais B/C: valores independentes e território apenas por sede na B. */
-.contas-lens-nav { display: flex; flex-wrap: wrap; gap: var(--odbr-space-2); padding: var(--odbr-space-3) var(--odbr-space-4); border-bottom: 1px solid var(--odbr-border); background: var(--odbr-bg-surface); }
-.contas-lens-nav a { padding: 0.5rem 0.75rem; border: 1px solid var(--odbr-border); border-radius: var(--odbr-radius-sm); font-weight: 700; text-decoration: none; }
-.contas-lens-nav a[aria-current="page"] { background: var(--odbr-bg-selected); border-color: var(--odbr-primary); color: var(--odbr-text-active); }
+/* DS 2.24.0 · Lentes B/C na moldura existente, com catálogo e árvore compartilhados. */
 .contas-federal { gap: var(--odbr-space-5); min-width: 0; }
 .contas-federal > * { flex-shrink: 0; min-width: 0; }
-.contas-federal h1 { font-size: var(--odbr-fs-card-title); }
-.contas-lens-note { padding: var(--odbr-space-4); }
 .contas-active-filters { display: flex; flex-wrap: wrap; gap: var(--odbr-space-2); }
+.contas-active-filters .theme-chip { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
 .contas-phase-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.contas-receipts-total { grid-template-columns: minmax(0, 1fr); }
 .contas-federal .contas-kpi-value { white-space: normal; overflow-wrap: anywhere; }
-.contas-execution-wrap { max-width: 100%; overflow: auto; }
-.contas-execution-table { min-width: 1250px; }
-.contas-execution-table th:first-child { min-width: 12rem; }
-.contas-phase-cards li:target { outline: 2px solid var(--odbr-primary); outline-offset: 2px; }
-@media (max-width: 800px) {
+.contas-federal .table-wrap { max-width: 100%; overflow: auto; }
+.contas-execution-table td.num { white-space: nowrap; }
+.contas-execution-table th.num { white-space: normal; }
+.contas-phase-cards li:target { background: var(--odbr-bg-selected); border-color: var(--odbr-primary); }
+.contas-federal .contas-when { display: flex; }
+.contas-federal .contas-when .contas-series-wrap { flex: none; height: calc(var(--odbr-control-h) * 7); }
+.contas-sidebar .themes { display: block; }
+.contas-sidebar .themes .kpi-link { display: block; padding: var(--odbr-space-2) var(--odbr-space-3); border-radius: var(--odbr-radius-sm); font-size: var(--odbr-fs-ui); }
+.contas-sidebar .themes .kpi-link[aria-current="page"] { background: var(--odbr-bg-selected); color: var(--odbr-text-active); font-weight: 800; }
+@media (max-width: 991px) {
   .contas-phase-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .contas-lens-nav { gap: var(--odbr-space-2); }
-  .contas-lens-nav a { flex: 1 1 100%; }
 }
-@media (max-width: 420px) {
-  .contas-phase-cards { grid-template-columns: 1fr; }
+@media (max-width: 575px) {
+  .contas-phase-cards { grid-template-columns: minmax(0, 1fr); }
 }
-
-.contas-federal .table-wrap { max-width: 100%; overflow-x: auto; }
-.contas-federal .contas-series-wrap { height: 18rem; }
-
-@media (min-width: 992px) and (min-height: 851px) {
-  .contas-lenses { display: flex; flex-direction: column; height: calc(100dvh - var(--odbr-header-h) - var(--odbr-stripe-h) - var(--notice-h) - var(--footer-slim-h)); }
-  .contas-lenses > .contas-lens-nav { flex-shrink: 0; }
-  .contas-lenses > .dashboard { flex: 1; height: auto; min-height: 0; }
+/* A árvore rola no espaço restante, sem comprimir ou cobrir os filtros existentes. */
+.contas-sidebar .filters { flex: none; }
+.contas-sidebar .themes { flex: 1; min-height: 0; overflow-y: auto; }
+.contas-sidebar .themes .tree-head { margin-top: 0; top: 0; padding-top: var(--odbr-space-2); }
+@media (max-width: 991px) {
+  .contas-sidebar .themes { max-height: calc(var(--odbr-control-h) * 10); }
+}
+@media (max-width: 575px) {
+  .contas-execution-table th:first-child { width: calc(var(--odbr-control-h) * 3); max-width: calc(var(--odbr-control-h) * 3); }
+  .contas-execution-table th:first-child .text-btn { white-space: normal; text-align: left; }
 }

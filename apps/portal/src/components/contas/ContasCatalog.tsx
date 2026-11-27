@@ -6,38 +6,12 @@ import { type CSSProperties, useState } from "react";
 
 import { FaIcon } from "@/components/FaIcon";
 import { SearchGlyph } from "@/components/HomeCatalog";
-import { contasApi } from "@/lib/api/contas";
-import { defaultPeriod } from "@/lib/contas/state";
 import { FA, type FaDef } from "@/lib/faIcons";
-import { normalize, themeStyle, type ThemeFamily } from "@/lib/themes";
+import { normalize, themeStyle } from "@/lib/themes";
+import { contasGroups, loadContasCatalog, matchContas, type Group, type Item } from "@/lib/contas/catalog";
 import { useAsync } from "@/lib/useAsync";
 
 const SAMPLE = 4;
-const PANEL = "/contas/painel";
-// Os mesmos nomes dos cartões do painel; um tipo novo da fonte aparece com o rótulo da API.
-const TYPE_LABELS: Record<string, "constitutional" | "legal"> = {
-  "Constitucionais e Royalties": "constitutional",
-  "Legais, Voluntárias e Específicas": "legal",
-};
-
-interface Item {
-  id: string;
-  label: string;
-  href: string;
-  /** Termos extras da busca (siglas e nomes populares), nunca exibidos. */
-  terms?: string;
-}
-
-interface Group {
-  id: "visao" | "tipos" | "areas" | "recebimentos" | "execucao";
-  label: string;
-  note: string;
-  icon: FaDef;
-  family: ThemeFamily;
-  terms: string;
-  items: Item[];
-}
-
 // Catálogo das Contas públicas no molde do catálogo das Estatísticas (DS ODBr): busca
 // com lupa, etiquetas de grupo, grade de cartões em "Todos" e lista completa ao escolher
 // um grupo ou buscar. Cada item abre o painel da lente correspondente. Tipos e
@@ -49,65 +23,11 @@ export function ContasCatalog() {
   const [retry, setRetry] = useState(0);
   const [q, setQ] = useState("");
   const [group, setGroup] = useState<Group["id"] | "all">("all");
-  const loaded = useAsync(async () => {
-    const meta = await contasApi.meta();
-    const period = defaultPeriod(meta);
-    const [areas, types] = await Promise.all([
-      contasApi.areas("brasil:1", [period]),
-      contasApi.table({ geography_key: "brasil:1", periods: [period], group_by: "transfer_type" }),
-    ]);
-    return { meta, period, areas: areas.rows, types: types.rows };
-  }, [], retry);
-
-  const groups: Group[] = loaded.data
-    ? [
-        {
-          id: "visao",
-          label: c("groups.visao.name"),
-          note: c("groups.visao.note"),
-          icon: FA.contas,
-          family: "azul",
-          terms: c("groups.visao.terms"),
-          items: [
-            { id: "total", label: c("items.total"), href: PANEL },
-            { id: "onde", label: c("items.onde"), href: `${PANEL}#onde`, terms: c("items.ondeTerms") },
-            { id: "quando", label: c("items.quando"), href: `${PANEL}#quando` },
-            { id: "quem", label: c("items.quem"), href: `${PANEL}#quem`, terms: c("items.quemTerms") },
-          ],
-        },
-        {
-          id: "tipos",
-          label: c("groups.tipos.name"),
-          note: c("groups.tipos.note"),
-          icon: FA.transferidos,
-          family: "petroleo",
-          terms: c("groups.tipos.terms"),
-          items: loaded.data.types.map((r) => ({ id: r.key, label: TYPE_LABELS[r.key] ? t(`contas.highlights.${TYPE_LABELS[r.key]}`) : r.label, href: `${PANEL}#como`, terms: TYPE_LABELS[r.key] ? c(`items.${TYPE_LABELS[r.key]}Terms`) : undefined })),
-        },
-        {
-          id: "areas",
-          label: c("groups.areas.name"),
-          note: c("groups.areas.note", { year: loaded.data.period.slice(0, 4) }),
-          icon: FA.gestao,
-          family: "roxo",
-          terms: c("groups.areas.terms"),
-          items: loaded.data.areas.map((r) => ({ id: r.key, label: r.label, href: `${PANEL}?${new URLSearchParams({ area: r.key })}` })),
-        },
-        {
-          id: "recebimentos", label: t("contas.federal.B"), note: t("contas.federal.receiptsNote"),
-          icon: FA.recebimento, family: "petroleo", terms: "favorecido pagamento sede estado município CNAE órgão",
-          items: [{ id: "pagamentos", label: t("contas.federal.B"), href: `${PANEL}?lens=B` }],
-        },
-        {
-          id: "execucao", label: t("contas.federal.C"), note: t("contas.federal.noSum"),
-          icon: FA.gestao, family: "roxo", terms: "execução empenhado liquidado pago restos pagar orçamento",
-          items: ["committed", "liquidated", "paid", "payables_registered", "payables_cancelled", "payables_paid"].map((phase) => ({ id: phase, label: t(`contas.federal.phases.${phase}`), href: `${PANEL}?lens=C#fase-${phase}` })),
-        },
-      ].filter((g) => g.id !== "recebimentos" && g.id !== "execucao" || loaded.data?.meta.lenses.some((l) => l.lens === (g.id === "recebimentos" ? "B" : "C"))) as Group[]
-    : [];
+  const loaded = useAsync(loadContasCatalog, [], retry);
+  const groups = contasGroups(loaded.data, t);
 
   const query = normalize(q.trim());
-  const matches = (g: Group, it: Item) => !query || normalize(`${it.label} ${it.terms ?? ""} ${g.label} ${g.terms}`).includes(query);
+  const matches = (g: Group, it: Item) => matchContas(g, it, query);
   const listed = groups
     .filter((g) => group === "all" || g.id === group)
     .map((g) => ({ ...g, found: g.items.filter((it) => matches(g, it)) }))

@@ -76,3 +76,11 @@ describe("lentes federais", () => {
     expect(query.getAll("filter")).toEqual(["organ:123", "recipient_class:empresa"]);
   });
 });
+
+
+it("preserva município textual do localizador sem criar código IBGE", () => {
+  const current: ContasMeta = { ...meta, lenses: [{ ...meta.lenses[0]!, lens: "C", dimensions: [{ id: "localizer_municipality", label: "Município" }] }] };
+  const search = new URLSearchParams();
+  search.set("filter", "localizer_municipality:PB / GUARABIRA");
+  expect(readFederalState(search, current, "C").filters).toEqual(["localizer_municipality:PB / GUARABIRA"]);
+});
